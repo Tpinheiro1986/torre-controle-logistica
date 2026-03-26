@@ -282,7 +282,7 @@ table.dt tr:hover td{background:var(--bg2)}
           <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
           <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
           <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
-          <div class="kpi kpi-amb"><div class="kpi-lbl">Hub — Ag. Exp.</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
+          <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
           <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="o-trs">—</div><div class="kpi-sub" id="o-trs-s">—</div></div>
         </div>
         <div class="card" style="padding:14px 18px">
@@ -318,28 +318,28 @@ table.dt tr:hover td{background:var(--bg2)}
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — Hub, Trânsito e Previsão por Quarter</div>
+          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito e Previsão por Quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-            <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Hub — Ag. Exp.</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
+            <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
             <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
-          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#854F0B">Valor Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total</th><th class="r">Valor Total</th><th class="r">% faturado</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total</th><th class="r">Valor Total</th><th class="r">% faturado</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r">Hub</th><th class="r">Em Trânsito</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r">CD</th><th class="r">Em Trânsito</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
           <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px" id="o5-kpis"></div>
           <div class="reg-grid" id="o5-cards"></div>
           <div style="background:var(--bg2);border-radius:var(--radius);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Média dias entrega por região/mês</div>
+            <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Prazo médio de entrega por região e mês (NFs entregues)</div>
             <div style="height:150px;position:relative"><canvas id="o5-chart"></canvas></div>
             <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap" id="o5-legend"></div>
           </div>
@@ -581,27 +581,80 @@ async function processOTD(file){
 
   const VENDAS_NAT=['VENDA DE MERCADORIA ADQUIRIDA','VENDA DE PRODUCAO'];
 
+  // Helper: find column by multiple possible names (handles encoding variations)
+  function col(r, ...names){
+    for(const n of names){
+      if(r[n]!==undefined && r[n]!==null) return r[n];
+    }
+    // Fuzzy match - try to find key containing the base word
+    const keys=Object.keys(r);
+    for(const n of names){
+      const base=n.replace(/[^a-zA-Z0-9 ]/g,'').toLowerCase().substring(0,8);
+      const found=keys.find(k=>k.replace(/[^a-zA-Z0-9 ]/g,'').toLowerCase().includes(base));
+      if(found && r[found]!==undefined) return r[found];
+    }
+    return null;
+  }
+
   // Helper: parse date from various formats
   function parseDate(v){
     if(!v) return null;
     if(v instanceof Date) return isNaN(v)?null:v;
+    if(typeof v==='number') return new Date(Math.round((v-25569)*86400*1000)); // Excel serial date
     const d=new Date(v); return isNaN(d)?null:d;
   }
 
   // Helper: get empresa
   function getEmpresa(r){
-    return String(r['Embarcador']||'').toUpperCase().includes('INOVALAB')?'INOVALAB':'GENOMMA';
+    return String(col(r,'Embarcador')||'').toUpperCase().includes('INOVALAB')?'INOVALAB':'GENOMMA';
   }
 
-  // Helper: get UF (new base uses UF Destino)
-  function getUF(r){ return String(r['UF Destino']||r['UF Dest']||''); }
+  // Helper: get UF
+  function getUF(r){ 
+    return String(col(r,'UF Destino','UF Dest','UF_Destino')||''); 
+  }
 
   // Helper: get valor
-  function getValor(r){ return parseFloat(String(r['Valor Total']||r['Valor Nota']||0).replace(',','.'))||0; }
+  function getValor(r){ 
+    const v=col(r,'Valor Total','Valor Nota','ValorTotal','valor_total');
+    return parseFloat(String(v||0).replace(',','.'))||0; 
+  }
 
-  // Separate vendas and bonificacoes
-  const vendas=processed.filter(r=>VENDAS_NAT.includes(String(r['Natureza da Operação']||r['Natureza da Operacao']||'')));
-  const bonifs=processed.filter(r=>!VENDAS_NAT.includes(String(r['Natureza da Operação']||r['Natureza da Operacao']||'')));
+  // Helper: get natureza
+  function getNatureza(r){
+    const v=col(r,'Natureza da Operação','Natureza da Operacao','Natureza_da_Operacao');
+    return String(v||'');
+  }
+
+  // Helper: get status
+  function getStatus(r){
+    const v=col(r,'Status da Entrega','Status_da_Entrega');
+    return String(v||'');
+  }
+
+  // Helper: get transportador
+  function getTransp(r){
+    return String(col(r,'Transportador')||'').substring(0,32);
+  }
+
+  // Helper: get data emissao
+  function getDataEmissao(r){
+    return parseDate(col(r,'Data Emissão','Data Emissao','Data_Emissao'));
+  }
+
+  // Helper: get data entrega
+  function getDataEntrega(r){
+    return parseDate(col(r,'Data Entrega','Data Entregue','Data_Entrega'));
+  }
+
+  // Helper: get previsao entrega
+  function getPrevisao(r){
+    return parseDate(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
+  }
+
+  // Separate vendas and bonificacoes using helper
+  const vendas=processed.filter(r=>VENDAS_NAT.includes(getNatureza(r)));
+  const bonifs=processed.filter(r=>!VENDAS_NAT.includes(getNatureza(r)));
   log('Notas de venda: '+vendas.length,'info');
   log('Bonificações/Outros: '+bonifs.length,'info');
 
@@ -610,8 +663,8 @@ async function processOTD(file){
   // Aggregate by month — VENDAS
   const meses={};
   vendas.forEach(r=>{
-    const tipo=classificar(r['Status da Entrega']);
-    const de=parseDate(r['Data Emissão']||r['Data Emissao']);
+    const tipo=classificar(getStatus(r));
+    const de=getDataEmissao(r);
     if(!de) return;
     const mes=de.getMonth()+1;
     const val=getValor(r);
@@ -635,7 +688,7 @@ async function processOTD(file){
   // Bonificacoes por mes
   const bonif_mes={};
   bonifs.forEach(r=>{
-    const de=parseDate(r['Data Emissão']||r['Data Emissao']);
+    const de=getDataEmissao(r);
     if(!de) return;
     const mes=de.getMonth()+1;
     const val=getValor(r);
@@ -658,9 +711,9 @@ async function processOTD(file){
   // Transportadoras
   const transpMap={};
   vendas.forEach(r=>{
-    const tipo=classificar(r['Status da Entrega']);
+    const tipo=classificar(getStatus(r));
     const val=getValor(r);
-    const t=String(r['Transportador']||'').substring(0,32);
+    const t=getTransp(r);
     if(!t) return;
     if(!transpMap[t]) transpMap[t]={n:t,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0};
     if(tipo==='on_time'){transpMap[t].fin++;transpMap[t].on++;}
@@ -683,10 +736,10 @@ async function processOTD(file){
     return 'Q4';
   }
   const prevQ={};
-  processed.filter(r=>classificar(r['Status da Entrega']).match(/hub|transito/)).forEach(r=>{
-    const pq=getPrevQ(r['Previsão de Entrega']||r['Previsao de Entrega']);
+  processed.filter(r=>classificar(getStatus(r)).match(/hub|transito/)).forEach(r=>{
+    const pq=getPrevQ(getPrevisao(r));
     const val=getValor(r);
-    const tipo=classificar(r['Status da Entrega']);
+    const tipo=classificar(getStatus(r));
     if(!prevQ[pq]) prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0};
     prevQ[pq].qtd++;
     prevQ[pq].valor+=val;
@@ -700,31 +753,32 @@ async function processOTD(file){
   const regMap={};
   const diasRegMap={};
   vendas.forEach(r=>{
-    const tipo=classificar(r['Status da Entrega']);
+    const tipo=classificar(getStatus(r));
     const uf=getUF(r);
     const reg=REGIOES_MAP[uf]||'Outros';
     const val=getValor(r);
-    const da=parseFloat(r['Dias Atraso']||0)||0;
+    // Dias Decorridos = time in transit for pending NFs
+    const diasDecorridos=parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0;
 
-    // transito stats
+    // transito stats - use Dias Decorridos
     if(tipo==='transito'){
       if(!regMap[reg]) regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
       regMap[reg].atr_qtd++;
       regMap[reg].atr_val+=val;
-      regMap[reg].dias_sum+=da;
+      regMap[reg].dias_sum+=diasDecorridos;
       if(!regMap[reg].ufs[uf]) regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
       regMap[reg].ufs[uf].n++;
       regMap[reg].ufs[uf].val+=val;
-      regMap[reg].ufs[uf].d_sum+=da;
+      regMap[reg].ufs[uf].d_sum+=diasDecorridos;
     }
 
-    // dias entrega
+    // dias entrega - from emissao to actual delivery date
     if(tipo==='on_time'||tipo==='off_time'){
-      const de=parseDate(r['Data Emissão']||r['Data Emissao']);
-      const dent=parseDate(r['Data Entrega']||r['Data Entregue']);
+      const de=getDataEmissao(r);
+      const dent=getDataEntrega(r);
       if(de&&dent){
         const dias=Math.round((dent-de)/(1000*60*60*24));
-        if(dias>=0&&dias<=365){
+        if(dias>=0&&dias<=60){
           const mes=de.getMonth()+1;
           if(!diasRegMap[reg]) diasRegMap[reg]={};
           if(!diasRegMap[reg][mes]) diasRegMap[reg][mes]={sum:0,n:0};
@@ -764,7 +818,7 @@ async function processOTD(file){
   };
   vendas.forEach(r=>{
     const emp=getEmpresa(r);
-    const tipo=classificar(r['Status da Entrega']);
+    const tipo=classificar(getStatus(r));
     const val=getValor(r);
     empresa_total[emp].fat+=val;
     empresa_total[emp].qtd++;
@@ -945,13 +999,19 @@ function renderOTDChart(d){
   if(fatChart) fatChart.destroy();
   fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',
     data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:[
-      {label:'Hub+Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'#FAEEDA',borderRadius:0,borderWidth:0,stack:'s'},
+      {label:'CD + Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
       {label:'Inovalab',data:ms.map(m=>d.meses[m]?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
       {label:'Genomma',data:ms.map(m=>d.meses[m]?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
-              y:{grid:{color:'rgba(128,128,128,.07)'},stacked:true,ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}}}});
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12,padding:14,color:'var(--text2,#6b6b67)'}},
+        tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmtM(ctx.raw)}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
+        y:{grid:{color:'rgba(128,128,128,.06)'},stacked:true,border:{display:false},ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}
+      }}});
 
   // Bonificações row (fonte menor abaixo)
   const bm=d.bonif_mes||{};
@@ -976,7 +1036,7 @@ function renderOTDChart(d){
   if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(off>0?'#A32D2D':'var(--text2)')+'">'+off+'</td><td class="r">'+fin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(fin_val)+'</td><td class="r" style="color:#3B6D11">'+otd+'%</td><td class="r">'+fmtP(fin,qtd)+'</td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
 
-  // ---- BLOCO 3: Hub + Trânsito por mês ----
+  // ---- BLOCO 3: CD + Trânsito por mês ----
   let r3='';
   ms.forEach(m=>{const md=d.meses[m];if(!md||(md.hub+md.trs===0&&ms.length>1))return;
     r3+='<tr><td>'+md.nome+'</td>'
@@ -1035,8 +1095,8 @@ function renderOTDChart(d){
       +'<div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44"><span class="reg-name">'+r.r+'</span><span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div>'
       +'<div class="reg-body">'
       +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Dias médio trânsito</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Média p/ entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Dias decorridos (médio)</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Prazo médio entregues</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
       +'<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'
       +'<table class="reg-uf-table"><tbody>'
       +(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')
@@ -1049,12 +1109,31 @@ function renderOTDChart(d){
   if(diasChart) diasChart.destroy();
   diasChart=new Chart(document.getElementById('o5-chart'),{type:'line',
     data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:rNames.map((r,i)=>({
-      label:r, data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||0),
-      borderColor:rC[i], backgroundColor:rC[i]+'18', borderWidth:2, pointRadius:4, tension:.3
+      label:r,
+      data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||null),
+      borderColor:rC[i],
+      backgroundColor:rC[i]+'18',
+      borderWidth:2.5,
+      pointRadius:5,
+      pointHoverRadius:7,
+      pointBackgroundColor:'#fff',
+      pointBorderColor:rC[i],
+      pointBorderWidth:2,
+      tension:.35,
+      spanGaps:false
     }))},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
-              y:{grid:{color:'rgba(128,128,128,.07)'},ticks:{font:{size:11}},title:{display:true,text:'dias',font:{size:10},color:'#888'}}}}});
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+(ctx.raw?.toFixed(1)||'—')+'d'}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
+        y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},
+           ticks:{font:{size:11},callback:v=>v+'d'},
+           title:{display:true,text:'dias até entrega',font:{size:10},color:'#9b9b97'},
+           min:0}
+      }});
   document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
 }
 </script>
