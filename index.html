@@ -3,499 +3,852 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Executivo de Entregas</title>
+<title>Torre de Controle — Logística</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;--border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);--radius:8px;--radius-lg:12px}
-@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.10);--border2:rgba(255,255,255,0.18)}}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --radius:8px;--radius-lg:14px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh}
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg3);padding:24px}
-.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:16px;padding:40px 44px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
-.login-logo{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:28px}
-.login-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px}
-.login-subtitle{font-size:13px;color:var(--text2);margin-bottom:32px}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+
+/* LOGIN */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand-icon{width:38px;height:38px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-size:14px;font-weight:700;color:var(--text)}
+.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
-.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.12)}
-.btn-login{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px}
-.btn-login:hover{background:#0C447C}
-.btn-login:disabled{background:#888;cursor:not-allowed}
-.login-error{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:12px;display:none}
-.login-magic{text-align:center;margin-top:20px;font-size:12px;color:var(--text2)}
-.login-magic a{color:#185FA5;cursor:pointer;text-decoration:underline}
-.login-success{background:#EAF3DE;color:#3B6D11;border:0.5px solid #C0DD97;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:12px;display:none}
-.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.topnav-left{display:flex;align-items:center;gap:12px}
-.topnav-logo{font-size:14px;font-weight:700;color:var(--text)}
-.topnav-sep{width:0.5px;height:18px;background:var(--border2)}
-.topnav-title{font-size:13px;color:var(--text2)}
-.topnav-right{display:flex;align-items:center;gap:12px}
-.user-badge{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
-.user-avatar{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-.user-email{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-logout{font-size:11px;padding:4px 10px;border-radius:16px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
-.btn-logout:hover{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1}
-.pill-q{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;background:#E6F1FB;color:#0C447C}
-#dashboard-screen{display:none}
-.container{max-width:1400px;margin:0 auto;padding:24px 32px}
-.update-bar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text2)}
-.update-dot{width:7px;height:7px;border-radius:50%;background:#3B6D11;flex-shrink:0}
-.legend-box{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 16px;margin-bottom:14px;display:flex;gap:6px 20px;flex-wrap:wrap;align-items:center}
-.legend-title{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
-.legend-item{display:flex;align-items:center;gap:7px;font-size:11px}
-.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.fbar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 14px;margin-bottom:14px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.10)}
+.btn-primary{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
+.btn-primary:hover{background:#0C447C}
+.btn-primary:disabled{background:#888;cursor:not-allowed}
+.login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+
+/* TOP NAV */
+#screen-app{display:none}
+.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-icon{width:30px;height:30px;background:#185FA5;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-title{font-size:14px;font-weight:700}
+.nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
+.user-av{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
+.btn-sm:hover{background:var(--bg2)}
+.admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500}
+
+/* TABS */
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex;gap:0}
+.tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.on{color:#185FA5;border-bottom-color:#185FA5;font-weight:500}
+
+/* CONTAINER */
+.container{max-width:1400px;margin:0 auto;padding:28px 32px}
+
+/* UPLOAD SECTION */
+.upload-section{display:none}
+.upload-section.on{display:block}
+.upload-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:14px}
+.upload-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.upload-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
+.upload-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-box:hover,.upload-box.drag{border-color:#185FA5;background:#E6F1FB20}
+.upload-box.done{border-color:#3B6D11;background:#EAF3DE20;border-style:solid}
+.upload-box.done .upload-box-icon{background:#EAF3DE}
+.upload-box.done .upload-box-icon svg{stroke:#3B6D11}
+.upload-box-icon{width:44px;height:44px;background:var(--bg2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.upload-box-icon svg{width:22px;height:22px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.upload-box-title{font-size:13px;font-weight:500;margin-bottom:4px}
+.upload-box-sub{font-size:11px;color:var(--text2)}
+.upload-box-status{font-size:10px;margin-top:8px;font-weight:500}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.btn-process{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-process:hover{background:#0C447C}
+.btn-process:disabled{background:#888;cursor:not-allowed}
+.process-log{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;display:none}
+.log-line{padding:2px 0;color:var(--text2)}
+.log-line.ok{color:#3B6D11}
+.log-line.err{color:#A32D2D}
+.log-line.info{color:#185FA5}
+
+/* HISTORY */
+.hist-table{width:100%;border-collapse:collapse;font-size:12px}
+.hist-table th{padding:7px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.hist-table td{padding:8px 12px;border-bottom:0.5px solid var(--border);color:var(--text)}
+.hist-table tr:last-child td{border-bottom:none}
+.hist-table tr:hover td{background:var(--bg2)}
+.badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block}
+.badge-ok{background:#EAF3DE;color:#3B6D11}
+.badge-proc{background:#E6F1FB;color:#185FA5}
+.badge-err{background:#FCEBEB;color:#A32D2D}
+
+/* DASHBOARD */
+.dash-section{display:none}
+.dash-section.on{display:block}
+.krow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:700;line-height:1}
+.kpi-sub{font-size:10px;color:var(--text2);margin-top:4px}
+.kpi-grn .kpi-val{color:#3B6D11}.kpi-red .kpi-val{color:#A32D2D}.kpi-amb .kpi-val{color:#854F0B}.kpi-blu .kpi-val{color:#185FA5}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
+.slabel{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.slabel-num{width:20px;height:20px;border-radius:50%;background:#E6F1FB;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0C447C;flex-shrink:0}
+.fbar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 14px;margin-bottom:12px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .fl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-right:2px;white-space:nowrap}
 .fdiv{width:0.5px;height:14px;background:var(--border2);margin:0 6px}
 .fbtn{font-size:11px;padding:4px 11px;border-radius:16px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
 .fbtn:hover{background:var(--bg2)}
-.fbtn.on{background:var(--bg);color:var(--text);border-color:var(--border2);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.slabel{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.slabel-num{width:20px;height:20px;border-radius:50%;background:#E6F1FB;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0C447C;flex-shrink:0}
-.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
-.krow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
-.kpi{background:var(--bg2);border-radius:var(--radius);padding:12px 14px}
-.kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.kpi-val{font-size:22px;font-weight:700;line-height:1;color:var(--text)}
-.kpi-sub{font-size:10px;color:var(--text2);margin-top:4px}
-.kpi-grn .kpi-val{color:#3B6D11}.kpi-red .kpi-val{color:#A32D2D}.kpi-amb .kpi-val{color:#854F0B}.kpi-blu .kpi-val{color:#185FA5}
-.otd-strip{background:var(--bg2);border-radius:var(--radius);padding:12px 18px;margin-bottom:12px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.otd-big{font-size:32px;font-weight:700;color:#3B6D11;line-height:1}
-.bw{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin:5px 0}
-.bf{height:100%;border-radius:3px}
-.mes-row{display:flex;align-items:center;gap:10px;padding:4px 0;font-size:11px}
-.mes-lbl{width:28px;color:var(--text2);flex-shrink:0;font-weight:600}
-.mes-bar{flex:1;height:18px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative}
-.mes-val{width:56px;text-align:right;font-weight:600;color:var(--text);flex-shrink:0}
-.mes-qtd{width:54px;text-align:right;color:var(--text2);flex-shrink:0;font-size:10px}
+.fbtn.on{background:var(--bg);color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.update-bar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text2)}
+.update-dot{width:7px;height:7px;border-radius:50%;background:#3B6D11;flex-shrink:0}
 .tw{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:11px}
-th{padding:7px 10px;font-weight:600;color:var(--text2);border-bottom:0.5px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;text-align:left;background:var(--bg2)}
-th.r,td.r{text-align:right}
-td{padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle;white-space:nowrap}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--bg2)}
+table.dt{width:100%;border-collapse:collapse;font-size:11px}
+table.dt th{padding:6px 10px;font-weight:600;color:var(--text2);border-bottom:0.5px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em;text-align:left;background:var(--bg2)}
+table.dt th.r,table.dt td.r{text-align:right}
+table.dt td{padding:6px 10px;border-bottom:0.5px solid var(--border);vertical-align:middle;white-space:nowrap}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tr:hover td{background:var(--bg2)}
 .tr-total td{background:var(--bg2)!important;font-weight:600;border-top:0.5px solid var(--border2)}
-.tr-sub td{color:var(--text2)}.tr-sub td:first-child{padding-left:22px}
-.tr-group td{background:var(--bg2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.tr-sub td{color:var(--text2)}.tr-sub td:first-child{padding-left:20px}
 .stat-row{display:flex;gap:0;flex-wrap:wrap;margin-bottom:14px}
-.stat-cell{padding:12px 24px;border-right:0.5px solid var(--border)}
+.stat-cell{padding:10px 20px;border-right:0.5px solid var(--border)}
 .stat-cell:first-child{padding-left:0}.stat-cell:last-child{border-right:none}
-.stat-val{font-size:28px;font-weight:700;line-height:1}
+.stat-val{font-size:26px;font-weight:700;line-height:1}
 .stat-lbl{font-size:10px;color:var(--text2);margin-top:3px}
-.stat-bar-cell{flex:1;padding:12px 0 12px 24px;min-width:200px;display:flex;flex-direction:column;justify-content:center}
+.stat-bar-cell{flex:1;padding:10px 0 10px 20px;min-width:180px;display:flex;flex-direction:column;justify-content:center}
 .status-hl{padding:10px 16px;border-radius:var(--radius);margin-right:4px}
-.reg-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.reg-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .reg-card{border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border)}
-.reg-head{padding:9px 12px 7px;display:flex;justify-content:space-between;align-items:center}
-.reg-name{font-size:12px;font-weight:600;color:var(--text)}
-.reg-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:12px}
-.reg-body{padding:7px 12px 9px;background:var(--bg)}
-.reg-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border);font-size:11px}
+.reg-head{padding:8px 12px 6px;display:flex;justify-content:space-between;align-items:center}
+.reg-name{font-size:12px;font-weight:600}
+.reg-badge{font-size:10px;padding:2px 7px;border-radius:12px;font-weight:500}
+.reg-body{padding:6px 12px 8px;background:var(--bg)}
+.reg-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--border);font-size:11px}
 .reg-row:last-child{border-bottom:none}
 .reg-lbl{color:var(--text2)}
-.reg-uf{padding:8px 12px 9px;background:var(--bg2)}
-.reg-uf-title{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:6px}
+.reg-uf{padding:6px 12px 8px;background:var(--bg2)}
+.reg-uf-title{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:4px}
 .reg-uf-table{width:100%;border-collapse:collapse;font-size:10px}
-.reg-uf-table td{padding:2px 0;color:var(--text2);vertical-align:middle}
+.reg-uf-table td{padding:2px 0;color:var(--text2)}
 .reg-uf-table td:last-child{text-align:right;font-weight:500;color:var(--text)}
 .uf-bw{height:3px;background:var(--bg);border-radius:2px;overflow:hidden;margin:2px 0}
 .uf-bf{height:100%;border-radius:2px}
-@media(max-width:900px){.krow{grid-template-columns:repeat(3,minmax(0,1fr))}.reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.container{padding:16px}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state svg{width:48px;height:48px;margin:0 auto 16px;display:block;opacity:.3}
+.empty-state p{font-size:13px;margin-bottom:12px}
+@media(max-width:900px){.krow{grid-template-columns:repeat(3,minmax(0,1fr))}.upload-grid{grid-template-columns:1fr}.container{padding:16px 14px}}
 </style>
 </head>
 <body>
 
-<div id="login-screen">
+<!-- LOGIN -->
+<div id="screen-login">
   <div class="login-card">
-    <div class="login-logo">Logística · Painel Executivo</div>
+    <div class="login-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="brand-name">Torre de Controle</div><div class="brand-sub">Logística · Genomma Lab</div></div>
+    </div>
     <div class="login-title">Bem-vindo</div>
-    <div class="login-subtitle">Faça login com seu e-mail corporativo para acessar o painel.</div>
-    <div id="form-password">
-      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="login-email" placeholder="seu@email.com"/></div>
-      <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-      <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar</button>
-      <div class="login-error" id="login-error"></div>
-      <div class="login-magic">Esqueceu a senha? <a onclick="showMagic()">Receber link por e-mail</a></div>
-    </div>
-    <div id="form-magic" style="display:none">
-      <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="magic-email" placeholder="seu@email.com"/></div>
-      <button class="btn-login" id="btn-magic" onclick="doMagicLink()">Enviar link de acesso</button>
-      <div class="login-success" id="magic-success">Link enviado! Verifique sua caixa de entrada.</div>
-      <div class="login-error" id="magic-error"></div>
-      <div class="login-magic"><a onclick="showPassword()">Voltar para login com senha</a></div>
-    </div>
+    <div class="login-sub">Acesse com seu e-mail corporativo.</div>
+    <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="l-email" placeholder="seu@genommalab.com"/></div>
+    <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<div id="dashboard-screen">
+<!-- APP -->
+<div id="screen-app">
   <div class="topnav">
-    <div class="topnav-left">
-      <span class="topnav-logo">Logística</span>
-      <div class="topnav-sep"></div>
-      <span class="topnav-title">Painel Executivo de Entregas</span>
+    <div class="nav-brand">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
     </div>
-    <div class="topnav-right">
-      <span style="font-size:11px;color:var(--text3)">Atualizado em %%ATUALIZADO%%</span>
-      <div class="user-badge"><div class="user-avatar" id="user-avatar">?</div><span class="user-email" id="user-email">—</span></div>
-      <button class="btn-logout" onclick="doLogout()">Sair</button>
-      <span class="pill-q" id="nav-pill">2026</span>
+    <div class="nav-right">
+      <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
+      <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
     </div>
   </div>
 
+  <!-- TABS -->
+  <div class="tabs" id="tabs-bar">
+    <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
+    <div class="tab" onclick="switchTab('custo',this)">Custo de Servir</div>
+    <div class="tab" onclick="switchTab('estoque',this)">Estoque</div>
+    <div class="tab" onclick="switchTab('nivel',this)">Nível de Serviço</div>
+    <div class="tab" onclick="switchTab('dev',this)">Devoluções</div>
+    <div class="tab" onclick="switchTab('prod',this)">Produtividade</div>
+    <div class="tab" id="tab-upload" style="display:none;margin-left:auto;color:#185FA5;font-weight:500" onclick="switchTab('upload',this)">⬆ Upload</div>
+  </div>
+
   <div class="container">
-    <div class="update-bar">
-      <span class="update-dot"></span>
-      <span>Base: <strong>%%BASE_NOME%%</strong> &nbsp;·&nbsp; Gerado em: <strong>%%ATUALIZADO%%</strong></span>
-    </div>
 
-    <div class="legend-box">
-      <span class="legend-title">Classificação:</span>
-      <div class="legend-item"><span class="legend-dot" style="background:#3B6D11"></span><strong>Entregue no Prazo</strong><span style="color:var(--text2);margin-left:4px">→ On Time (OTD ✓)</span></div>
-      <div class="legend-item"><span class="legend-dot" style="background:#A32D2D"></span><strong>Entregue em Atraso</strong><span style="color:var(--text2);margin-left:4px">→ Off Time (OTD ✗)</span></div>
-      <div class="legend-item"><span class="legend-dot" style="background:#854F0B"></span><strong>Aguardando Embarque</strong><span style="color:var(--text2);margin-left:4px">→ Hub · Ag. Expedição</span></div>
-      <div class="legend-item"><span class="legend-dot" style="background:#185FA5"></span><strong>Ainda Pendente / Pend. em Atraso</strong><span style="color:var(--text2);margin-left:4px">→ Em Trânsito</span></div>
-    </div>
+    <!-- UPLOAD SECTION (admin only) -->
+    <div class="upload-section" id="sec-upload">
+      <div class="upload-card">
+        <div class="upload-title">Upload de bases de dados</div>
+        <div class="upload-sub">Faça upload dos arquivos Excel para atualizar os indicadores automaticamente. Os KPIs são recalculados na hora.</div>
+        <div class="upload-grid">
 
-    <div class="fbar" id="fbar-container">
-      <span class="fl">Quarter</span>
-      <button class="fbtn on" id="btn-all" onclick="setFilter('all',this,'q')">Acumulado</button>
-      <span id="quarter-btns"></span>
-      <div class="fdiv"></div>
-      <span class="fl">Mês</span>
-      <button class="fbtn on" id="btn-m-all" onclick="setFilter('all',this,'m')">Todos</button>
-      <span id="mes-btns"></span>
-    </div>
+          <div class="upload-box" id="box-otd" ondragover="dragOver(event,'box-otd')" ondragleave="dragLeave('box-otd')" ondrop="dropFile(event,'otd')">
+            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'otd')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="upload-box-title">OTD — Entregas</div>
+            <div class="upload-box-sub">grid-atividade-entrega.xlsx</div>
+            <div class="upload-box-status" id="status-otd" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
 
-    <div class="krow">
-      <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento (vendas)</div><div class="kpi-val" id="k-fat">—</div><div class="kpi-sub" id="k-fat-s">—</div></div>
-      <div class="kpi kpi-grn"><div class="kpi-lbl">Finalizado — On Time</div><div class="kpi-val" id="k-on">—</div><div class="kpi-sub" id="k-on-s">—</div></div>
-      <div class="kpi kpi-red"><div class="kpi-lbl">Finalizado — Off Time</div><div class="kpi-val" id="k-off">—</div><div class="kpi-sub" id="k-off-s">—</div></div>
-      <div class="kpi kpi-amb"><div class="kpi-lbl">Hub — Ag. Expedição</div><div class="kpi-val" id="k-hub">—</div><div class="kpi-sub" id="k-hub-s">—</div></div>
-      <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="k-trs">—</div><div class="kpi-sub" id="k-trs-s">—</div></div>
-    </div>
+          <div class="upload-box" id="box-custo" ondragover="dragOver(event,'box-custo')" ondragleave="dragLeave('box-custo')" ondrop="dropFile(event,'custo')">
+            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'custo')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="upload-box-title">Custo de Servir</div>
+            <div class="upload-box-sub">base-custo-servir.xlsx</div>
+            <div class="upload-box-status" id="status-custo" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
 
-    <div class="otd-strip">
-      <div style="display:flex;align-items:baseline;gap:10px">
-        <span style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">OTD</span>
-        <span class="otd-big" id="k-otd">—</span>
-        <span style="font-size:12px;color:var(--text2)" id="k-otd-s">—</span>
+          <div class="upload-box" id="box-estoque" ondragover="dragOver(event,'box-estoque')" ondragleave="dragLeave('box-estoque')" ondrop="dropFile(event,'estoque')">
+            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'estoque')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+            <div class="upload-box-title">Estoque</div>
+            <div class="upload-box-sub">base-estoque.xlsx</div>
+            <div class="upload-box-status" id="status-estoque" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
+
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button class="btn-process" id="btn-process" onclick="processarTodos()" disabled>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Processar e atualizar indicadores
+          </button>
+          <span style="font-size:11px;color:var(--text2)" id="process-status"></span>
+        </div>
+
+        <div class="process-log" id="process-log"></div>
       </div>
-      <div style="flex:1;min-width:220px"><div style="height:10px;background:var(--bg);border-radius:5px;overflow:hidden;border:0.5px solid var(--border)"><div id="otd-bar" style="height:100%;width:0%;background:#3B6D11;border-radius:5px"></div></div></div>
-      <div style="display:flex;gap:18px;flex-wrap:wrap">
-        <span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#3B6D11;display:inline-block"></span>On Time <strong id="otd-on-n">—</strong></span>
-        <span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#A32D2D;display:inline-block"></span>Off Time <strong id="otd-off-n">—</strong></span>
+
+      <!-- Histórico de uploads -->
+      <div class="upload-card">
+        <div class="upload-title">Histórico de atualizações</div>
+        <div class="upload-sub" style="margin-bottom:14px">Últimas bases processadas</div>
+        <div class="tw"><table class="hist-table">
+          <thead><tr><th>Data/Hora</th><th>Indicador</th><th>Arquivo</th><th>NFs</th><th>Status</th></tr></thead>
+          <tbody id="hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Nenhum upload realizado ainda</td></tr></tbody>
+        </table></div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="slabel"><span class="slabel-num">1</span>Faturamento acumulado — somente notas de venda</div>
-      <div style="display:flex;gap:28px;margin-bottom:16px;flex-wrap:wrap">
-        <div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">Total emitido</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="fat-big">—</div></div>
-        <div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">Finalizado</div><div style="font-size:24px;font-weight:700;color:#3B6D11" id="ent-big">—</div></div>
-        <div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em">Hub + Trânsito</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="pend-big">—</div></div>
+    <!-- OTD DASHBOARD -->
+    <div class="dash-section on" id="sec-otd">
+      <div id="otd-empty" class="empty-state">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+        <p style="font-size:11px">Faça upload do arquivo na aba <strong>⬆ Upload</strong> para visualizar os indicadores.</p>
       </div>
-      <div id="mes-bars" style="margin-bottom:12px"></div>
-      <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap" id="fat-legend"></div>
-      <div style="height:140px;position:relative"><canvas id="fatChart"></canvas></div>
-    </div>
-
-    <div class="card">
-      <div class="slabel"><span class="slabel-num">2</span>Entregas finalizadas — On Time &amp; Off Time por mês</div>
-      <div class="stat-row">
-        <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="ent2-on">—</div><div class="stat-lbl">On Time</div></div>
-        <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="ent2-off">—</div><div class="stat-lbl">Off Time</div></div>
-        <div class="stat-cell"><div class="stat-val" style="color:#185FA5" id="ent2-val">—</div><div class="stat-lbl">Receita finalizada</div></div>
-        <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="ent2-otd">—</div><div class="stat-lbl">OTD</div></div>
-        <div class="stat-bar-cell">
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px"><span>Finalizadas do total</span><span id="ent2-pct">—</span></div>
-          <div class="bw" style="height:9px"><div class="bf" id="ent2-bar" style="background:#185FA5;width:0%"></div></div>
+      <div id="otd-content" style="display:none">
+        <div class="update-bar"><span class="update-dot"></span><span id="otd-update-text">—</span></div>
+        <div class="fbar" id="otd-fbar">
+          <span class="fl">Quarter</span>
+          <button class="fbtn on" onclick="otdFilter('all',this,'q')">Acumulado</button>
+          <span id="otd-q-btns"></span>
+          <div class="fdiv"></div>
+          <span class="fl">Mês</span>
+          <button class="fbtn on" id="otd-m-all" onclick="otdFilter('all',this,'m')">Todos</button>
+          <span id="otd-m-btns"></span>
+        </div>
+        <div class="krow">
+          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
+          <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
+          <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
+          <div class="kpi kpi-amb"><div class="kpi-lbl">Hub — Ag. Exp.</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
+          <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="o-trs">—</div><div class="kpi-sub" id="o-trs-s">—</div></div>
+        </div>
+        <div class="card" style="padding:14px 18px">
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+            <span style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">OTD</span>
+            <span style="font-size:36px;font-weight:700;color:#3B6D11" id="o-otd">—</span>
+            <span style="font-size:12px;color:var(--text2)" id="o-otd-s">—</span>
+            <div style="flex:1;min-width:180px"><div style="height:10px;background:var(--bg2);border-radius:5px;overflow:hidden;border:0.5px solid var(--border)"><div id="o-otd-bar" style="height:100%;width:0%;background:#3B6D11;border-radius:5px;transition:width .5s"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">1</span>Faturamento por mês</div>
+          <div id="otd-mes-bars" style="margin-bottom:10px"></div>
+          <div style="height:140px;position:relative"><canvas id="otd-fat-chart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">2</span>Entregas finalizadas</div>
+          <div class="stat-row">
+            <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-on">—</div><div class="stat-lbl">On Time</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o2-off">—</div><div class="stat-lbl">Off Time</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#185FA5" id="o2-val">—</div><div class="stat-lbl">Receita</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-otd">—</div><div class="stat-lbl">OTD</div></div>
+            <div class="stat-bar-cell">
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px"><span>Finalizadas</span><span id="o2-pct">—</span></div>
+              <div style="height:8px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="o2-bar" style="height:100%;background:#185FA5;border-radius:3px;transition:width .5s"></div></div>
+            </div>
+          </div>
+          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th><th class="r">% faturado</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">3</span>Hub + Trânsito</div>
+          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+            <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Hub — Ag. Exp.</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
+            <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
+            <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não final.</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
+          </div>
+          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#854F0B">Valor Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total</th><th class="r">Valor Total</th><th class="r">% faturado</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
+          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
+          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px" id="o5-kpis"></div>
+          <div class="reg-grid" id="o5-cards"></div>
+          <div style="background:var(--bg2);border-radius:var(--radius);padding:12px 14px">
+            <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Média dias entrega por região/mês</div>
+            <div style="height:150px;position:relative"><canvas id="o5-chart"></canvas></div>
+            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap" id="o5-legend"></div>
+          </div>
         </div>
       </div>
-      <div class="tw"><table><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total finalizado</th><th class="r">Receita</th><th class="r">OTD</th><th class="r">% do faturado</th></tr></thead><tbody id="ent2-tbody"></tbody></table></div>
     </div>
 
-    <div class="card">
-      <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — Hub Logístico e Em Trânsito</div>
-      <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;align-items:stretch">
-        <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Hub — Ag. Expedição</div><div style="font-size:26px;font-weight:700;color:#854F0B;line-height:1" id="ne-hub-qtd">—</div><div style="font-size:12px;color:#854F0B;margin-top:4px" id="ne-hub-val">—</div></div>
-        <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Em Trânsito</div><div style="font-size:26px;font-weight:700;color:#185FA5;line-height:1" id="ne-trs-qtd">—</div><div style="font-size:12px;color:#185FA5;margin-top:4px" id="ne-trs-val">—</div></div>
-        <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="ne-total-qtd">—</div><div class="stat-lbl">Total não finalizado</div></div>
-        <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="ne-total-val">—</div><div class="stat-lbl">A entregar</div></div>
-        <div class="stat-bar-cell">
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px"><span>% do faturado em aberto</span><span id="ne-pct">—</span></div>
-          <div style="height:9px;background:var(--bg2);border-radius:4px;overflow:hidden;display:flex"><div id="ne-bar-hub" style="height:100%;background:#EF9F27;width:0%"></div><div id="ne-bar-trs" style="height:100%;background:#378ADD;width:0%"></div></div>
-          <div style="display:flex;gap:12px;margin-top:5px;font-size:10px;color:var(--text2)"><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#EF9F27;margin-right:3px;vertical-align:middle"></span>Hub</span><span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#378ADD;margin-right:3px;vertical-align:middle"></span>Trânsito</span></div>
-        </div>
-      </div>
-      <div class="tw"><table><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#854F0B">Valor Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total NFs</th><th class="r">Total Valor</th><th class="r">% faturado</th></tr></thead><tbody id="ne-tbody"></tbody></table></div>
+    <!-- OTHER DASHBOARDS - EM BREVE -->
+    <div class="dash-section" id="sec-custo">
+      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p><strong>Custo de Servir</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
+    </div>
+    <div class="dash-section" id="sec-estoque">
+      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><p><strong>Estoque / Armazenagem</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
+    </div>
+    <div class="dash-section" id="sec-nivel">
+      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><p><strong>Nível de Serviço</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
+    </div>
+    <div class="dash-section" id="sec-dev">
+      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"/></svg><p><strong>Devoluções / Avarias</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
+    </div>
+    <div class="dash-section" id="sec-prod">
+      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg><p><strong>Produtividade Operacional</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
     </div>
 
-    <div class="card">
-      <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora — NFs finalizadas</div>
-      <div class="tw"><table><thead><tr><th>Transportadora</th><th class="r">Finalizadas</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:100px">Performance</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Não final.</th><th class="r">Valor</th></tr></thead><tbody id="otd-tbody"></tbody></table></div>
-    </div>
-
-    <div class="card">
-      <div class="slabel"><span class="slabel-num">5</span>Trânsito e tempo médio de entrega por região</div>
-      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px" id="reg-kpis"></div>
-      <div class="reg-grid" id="reg-cards"></div>
-      <div style="background:var(--bg2);border-radius:var(--radius);padding:14px 16px">
-        <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Média de dias para entrega por região e mês</div>
-        <div style="height:160px;position:relative"><canvas id="diasChart"></canvas></div>
-        <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap" id="dias-legend"></div>
-      </div>
-    </div>
-
-    <div style="text-align:center;padding:24px 0 8px;font-size:10px;color:var(--text3)">Painel Executivo de Entregas · Acesso restrito</div>
   </div>
 </div>
 
 <script>
+// ============================================================
+// SUPABASE CONFIG
+// ============================================================
 const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br'; // Email do admin que faz upload
+
 const {createClient} = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-async function checkSession(){const{data:{session}}=await sb.auth.getSession();if(session)showDashboard(session.user);else{window.location.href='../index.html';}}
-async function doLogin(){const email=document.getElementById('login-email').value.trim();const pass=document.getElementById('login-password').value;const btn=document.getElementById('btn-login');const err=document.getElementById('login-error');if(!email||!pass){showErr(err,'Preencha e-mail e senha.');return;}btn.disabled=true;btn.textContent='Entrando…';const{data,error}=await sb.auth.signInWithPassword({email,password:pass});if(error){showErr(err,error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error.message);btn.disabled=false;btn.textContent='Entrar';}else showDashboard(data.user);}
-async function doMagicLink(){const email=document.getElementById('magic-email').value.trim();const btn=document.getElementById('btn-magic');const err=document.getElementById('magic-error');const ok=document.getElementById('magic-success');if(!email){showErr(err,'Digite seu e-mail.');return;}btn.disabled=true;btn.textContent='Enviando…';const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.href}});if(error){showErr(err,error.message);btn.disabled=false;btn.textContent='Enviar link de acesso';}else{ok.style.display='block';err.style.display='none';}}
-async function doLogout(){await sb.auth.signOut();document.getElementById('dashboard-screen').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('login-password').value='';document.getElementById('login-error').style.display='none';}
-function showLogin(){document.getElementById('login-screen').style.display='flex';document.getElementById('dashboard-screen').style.display='none';}
-function showDashboard(user){document.getElementById('login-screen').style.display='none';document.getElementById('dashboard-screen').style.display='block';const i=user.email.slice(0,2).toUpperCase();document.getElementById('user-avatar').textContent=i;document.getElementById('user-email').textContent=user.email;render();}
+// ============================================================
+// AUTH
+// ============================================================
+let currentUser = null;
+
+async function checkSession(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(session) showApp(session.user);
+  else showLogin();
+}
+
+async function doLogin(){
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const btn   = document.getElementById('btn-login');
+  const err   = document.getElementById('login-err');
+  if(!email||!pass){showErr(err,'Preencha e-mail e senha.');return;}
+  btn.disabled=true; btn.textContent='Entrando…';
+  const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
+  if(error){
+    showErr(err, error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error.message);
+    btn.disabled=false; btn.textContent='Entrar';
+  } else showApp(data.user);
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('screen-app').style.display='none';
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('l-pass').value='';
+  document.getElementById('login-err').style.display='none';
+}
+
+function showLogin(){
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('screen-app').style.display='none';
+}
+
+function showApp(user){
+  currentUser = user;
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').style.display='block';
+  document.getElementById('user-av').textContent = user.email.slice(0,2).toUpperCase();
+  document.getElementById('user-em').textContent  = user.email;
+
+  // Show upload tab only for admin
+  const isAdmin = user.email === ADMIN_EMAIL;
+  if(isAdmin){
+    document.getElementById('tab-upload').style.display='block';
+    document.getElementById('admin-badge').style.display='inline-block';
+  }
+
+  // Load OTD data
+  loadOTDFromStorage();
+}
+
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
-function showMagic(){document.getElementById('form-password').style.display='none';document.getElementById('form-magic').style.display='block';}
-function showPassword(){document.getElementById('form-magic').style.display='none';document.getElementById('form-password').style.display='block';}
-sb.auth.onAuthStateChange((_e,session)=>{if(session)showDashboard(session.user);});
+sb.auth.onAuthStateChange((_e,session)=>{if(session)showApp(session.user);});
 checkSession();
 
-const M        = %%DADOS_M%%;
-const OTD_DATA = %%DADOS_OTD%%;
-const REGIOES  = %%DADOS_REGIOES%%;
-const DIAS_MES = %%DADOS_DIAS%%;
-const MES_KEYS = Object.keys(M).map(Number).sort();
-const MC = {};
-const palette = ['#378ADD','#185FA5','#0C447C','#042C53'];
-MES_KEYS.forEach((m,i) => MC[m] = palette[i] || '#185FA5');
+// ============================================================
+// TABS
+// ============================================================
+const TABS = {
+  otd:'sec-otd', custo:'sec-custo', estoque:'sec-estoque',
+  nivel:'sec-nivel', dev:'sec-dev', prod:'sec-prod', upload:'sec-upload'
+};
 
-// Map month -> quarter
-function mesParaQ(m){ return 'Q' + Math.ceil(m/3); }
-const QUARTERS = [...new Set(MES_KEYS.map(mesParaQ))].sort();
-
-// Build quarter buttons
-const qContainer = document.getElementById('quarter-btns');
-QUARTERS.forEach(q => {
-  const btn = document.createElement('button');
-  btn.className = 'fbtn';
-  btn.textContent = q;
-  btn.onclick = function(){ setFilter(q, this, 'q'); };
-  qContainer.appendChild(btn);
-});
-
-// Build month buttons
-const mContainer = document.getElementById('mes-btns');
-MES_KEYS.forEach(m => {
-  const btn = document.createElement('button');
-  btn.className = 'fbtn';
-  btn.textContent = M[m].nome;
-  btn.onclick = function(){ setFilter(m, this, 'm'); };
-  mContainer.appendChild(btn);
-});
-
-let curFilter = {type:'all', val:'all'};
-let fatRef=null, diasRef=null;
-const fmtM  = v => 'R\u00a0' + (v/1e6).toFixed(1) + 'M';
-const fmtMd = v => 'R\u00a0' + (v/1e6).toFixed(2) + 'M';
-const fmtP  = (a,b) => b ? ((a/b)*100).toFixed(1)+'%' : '—';
-
-function getMeses(){
-  if(curFilter.type === 'all') return MES_KEYS;
-  if(curFilter.type === 'q')   return MES_KEYS.filter(m => mesParaQ(m) === curFilter.val);
-  if(curFilter.type === 'm')   return [parseInt(curFilter.val)];
-  return MES_KEYS;
-}
-
-function clearAllBtns(){
-  document.querySelectorAll('.fbar .fbtn').forEach(b => b.classList.remove('on'));
-}
-
-function setFilter(v, btn, type){
-  clearAllBtns();
-  // When selecting a quarter, also reset month to Todos
-  if(type === 'q'){
-    curFilter = {type:'q', val:v};
-    document.getElementById('btn-m-all').classList.add('on');
-  } else if(type === 'm'){
-    curFilter = {type: v==='all'?'all':'m', val:v};
-    // clear quarter selection, mark Acumulado
-    document.getElementById('btn-all').classList.add('on');
-  } else {
-    curFilter = {type:'all', val:'all'};
-    document.getElementById('btn-m-all').classList.add('on');
-  }
+function switchTab(id, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  Object.values(TABS).forEach(s=>{
+    const el=document.getElementById(s);
+    if(el){el.classList.remove('on');el.style.display='none';}
+  });
   btn.classList.add('on');
-  render();
+  const sec = document.getElementById(TABS[id]);
+  if(sec){sec.classList.add('on');sec.style.display='block';}
 }
 
-function render(){
-  const ms = getMeses();
+// init visibility
+Object.entries(TABS).forEach(([k,v])=>{
+  const el=document.getElementById(v);
+  if(el&&k!=='otd'){el.style.display='none';}
+});
+
+// ============================================================
+// FILE UPLOAD
+// ============================================================
+const files = {otd:null, custo:null, estoque:null};
+
+function dragOver(e,id){e.preventDefault();document.getElementById('box-'+id.replace('box-','')).classList.add('drag');}
+function dragLeave(id){document.getElementById(id).classList.remove('drag');}
+
+function dropFile(e,type){
+  e.preventDefault();
+  const id='box-'+type;
+  document.getElementById(id).classList.remove('drag');
+  const file=e.dataTransfer.files[0];
+  if(file) registerFile(file,type);
+}
+
+function fileSelected(input,type){
+  if(input.files[0]) registerFile(input.files[0],type);
+}
+
+function registerFile(file,type){
+  files[type]=file;
+  const box=document.getElementById('box-'+type);
+  box.classList.add('done');
+  box.classList.remove('drag');
+  document.getElementById('status-'+type).textContent='✓ '+file.name;
+  document.getElementById('status-'+type).style.color='#3B6D11';
+  // Enable process button if at least one file
+  document.getElementById('btn-process').disabled = false;
+}
+
+// ============================================================
+// PROCESS FILES
+// ============================================================
+const REGIOES_MAP = {
+  'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
+  'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
+  'PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste',
+  'DF':'Centro-Oeste','GO':'Centro-Oeste','MS':'Centro-Oeste','MT':'Centro-Oeste',
+  'ES':'Sudeste','MG':'Sudeste','RJ':'Sudeste','SP':'Sudeste',
+  'PR':'Sul','RS':'Sul','SC':'Sul'
+};
+
+function log(msg,type=''){
+  const box=document.getElementById('process-log');
+  box.style.display='block';
+  const line=document.createElement('div');
+  line.className='log-line '+(type||'');
+  line.textContent='['+ new Date().toLocaleTimeString('pt-BR')+'] '+msg;
+  box.appendChild(line);
+  box.scrollTop=box.scrollHeight;
+}
+
+async function processarTodos(){
+  const btn=document.getElementById('btn-process');
+  btn.disabled=true;
+  document.getElementById('process-log').innerHTML='';
+  document.getElementById('process-status').textContent='';
+
+  if(files.otd){
+    log('Processando OTD...','info');
+    try{
+      await processOTD(files.otd);
+      log('OTD processado com sucesso!','ok');
+      updateHistorico('OTD',files.otd.name);
+    }catch(e){
+      log('Erro no OTD: '+e.message,'err');
+    }
+  }
+
+  log('Concluído!','ok');
+  document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
+  btn.disabled=false;
+}
+
+function readExcel(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const data=XLSX.utils.sheet_to_json(ws,{defval:null});
+        res(data);
+      }catch(err){rej(err);}
+    };
+    reader.onerror=rej;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function classificar(status){
+  const s=String(status||'');
+  if(s==='Entregue no Prazo')    return 'on_time';
+  if(s==='Entregue em Atraso')   return 'off_time';
+  if(s==='Aguardando Embarque')  return 'hub';
+  if(s.includes('Pendente'))     return 'transito';
+  return 'outros';
+}
+
+async function processOTD(file){
+  log('Lendo arquivo Excel...','info');
+  const rows = await readExcel(file);
+  log('Linhas lidas: '+rows.length,'info');
+
+  // Fix column names — first col may be HTML
+  const processed = rows.map(r=>{
+    const keys=Object.keys(r);
+    const fixed={};
+    keys.forEach((k,i)=>{
+      const cleanKey = k.replace(/<[^>]*>/g,'').trim() || ('col_'+i);
+      fixed[cleanKey]=r[k];
+    });
+    return fixed;
+  });
+
+  // Filter vendas
+  const vendas = processed.filter(r=>{
+    const nat=String(r['Natureza da Operação']||r['Natureza da Operacao']||'VENDA');
+    return nat.toUpperCase().includes('VENDA');
+  });
+  log('Notas de venda: '+vendas.length,'info');
+
+  // Classify + aggregate by month
+  const meses={};
+  vendas.forEach(r=>{
+    const tipo=classificar(r['Status da Entrega']);
+    let mes=null;
+    const de=r['Data Emissão']||r['Data Emissao']||r['Data EmissÃ£o'];
+    if(de instanceof Date) mes=de.getMonth()+1;
+    else if(de){ const d=new Date(de); if(!isNaN(d)) mes=d.getMonth()+1; }
+    if(!mes) return;
+
+    const val=parseFloat(String(r['Valor Nota']||0).replace(',','.')) || 0;
+    const da=parseFloat(r['Dias Atraso']||0)||0;
+    const uf=String(r['UF Dest']||'');
+    const reg=REGIOES_MAP[uf]||'Outros';
+    const transp=String(r['Transportador']||'').substring(0,28);
+
+    if(!meses[mes]) meses[mes]={
+      fat:0,qtd:0,on:0,off:0,hub:0,trs:0,
+      on_val:0,off_val:0,hub_val:0,trs_val:0,
+      nome:['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mes]||('M'+mes)
+    };
+    const m=meses[mes];
+    m.fat+=val; m.qtd++;
+    if(tipo==='on_time'){m.on++;m.on_val+=val;}
+    else if(tipo==='off_time'){m.off++;m.off_val+=val;}
+    else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
+    else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
+  });
+
+  // Transportadoras
+  const transpMap={};
+  vendas.forEach(r=>{
+    const tipo=classificar(r['Status da Entrega']);
+    const val=parseFloat(String(r['Valor Nota']||0).replace(',','.')) || 0;
+    const t=String(r['Transportador']||'').substring(0,28);
+    if(!t) return;
+    if(!transpMap[t]) transpMap[t]={n:t,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0};
+    if(tipo==='on_time'){transpMap[t].fin++;transpMap[t].on++;}
+    else if(tipo==='off_time'){transpMap[t].fin++;transpMap[t].off++;}
+    else if(tipo==='hub'){transpMap[t].hub++;transpMap[t].nao_val+=val;}
+    else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].nao_val+=val;}
+  });
+  const transpList=Object.values(transpMap)
+    .map(t=>({...t,otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null}))
+    .sort((a,b)=>b.fin-a.fin);
+
+  // Regiões
+  const regMap={};
+  const atrVendas=vendas.filter(r=>classificar(r['Status da Entrega'])==='transito');
+  atrVendas.forEach(r=>{
+    const uf=String(r['UF Dest']||'');
+    const reg=REGIOES_MAP[uf]||'Outros';
+    const val=parseFloat(String(r['Valor Nota']||0).replace(',','.')) || 0;
+    const da=parseFloat(r['Dias Atraso']||0)||0;
+    if(!regMap[reg]) regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_atr_sum:0,media_ent:0,mediana:0,ufs:{}};
+    regMap[reg].atr_qtd++;
+    regMap[reg].atr_val+=val;
+    regMap[reg].dias_atr_sum+=da;
+    if(!regMap[reg].ufs[uf]) regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
+    regMap[reg].ufs[uf].n++;
+    regMap[reg].ufs[uf].val+=val;
+    regMap[reg].ufs[uf].d_sum+=da;
+  });
+
+  // Dias entrega
+  const entregues=vendas.filter(r=>classificar(r['Status da Entrega']).endsWith('time'));
+  const diasRegMap={};
+  entregues.forEach(r=>{
+    const uf=String(r['UF Dest']||'');
+    const reg=REGIOES_MAP[uf]||'Outros';
+    const de=r['Data Emissão']||r['Data Emissao']||r['Data EmissÃ£o'];
+    const dent=r['Data Entregue']||r['Data Entregue'];
+    if(!de||!dent) return;
+    const d1=de instanceof Date?de:new Date(de);
+    const d2=dent instanceof Date?dent:new Date(dent);
+    if(isNaN(d1)||isNaN(d2)) return;
+    const dias=Math.round((d2-d1)/(1000*60*60*24));
+    if(dias<0||dias>365) return;
+    let mes=d1.getMonth()+1;
+    if(!diasRegMap[reg]) diasRegMap[reg]={};
+    if(!diasRegMap[reg][mes]) diasRegMap[reg][mes]={sum:0,n:0};
+    diasRegMap[reg][mes].sum+=dias;
+    diasRegMap[reg][mes].n++;
+  });
+  const dias_mes={};
+  Object.keys(diasRegMap).forEach(reg=>{
+    dias_mes[reg]={};
+    Object.keys(diasRegMap[reg]).forEach(m=>{
+      const {sum,n}=diasRegMap[reg][m];
+      dias_mes[reg][parseInt(m)]=n>0?Math.round(sum/n*10)/10:0;
+    });
+  });
+
+  // Finalize regions
+  const regioes=['Sudeste','Nordeste','Centro-Oeste','Norte','Sul'].map(reg=>{
+    const rm=regMap[reg]||{r:reg,atr_qtd:0,atr_val:0,dias_atr_sum:0,ufs:{}};
+    const ufs=Object.values(rm.ufs||{})
+      .map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0}))
+      .sort((a,b)=>b.n-a.n).slice(0,6);
+    return {
+      r:reg, atr_qtd:rm.atr_qtd,
+      atr_val:Math.round(rm.atr_val*100)/100,
+      dias_atr:rm.atr_qtd>0?Math.round(rm.dias_atr_sum/rm.atr_qtd*10)/10:0,
+      media_ent:0, mediana:0, ufs
+    };
+  });
+
+  // Round meses values
+  Object.keys(meses).forEach(m=>{
+    const md=meses[m];
+    ['fat','on_val','off_val','hub_val','trs_val'].forEach(k=>{
+      md[k]=Math.round(md[k]*100)/100;
+    });
+  });
+
+  // Build payload
+  const payload = {
+    meses, otd:transpList, regioes, dias_mes,
+    atualizado: new Date().toLocaleString('pt-BR'),
+    base_nome: file.name,
+    total_nfs: vendas.length
+  };
+
+  log('Salvando no banco...','info');
+  // Save to Supabase storage as JSON
+  const json=JSON.stringify(payload);
+  const blob=new Blob([json],{type:'application/json'});
+  const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json'});
+  if(error) throw new Error(error.message);
+
+  log('Dados salvos! Atualizando painel...','info');
+  renderOTD(payload);
+}
+
+// ============================================================
+// LOAD OTD FROM STORAGE
+// ============================================================
+async function loadOTDFromStorage(){
+  try{
+    const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
+    if(error) return; // no data yet
+    const text=await data.text();
+    const payload=JSON.parse(text);
+    renderOTD(payload);
+  }catch(e){
+    // no data yet, show empty state
+  }
+}
+
+// ============================================================
+// HISTORICO
+// ============================================================
+function updateHistorico(indicador, arquivo){
+  const tbody=document.getElementById('hist-tbody');
+  const row=document.createElement('tr');
+  row.innerHTML=`<td>${new Date().toLocaleString('pt-BR')}</td><td>${indicador}</td><td>${arquivo}</td><td>—</td><td><span class="badge badge-ok">Sucesso</span></td>`;
+  if(tbody.querySelector('td[colspan]')) tbody.innerHTML='';
+  tbody.insertBefore(row, tbody.firstChild);
+}
+
+// ============================================================
+// RENDER OTD
+// ============================================================
+let otdData=null;
+let otdFilter_state={type:'all',val:'all'};
+let fatChart=null,diasChart=null;
+
+const fmtM=v=>'R$ '+(v/1e6).toFixed(1)+'M';
+const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
+const MES_PALETTE=['#378ADD','#185FA5','#0C447C','#042C53','#85B7EB'];
+const REG_CORES={'Sudeste':'#185FA5','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
+
+function renderOTD(payload){
+  otdData=payload;
+  document.getElementById('otd-empty').style.display='none';
+  document.getElementById('otd-content').style.display='block';
+  document.getElementById('otd-update-text').innerHTML=
+    'Base: <strong>'+payload.base_nome+'</strong> &nbsp;·&nbsp; Atualizado em: <strong>'+payload.atualizado+'</strong>';
+
+  // Build filter buttons
+  const MK=Object.keys(payload.meses).map(Number).sort();
+  const QS=[...new Set(MK.map(m=>'Q'+Math.ceil(m/3)))].sort();
+  const MC={}; MK.forEach((m,i)=>MC[m]=MES_PALETTE[i]||'#185FA5');
+  payload._MK=MK; payload._MC=MC; payload._QS=QS;
+
+  const qc=document.getElementById('otd-q-btns'); qc.innerHTML='';
+  QS.forEach(q=>{const b=document.createElement('button');b.className='fbtn';b.textContent=q;b.onclick=function(){otdFilter(q,this,'q');};qc.appendChild(b);});
+  const mc=document.getElementById('otd-m-btns'); mc.innerHTML='';
+  MK.forEach(m=>{const b=document.createElement('button');b.className='fbtn';b.textContent=payload.meses[m].nome;b.onclick=function(){otdFilter(m,this,'m');};mc.appendChild(b);});
+
+  otdFilter_state={type:'all',val:'all'};
+  renderOTDChart(payload);
+}
+
+function otdFilter(v,btn,type){
+  if(!otdData) return;
+  document.querySelectorAll('#otd-fbar .fbtn').forEach(b=>b.classList.remove('on'));
+  if(type==='q'){otdFilter_state={type:'q',val:v};document.getElementById('otd-m-all').classList.add('on');}
+  else if(type==='m'){otdFilter_state={type:v==='all'?'all':'m',val:v};document.querySelectorAll('#otd-fbar .fbtn')[0].classList.add('on');}
+  else{otdFilter_state={type:'all',val:'all'};document.getElementById('otd-m-all').classList.add('on');}
+  btn.classList.add('on');
+  renderOTDChart(otdData);
+}
+
+function getOTDMeses(){
+  if(!otdData) return [];
+  const MK=otdData._MK||[];
+  if(otdFilter_state.type==='all') return MK;
+  if(otdFilter_state.type==='q') return MK.filter(m=>'Q'+Math.ceil(m/3)===otdFilter_state.val);
+  if(otdFilter_state.type==='m') return [parseInt(otdFilter_state.val)];
+  return MK;
+}
+
+function renderOTDChart(d){
+  const ms=getOTDMeses();
+  const MC=d._MC||{};
   let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,on_val=0,off_val=0,hub_val=0,trs_val=0;
-  ms.forEach(m => {
-    fat+=M[m].fat; qtd+=M[m].qtd; on+=M[m].on; off+=M[m].off;
-    hub+=M[m].hub; trs+=M[m].trs;
-    on_val+=M[m].on_val; off_val+=M[m].off_val;
-    hub_val+=M[m].hub_val; trs_val+=M[m].trs_val;
-  });
-  const fin=on+off, otd=fin?((on/fin)*100).toFixed(1):'—';
-  const fin_val=on_val+off_val, nfin=hub+trs, nfin_val=hub_val+trs_val;
+  ms.forEach(m=>{const md=d.meses[m];if(!md)return;fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;});
+  const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val,nfin=hub+trs,nfin_val=hub_val+trs_val;
 
-  document.getElementById('k-fat').textContent=fmtM(fat);
-  document.getElementById('k-fat-s').textContent=qtd.toLocaleString('pt-BR')+' NFs';
-  document.getElementById('k-on').textContent=on.toLocaleString('pt-BR');
-  document.getElementById('k-on-s').textContent=fmtM(on_val);
-  document.getElementById('k-off').textContent=off;
-  document.getElementById('k-hub').textContent=hub;
-  document.getElementById('k-hub-s').textContent=fmtM(hub_val);
-  document.getElementById('k-trs').textContent=trs;
-  document.getElementById('k-trs-s').textContent=fmtM(trs_val);
-  document.getElementById('k-otd').textContent=otd+'%';
-  document.getElementById('k-otd-s').textContent=on.toLocaleString('pt-BR')+' On Time de '+fin.toLocaleString('pt-BR')+' finalizadas';
-  document.getElementById('otd-bar').style.width=otd+'%';
-  document.getElementById('otd-on-n').textContent=on.toLocaleString('pt-BR');
-  document.getElementById('otd-off-n').textContent=off;
-  document.getElementById('fat-big').textContent=fmtM(fat);
-  document.getElementById('ent-big').textContent=fmtM(fin_val);
-  document.getElementById('pend-big').textContent=fmtM(nfin_val);
-  document.getElementById('ent2-on').textContent=on.toLocaleString('pt-BR');
-  document.getElementById('ent2-off').textContent=off;
-  document.getElementById('ent2-val').textContent=fmtM(fin_val);
-  document.getElementById('ent2-otd').textContent=otd+'%';
-  document.getElementById('ent2-bar').style.width=fmtP(fin,qtd);
-  document.getElementById('ent2-pct').textContent=fmtP(fin,qtd);
-  document.getElementById('ne-hub-qtd').textContent=hub;
-  document.getElementById('ne-hub-val').textContent=fmtM(hub_val);
-  document.getElementById('ne-trs-qtd').textContent=trs;
-  document.getElementById('ne-trs-val').textContent=fmtM(trs_val);
-  document.getElementById('ne-total-qtd').textContent=nfin.toLocaleString('pt-BR');
-  document.getElementById('ne-total-val').textContent=fmtM(nfin_val);
-  document.getElementById('ne-pct').textContent=fmtP(nfin,qtd);
-  document.getElementById('ne-bar-hub').style.width=fmtP(hub_val,fat);
-  document.getElementById('ne-bar-trs').style.width=fmtP(trs_val,fat);
+  document.getElementById('o-fat').textContent=fmtM(fat);document.getElementById('o-fat-s').textContent=qtd.toLocaleString('pt-BR')+' NFs';
+  document.getElementById('o-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o-on-s').textContent=fmtM(on_val);
+  document.getElementById('o-off').textContent=off;
+  document.getElementById('o-hub').textContent=hub;document.getElementById('o-hub-s').textContent=fmtM(hub_val);
+  document.getElementById('o-trs').textContent=trs;document.getElementById('o-trs-s').textContent=fmtM(trs_val);
+  document.getElementById('o-otd').textContent=otd+'%';
+  document.getElementById('o-otd-s').textContent=on.toLocaleString('pt-BR')+' On Time de '+fin.toLocaleString('pt-BR')+' finalizadas';
+  document.getElementById('o-otd-bar').style.width=otd+'%';
+  document.getElementById('o2-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=off;
+  document.getElementById('o2-val').textContent=fmtM(fin_val);document.getElementById('o2-otd').textContent=otd+'%';
+  document.getElementById('o2-bar').style.width=fmtP(fin,qtd);document.getElementById('o2-pct').textContent=fmtP(fin,qtd);
+  document.getElementById('o3-hub').textContent=hub;document.getElementById('o3-hub-val').textContent=fmtM(hub_val);
+  document.getElementById('o3-trs').textContent=trs;document.getElementById('o3-trs-val').textContent=fmtM(trs_val);
+  document.getElementById('o3-total').textContent=nfin;document.getElementById('o3-total-val').textContent=fmtM(nfin_val);
 
-  const maxF = Math.max(...ms.map(m=>M[m].fat), 1);
-  document.getElementById('mes-bars').innerHTML = ms.map(m =>
-    '<div class="mes-row"><span class="mes-lbl">'+M[m].nome+'</span><div class="mes-bar">'+
-    '<div style="position:absolute;left:0;height:100%;width:'+Math.round(M[m].fat/maxF*100)+'%;background:'+MC[m]+'22;border-radius:3px"></div>'+
-    '<div style="position:absolute;left:0;height:100%;width:'+Math.round((M[m].on_val+M[m].off_val)/maxF*100)+'%;background:'+MC[m]+';border-radius:3px"></div>'+
-    '</div><span class="mes-val">'+fmtM(M[m].fat)+'</span><span class="mes-qtd">'+M[m].qtd+' NFs</span></div>'
-  ).join('');
+  // Month bars
+  const maxF=Math.max(...ms.map(m=>d.meses[m]?.fat||0),1);
+  document.getElementById('otd-mes-bars').innerHTML=ms.map(m=>{const md=d.meses[m];if(!md)return'';return'<div style="display:flex;align-items:center;gap:10px;padding:3px 0;font-size:11px"><span style="width:28px;color:var(--text2);font-weight:600">'+md.nome+'</span><div style="flex:1;height:16px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative"><div style="position:absolute;left:0;height:100%;width:'+Math.round(md.fat/maxF*100)+'%;background:'+MC[m]+'22;border-radius:3px"></div><div style="position:absolute;left:0;height:100%;width:'+Math.round((md.on_val+md.off_val)/maxF*100)+'%;background:'+MC[m]+';border-radius:3px"></div></div><span style="width:54px;text-align:right;font-weight:600">'+fmtM(md.fat)+'</span><span style="width:50px;text-align:right;color:var(--text2);font-size:10px">'+md.qtd+' NFs</span></div>';}).join('');
 
-  document.getElementById('fat-legend').innerHTML = ms.map(m =>
-    '<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:2px;background:'+MC[m]+';display:inline-block"></span>'+M[m].nome+' — '+fmtM(M[m].fat)+'</span>'
-  ).join('') + '<span style="font-size:11px;display:flex;align-items:center;gap:5px;margin-left:8px"><span style="width:11px;height:11px;border-radius:2px;background:#FAEEDA;border:0.5px solid #EF9F27;display:inline-block"></span>Hub+Trânsito — '+fmtM(nfin_val)+'</span>';
+  // Fat chart
+  if(fatChart) fatChart.destroy();
+  fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:[{label:'Hub+Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'#FAEEDA',borderRadius:0,borderWidth:0,stack:'s'},{label:'Finalizado',data:ms.map(m=>(d.meses[m]?.on_val||0)+(d.meses[m]?.off_val||0)),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.07)'},stacked:true,ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}}}});
 
-  if(fatRef) fatRef.destroy();
-  fatRef = new Chart(document.getElementById('fatChart'), {
-    type:'bar',
-    data:{labels:ms.map(m=>M[m].nome),datasets:[
-      {label:'Hub+Trânsito',data:ms.map(m=>M[m].hub_val+M[m].trs_val),backgroundColor:'#FAEEDA',borderRadius:0,borderWidth:0,stack:'s'},
-      {label:'Finalizado',data:ms.map(m=>M[m].on_val+M[m].off_val),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
-              y:{grid:{color:'rgba(128,128,128,.07)'},stacked:true,ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}}}
-  });
+  // Tables bloco 2
+  let r2='';
+  ms.forEach(m=>{const md=d.meses[m];if(!md)return;const f=md.on+md.off,o=f?((md.on/f)*100).toFixed(1)+'%':'—';r2+='<tr><td>'+md.nome+'/'+new Date().getFullYear()+'</td><td class="r" style="color:#3B6D11">'+md.on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(md.off>0?'#A32D2D':'var(--text2)')+'">'+md.off+'</td><td class="r">'+f.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(md.on_val+md.off_val)+'</td><td class="r" style="color:#3B6D11;font-weight:600">'+o+'</td><td class="r" style="color:var(--text2)">'+fmtP(f,md.qtd)+'</td></tr>';});
+  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(off>0?'#A32D2D':'var(--text2)')+'">'+off+'</td><td class="r">'+fin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(fin_val)+'</td><td class="r" style="color:#3B6D11">'+otd+'%</td><td class="r">'+fmtP(fin,qtd)+'</td></tr>';
+  document.getElementById('o2-tbody').innerHTML=r2;
 
-  let r2 = '';
-  ms.forEach(m => {
-    const d=M[m], f=d.on+d.off, o=f?((d.on/f)*100).toFixed(1)+'%':'—';
-    r2 += '<tr><td>'+d.nome+'/2026</td>'+
-      '<td class="r" style="color:#3B6D11">'+d.on.toLocaleString('pt-BR')+'</td>'+
-      '<td class="r" style="color:'+(d.off>0?'#A32D2D':'var(--text2)')+'">'+d.off+'</td>'+
-      '<td class="r">'+f.toLocaleString('pt-BR')+'</td>'+
-      '<td class="r">'+fmtM(d.on_val+d.off_val)+'</td>'+
-      '<td class="r" style="color:#3B6D11;font-weight:600">'+o+'</td>'+
-      '<td class="r" style="color:var(--text2)">'+fmtP(f,d.qtd)+'</td></tr>';
-  });
-  if(ms.length>1) r2 += '<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(off>0?'#A32D2D':'var(--text2)')+'">'+off+'</td><td class="r">'+fin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(fin_val)+'</td><td class="r" style="color:#3B6D11">'+otd+'%</td><td class="r">'+fmtP(fin,qtd)+'</td></tr>';
-  document.getElementById('ent2-tbody').innerHTML = r2;
+  // Table bloco 3
+  let r3='';
+  ms.forEach(m=>{const md=d.meses[m];if(!md||(md.hub+md.trs===0&&ms.length>1))return;r3+='<tr><td>'+md.nome+'</td><td class="r" style="color:#854F0B">'+(md.hub||'—')+'</td><td class="r" style="color:#854F0B">'+(md.hub_val>0?fmtM(md.hub_val):'—')+'</td><td class="r" style="color:#185FA5">'+(md.trs||'—')+'</td><td class="r" style="color:#185FA5">'+(md.trs_val>0?fmtM(md.trs_val):'—')+'</td><td class="r">'+(md.hub+md.trs||'—')+'</td><td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td><td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';});
+  if(ms.length>1) r3+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r">'+nfin+'</td><td class="r">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
+  document.getElementById('o3-tbody').innerHTML=r3;
 
-  let r3 = '';
-  ms.forEach(m => {
-    const d=M[m];
-    if(d.hub+d.trs===0 && ms.length>1) return;
-    r3 += '<tr><td>'+d.nome+'/2026</td>'+
-      '<td class="r" style="color:#854F0B">'+(d.hub||'—')+'</td>'+
-      '<td class="r" style="color:#854F0B">'+(d.hub_val>0?fmtM(d.hub_val):'—')+'</td>'+
-      '<td class="r" style="color:#185FA5">'+(d.trs||'—')+'</td>'+
-      '<td class="r" style="color:#185FA5">'+(d.trs_val>0?fmtM(d.trs_val):'—')+'</td>'+
-      '<td class="r">'+(d.hub+d.trs||'—')+'</td>'+
-      '<td class="r">'+(d.hub_val+d.trs_val>0?fmtM(d.hub_val+d.trs_val):'—')+'</td>'+
-      '<td class="r" style="color:var(--text2)">'+(d.hub+d.trs>0?fmtP(d.hub+d.trs,d.qtd):'—')+'</td></tr>';
-  });
-  if(ms.length>1) r3 += '<tr class="tr-total"><td>Total</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r">'+nfin+'</td><td class="r">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
-  document.getElementById('ne-tbody').innerHTML = r3;
+  // Table bloco 4 transportadoras
+  const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
+  document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';return'<tr><td>'+t.n+'</td><td class="r">'+(t.fin||'—')+'</td><td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td><td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td><td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td><td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td><td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td><td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td><td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td></tr>';}).join('');
 
-  const bc = v => v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
-  document.getElementById('otd-tbody').innerHTML = OTD_DATA.map(t => {
-    const c = t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';
-    return '<tr><td>'+t.n+'</td><td class="r">'+(t.fin||'—')+'</td>'+
-      '<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'+
-      '<td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td>'+
-      '<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'+
-      '<td style="min-width:90px;padding-right:14px"><div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'+
-      '<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'+
-      '<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'+
-      '<td class="r">'+(t.hub+t.trs>0?t.hub+t.trs:'—')+'</td>'+
-      '<td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td></tr>';
-  }).join('');
+  // Bloco 5 regiões
+  const tA=(d.regioes||[]).reduce((a,r)=>a+r.atr_qtd,0)||1;
+  document.getElementById('o5-kpis').innerHTML=(d.regioes||[]).map(r=>'<div class="kpi" style="border-left:3px solid '+(REG_CORES[r.r]||'#888')+'"><div class="kpi-lbl">'+r.r+'</div><div class="kpi-val" style="font-size:20px;color:'+(REG_CORES[r.r]||'#888')+'">'+r.atr_qtd+'</div><div class="kpi-sub">'+((r.atr_qtd/tA)*100).toFixed(0)+'% do trânsito</div></div>').join('');
+  document.getElementById('o5-cards').innerHTML=(d.regioes||[]).map(r=>{const cor=REG_CORES[r.r]||'#888';const mx=Math.max(...(r.ufs||[]).map(u=>u.n),1);return'<div class="reg-card"><div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44"><span class="reg-name">'+r.r+'</span><span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div><div class="reg-body"><div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div><div class="reg-row"><span class="reg-lbl">Dias médio trânsito</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div><div class="reg-row"><span class="reg-lbl">Média p/ entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div><div class="reg-uf"><div class="reg-uf-title">Praças</div><table class="reg-uf-table"><tbody>'+(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')+'</tbody></table></div></div>';}).join('');
 
-  const tA = REGIOES.reduce((a,r)=>a+r.atr_qtd,0) || 1;
-  const rCores = {'Sudeste':'#185FA5','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
-  document.getElementById('reg-kpis').innerHTML = REGIOES.map(r =>
-    '<div class="kpi" style="border-left:3px solid '+(rCores[r.r]||'#888')+'">'+
-    '<div class="kpi-lbl">'+r.r+'</div>'+
-    '<div class="kpi-val" style="font-size:20px;color:'+(rCores[r.r]||'#888')+'">'+r.atr_qtd+'</div>'+
-    '<div class="kpi-sub">'+((r.atr_qtd/tA)*100).toFixed(0)+'% do trânsito</div></div>'
-  ).join('');
-
-  document.getElementById('reg-cards').innerHTML = REGIOES.map(r => {
-    const cor = rCores[r.r]||'#888';
-    const mx  = Math.max(...r.ufs.map(u=>u.n), 1);
-    return '<div class="reg-card">'+
-      '<div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44">'+
-      '<span class="reg-name">'+r.r+'</span>'+
-      '<span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div>'+
-      '<div class="reg-body">'+
-      '<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div>'+
-      '<div class="reg-row"><span class="reg-lbl">Dias médio em trânsito</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'+
-      '<div class="reg-row"><span class="reg-lbl">Média p/ entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div>'+
-      '<div class="reg-row"><span class="reg-lbl">Mediana entrega</span><span style="font-weight:500;color:'+cor+'">'+r.mediana+' d</span></div></div>'+
-      '<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'+
-      '<table class="reg-uf-table"><tbody>'+
-      r.ufs.map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:55px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:18px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')+
-      '</tbody></table></div></div>';
-  }).join('');
-
-  const rNames = Object.keys(DIAS_MES);
-  const rC = rNames.map(r => rCores[r]||'#888');
-  if(diasRef) diasRef.destroy();
-  diasRef = new Chart(document.getElementById('diasChart'), {
-    type:'line',
-    data:{labels:ms.map(m=>M[m].nome),datasets:rNames.map((r,i)=>({
-      label:r, data:ms.map(m=>DIAS_MES[r]&&DIAS_MES[r][m]?DIAS_MES[r][m]:0),
-      borderColor:rC[i], backgroundColor:rC[i]+'18', borderWidth:2.5, pointRadius:5, tension:.3
-    }))},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
-              y:{grid:{color:'rgba(128,128,128,.07)'},ticks:{font:{size:11}},title:{display:true,text:'dias',font:{size:10},color:'#888'}}}}
-  });
-  document.getElementById('dias-legend').innerHTML = rNames.map((r,i) =>
-    '<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:16px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>'
-  ).join('');
+  // Dias chart bloco 5
+  const rNames=Object.keys(d.dias_mes||{});
+  const rC=rNames.map(r=>REG_CORES[r]||'#888');
+  if(diasChart) diasChart.destroy();
+  diasChart=new Chart(document.getElementById('o5-chart'),{type:'line',data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:rNames.map((r,i)=>({label:r,data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||0),borderColor:rC[i],backgroundColor:rC[i]+'18',borderWidth:2,pointRadius:4,tension:.3}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.07)'},ticks:{font:{size:11}},title:{display:true,text:'dias',font:{size:10},color:'#888'}}}}});
+  document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
 }
 </script>
 </body>
