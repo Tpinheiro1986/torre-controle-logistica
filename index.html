@@ -12,7 +12,7 @@
   --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
   --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
   --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
-  --radius:8px;--radius-lg:14px;
+  --radius:8px;--radius-lg:14px;--blue:#185FA5;
 }
 @media(prefers-color-scheme:dark){
   :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}
@@ -20,125 +20,80 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
 
-/* LOGIN SCREEN */
+/* LOGIN */
 #screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
 .login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
-.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.brand-icon{width:38px;height:38px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.brand-name{font-size:14px;font-weight:700;color:var(--text)}
-.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
-.login-title{font-size:22px;font-weight:700;margin-bottom:6px}
-.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
-.form-group{margin-bottom:14px}
-.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
-.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.10)}
-.btn-primary{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
-.btn-primary:hover{background:#0C447C}
-.btn-primary:disabled{background:#888;cursor:not-allowed}
-.login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+.btn-primary{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;margin-top:10px}
 
-/* APP STYLES (Restaurados do seu modelo anterior) */
+/* APP */
 #screen-app{display:none}
 .topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.nav-brand{display:flex;align-items:center;gap:10px}
-.nav-icon{width:30px;height:30px;background:#185FA5;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.nav-title{font-size:14px;font-weight:700}
-.nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
-.nav-right{display:flex;align-items:center;gap:10px}
-.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
-.user-av{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
-.user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
-.btn-sm:hover{background:var(--bg2)}
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex}
+.tab{padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
 
-/* DASHBOARD COMPONENTS */
-.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex;gap:0}
-.tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab.on{color:#185FA5;border-bottom-color:#185FA5;font-weight:500}
+/* DASHBOARD */
 .container{max-width:1400px;margin:0 auto;padding:28px 32px}
-.dash-section{display:none}
-.dash-section.on{display:block}
-.krow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
-.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
-.kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.kpi-val{font-size:22px;font-weight:700;line-height:1}
-.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
-.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
-.empty-state svg{width:48px;height:48px;margin:0 auto 16px;display:block;opacity:.3}
+.krow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px}
+.kpi-lbl{font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:5px}
+.kpi-val{font-size:24px;font-weight:700}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
 
-/* UPLOAD */
+/* UPLOAD BOX */
 .upload-section{display:none}.upload-section.on{display:block}
-.upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:24px 20px;text-align:center;cursor:pointer;position:relative}
+.upload-box{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:40px;text-align:center;cursor:pointer;transition:0.3s;position:relative}
+.upload-box:hover{border-color:var(--blue);background:rgba(24,95,165,0.05)}
 .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
 </style>
 </head>
 <body>
 
 <div id="screen-login">
-  <div class="login-card">
-    <div class="login-brand">
-      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <div><div class="brand-name">Torre de Controle</div><div class="brand-sub">Logística · Genomma Lab</div></div>
+    <div class="login-card">
+        <h2 style="margin-bottom:20px">Torre de Controle</h2>
+        <input type="email" id="l-email" placeholder="E-mail" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc">
+        <input type="password" id="l-pass" placeholder="Senha" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc">
+        <button class="btn-primary" onclick="doLogin()">Entrar</button>
+        <p id="login-err" style="color:red;display:none;margin-top:10px"></p>
     </div>
-    <div class="login-title">Bem-vindo</div>
-    <div class="login-sub">Acesse com seu e-mail corporativo.</div>
-    <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="l-email" placeholder="seu@email.com"/></div>
-    <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
-    <div class="login-err" id="login-err"></div>
-  </div>
 </div>
 
 <div id="screen-app">
-  <div class="topnav">
-    <div class="nav-brand">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
+    <div class="topnav">
+        <strong>Genomma Lab Logística</strong>
+        <button onclick="doLogout()" style="background:none;border:none;cursor:pointer;color:var(--text2)">Sair</button>
     </div>
-    <div class="nav-right">
-      <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
-      <button class="btn-sm" onclick="doLogout()">Sair</button>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
-    <div class="tab" onclick="switchTab('custo',this)">Custo de Servir</div>
-    <div class="tab" id="tab-upload" style="display:none; margin-left:auto; color:#185FA5" onclick="switchTab('upload',this)">⬆ Upload</div>
-  </div>
-
-  <div class="container">
-    <div class="dash-section on" id="sec-otd">
-        <div class="krow">
-            <div class="kpi"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">R$ 0,00</div></div>
-            <div class="kpi"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">0</div></div>
-            <div class="kpi"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">0</div></div>
-            <div class="kpi"><div class="kpi-lbl">OTD %</div><div class="kpi-val" id="o-otd">0%</div></div>
-        </div>
-        <div class="empty-state">
-            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <p>Os dados aparecerão aqui após o processamento do Excel.</p>
-        </div>
+    <div class="tabs">
+        <div class="tab on" onclick="switchTab('otd',this)">Painel OTD</div>
+        <div id="tab-upload" class="tab" style="display:none" onclick="switchTab('upload',this)">⬆ Upload de Dados</div>
     </div>
 
-    <div class="upload-section" id="sec-upload">
-        <div class="card">
-            <h3>Upload de Bases</h3>
-            <p style="color:var(--text2); margin-bottom:20px">Arraste seus arquivos .xlsx aqui</p>
-            <div class="upload-grid">
-                <div class="upload-box">
-                    <input type="file" accept=".xlsx" onchange="console.log('Arquivo selecionado')">
-                    <p>OTD — Entregas</p>
-                </div>
+    <div class="container">
+        <div id="sec-otd" class="dash-section on">
+            <div class="krow">
+                <div class="kpi"><div class="kpi-lbl">Total Faturado</div><div class="kpi-val" id="kpi-fat">R$ 0,00</div></div>
+                <div class="kpi"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="kpi-on" style="color:green">0</div></div>
+                <div class="kpi"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="kpi-off" style="color:red">0</div></div>
+                <div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" id="kpi-otd">0%</div></div>
             </div>
-            <button class="btn-primary" style="width:200px">Processar Dados</button>
+            <div class="card">
+                <canvas id="otdChart" height="100"></canvas>
+            </div>
+        </div>
+
+        <div id="sec-upload" class="upload-section">
+            <div class="card">
+                <h3>Atualizar Base de Dados</h3>
+                <p style="margin-bottom:20px">Selecione o arquivo Excel exportado do sistema (grid-atividade-entrega.xlsx)</p>
+                <div class="upload-box" id="drop-zone">
+                    <input type="file" id="file-input" accept=".xlsx">
+                    <p id="file-name">Arraste o arquivo aqui ou clique para selecionar</p>
+                </div>
+                <button class="btn-primary" id="btn-process" style="width:200px;margin-top:20px" onclick="processarExcel()">Processar Agora</button>
+            </div>
         </div>
     </div>
-  </div>
 </div>
 
 <script>
@@ -149,44 +104,24 @@ const ADMIN_EMAIL = 'thiago_balao@yahoo.com.br';
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// --- LÓGICA DE LOGIN ---
+let rawData = [];
+let chartInstance = null;
+
+// --- AUTH ---
 async function doLogin() {
-    const email = document.getElementById('l-email').value.trim();
+    const email = document.getElementById('l-email').value;
     const pass = document.getElementById('l-pass').value;
-    const btn = document.getElementById('btn-login');
-    const err = document.getElementById('login-err');
-
-    if(!email || !pass) { err.textContent = "Preencha tudo"; err.style.display='block'; return; }
-
-    btn.disabled = true; btn.textContent = 'Entrando...';
-    err.style.display = 'none';
-
-    try {
-        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-        if (error) throw error;
-        if (data.user) showApp(data.user);
-    } catch (e) {
-        err.textContent = "Erro: " + e.message;
-        err.style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Entrar';
-    }
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) { document.getElementById('login-err').textContent = error.message; document.getElementById('login-err').style.display='block'; }
 }
 
 function showApp(user) {
     document.getElementById('screen-login').style.display = 'none';
     document.getElementById('screen-app').style.display = 'block';
-    document.getElementById('user-em').textContent = user.email;
-    document.getElementById('user-av').textContent = user.email.substring(0,2).toUpperCase();
-    
-    if(user.email === ADMIN_EMAIL) {
-        document.getElementById('tab-upload').style.display = 'block';
-    }
+    if(user.email === ADMIN_EMAIL) document.getElementById('tab-upload').style.display = 'block';
 }
 
-async function doLogout() {
-    await sb.auth.signOut();
-    location.reload();
-}
+async function doLogout() { await sb.auth.signOut(); location.reload(); }
 
 function switchTab(id, el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
@@ -195,11 +130,72 @@ function switchTab(id, el) {
     document.getElementById('sec-' + id).classList.add('on');
 }
 
-// Verifica sessão ativa ao carregar
-sb.auth.onAuthStateChange((event, session) => {
-    if (session) showApp(session.user);
+// --- PROCESSAMENTO EXCEL ---
+document.getElementById('file-input').addEventListener('change', function(e) {
+    if(e.target.files[0]) document.getElementById('file-name').textContent = e.target.files[0].name;
 });
-</script>
 
+function processarExcel() {
+    const file = document.getElementById('file-input').files[0];
+    if(!file) { alert("Selecione um arquivo primeiro!"); return; }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const firstSheet = workbook.SheetNames[0];
+        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+        
+        atualizarDashboards(jsonData);
+        alert("Dados processados com sucesso!");
+        switchTab('otd', document.querySelector('.tab'));
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function atualizarDashboards(data) {
+    let totalFat = 0;
+    let onTime = 0;
+    let offTime = 0;
+
+    data.forEach(row => {
+        // Ajuste os nomes das colunas conforme sua planilha real
+        const valor = parseFloat(row['Valor'] || row['Faturamento'] || 0);
+        totalFat += valor;
+
+        const status = row['Status OTD'] || row['Status'];
+        if(status === 'No Prazo' || status === 'On Time') onTime++;
+        else offTime++;
+    });
+
+    const otdPerc = data.length > 0 ? ((onTime / data.length) * 100).toFixed(1) : 0;
+
+    document.getElementById('kpi-fat').textContent = 'R$ ' + totalFat.toLocaleString('pt-BR');
+    document.getElementById('kpi-on').textContent = onTime;
+    document.getElementById('kpi-off').textContent = offTime;
+    document.getElementById('kpi-otd').textContent = otdPerc + '%';
+
+    renderChart(onTime, offTime);
+}
+
+function renderChart(on, off) {
+    const ctx = document.getElementById('otdChart').getContext('2d');
+    if(chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['On Time', 'Off Time'],
+            datasets: [{
+                label: 'Entregas',
+                data: [on, off],
+                backgroundColor: ['#3B6D11', '#A32D2D']
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+}
+
+sb.auth.onAuthStateChange((event, session) => { if (session) showApp(session.user); });
+</script>
 </body>
 </html>
