@@ -376,7 +376,14 @@ const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
 const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br'; // Email do admin que faz upload
 
 const {createClient} = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'torre-controle-auth'
+  }
+});
 
 // ============================================================
 // AUTH
@@ -384,6 +391,14 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 let currentUser = null;
 
 async function checkSession(){
+  // Handle Supabase auth redirect (magic link / token in URL)
+  const hash = window.location.hash;
+  if(hash && (hash.includes('access_token') || hash.includes('error'))){
+    // Let Supabase process the hash
+    await new Promise(r => setTimeout(r, 500));
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+  
   const {data:{session}} = await sb.auth.getSession();
   if(session) showApp(session.user);
   else showLogin();
@@ -410,6 +425,7 @@ async function doLogout(){
   document.getElementById('screen-login').style.display='flex';
   document.getElementById('l-pass').value='';
   document.getElementById('login-err').style.display='none';
+  document.getElementById('login-err').style.display='none';
 }
 
 function showLogin(){
@@ -427,16 +443,22 @@ function showApp(user){
   // Show upload tab only for admin
   const isAdmin = user.email === ADMIN_EMAIL;
   if(isAdmin){
-    document.getElementById('tab-upload').style.display='block';
+    document.getElementById('tab-upload').style.display='flex';
     document.getElementById('admin-badge').style.display='inline-block';
   }
 
-  // Load OTD data
+  // Load OTD data from Supabase storage
   loadOTDFromStorage();
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
-sb.auth.onAuthStateChange((_e,session)=>{if(session)showApp(session.user);});
+
+// Listen for auth state changes (handles token refresh, logout from other tab etc)
+sb.auth.onAuthStateChange((event, session)=>{
+  if(event === 'SIGNED_IN' && session) showApp(session.user);
+  if(event === 'SIGNED_OUT') showLogin();
+});
+
 checkSession();
 
 // ============================================================
@@ -841,14 +863,25 @@ async function processOTD(file){
     total_bonif: bonifs.length
   };
 
-  log('Salvando no banco...','info');
-  // Save to Supabase storage as JSON
+  log('Salvando no servidor...','info');
   const json=JSON.stringify(payload);
   const blob=new Blob([json],{type:'application/json'});
-  const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json'});
-  if(error) throw new Error(error.message);
-
-  log('Dados salvos! Atualizando painel...','info');
+  
+  // Try to upload to Supabase Storage
+  const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{
+    upsert:true,
+    contentType:'application/json',
+    cacheControl:'0'
+  });
+  
+  if(error){
+    // If storage fails, still render locally and warn
+    log('⚠ Aviso ao salvar: '+error.message,'err');
+    log('Renderizando dados localmente...','info');
+  } else {
+    log('✓ Dados salvos no servidor!','ok');
+  }
+  
   renderOTD(payload);
 }
 
@@ -858,12 +891,17 @@ async function processOTD(file){
 async function loadOTDFromStorage(){
   try{
     const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
-    if(error) return; // no data yet
+    if(error){
+      console.log('Storage: sem dados ainda ou erro de permissão:', error.message);
+      return;
+    }
     const text=await data.text();
     const payload=JSON.parse(text);
+    log && log('Dados carregados do servidor!','ok');
     renderOTD(payload);
   }catch(e){
-    // no data yet, show empty state
+    console.log('loadOTDFromStorage erro:', e.message);
+    // No data yet - show empty state (normal on first use)
   }
 }
 
