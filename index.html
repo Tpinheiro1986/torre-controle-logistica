@@ -8,73 +8,132 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--blue:#185FA5;--radius:8px;--radius-lg:14px}
-body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);margin:0;font-size:13px}
-#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh}
-.login-card{background:white;padding:40px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,0.1);width:350px}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --radius:8px;--radius-lg:14px;--blue:#185FA5;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+
+/* LOGIN */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand-icon{width:38px;height:38px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2}
+.form-input{width:100%;padding:12px;margin-bottom:15px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text)}
+
+/* APP LAYOUT */
 #screen-app{display:none}
-.topnav{background:white;padding:15px 30px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,0.1)}
-.tabs{background:white;display:flex;padding:0 30px;border-bottom:1px solid rgba(0,0,0,0.1)}
-.tab{padding:15px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent}
-.tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:bold}
-.container{max-width:1200px;margin:20px auto;padding:0 20px}
-.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
-.kpi{background:white;padding:20px;border-radius:var(--radius);border:1px solid rgba(0,0,0,0.05)}
-.kpi-lbl{font-size:11px;color:var(--text2);text-transform:uppercase;margin-bottom:5px}
-.kpi-val{font-size:26px;font-weight:bold}
-.card{background:white;padding:25px;border-radius:var(--radius-lg);border:1px solid rgba(0,0,0,0.05)}
-.upload-box{border:2px dashed #ccc;padding:40px;text-align:center;border-radius:14px;cursor:pointer;position:relative;margin:20px 0}
-.upload-box:hover{border-color:var(--blue);background:#f0f7ff}
-input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.btn{background:var(--blue);color:white;border:none;padding:12px 25px;border-radius:8px;font-weight:bold;cursor:pointer;width:100%}
-#log-area{background:#f8f8f8;padding:10px;border-radius:5px;font-family:monospace;font-size:11px;margin-top:15px;max-height:150px;overflow-y:auto;display:none}
+.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex}
+.tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+
+/* DASHBOARD ELEMENTS */
+.container{max-width:1400px;margin:0 auto;padding:28px 32px}
+.krow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:700}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
+
+/* UPLOAD */
+.upload-section{display:none}.upload-section.on{display:block}
+.upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:30px;text-align:center;cursor:pointer;position:relative}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.btn-process{padding:10px 20px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
 
 <div id="screen-login">
-    <div class="login-card">
-        <h2 style="margin-bottom:20px">Entrar</h2>
-        <input type="email" id="l-email" placeholder="E-mail" style="width:100%;padding:10px;margin-bottom:10px">
-        <input type="password" id="l-pass" placeholder="Senha" style="width:100%;padding:10px;margin-bottom:10px">
-        <button class="btn" onclick="doLogin()">Acessar Painel</button>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+      <div><strong>Torre de Controle</strong><div style="font-size:10px;color:var(--text2)">Genomma Lab</div></div>
     </div>
+    <input class="form-input" type="email" id="l-email" placeholder="E-mail corporativo">
+    <input class="form-input" type="password" id="l-pass" placeholder="Senha">
+    <button class="btn-process" style="width:100%" onclick="doLogin()">Entrar</button>
+    <p id="login-err" style="color:red;display:none;margin-top:10px;font-size:12px"></p>
+  </div>
 </div>
 
 <div id="screen-app">
-    <div class="topnav">
-        <strong>Torre de Controle - Logística</strong>
-        <button onclick="doLogout()" style="background:none;border:none;color:red;cursor:pointer">Sair</button>
+  <div class="topnav">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="brand-icon" style="width:30px;height:30px"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+      <strong>Torre de Controle</strong>
     </div>
-    <div class="tabs">
-        <div class="tab on" onclick="switchTab('otd',this)">Painel OTD</div>
-        <div id="tab-upload" class="tab" style="display:none" onclick="switchTab('upload',this)">⬆ Upload de Dados</div>
+    <div style="display:flex;align-items:center;gap:15px">
+      <span id="user-display" style="font-size:11px;color:var(--text2)"></span>
+      <button onclick="doLogout()" style="background:none;border:none;color:red;cursor:pointer;font-size:11px">Sair</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
+    <div class="tab" onclick="switchTab('custo',this)">Custo de Servir</div>
+    <div class="tab" id="tab-upload" style="display:none; margin-left:auto; color:var(--blue)" onclick="switchTab('upload',this)">⬆ Upload</div>
+  </div>
+
+  <div class="container">
+    <div id="sec-otd" class="dash-section on">
+      <div class="krow">
+        <div class="kpi"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="k-fat">R$ 0,00</div></div>
+        <div class="kpi"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="k-on" style="color:#3B6D11">0</div></div>
+        <div class="kpi"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="k-off" style="color:#A32D2D">0</div></div>
+        <div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" id="k-otd">0%</div></div>
+        <div class="kpi"><div class="kpi-lbl">Total NFs</div><div class="kpi-val" id="k-total">0</div></div>
+      </div>
+      
+      <div class="card">
+        <div style="font-size:11px;font-weight:bold;margin-bottom:15px;text-transform:uppercase">Performance de Entregas</div>
+        <div style="height:250px"><canvas id="mainChart"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:11px;font-weight:bold;margin-bottom:10px;text-transform:uppercase">Detalhamento por Transportadora</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px" id="transp-table">
+            <thead>
+              <tr style="text-align:left;border-bottom:1px solid var(--border)">
+                <th style="padding:10px">Transportadora</th>
+                <th>Total NFs</th>
+                <th>On Time</th>
+                <th>Off Time</th>
+                <th>OTD %</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <div class="container">
-        <div id="sec-otd" class="dash-section on">
-            <div class="krow">
-                <div class="kpi"><div class="kpi-lbl">Total Faturado</div><div class="kpi-val" id="kpi-fat">R$ 0,00</div></div>
-                <div class="kpi"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="kpi-on" style="color:green">0</div></div>
-                <div class="kpi"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="kpi-off" style="color:red">0</div></div>
-                <div class="kpi"><div class="kpi-lbl">OTD %</div><div class="kpi-val" id="kpi-otd">0%</div></div>
-            </div>
-            <div class="card"><canvas id="otdChart" height="100"></canvas></div>
+    <div id="sec-upload" class="upload-section">
+      <div class="card">
+        <h3>Upload de Base</h3>
+        <p style="color:var(--text2);margin-bottom:20px">Selecione o arquivo Excel para atualizar os dashboards</p>
+        <div class="upload-box">
+          <input type="file" id="file-input" accept=".xlsx">
+          <p id="file-name">Clique para selecionar o arquivo .xlsx</p>
         </div>
-
-        <div id="sec-upload" class="upload-section" style="display:none">
-            <div class="card">
-                <h3>Carregar Nova Base</h3>
-                <p>Arraste o arquivo <strong>grid-atividade-entrega.xlsx</strong> abaixo:</p>
-                <div class="upload-box">
-                    <input type="file" id="file-input" accept=".xlsx,.csv">
-                    <p id="file-name">Clique ou arraste o arquivo aqui</p>
-                </div>
-                <button class="btn" onclick="processarExcel()">Processar e Atualizar Gráficos</button>
-                <div id="log-area"></div>
-            </div>
-        </div>
+        <button class="btn-process" style="margin-top:20px" onclick="processExcel()">Processar e Sincronizar</button>
+        <div id="upload-status" style="margin-top:15px;font-family:monospace;font-size:11px"></div>
+      </div>
     </div>
+
+    <div id="sec-custo" class="dash-section">
+        <div class="card"><h3>Custo de Servir</h3><p>Dados pendentes de processamento.</p></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -85,82 +144,121 @@ const ADMIN_EMAIL = 'thiago_balao@yahoo.com.br';
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-let chartInstance = null;
+let chartObj = null;
 
+// AUTH
 async function doLogin() {
-    const email = document.getElementById('l-email').value;
-    const pass = document.getElementById('l-pass').value;
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if(error) alert("Erro: " + error.message);
+  const email = document.getElementById('l-email').value;
+  const pass = document.getElementById('l-pass').value;
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if(error) { 
+    document.getElementById('login-err').textContent = error.message;
+    document.getElementById('login-err').style.display = 'block';
+  }
 }
 
 function showApp(user) {
-    document.getElementById('screen-login').style.display = 'none';
-    document.getElementById('screen-app').style.display = 'block';
-    if(user.email === ADMIN_EMAIL) document.getElementById('tab-upload').style.display = 'block';
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'block';
+  document.getElementById('user-display').textContent = user.email;
+  if(user.email === ADMIN_EMAIL) document.getElementById('tab-upload').style.display = 'block';
 }
 
 async function doLogout() { await sb.auth.signOut(); location.reload(); }
 
 function switchTab(id, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-    el.classList.add('on');
-    document.getElementById('sec-otd').style.display = id === 'otd' ? 'block' : 'none';
-    document.getElementById('sec-upload').style.display = id === 'upload' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.dash-section, .upload-section').forEach(s => s.classList.remove('on'));
+  document.getElementById('sec-' + id).classList.add('on');
 }
 
+// EXCEL ENGINE
 document.getElementById('file-input').addEventListener('change', (e) => {
-    if(e.target.files[0]) document.getElementById('file-name').innerHTML = "<b>Arquivo selecionado:</b> " + e.target.files[0].name;
+  if(e.target.files[0]) document.getElementById('file-name').textContent = e.target.files[0].name;
 });
 
-function addLog(msg) {
-    const log = document.getElementById('log-area');
-    log.style.display = 'block';
-    log.innerHTML += "> " + msg + "<br>";
+function processExcel() {
+  const file = document.getElementById('file-input').files[0];
+  if(!file) return alert("Selecione um arquivo!");
+
+  const status = document.getElementById('upload-status');
+  status.innerHTML = "Lendo arquivo...";
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = new Uint8Array(e.target.result);
+    const wb = XLSX.read(data, {type: 'array'});
+    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    
+    status.innerHTML += "<br>Linhas lidas: " + json.length;
+    runCalculations(json);
+    status.innerHTML += "<br>✅ Dashboards Atualizados!";
+    setTimeout(() => switchTab('otd', document.querySelector('.tab')), 1000);
+  };
+  reader.readAsArrayBuffer(file);
 }
 
-function processarExcel() {
-    const file = document.getElementById('file-input').files[0];
-    if(!file) return alert("Selecione um arquivo!");
+function runCalculations(data) {
+  let fat = 0, on = 0, off = 0;
+  const transpData = {};
+
+  data.forEach(row => {
+    // Tenta capturar valores e nomes de colunas flexíveis
+    const v = parseFloat(row['Valor'] || row['Faturamento'] || row['Valor Total'] || 0);
+    fat += v;
+
+    const s = String(row['Status OTD'] || row['Status'] || row['Situação'] || "").toLowerCase();
+    const isOn = s.includes('prazo') || s.includes('on') || s.includes('entregue');
     
-    addLog("Iniciando leitura do arquivo...");
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet);
-            
-            addLog("Linhas encontradas: " + json.length);
-            
-            if(json.length === 0) throw new Error("A planilha está vazia!");
-            
-            atualizarDashboards(json);
-            addLog("Sucesso! Painel atualizado.");
-            setTimeout(() => switchTab('otd', document.querySelector('.tab')), 1500);
-            
-        } catch (err) {
-            addLog("ERRO: " + err.message);
-            console.error(err);
-        }
-    };
-    reader.readAsArrayBuffer(file);
+    if(isOn) on++; else off++;
+
+    // Agrupamento por transportadora
+    const tName = row['Transportadora'] || row['Transp'] || 'Outros';
+    if(!transpData[tName]) transpData[tName] = { total: 0, on: 0, off: 0 };
+    transpData[tName].total++;
+    if(isOn) transpData[tName].on++; else transpData[tName].off++;
+  });
+
+  // Atualiza KPIs
+  document.getElementById('k-fat').textContent = "R$ " + fat.toLocaleString('pt-BR');
+  document.getElementById('k-on').textContent = on;
+  document.getElementById('k-off').textContent = off;
+  document.getElementById('k-total').textContent = data.length;
+  document.getElementById('k-otd').textContent = ((on / data.length) * 100).toFixed(1) + "%";
+
+  // Atualiza Tabela
+  const tbody = document.querySelector('#transp-table tbody');
+  tbody.innerHTML = "";
+  Object.keys(transpData).forEach(t => {
+    const info = transpData[t];
+    const perc = ((info.on / info.total) * 100).toFixed(1);
+    tbody.innerHTML += `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:10px">${t}</td>
+      <td>${info.total}</td>
+      <td style="color:#3B6D11">${info.on}</td>
+      <td style="color:#A32D2D">${info.off}</td>
+      <td><strong>${perc}%</strong></td>
+    </tr>`;
+  });
+
+  updateChart(on, off);
 }
 
-function atualizarDashboards(data) {
-    let fat = 0, on = 0, off = 0;
+function updateChart(on, off) {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  if(chartObj) chartObj.destroy();
+  chartObj = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['On Time', 'Off Time'],
+      datasets: [{ data: [on, off], backgroundColor: ['#3B6D11', '#A32D2D'], borderWidth: 0 }]
+    },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+  });
+}
 
-    data.forEach((row, i) => {
-        // Tenta achar o valor em diferentes nomes de coluna possíveis
-        const v = row['Valor'] || row['Faturamento'] || row['Valor Total'] || row['Vlr'] || 0;
-        fat += parseFloat(v);
-
-        // Tenta achar o status em diferentes nomes
-        const s = String(row['Status OTD'] || row['Status'] || row['Situação'] || "").toLowerCase();
-        if(s.includes('prazo') || s.includes('on') || s.includes('entregue')) on++;
-        else off++;
-    });
-
-    document.getElementById('kpi-fat').textContent = "R$ " + fat.toLocaleString('pt
+sb.auth.onAuthStateChange((event, session) => { if (session) showApp(session.user); });
+</script>
+</body>
+</html>
