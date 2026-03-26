@@ -777,7 +777,7 @@ async function processOTD(file){
     const reg=REGIOES_MAP[uf]||'Outros';
     const val=getValor(r);
     // Dias Decorridos = time in transit for pending NFs
-    const diasDecorridos=parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0;
+    const diasDecorridos=Math.abs(parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0);
 
     // transito stats - use Dias Decorridos
     if(tipo==='transito'){
@@ -822,11 +822,16 @@ async function processOTD(file){
     const ufs=Object.values(rm.ufs||{})
       .map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0}))
       .sort((a,b)=>b.n-a.n).slice(0,6);
+    // Calculate media_ent from diasRegMap (avg delivery days for delivered NFs)
+    const drm=diasRegMap[reg]||{};
+    let entSum=0,entN=0;
+    Object.values(drm).forEach(v=>{entSum+=v.sum;entN+=v.n;});
+    const media_ent=entN>0?Math.round(entSum/entN*10)/10:0;
     return {
       r:reg,atr_qtd:rm.atr_qtd,
       atr_val:Math.round(rm.atr_val*100)/100,
       dias_atr:rm.atr_qtd>0?Math.round(rm.dias_sum/rm.atr_qtd*10)/10:0,
-      media_ent:0,mediana:0,ufs
+      media_ent,mediana:0,ufs
     };
   });
 
@@ -1115,7 +1120,7 @@ function renderOTDChart(d){
       +'<div class="reg-body">'
       +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div>'
       +'<div class="reg-row"><span class="reg-lbl">Dias decorridos (médio)</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Prazo médio entregues</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Prazo médio de entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
       +'<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'
       +'<table class="reg-uf-table"><tbody>'
       +(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')
