@@ -377,7 +377,13 @@ const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br'; // Email do admin que faz upl
 
 const {createClient} = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
-  auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'torre-controle-auth' }
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    flowType: 'implicit',
+    storageKey: 'torre-controle-auth'
+  }
 });
 
 // ============================================================
@@ -386,40 +392,41 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
 let currentUser = null;
 
 async function checkSession(){
-  try{
-    if(window.location.hash&&window.location.hash.includes('access_token')){
-      await new Promise(r=>setTimeout(r,800));
+  try {
+    const hash = window.location.hash;
+    if(hash && hash.includes('access_token')){
+      await new Promise(r => setTimeout(r, 800));
       window.history.replaceState(null,'',window.location.pathname);
     }
-    const {data:{session},error}=await sb.auth.getSession();
-    if(error){console.warn('session error:',error.message);showLogin();return;}
+    const {data:{session}, error} = await sb.auth.getSession();
+    if(error){ showLogin(); return; }
     if(session) showApp(session.user);
     else showLogin();
-  }catch(e){console.error('checkSession:',e);showLogin();}
+  } catch(e){ showLogin(); }
 }
 
 async function doLogin(){
-  const email=document.getElementById('l-email').value.trim();
-  const pass=document.getElementById('l-pass').value;
-  const btn=document.getElementById('btn-login');
-  const err=document.getElementById('login-err');
-  err.style.display='none';
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const btn   = document.getElementById('btn-login');
+  const err   = document.getElementById('login-err');
   if(!email||!pass){showErr(err,'Preencha e-mail e senha.');return;}
   btn.disabled=true; btn.textContent='Entrando…';
-  try{
-    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  err.style.display='none';
+  try {
+    const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
     if(error){
-      let msg=error.message;
-      if(msg.includes('Invalid login')||msg.includes('invalid_credentials')) msg='E-mail ou senha incorretos.';
-      else if(msg.includes('Email not confirmed')) msg='Confirme seu e-mail antes de entrar.';
-      else if(msg.includes('fetch')||msg.includes('network')||msg.includes('NetworkError')) msg='Erro de conexão. Verifique sua internet e tente novamente.';
-      showErr(err,msg);
+      let msg = error.message;
+      if(msg==='Invalid login credentials') msg='E-mail ou senha incorretos.';
+      if(msg.includes('Email not confirmed')) msg='Confirme seu e-mail antes de entrar.';
+      if(msg.includes('fetch')) msg='Erro de conexão. Verifique sua internet.';
+      showErr(err, msg);
       btn.disabled=false; btn.textContent='Entrar';
     } else {
       showApp(data.user);
     }
-  }catch(e){
-    showErr(err,'Erro ao conectar: '+e.message);
+  } catch(e) {
+    showErr(err, 'Erro inesperado: '+e.message);
     btn.disabled=false; btn.textContent='Entrar';
   }
 }
@@ -457,10 +464,7 @@ function showApp(user){
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
-sb.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_IN'&&session&&!currentUser) showApp(session.user);
-  if(event==='SIGNED_OUT') showLogin();
-});
+sb.auth.onAuthStateChange((_e,session)=>{if(session)showApp(session.user);});
 checkSession();
 
 // ============================================================
@@ -865,14 +869,14 @@ async function processOTD(file){
     total_bonif: bonifs.length
   };
 
-  log('Salvando no servidor...','info');
+  log('Salvando no banco...','info');
+  // Save to Supabase storage as JSON
   const json=JSON.stringify(payload);
   const blob=new Blob([json],{type:'application/json'});
-  try{
-    const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json',cacheControl:'0'});
-    if(error) log('Aviso storage: '+error.message+' (dados renderizados localmente)','err');
-    else log('✓ Dados salvos no servidor!','ok');
-  }catch(e){ log('Aviso storage: '+e.message,'err'); }
+  const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json'});
+  if(error) throw new Error(error.message);
+
+  log('Dados salvos! Atualizando painel...','info');
   renderOTD(payload);
 }
 
@@ -882,11 +886,13 @@ async function processOTD(file){
 async function loadOTDFromStorage(){
   try{
     const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
-    if(error){console.log('Storage sem dados:',error.message);return;}
+    if(error) return; // no data yet
     const text=await data.text();
     const payload=JSON.parse(text);
     renderOTD(payload);
-  }catch(e){console.log('loadOTD:',e.message);}
+  }catch(e){
+    // no data yet, show empty state
+  }
 }
 
 // ============================================================
