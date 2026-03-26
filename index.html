@@ -411,9 +411,7 @@ async function doLogin(){
       else if(msg.includes('Email not confirmed')) msg='Confirme seu e-mail antes de entrar.';
       else if(msg.includes('fetch')||msg.includes('NetworkError')) msg='Erro de conexão. Verifique sua internet.';
       showErr(err,msg); btn.disabled=false; btn.textContent='Entrar';
-    } else {
-      showApp(data.user);
-    }
+    } else { showApp(data.user); }
   }catch(e){
     showErr(err,'Erro: '+e.message); btn.disabled=false; btn.textContent='Entrar';
   }
@@ -822,7 +820,6 @@ async function processOTD(file){
     const ufs=Object.values(rm.ufs||{})
       .map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0}))
       .sort((a,b)=>b.n-a.n).slice(0,6);
-    // Calculate media_ent from diasRegMap (avg delivery days for delivered NFs)
     const drm=diasRegMap[reg]||{};
     let entSum=0,entN=0;
     Object.values(drm).forEach(v=>{entSum+=v.sum;entN+=v.n;});
@@ -1157,7 +1154,7 @@ function renderOTDChart(d){
            ticks:{font:{size:11},callback:v=>v+'d'},
            title:{display:true,text:'dias até entrega',font:{size:10},color:'#9b9b97'},
            min:0}
-      }}});
+      }}})
   document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
 }
 </script>
