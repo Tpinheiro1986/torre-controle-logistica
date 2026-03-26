@@ -1,237 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Torre de Controle Genomma — Oficial</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        :root { --blue: #185FA5; --bg: #f4f7f6; --card: #ffffff; --text: #333; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
-        
-        /* Telas */
-        #screen-login { display: flex; height: 100vh; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        
-        #screen-app { display: none; }
-        .header { background: var(--blue); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .nav { background: white; border-bottom: 1px solid #ddd; display: flex; padding: 0 30px; }
-        .nav-item { padding: 15px 20px; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; }
-        .nav-item.active { color: var(--blue); border-bottom-color: var(--blue); }
-
-        .container { padding: 30px; max-width: 1400px; margin: auto; }
-        .grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .kpi-card { background: white; padding: 20px; border-radius: 10px; border-left: 5px solid var(--blue); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .kpi-title { font-size: 12px; color: #888; text-transform: uppercase; margin-bottom: 8px; }
-        .kpi-value { font-size: 24px; font-weight: bold; }
-
-        .charts-row { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        /* Upload */
-        .upload-area { border: 2px dashed #bbb; padding: 50px; text-align: center; border-radius: 15px; background: #fafafa; cursor: pointer; transition: 0.3s; }
-        .upload-area:hover { border-color: var(--blue); background: #f0f7ff; }
-        #file-input { display: none; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th { text-align: left; padding: 12px; background: #f9f9f9; border-bottom: 2px solid #eee; }
-        td { padding: 10px; border-bottom: 1px solid #eee; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torre de Controle — Logística</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+/* MANTENDO EXATAMENTE O SEU CSS ORIGINAL */
+:root{ --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8; --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97; --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18); --radius:8px;--radius-lg:14px; --blue-gen:#185FA5; }
+@media(prefers-color-scheme:dark){ :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);} }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.brand-icon{width:38px;height:38px;background:var(--blue-gen);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2}
+.btn-primary, .btn-process{width:100%;padding:11px;background:var(--blue-gen);color:#fff;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer}
+#screen-app{display:none}
+.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex;gap:0}
+.tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--blue-gen);border-bottom-color:var(--blue-gen);font-weight:600}
+.container{max-width:1400px;margin:0 auto;padding:28px 32px}
+.krow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;margin-bottom:4px}
+.kpi-val{font-size:22px;font-weight:700}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
+.upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:24px;text-align:center;position:relative}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+table.dt{width:100%;border-collapse:collapse;font-size:11px}
+table.dt th{padding:8px;text-align:left;background:var(--bg2);color:var(--text2);text-transform:uppercase;font-size:9px}
+table.dt td{padding:8px;border-bottom:0.5px solid var(--border)}
+</style>
 </head>
 <body>
 
 <div id="screen-login">
-    <div class="login-box">
-        <h2 style="color:var(--blue)">Genomma Lab</h2>
-        <p>Torre de Controle Logística</p>
-        <input type="email" id="email" placeholder="E-mail" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:5px;">
-        <input type="password" id="pass" placeholder="Senha" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:5px;">
-        <button onclick="handleLogin()" style="width:100%; padding:12px; background:var(--blue); color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">ENTRAR</button>
-        <p id="err" style="color:red; font-size:12px; display:none; margin-top:10px;"></p>
+    <div class="login-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:30px">
+            <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+            <strong>Genomma Lab | Torre de Controle</strong>
+        </div>
+        <input type="email" id="l-email" placeholder="E-mail" style="width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #ddd">
+        <input type="password" id="l-pass" placeholder="Senha" style="width:100%;padding:10px;margin-bottom:20px;border-radius:8px;border:1px solid #ddd">
+        <button class="btn-primary" onclick="doLogin()">Entrar</button>
+        <p id="login-err" style="color:red;display:none;margin-top:10px"></p>
     </div>
 </div>
 
 <div id="screen-app">
-    <div class="header">
-        <strong>CONTROLE DE OPERAÇÕES</strong>
-        <span id="user-info" style="font-size:12px"></span>
-    </div>
-    <div class="nav">
-        <div class="nav-item active" onclick="showTab('dash', this)">DASHBOARD OTD</div>
-        <div class="nav-item" id="admin-tab" style="display:none" onclick="showTab('upload', this)">ATUALIZAR DADOS</div>
-        <div class="nav-item" style="margin-left:auto; color:red" onclick="location.reload()">SAIR</div>
-    </div>
-
-    <div class="container">
-        <div id="tab-dash">
-            <div class="grid-kpi">
-                <div class="kpi-card"><div class="kpi-title">Faturamento Total</div><div class="kpi-value" id="k-fat">R$ 0,00</div></div>
-                <div class="kpi-card" style="border-left-color: #2ecc71"><div class="kpi-title">Entregas no Prazo</div><div class="kpi-value" id="k-on">0</div></div>
-                <div class="kpi-card" style="border-left-color: #e74c3c"><div class="kpi-title">Atrasos / Pendentes</div><div class="kpi-value" id="k-off">0</div></div>
-                <div class="kpi-card" style="border-left-color: #f1c40f"><div class="kpi-title">OTD Geral</div><div class="kpi-value" id="k-otd">0%</div></div>
-            </div>
-
-            <div class="charts-row">
-                <div class="card">
-                    <h3>Status das Notas</h3>
-                    <canvas id="chartOTD"></canvas>
-                </div>
-                <div class="card">
-                    <h3>Performance por Transportadora</h3>
-                    <div style="max-height: 400px; overflow-y: auto;">
-                        <table id="table-transp">
-                            <thead><tr><th>Transportador</th><th>Qtd Notas</th><th>OTD %</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-upload" style="display:none">
-            <div class="card">
-                <h2>Importar Relatório Sintético</h2>
-                <p>Arraste o arquivo .xlsx extraído do sistema para atualizar os indicadores em tempo real.</p>
-                <div class="upload-area" onclick="document.getElementById('file-input').click()">
-                    <input type="file" id="file-input" accept=".xlsx">
-                    <strong id="file-label">Clique ou arraste o arquivo aqui</strong>
-                </div>
-                <div id="status-log" style="margin-top:20px; padding:15px; background:#f0f0f0; border-radius:5px; font-family:monospace; font-size:12px; display:none"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const SB_URL = 'https://ennsbpibfnuwlvtodukg.supabase.co';
-    const SB_KEY = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
-    const sb = supabase.createClient(SB_URL, SB_KEY);
-    let otdChart = null;
-
-    // --- AUTENTICAÇÃO ---
-    async function handleLogin() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('pass').value;
-        const { data, error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) {
-            document.getElementById('err').innerText = "Acesso Negado: Verifique seus dados.";
-            document.getElementById('err').style.display = 'block';
-        }
-    }
-
-    sb.auth.onAuthStateChange((event, session) => {
-        if (session) {
-            document.getElementById('screen-login').style.display = 'none';
-            document.getElementById('screen-app').style.display = 'block';
-            document.getElementById('user-info').innerText = session.user.email;
-            if (session.user.email === 'thiago_balao@yahoo.com.br') {
-                document.getElementById('admin-tab').style.display = 'block';
-            }
-        }
-    });
-
-    function showTab(id, el) {
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('tab-dash').style.display = id === 'dash' ? 'block' : 'none';
-        document.getElementById('tab-upload').style.display = id === 'upload' ? 'block' : 'none';
-    }
-
-    // --- PROCESSAMENTO DO EXCEL (REVISADO PARA SEU ARQUIVO) ---
-    document.getElementById('file-input').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        document.getElementById('file-label').innerText = "Arquivo: " + file.name;
-        
-        const log = document.getElementById('status-log');
-        log.style.display = 'block';
-        log.innerHTML = "Iniciando leitura técnica...";
-
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            try {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const rows = XLSX.utils.sheet_to_json(sheet);
-
-                processData(rows, log);
-            } catch (err) {
-                log.innerHTML += "<br><span style='color:red'>Erro no processamento: " + err.message + "</span>";
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    });
-
-    function processData(rows, log) {
-        let totalFaturamento = 0;
-        let onTime = 0;
-        let offTime = 0;
-        const transpMap = {};
-
-        rows.forEach((row, index) => {
-            // 1. Limpeza e conversão do Valor Total (Lida com R$ 1.234,56)
-            let rawVlr = row['Valor Total'] || 0;
-            if (typeof rawVlr === 'string') {
-                rawVlr = rawVlr.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-            }
-            const valorNum = parseFloat(rawVlr) || 0;
-            totalFaturamento += valorNum;
-
-            // 2. Lógica de OTD por Status
-            const status = String(row['Status da Entrega'] || "").toLowerCase();
-            // No seu arquivo: "Agendamento Confirmado", "Aguardando Embarque" são pendentes.
-            // "Entregue" ou "Realizado" seriam On Time.
-            const isOnTime = status.includes('entregue') || status.includes('realizada') || status.includes('concluido');
-            
-            if (isOnTime) onTime++; else offTime++;
-
-            // 3. Agrupamento por Transportador
-            const transportador = row['Transportador'] || 'N/I';
-            if (!transpMap[transportador]) transpMap[transportador] = { total: 0, ok: 0 };
-            transpMap[transportador].total++;
-            if (isOnTime) transpMap[transportador].ok++;
-        });
-
-        // Atualiza KPIs na tela
-        document.getElementById('k-fat').innerText = totalFaturamento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        document.getElementById('k-on').innerText = onTime;
-        document.getElementById('k-off').innerText = offTime;
-        const otdGeral = rows.length > 0 ? ((onTime / rows.length) * 100).toFixed(1) : 0;
-        document.getElementById('k-otd').innerText = otdGeral + "%";
-
-        // Atualiza Tabela
-        const tbody = document.querySelector('#table-transp tbody');
-        tbody.innerHTML = "";
-        Object.keys(transpMap).sort().forEach(t => {
-            const perc = ((transpMap[t].ok / transpMap[t].total) * 100).toFixed(1);
-            tbody.innerHTML += `<tr><td>${t}</td><td>${transpMap[t].total}</td><td><strong>${perc}%</strong></td></tr>`;
-        });
-
-        updateChart(onTime, offTime);
-        log.innerHTML += "<br>✅ " + rows.length + " notas processadas com sucesso!";
-        setTimeout(() => showTab('dash', document.querySelector('.nav-item')), 1500);
-    }
-
-    function updateChart(on, off) {
-        const ctx = document.getElementById('chartOTD').getContext('2d');
-        if (otdChart) otdChart.destroy();
-        otdChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['No Prazo', 'Pendentes/Atraso'],
-                datasets: [{
-                    data: [on, off],
-                    backgroundColor: ['#2ecc71', '#e74c3c'],
-                    hoverOffset: 4
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
-    }
-</script>
-
-</body>
-</html>
+    <div class="topnav">
+        <div style="display:flex;align-items:center;gap:10px">
+            <div class="brand-icon" style="width:30px;height:30px"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0
