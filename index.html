@@ -293,13 +293,17 @@ table.dt tr:hover td{background:var(--bg2)}
             <div style="flex:1;min-width:180px"><div style="height:10px;background:var(--bg2);border-radius:5px;overflow:hidden;border:0.5px solid var(--border)"><div id="o-otd-bar" style="height:100%;width:0%;background:#3B6D11;border-radius:5px;transition:width .5s"></div></div></div>
           </div>
         </div>
+        <!-- BLOCO 1 FATURAMENTO -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">1</span>Faturamento por mês</div>
+          <div class="slabel"><span class="slabel-num">1</span>Faturamento acumulado — somente notas de venda</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="emp-kpis"></div>
           <div id="otd-mes-bars" style="margin-bottom:10px"></div>
           <div style="height:140px;position:relative"><canvas id="otd-fat-chart"></canvas></div>
+          <div id="bonif-row" style="margin-top:12px;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)"></div>
         </div>
+        <!-- BLOCO 2 -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">2</span>Entregas finalizadas</div>
+          <div class="slabel"><span class="slabel-num">2</span>Entregas finalizadas — On Time &amp; Off Time</div>
           <div class="stat-row">
             <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-on">—</div><div class="stat-lbl">On Time</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o2-off">—</div><div class="stat-lbl">Off Time</div></div>
@@ -312,15 +316,19 @@ table.dt tr:hover td{background:var(--bg2)}
           </div>
           <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th><th class="r">% faturado</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
         </div>
+        <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Hub + Trânsito</div>
+          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — Hub, Trânsito e Previsão por Quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
             <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Hub — Ag. Exp.</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
             <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
-            <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não final.</div></div>
+            <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
-          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#854F0B">Valor Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total</th><th class="r">Valor Total</th><th class="r">% faturado</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
+          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">Hub</th><th class="r" style="color:#854F0B">Valor Hub</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total</th><th class="r">Valor Total</th><th class="r">% faturado</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
+          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r">Hub</th><th class="r">Em Trânsito</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
@@ -561,59 +569,98 @@ async function processOTD(file){
   const rows = await readExcel(file);
   log('Linhas lidas: '+rows.length,'info');
 
-  // Fix column names — first col may be HTML
+  // Fix column names
   const processed = rows.map(r=>{
-    const keys=Object.keys(r);
     const fixed={};
-    keys.forEach((k,i)=>{
-      const cleanKey = k.replace(/<[^>]*>/g,'').trim() || ('col_'+i);
+    Object.keys(r).forEach((k,i)=>{
+      const cleanKey=k.replace(/<[^>]*>/g,'').trim()||('col_'+i);
       fixed[cleanKey]=r[k];
     });
     return fixed;
   });
 
-  // Filter vendas
-  const vendas = processed.filter(r=>{
-    const nat=String(r['Natureza da Operação']||r['Natureza da Operacao']||'VENDA');
-    return nat.toUpperCase().includes('VENDA');
-  });
-  log('Notas de venda: '+vendas.length,'info');
+  const VENDAS_NAT=['VENDA DE MERCADORIA ADQUIRIDA','VENDA DE PRODUCAO'];
 
-  // Classify + aggregate by month
+  // Helper: parse date from various formats
+  function parseDate(v){
+    if(!v) return null;
+    if(v instanceof Date) return isNaN(v)?null:v;
+    const d=new Date(v); return isNaN(d)?null:d;
+  }
+
+  // Helper: get empresa
+  function getEmpresa(r){
+    return String(r['Embarcador']||'').toUpperCase().includes('INOVALAB')?'INOVALAB':'GENOMMA';
+  }
+
+  // Helper: get UF (new base uses UF Destino)
+  function getUF(r){ return String(r['UF Destino']||r['UF Dest']||''); }
+
+  // Helper: get valor
+  function getValor(r){ return parseFloat(String(r['Valor Total']||r['Valor Nota']||0).replace(',','.'))||0; }
+
+  // Separate vendas and bonificacoes
+  const vendas=processed.filter(r=>VENDAS_NAT.includes(String(r['Natureza da Operação']||r['Natureza da Operacao']||'')));
+  const bonifs=processed.filter(r=>!VENDAS_NAT.includes(String(r['Natureza da Operação']||r['Natureza da Operacao']||'')));
+  log('Notas de venda: '+vendas.length,'info');
+  log('Bonificações/Outros: '+bonifs.length,'info');
+
+  const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // Aggregate by month — VENDAS
   const meses={};
   vendas.forEach(r=>{
     const tipo=classificar(r['Status da Entrega']);
-    let mes=null;
-    const de=r['Data Emissão']||r['Data Emissao']||r['Data EmissÃ£o'];
-    if(de instanceof Date) mes=de.getMonth()+1;
-    else if(de){ const d=new Date(de); if(!isNaN(d)) mes=d.getMonth()+1; }
-    if(!mes) return;
-
-    const val=parseFloat(String(r['Valor Nota']||0).replace(',','.')) || 0;
-    const da=parseFloat(r['Dias Atraso']||0)||0;
-    const uf=String(r['UF Dest']||'');
-    const reg=REGIOES_MAP[uf]||'Outros';
-    const transp=String(r['Transportador']||'').substring(0,28);
-
+    const de=parseDate(r['Data Emissão']||r['Data Emissao']);
+    if(!de) return;
+    const mes=de.getMonth()+1;
+    const val=getValor(r);
+    const emp=getEmpresa(r);
     if(!meses[mes]) meses[mes]={
-      fat:0,qtd:0,on:0,off:0,hub:0,trs:0,
+      fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,qtd_genomma:0,qtd_inovalab:0,
+      on:0,off:0,hub:0,trs:0,
       on_val:0,off_val:0,hub_val:0,trs_val:0,
-      nome:['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mes]||('M'+mes)
+      nome:NOME_MES[mes]||('M'+mes)
     };
     const m=meses[mes];
     m.fat+=val; m.qtd++;
+    if(emp==='GENOMMA'){m.fat_genomma+=val;m.qtd_genomma++;}
+    else{m.fat_inovalab+=val;m.qtd_inovalab++;}
     if(tipo==='on_time'){m.on++;m.on_val+=val;}
     else if(tipo==='off_time'){m.off++;m.off_val+=val;}
     else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
     else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
   });
 
+  // Bonificacoes por mes
+  const bonif_mes={};
+  bonifs.forEach(r=>{
+    const de=parseDate(r['Data Emissão']||r['Data Emissao']);
+    if(!de) return;
+    const mes=de.getMonth()+1;
+    const val=getValor(r);
+    if(!bonif_mes[mes]) bonif_mes[mes]={fat:0,qtd:0};
+    bonif_mes[mes].fat+=val;
+    bonif_mes[mes].qtd++;
+  });
+
+  // Round meses
+  Object.keys(meses).forEach(m=>{
+    const md=meses[m];
+    ['fat','fat_genomma','fat_inovalab','on_val','off_val','hub_val','trs_val'].forEach(k=>{
+      md[k]=Math.round(md[k]*100)/100;
+    });
+  });
+  Object.keys(bonif_mes).forEach(m=>{
+    bonif_mes[m].fat=Math.round(bonif_mes[m].fat*100)/100;
+  });
+
   // Transportadoras
   const transpMap={};
   vendas.forEach(r=>{
     const tipo=classificar(r['Status da Entrega']);
-    const val=parseFloat(String(r['Valor Nota']||0).replace(',','.')) || 0;
-    const t=String(r['Transportador']||'').substring(0,28);
+    const val=getValor(r);
+    const t=String(r['Transportador']||'').substring(0,32);
     if(!t) return;
     if(!transpMap[t]) transpMap[t]={n:t,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0};
     if(tipo==='on_time'){transpMap[t].fin++;transpMap[t].on++;}
@@ -622,47 +669,72 @@ async function processOTD(file){
     else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].nao_val+=val;}
   });
   const transpList=Object.values(transpMap)
-    .map(t=>({...t,otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null}))
+    .map(t=>({...t,otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,nao_val:Math.round(t.nao_val*100)/100}))
     .sort((a,b)=>b.fin-a.fin);
+
+  // Previsoes por quarter (bloco 3)
+  const Q_ENDS={Q1:new Date('2026-03-31'),Q2:new Date('2026-06-30'),Q3:new Date('2026-09-30'),Q4:new Date('2026-12-31')};
+  function getPrevQ(ts){
+    if(!ts) return 'Sem previsão';
+    const d=parseDate(ts); if(!d) return 'Sem previsão';
+    if(d<=Q_ENDS.Q1) return 'Q1';
+    if(d<=Q_ENDS.Q2) return 'Q2';
+    if(d<=Q_ENDS.Q3) return 'Q3';
+    return 'Q4';
+  }
+  const prevQ={};
+  processed.filter(r=>classificar(r['Status da Entrega']).match(/hub|transito/)).forEach(r=>{
+    const pq=getPrevQ(r['Previsão de Entrega']||r['Previsao de Entrega']);
+    const val=getValor(r);
+    const tipo=classificar(r['Status da Entrega']);
+    if(!prevQ[pq]) prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0};
+    prevQ[pq].qtd++;
+    prevQ[pq].valor+=val;
+    if(tipo==='hub') prevQ[pq].hub++;
+    else prevQ[pq].transito++;
+  });
+  const prevQLista=Object.values(prevQ).map(p=>({...p,valor:Math.round(p.valor*100)/100}))
+    .sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q));
 
   // Regiões
   const regMap={};
-  const atrVendas=vendas.filter(r=>classificar(r['Status da Entrega'])==='transito');
-  atrVendas.forEach(r=>{
-    const uf=String(r['UF Dest']||'');
+  const diasRegMap={};
+  vendas.forEach(r=>{
+    const tipo=classificar(r['Status da Entrega']);
+    const uf=getUF(r);
     const reg=REGIOES_MAP[uf]||'Outros';
-    const val=parseFloat(String(r['Valor Nota']||0).replace(',','.')) || 0;
+    const val=getValor(r);
     const da=parseFloat(r['Dias Atraso']||0)||0;
-    if(!regMap[reg]) regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_atr_sum:0,media_ent:0,mediana:0,ufs:{}};
-    regMap[reg].atr_qtd++;
-    regMap[reg].atr_val+=val;
-    regMap[reg].dias_atr_sum+=da;
-    if(!regMap[reg].ufs[uf]) regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
-    regMap[reg].ufs[uf].n++;
-    regMap[reg].ufs[uf].val+=val;
-    regMap[reg].ufs[uf].d_sum+=da;
+
+    // transito stats
+    if(tipo==='transito'){
+      if(!regMap[reg]) regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
+      regMap[reg].atr_qtd++;
+      regMap[reg].atr_val+=val;
+      regMap[reg].dias_sum+=da;
+      if(!regMap[reg].ufs[uf]) regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
+      regMap[reg].ufs[uf].n++;
+      regMap[reg].ufs[uf].val+=val;
+      regMap[reg].ufs[uf].d_sum+=da;
+    }
+
+    // dias entrega
+    if(tipo==='on_time'||tipo==='off_time'){
+      const de=parseDate(r['Data Emissão']||r['Data Emissao']);
+      const dent=parseDate(r['Data Entrega']||r['Data Entregue']);
+      if(de&&dent){
+        const dias=Math.round((dent-de)/(1000*60*60*24));
+        if(dias>=0&&dias<=365){
+          const mes=de.getMonth()+1;
+          if(!diasRegMap[reg]) diasRegMap[reg]={};
+          if(!diasRegMap[reg][mes]) diasRegMap[reg][mes]={sum:0,n:0};
+          diasRegMap[reg][mes].sum+=dias;
+          diasRegMap[reg][mes].n++;
+        }
+      }
+    }
   });
 
-  // Dias entrega
-  const entregues=vendas.filter(r=>classificar(r['Status da Entrega']).endsWith('time'));
-  const diasRegMap={};
-  entregues.forEach(r=>{
-    const uf=String(r['UF Dest']||'');
-    const reg=REGIOES_MAP[uf]||'Outros';
-    const de=r['Data Emissão']||r['Data Emissao']||r['Data EmissÃ£o'];
-    const dent=r['Data Entregue']||r['Data Entregue'];
-    if(!de||!dent) return;
-    const d1=de instanceof Date?de:new Date(de);
-    const d2=dent instanceof Date?dent:new Date(dent);
-    if(isNaN(d1)||isNaN(d2)) return;
-    const dias=Math.round((d2-d1)/(1000*60*60*24));
-    if(dias<0||dias>365) return;
-    let mes=d1.getMonth()+1;
-    if(!diasRegMap[reg]) diasRegMap[reg]={};
-    if(!diasRegMap[reg][mes]) diasRegMap[reg][mes]={sum:0,n:0};
-    diasRegMap[reg][mes].sum+=dias;
-    diasRegMap[reg][mes].n++;
-  });
   const dias_mes={};
   Object.keys(diasRegMap).forEach(reg=>{
     dias_mes[reg]={};
@@ -672,34 +744,47 @@ async function processOTD(file){
     });
   });
 
-  // Finalize regions
   const regioes=['Sudeste','Nordeste','Centro-Oeste','Norte','Sul'].map(reg=>{
-    const rm=regMap[reg]||{r:reg,atr_qtd:0,atr_val:0,dias_atr_sum:0,ufs:{}};
+    const rm=regMap[reg]||{r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
     const ufs=Object.values(rm.ufs||{})
       .map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0}))
       .sort((a,b)=>b.n-a.n).slice(0,6);
     return {
-      r:reg, atr_qtd:rm.atr_qtd,
+      r:reg,atr_qtd:rm.atr_qtd,
       atr_val:Math.round(rm.atr_val*100)/100,
-      dias_atr:rm.atr_qtd>0?Math.round(rm.dias_atr_sum/rm.atr_qtd*10)/10:0,
-      media_ent:0, mediana:0, ufs
+      dias_atr:rm.atr_qtd>0?Math.round(rm.dias_sum/rm.atr_qtd*10)/10:0,
+      media_ent:0,mediana:0,ufs
     };
   });
 
-  // Round meses values
-  Object.keys(meses).forEach(m=>{
-    const md=meses[m];
-    ['fat','on_val','off_val','hub_val','trs_val'].forEach(k=>{
-      md[k]=Math.round(md[k]*100)/100;
-    });
+  // Summary por empresa
+  const empresa_total={
+    GENOMMA:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0},
+    INOVALAB:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0}
+  };
+  vendas.forEach(r=>{
+    const emp=getEmpresa(r);
+    const tipo=classificar(r['Status da Entrega']);
+    const val=getValor(r);
+    empresa_total[emp].fat+=val;
+    empresa_total[emp].qtd++;
+    if(tipo==='on_time') empresa_total[emp].on++;
+    else if(tipo==='off_time') empresa_total[emp].off++;
+    else if(tipo==='hub') empresa_total[emp].hub++;
+    else if(tipo==='transito') empresa_total[emp].trs++;
+  });
+  Object.keys(empresa_total).forEach(e=>{
+    empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;
   });
 
   // Build payload
   const payload = {
-    meses, otd:transpList, regioes, dias_mes,
+    meses, bonif_mes, otd:transpList, regioes, dias_mes,
+    prevQ:prevQLista, empresa_total,
     atualizado: new Date().toLocaleString('pt-BR'),
     base_nome: file.name,
-    total_nfs: vendas.length
+    total_nfs: vendas.length,
+    total_bonif: bonifs.length
   };
 
   log('Salvando no banco...','info');
@@ -814,40 +899,162 @@ function renderOTDChart(d){
   document.getElementById('o3-trs').textContent=trs;document.getElementById('o3-trs-val').textContent=fmtM(trs_val);
   document.getElementById('o3-total').textContent=nfin;document.getElementById('o3-total-val').textContent=fmtM(nfin_val);
 
+  // ---- BLOCO 1: Genomma vs Inovalab + Bonificações ----
+  const et=d.empresa_total||{};
+  const gFat=et.GENOMMA?.fat||0, gQtd=et.GENOMMA?.qtd||0;
+  const iFat=et.INOVALAB?.fat||0, iQtd=et.INOVALAB?.qtd||0;
+  const gOn=et.GENOMMA?.on||0, gOff=et.GENOMMA?.off||0;
+  const iOn=et.INOVALAB?.on||0, iOff=et.INOVALAB?.off||0;
+  const gFin=gOn+gOff, iFin=iOn+iOff;
+  const gOtd=gFin>0?((gOn/gFin)*100).toFixed(1):'—';
+  const iOtd=iFin>0?((iOn/iFin)*100).toFixed(1):'—';
+
+  document.getElementById('emp-kpis').innerHTML=
+    '<div style="background:#E6F1FB20;border:0.5px solid #185FA544;border-radius:var(--radius);padding:12px 16px">'
+    +'<div style="font-size:10px;font-weight:600;color:#0C447C;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Genomma Lab</div>'
+    +'<div style="display:flex;gap:20px;flex-wrap:wrap">'
+    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:20px;font-weight:700;color:#185FA5">'+fmtM(gFat)+'</div><div style="font-size:10px;color:var(--text2)">'+gQtd.toLocaleString('pt-BR')+' NFs'+'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text2)">OTD</div><div style="font-size:20px;font-weight:700;color:#3B6D11">'+gOtd+'%</div><div style="font-size:10px;color:var(--text2)">'+gOn+' on / '+gOff+' off'+'</div></div>'
+    +'</div></div>'
+    +'<div style="background:#EAF3DE20;border:0.5px solid #3B6D1144;border-radius:var(--radius);padding:12px 16px">'
+    +'<div style="font-size:10px;font-weight:600;color:#3B6D11;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Inovalab</div>'
+    +'<div style="display:flex;gap:20px;flex-wrap:wrap">'
+    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:20px;font-weight:700;color:#1D9E75">'+fmtM(iFat)+'</div><div style="font-size:10px;color:var(--text2)">'+iQtd.toLocaleString('pt-BR')+' NFs'+'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text2)">OTD</div><div style="font-size:20px;font-weight:700;color:#3B6D11">'+iOtd+'%</div><div style="font-size:10px;color:var(--text2)">'+iOn+' on / '+iOff+' off'+'</div></div>'
+    +'</div></div>';
+
   // Month bars
   const maxF=Math.max(...ms.map(m=>d.meses[m]?.fat||0),1);
-  document.getElementById('otd-mes-bars').innerHTML=ms.map(m=>{const md=d.meses[m];if(!md)return'';return'<div style="display:flex;align-items:center;gap:10px;padding:3px 0;font-size:11px"><span style="width:28px;color:var(--text2);font-weight:600">'+md.nome+'</span><div style="flex:1;height:16px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative"><div style="position:absolute;left:0;height:100%;width:'+Math.round(md.fat/maxF*100)+'%;background:'+MC[m]+'22;border-radius:3px"></div><div style="position:absolute;left:0;height:100%;width:'+Math.round((md.on_val+md.off_val)/maxF*100)+'%;background:'+MC[m]+';border-radius:3px"></div></div><span style="width:54px;text-align:right;font-weight:600">'+fmtM(md.fat)+'</span><span style="width:50px;text-align:right;color:var(--text2);font-size:10px">'+md.qtd+' NFs</span></div>';}).join('');
+  document.getElementById('otd-mes-bars').innerHTML=ms.map(m=>{
+    const md=d.meses[m]; if(!md)return'';
+    const gBar=Math.round((md.fat_genomma||0)/maxF*100);
+    const iBar=Math.round((md.fat_inovalab||0)/maxF*100);
+    return'<div style="display:flex;align-items:center;gap:10px;padding:3px 0;font-size:11px">'
+      +'<span style="width:28px;color:var(--text2);font-weight:600">'+md.nome+'</span>'
+      +'<div style="flex:1;height:16px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative">'
+      +'<div style="position:absolute;left:0;height:100%;width:'+Math.round(md.fat/maxF*100)+'%;background:'+MC[m]+'22;border-radius:3px"></div>'
+      +'<div style="position:absolute;left:0;height:100%;width:'+gBar+'%;background:'+MC[m]+';border-radius:3px"></div>'
+      +'<div style="position:absolute;left:'+gBar+'%;height:100%;width:'+iBar+'%;background:#1D9E75;border-radius:0 3px 3px 0"></div>'
+      +'</div>'
+      +'<span style="width:54px;text-align:right;font-weight:600">'+fmtM(md.fat)+'</span>'
+      +'<span style="width:50px;text-align:right;color:var(--text2);font-size:10px">'+md.qtd+' NFs</span>'
+      +'</div>';
+  }).join('');
 
   // Fat chart
   if(fatChart) fatChart.destroy();
-  fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:[{label:'Hub+Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'#FAEEDA',borderRadius:0,borderWidth:0,stack:'s'},{label:'Finalizado',data:ms.map(m=>(d.meses[m]?.on_val||0)+(d.meses[m]?.off_val||0)),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.07)'},stacked:true,ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}}}});
+  fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',
+    data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:[
+      {label:'Hub+Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'#FAEEDA',borderRadius:0,borderWidth:0,stack:'s'},
+      {label:'Inovalab',data:ms.map(m=>d.meses[m]?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
+      {label:'Genomma',data:ms.map(m=>d.meses[m]?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+              y:{grid:{color:'rgba(128,128,128,.07)'},stacked:true,ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}}}});
 
-  // Tables bloco 2
+  // Bonificações row (fonte menor abaixo)
+  const bm=d.bonif_mes||{};
+  const totalBonif=Object.values(bm).reduce((a,b)=>a+(b.fat||0),0);
+  const totalBonifQtd=Object.values(bm).reduce((a,b)=>a+(b.qtd||0),0);
+  let bonifHtml='<span style="font-weight:600;color:var(--text2)">Bonificações / Outros: </span>';
+  bonifHtml+=fmtM(totalBonif)+' · '+totalBonifQtd+' NFs &nbsp;';
+  ms.forEach(m=>{if(bm[m]&&bm[m].fat>0) bonifHtml+='<span style="margin-left:8px;background:var(--bg2);padding:2px 8px;border-radius:4px">'+d.meses[m]?.nome+': '+fmtM(bm[m].fat)+'</span>';});
+  document.getElementById('bonif-row').innerHTML=bonifHtml;
+
+  // ---- BLOCO 2: Entregas finalizadas ----
   let r2='';
-  ms.forEach(m=>{const md=d.meses[m];if(!md)return;const f=md.on+md.off,o=f?((md.on/f)*100).toFixed(1)+'%':'—';r2+='<tr><td>'+md.nome+'/'+new Date().getFullYear()+'</td><td class="r" style="color:#3B6D11">'+md.on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(md.off>0?'#A32D2D':'var(--text2)')+'">'+md.off+'</td><td class="r">'+f.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(md.on_val+md.off_val)+'</td><td class="r" style="color:#3B6D11;font-weight:600">'+o+'</td><td class="r" style="color:var(--text2)">'+fmtP(f,md.qtd)+'</td></tr>';});
+  ms.forEach(m=>{const md=d.meses[m];if(!md)return;const f=md.on+md.off,o=f?((md.on/f)*100).toFixed(1)+'%':'—';
+    r2+='<tr><td>'+md.nome+'/'+new Date().getFullYear()+'</td>'
+      +'<td class="r" style="color:#3B6D11">'+md.on.toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:'+(md.off>0?'#A32D2D':'var(--text2)')+'">'+md.off+'</td>'
+      +'<td class="r">'+f.toLocaleString('pt-BR')+'</td>'
+      +'<td class="r">'+fmtM(md.on_val+md.off_val)+'</td>'
+      +'<td class="r" style="color:#3B6D11;font-weight:600">'+o+'</td>'
+      +'<td class="r" style="color:var(--text2)">'+fmtP(f,md.qtd)+'</td></tr>';
+  });
   if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(off>0?'#A32D2D':'var(--text2)')+'">'+off+'</td><td class="r">'+fin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(fin_val)+'</td><td class="r" style="color:#3B6D11">'+otd+'%</td><td class="r">'+fmtP(fin,qtd)+'</td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
 
-  // Table bloco 3
+  // ---- BLOCO 3: Hub + Trânsito por mês ----
   let r3='';
-  ms.forEach(m=>{const md=d.meses[m];if(!md||(md.hub+md.trs===0&&ms.length>1))return;r3+='<tr><td>'+md.nome+'</td><td class="r" style="color:#854F0B">'+(md.hub||'—')+'</td><td class="r" style="color:#854F0B">'+(md.hub_val>0?fmtM(md.hub_val):'—')+'</td><td class="r" style="color:#185FA5">'+(md.trs||'—')+'</td><td class="r" style="color:#185FA5">'+(md.trs_val>0?fmtM(md.trs_val):'—')+'</td><td class="r">'+(md.hub+md.trs||'—')+'</td><td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td><td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';});
+  ms.forEach(m=>{const md=d.meses[m];if(!md||(md.hub+md.trs===0&&ms.length>1))return;
+    r3+='<tr><td>'+md.nome+'</td>'
+      +'<td class="r" style="color:#854F0B">'+(md.hub||'—')+'</td>'
+      +'<td class="r" style="color:#854F0B">'+(md.hub_val>0?fmtM(md.hub_val):'—')+'</td>'
+      +'<td class="r" style="color:#185FA5">'+(md.trs||'—')+'</td>'
+      +'<td class="r" style="color:#185FA5">'+(md.trs_val>0?fmtM(md.trs_val):'—')+'</td>'
+      +'<td class="r">'+(md.hub+md.trs||'—')+'</td>'
+      +'<td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td>'
+      +'<td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';
+  });
   if(ms.length>1) r3+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r">'+nfin+'</td><td class="r">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
   document.getElementById('o3-tbody').innerHTML=r3;
 
-  // Table bloco 4 transportadoras
-  const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
-  document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';return'<tr><td>'+t.n+'</td><td class="r">'+(t.fin||'—')+'</td><td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td><td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td><td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td><td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td><td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td><td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td><td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td></tr>';}).join('');
+  // ---- BLOCO 3b: Previsão por quarter ----
+  const prevQ=d.prevQ||[];
+  const qColors={'Q1':'#185FA5','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
+  let rPrev='';
+  prevQ.forEach(p=>{
+    const cor=qColors[p.q]||'#888';
+    rPrev+='<tr>'
+      +'<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+p.q+'</strong></span></td>'
+      +'<td class="r" style="color:#854F0B">'+(p.hub>0?p.hub:'—')+'</td>'
+      +'<td class="r" style="color:#185FA5">'+(p.transito>0?p.transito:'—')+'</td>'
+      +'<td class="r" style="font-weight:600">'+p.qtd+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(p.valor)+'</td>'
+      +'</tr>';
+  });
+  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+p.qtd,valor:a.valor+p.valor,hub:a.hub+p.hub,trs:a.transito+p.transito}),{qtd:0,valor:0,hub:0,trs:0});
+  rPrev+='<tr class="tr-total"><td>Total pendente</td><td class="r" style="color:#854F0B">'+totPrev.hub+'</td><td class="r" style="color:#185FA5">'+totPrev.trs+'</td><td class="r">'+totPrev.qtd+'</td><td class="r" style="color:#A32D2D">'+fmtM(totPrev.valor)+'</td></tr>';
+  document.getElementById('o3-prev-tbody').innerHTML=rPrev;
 
-  // Bloco 5 regiões
+  // ---- BLOCO 4: Transportadoras ----
+  const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
+  document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
+    const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';
+    return'<tr><td>'+t.n+'</td>'
+      +'<td class="r">'+(t.fin||'—')+'</td>'
+      +'<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'
+      +'<td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td>'
+      +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
+      +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
+      +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
+      +'<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'
+      +'<td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
+      +'</tr>';
+  }).join('');
+
+  // ---- BLOCO 5: Regiões ----
   const tA=(d.regioes||[]).reduce((a,r)=>a+r.atr_qtd,0)||1;
   document.getElementById('o5-kpis').innerHTML=(d.regioes||[]).map(r=>'<div class="kpi" style="border-left:3px solid '+(REG_CORES[r.r]||'#888')+'"><div class="kpi-lbl">'+r.r+'</div><div class="kpi-val" style="font-size:20px;color:'+(REG_CORES[r.r]||'#888')+'">'+r.atr_qtd+'</div><div class="kpi-sub">'+((r.atr_qtd/tA)*100).toFixed(0)+'% do trânsito</div></div>').join('');
-  document.getElementById('o5-cards').innerHTML=(d.regioes||[]).map(r=>{const cor=REG_CORES[r.r]||'#888';const mx=Math.max(...(r.ufs||[]).map(u=>u.n),1);return'<div class="reg-card"><div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44"><span class="reg-name">'+r.r+'</span><span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div><div class="reg-body"><div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div><div class="reg-row"><span class="reg-lbl">Dias médio trânsito</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div><div class="reg-row"><span class="reg-lbl">Média p/ entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div><div class="reg-uf"><div class="reg-uf-title">Praças</div><table class="reg-uf-table"><tbody>'+(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')+'</tbody></table></div></div>';}).join('');
+  document.getElementById('o5-cards').innerHTML=(d.regioes||[]).map(r=>{
+    const cor=REG_CORES[r.r]||'#888';
+    const mx=Math.max(...(r.ufs||[]).map(u=>u.n),1);
+    return'<div class="reg-card">'
+      +'<div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44"><span class="reg-name">'+r.r+'</span><span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div>'
+      +'<div class="reg-body">'
+      +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Dias médio trânsito</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Média p/ entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
+      +'<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'
+      +'<table class="reg-uf-table"><tbody>'
+      +(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')
+      +'</tbody></table></div></div>';
+  }).join('');
 
   // Dias chart bloco 5
   const rNames=Object.keys(d.dias_mes||{});
   const rC=rNames.map(r=>REG_CORES[r]||'#888');
   if(diasChart) diasChart.destroy();
-  diasChart=new Chart(document.getElementById('o5-chart'),{type:'line',data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:rNames.map((r,i)=>({label:r,data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||0),borderColor:rC[i],backgroundColor:rC[i]+'18',borderWidth:2,pointRadius:4,tension:.3}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(128,128,128,.07)'},ticks:{font:{size:11}},title:{display:true,text:'dias',font:{size:10},color:'#888'}}}}});
+  diasChart=new Chart(document.getElementById('o5-chart'),{type:'line',
+    data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:rNames.map((r,i)=>({
+      label:r, data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||0),
+      borderColor:rC[i], backgroundColor:rC[i]+'18', borderWidth:2, pointRadius:4, tension:.3
+    }))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:11}}},
+              y:{grid:{color:'rgba(128,128,128,.07)'},ticks:{font:{size:11}},title:{display:true,text:'dias',font:{size:10},color:'#888'}}}}});
   document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
 }
 </script>
