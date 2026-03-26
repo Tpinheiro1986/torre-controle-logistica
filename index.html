@@ -8,1133 +8,171 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{
-  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
-  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
-  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
-  --radius:8px;--radius-lg:14px;
+:root {
+  --primary: #185FA5;
+  --primary-dark: #0C447C;
+  --success: #2E7D32;
+  --danger: #D32F2F;
+  --warning: #F59E0B;
+  --bg: #FFFFFF;
+  --bg2: #F8FAFC;
+  --bg3: #F1F5F9;
+  --text: #1E293B;
+  --text2: #64748B;
+  --border: #E2E8F0;
+  --radius-lg: 12px;
+  --radius: 8px;
 }
-@media(prefers-color-scheme:dark){
-  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}
+
+@media(prefers-color-scheme:dark) {
+  :root {
+    --bg: #0F172A;
+    --bg2: #1E293B;
+    --bg3: #020617;
+    --text: #F8FAFC;
+    --text2: #94A3B8;
+    --border: #334155;
+  }
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
 
-/* LOGIN */
-#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
-.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.brand-icon{width:38px;height:38px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.brand-name{font-size:14px;font-weight:700;color:var(--text)}
-.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
-.login-title{font-size:22px;font-weight:700;margin-bottom:6px}
-.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
-.form-group{margin-bottom:14px}
-.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
-.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.10)}
-.btn-primary{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
-.btn-primary:hover{background:#0C447C}
-.btn-primary:disabled{background:#888;cursor:not-allowed}
-.login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg3); color: var(--text); font-size: 13px; line-height: 1.5; }
 
-/* TOP NAV */
-#screen-app{display:none}
-.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.nav-brand{display:flex;align-items:center;gap:10px}
-.nav-icon{width:30px;height:30px;background:#185FA5;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.nav-title{font-size:14px;font-weight:700}
-.nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
-.nav-right{display:flex;align-items:center;gap:10px}
-.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
-.user-av{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
-.user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
-.btn-sm:hover{background:var(--bg2)}
-.admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500}
+/* Dashboard Cards Refinados */
+.card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.kpi { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; transition: transform 0.2s; }
+.kpi:hover { transform: translateY(-2px); }
+.kpi-lbl { font-size: 10px; color: var(--text2); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px; }
+.kpi-val { font-size: 24px; font-weight: 700; color: var(--text); }
 
-/* TABS */
-.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex;gap:0}
-.tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab:hover{color:var(--text)}
-.tab.on{color:#185FA5;border-bottom-color:#185FA5;font-weight:500}
+/* Cores de Status */
+.kpi-grn .kpi-val { color: var(--success); }
+.kpi-red .kpi-val { color: var(--danger); }
+.kpi-amb .kpi-val { color: var(--warning); }
+.kpi-blu .kpi-val { color: var(--primary); }
 
-/* CONTAINER */
-.container{max-width:1400px;margin:0 auto;padding:28px 32px}
+.slabel { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.slabel-num { width: 22px; height: 22px; border-radius: 6px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 
-/* UPLOAD SECTION */
-.upload-section{display:none}
-.upload-section.on{display:block}
-.upload-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:14px}
-.upload-title{font-size:15px;font-weight:600;margin-bottom:4px}
-.upload-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
-.upload-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
-.upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-.upload-box:hover,.upload-box.drag{border-color:#185FA5;background:#E6F1FB20}
-.upload-box.done{border-color:#3B6D11;background:#EAF3DE20;border-style:solid}
-.upload-box.done .upload-box-icon{background:#EAF3DE}
-.upload-box.done .upload-box-icon svg{stroke:#3B6D11}
-.upload-box-icon{width:44px;height:44px;background:var(--bg2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
-.upload-box-icon svg{width:22px;height:22px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.upload-box-title{font-size:13px;font-weight:500;margin-bottom:4px}
-.upload-box-sub{font-size:11px;color:var(--text2)}
-.upload-box-status{font-size:10px;margin-top:8px;font-weight:500}
-.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.btn-process{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
-.btn-process:hover{background:#0C447C}
-.btn-process:disabled{background:#888;cursor:not-allowed}
-.process-log{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;display:none}
-.log-line{padding:2px 0;color:var(--text2)}
-.log-line.ok{color:#3B6D11}
-.log-line.err{color:#A32D2D}
-.log-line.info{color:#185FA5}
+/* Tabelas */
+table.dt { width: 100%; border-collapse: collapse; }
+table.dt th { padding: 10px; background: var(--bg2); color: var(--text2); font-size: 10px; text-align: left; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+table.dt td { padding: 10px; border-bottom: 1px solid var(--border); }
+table.dt tr:hover td { background: var(--bg2); }
 
-/* HISTORY */
-.hist-table{width:100%;border-collapse:collapse;font-size:12px}
-.hist-table th{padding:7px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
-.hist-table td{padding:8px 12px;border-bottom:0.5px solid var(--border);color:var(--text)}
-.hist-table tr:last-child td{border-bottom:none}
-.hist-table tr:hover td{background:var(--bg2)}
-.badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block}
-.badge-ok{background:#EAF3DE;color:#3B6D11}
-.badge-proc{background:#E6F1FB;color:#185FA5}
-.badge-err{background:#FCEBEB;color:#A32D2D}
-
-/* DASHBOARD */
-.dash-section{display:none}
-.dash-section.on{display:block}
-.krow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}
-.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
-.kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.kpi-val{font-size:22px;font-weight:700;line-height:1}
-.kpi-sub{font-size:10px;color:var(--text2);margin-top:4px}
-.kpi-grn .kpi-val{color:#3B6D11}.kpi-red .kpi-val{color:#A32D2D}.kpi-amb .kpi-val{color:#854F0B}.kpi-blu .kpi-val{color:#185FA5}
-.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
-.slabel{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.slabel-num{width:20px;height:20px;border-radius:50%;background:#E6F1FB;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0C447C;flex-shrink:0}
-.fbar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 14px;margin-bottom:12px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.fl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-right:2px;white-space:nowrap}
-.fdiv{width:0.5px;height:14px;background:var(--border2);margin:0 6px}
-.fbtn{font-size:11px;padding:4px 11px;border-radius:16px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
-.fbtn:hover{background:var(--bg2)}
-.fbtn.on{background:var(--bg);color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.update-bar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text2)}
-.update-dot{width:7px;height:7px;border-radius:50%;background:#3B6D11;flex-shrink:0}
-.tw{overflow-x:auto}
-table.dt{width:100%;border-collapse:collapse;font-size:11px}
-table.dt th{padding:6px 10px;font-weight:600;color:var(--text2);border-bottom:0.5px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em;text-align:left;background:var(--bg2)}
-table.dt th.r,table.dt td.r{text-align:right}
-table.dt td{padding:6px 10px;border-bottom:0.5px solid var(--border);vertical-align:middle;white-space:nowrap}
-table.dt tr:last-child td{border-bottom:none}
-table.dt tr:hover td{background:var(--bg2)}
-.tr-total td{background:var(--bg2)!important;font-weight:600;border-top:0.5px solid var(--border2)}
-.tr-sub td{color:var(--text2)}.tr-sub td:first-child{padding-left:20px}
-.stat-row{display:flex;gap:0;flex-wrap:wrap;margin-bottom:14px}
-.stat-cell{padding:10px 20px;border-right:0.5px solid var(--border)}
-.stat-cell:first-child{padding-left:0}.stat-cell:last-child{border-right:none}
-.stat-val{font-size:26px;font-weight:700;line-height:1}
-.stat-lbl{font-size:10px;color:var(--text2);margin-top:3px}
-.stat-bar-cell{flex:1;padding:10px 0 10px 20px;min-width:180px;display:flex;flex-direction:column;justify-content:center}
-.status-hl{padding:10px 16px;border-radius:var(--radius);margin-right:4px}
-.reg-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
-.reg-card{border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border)}
-.reg-head{padding:8px 12px 6px;display:flex;justify-content:space-between;align-items:center}
-.reg-name{font-size:12px;font-weight:600}
-.reg-badge{font-size:10px;padding:2px 7px;border-radius:12px;font-weight:500}
-.reg-body{padding:6px 12px 8px;background:var(--bg)}
-.reg-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--border);font-size:11px}
-.reg-row:last-child{border-bottom:none}
-.reg-lbl{color:var(--text2)}
-.reg-uf{padding:6px 12px 8px;background:var(--bg2)}
-.reg-uf-title{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:4px}
-.reg-uf-table{width:100%;border-collapse:collapse;font-size:10px}
-.reg-uf-table td{padding:2px 0;color:var(--text2)}
-.reg-uf-table td:last-child{text-align:right;font-weight:500;color:var(--text)}
-.uf-bw{height:3px;background:var(--bg);border-radius:2px;overflow:hidden;margin:2px 0}
-.uf-bf{height:100%;border-radius:2px}
-.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
-.empty-state svg{width:48px;height:48px;margin:0 auto 16px;display:block;opacity:.3}
-.empty-state p{font-size:13px;margin-bottom:12px}
-@media(max-width:900px){.krow{grid-template-columns:repeat(3,minmax(0,1fr))}.upload-grid{grid-template-columns:1fr}.container{padding:16px 14px}}
+/* Grid de Regiões - Bloco 5 */
+.reg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="screen-login">
-  <div class="login-card">
-    <div class="login-brand">
-      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <div><div class="brand-name">Torre de Controle</div><div class="brand-sub">Logística · Genomma Lab</div></div>
-    </div>
-    <div class="login-title">Bem-vindo</div>
-    <div class="login-sub">Acesse com seu e-mail corporativo.</div>
-    <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="l-email" placeholder="seu@genommalab.com"/></div>
-    <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
-    <div class="login-err" id="login-err"></div>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="screen-app">
-  <div class="topnav">
-    <div class="nav-brand">
-      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
-    </div>
-    <div class="nav-right">
-      <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
-      <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
-      <button class="btn-sm" onclick="doLogout()">Sair</button>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs" id="tabs-bar">
-    <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
-    <div class="tab" onclick="switchTab('custo',this)">Custo de Servir</div>
-    <div class="tab" onclick="switchTab('estoque',this)">Estoque</div>
-    <div class="tab" onclick="switchTab('nivel',this)">Nível de Serviço</div>
-    <div class="tab" onclick="switchTab('dev',this)">Devoluções</div>
-    <div class="tab" onclick="switchTab('prod',this)">Produtividade</div>
-    <div class="tab" id="tab-upload" style="display:none;margin-left:auto;color:#185FA5;font-weight:500" onclick="switchTab('upload',this)">⬆ Upload</div>
-  </div>
-
-  <div class="container">
-
-    <!-- UPLOAD SECTION (admin only) -->
-    <div class="upload-section" id="sec-upload">
-      <div class="upload-card">
-        <div class="upload-title">Upload de bases de dados</div>
-        <div class="upload-sub">Faça upload dos arquivos Excel para atualizar os indicadores automaticamente. Os KPIs são recalculados na hora.</div>
-        <div class="upload-grid">
-
-          <div class="upload-box" id="box-otd" ondragover="dragOver(event,'box-otd')" ondragleave="dragLeave('box-otd')" ondrop="dropFile(event,'otd')">
-            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'otd')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div class="upload-box-title">OTD — Entregas</div>
-            <div class="upload-box-sub">grid-atividade-entrega.xlsx</div>
-            <div class="upload-box-status" id="status-otd" style="color:var(--text3)">Aguardando arquivo...</div>
-          </div>
-
-          <div class="upload-box" id="box-custo" ondragover="dragOver(event,'box-custo')" ondragleave="dragLeave('box-custo')" ondrop="dropFile(event,'custo')">
-            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'custo')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-            <div class="upload-box-title">Custo de Servir</div>
-            <div class="upload-box-sub">base-custo-servir.xlsx</div>
-            <div class="upload-box-status" id="status-custo" style="color:var(--text3)">Aguardando arquivo...</div>
-          </div>
-
-          <div class="upload-box" id="box-estoque" ondragover="dragOver(event,'box-estoque')" ondragleave="dragLeave('box-estoque')" ondrop="dropFile(event,'estoque')">
-            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'estoque')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
-            <div class="upload-box-title">Estoque</div>
-            <div class="upload-box-sub">base-estoque.xlsx</div>
-            <div class="upload-box-status" id="status-estoque" style="color:var(--text3)">Aguardando arquivo...</div>
-          </div>
-
-        </div>
-
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <button class="btn-process" id="btn-process" onclick="processarTodos()" disabled>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Processar e atualizar indicadores
-          </button>
-          <span style="font-size:11px;color:var(--text2)" id="process-status"></span>
-        </div>
-
-        <div class="process-log" id="process-log"></div>
-      </div>
-
-      <!-- Histórico de uploads -->
-      <div class="upload-card">
-        <div class="upload-title">Histórico de atualizações</div>
-        <div class="upload-sub" style="margin-bottom:14px">Últimas bases processadas</div>
-        <div class="tw"><table class="hist-table">
-          <thead><tr><th>Data/Hora</th><th>Indicador</th><th>Arquivo</th><th>NFs</th><th>Status</th></tr></thead>
-          <tbody id="hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Nenhum upload realizado ainda</td></tr></tbody>
-        </table></div>
-      </div>
+<div id="screen-app" style="display:block;">
+  <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+    
+    <div class="krow" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;">
+      <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">R$ 0,00</div></div>
+      <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">0</div></div>
+      <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">0</div></div>
+      <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-cd">0</div></div>
+      <div class="kpi kpi-blu"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" id="o-trs">0</div></div>
     </div>
 
-    <!-- OTD DASHBOARD -->
-    <div class="dash-section on" id="sec-otd">
-      <div id="otd-empty" class="empty-state">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        <p>Nenhuma base carregada ainda.</p>
-        <p style="font-size:11px">Faça upload do arquivo na aba <strong>⬆ Upload</strong> para visualizar os indicadores.</p>
-      </div>
-      <div id="otd-content" style="display:none">
-        <div class="update-bar"><span class="update-dot"></span><span id="otd-update-text">—</span></div>
-        <div class="fbar" id="otd-fbar">
-          <span class="fl">Quarter</span>
-          <button class="fbtn on" onclick="otdFilter('all',this,'q')">Acumulado</button>
-          <span id="otd-q-btns"></span>
-          <div class="fdiv"></div>
-          <span class="fl">Mês</span>
-          <button class="fbtn on" id="otd-m-all" onclick="otdFilter('all',this,'m')">Todos</button>
-          <span id="otd-m-btns"></span>
+    <div class="card">
+      <div class="slabel"><span class="slabel-num">5</span>Trânsito por região e Performance de Entrega</div>
+      
+      <div class="reg-grid" id="o5-cards">
         </div>
-        <div class="krow">
-          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
-          <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
-          <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
-          <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="o-trs">—</div><div class="kpi-sub" id="o-trs-s">—</div></div>
+
+      <div style="margin-top: 25px; padding: 20px; background: var(--bg2); border-radius: var(--radius);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; margin-bottom: 15px;">
+          Lead Time Médio de Entrega (Dias Corridos)
         </div>
-        <div class="card" style="padding:14px 18px">
-          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <span style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">OTD</span>
-            <span style="font-size:36px;font-weight:700;color:#3B6D11" id="o-otd">—</span>
-            <span style="font-size:12px;color:var(--text2)" id="o-otd-s">—</span>
-            <div style="flex:1;min-width:180px"><div style="height:10px;background:var(--bg2);border-radius:5px;overflow:hidden;border:0.5px solid var(--border)"><div id="o-otd-bar" style="height:100%;width:0%;background:#3B6D11;border-radius:5px;transition:width .5s"></div></div></div>
-          </div>
-        </div>
-        <!-- BLOCO 1 FATURAMENTO -->
-        <div class="card">
-          <div class="slabel"><span class="slabel-num">1</span>Faturamento acumulado — somente notas de venda</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="emp-kpis"></div>
-          <div id="otd-mes-bars" style="margin-bottom:10px"></div>
-          <div style="height:140px;position:relative"><canvas id="otd-fat-chart"></canvas></div>
-          <div id="bonif-row" style="margin-top:12px;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)"></div>
-        </div>
-        <!-- BLOCO 2 -->
-        <div class="card">
-          <div class="slabel"><span class="slabel-num">2</span>Entregas finalizadas — On Time &amp; Off Time</div>
-          <div class="stat-row">
-            <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-on">—</div><div class="stat-lbl">On Time</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o2-off">—</div><div class="stat-lbl">Off Time</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#185FA5" id="o2-val">—</div><div class="stat-lbl">Receita</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-otd">—</div><div class="stat-lbl">OTD</div></div>
-            <div class="stat-bar-cell">
-              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px"><span>Finalizadas</span><span id="o2-pct">—</span></div>
-              <div style="height:8px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="o2-bar" style="height:100%;background:#185FA5;border-radius:3px;transition:width .5s"></div></div>
-            </div>
-          </div>
-          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th><th class="r">% faturado</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
-        </div>
-        <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
-        <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito e Previsão por Quarter</div>
-          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-            <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
-            <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
-            <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
-          </div>
-          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
-          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r">Total</th><th class="r">Valor Total</th><th class="r">% faturado</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
-          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r">CD</th><th class="r">Em Trânsito</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
-        </div>
-        <div class="card">
-          <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
-        </div>
-        <div class="card">
-          <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
-          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px" id="o5-kpis"></div>
-          <div class="reg-grid" id="o5-cards"></div>
-          <div style="background:var(--bg2);border-radius:var(--radius);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Prazo médio de entrega por região e mês (NFs entregues)</div>
-            <div style="height:150px;position:relative"><canvas id="o5-chart"></canvas></div>
-            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap" id="o5-legend"></div>
-          </div>
+        <div style="height: 250px; position: relative;">
+          <canvas id="o5-chart"></canvas>
         </div>
       </div>
-    </div>
-
-    <!-- OTHER DASHBOARDS - EM BREVE -->
-    <div class="dash-section" id="sec-custo">
-      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p><strong>Custo de Servir</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
-    </div>
-    <div class="dash-section" id="sec-estoque">
-      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><p><strong>Estoque / Armazenagem</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
-    </div>
-    <div class="dash-section" id="sec-nivel">
-      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><p><strong>Nível de Serviço</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
-    </div>
-    <div class="dash-section" id="sec-dev">
-      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"/></svg><p><strong>Devoluções / Avarias</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
-    </div>
-    <div class="dash-section" id="sec-prod">
-      <div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg><p><strong>Produtividade Operacional</strong></p><p style="font-size:11px">Em desenvolvimento. Faça upload da base para ativar.</p></div>
     </div>
 
   </div>
 </div>
 
 <script>
-// ============================================================
-// SUPABASE CONFIG
-// ============================================================
-const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
-const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br'; // Email do admin que faz upload
+// Exemplo de lógica para correção das contas do Bloco 5
+function calcularMetricasRegiao(dadosNf) {
+    const regioes = {};
 
-const {createClient} = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-// ============================================================
-// AUTH
-// ============================================================
-let currentUser = null;
-
-async function checkSession(){
-  const {data:{session}} = await sb.auth.getSession();
-  if(session) showApp(session.user);
-  else showLogin();
-}
-
-async function doLogin(){
-  const email = document.getElementById('l-email').value.trim();
-  const pass  = document.getElementById('l-pass').value;
-  const btn   = document.getElementById('btn-login');
-  const err   = document.getElementById('login-err');
-  if(!email||!pass){showErr(err,'Preencha e-mail e senha.');return;}
-  btn.disabled=true; btn.textContent='Entrando…';
-  const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
-  if(error){
-    showErr(err, error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':error.message);
-    btn.disabled=false; btn.textContent='Entrar';
-  } else showApp(data.user);
-}
-
-async function doLogout(){
-  await sb.auth.signOut();
-  currentUser = null;
-  document.getElementById('screen-app').style.display='none';
-  document.getElementById('screen-login').style.display='flex';
-  document.getElementById('l-pass').value='';
-  document.getElementById('login-err').style.display='none';
-}
-
-function showLogin(){
-  document.getElementById('screen-login').style.display='flex';
-  document.getElementById('screen-app').style.display='none';
-}
-
-function showApp(user){
-  currentUser = user;
-  document.getElementById('screen-login').style.display='none';
-  document.getElementById('screen-app').style.display='block';
-  document.getElementById('user-av').textContent = user.email.slice(0,2).toUpperCase();
-  document.getElementById('user-em').textContent  = user.email;
-
-  // Show upload tab only for admin
-  const isAdmin = user.email === ADMIN_EMAIL;
-  if(isAdmin){
-    document.getElementById('tab-upload').style.display='block';
-    document.getElementById('admin-badge').style.display='inline-block';
-  }
-
-  // Load OTD data
-  loadOTDFromStorage();
-}
-
-function showErr(el,msg){el.textContent=msg;el.style.display='block';}
-sb.auth.onAuthStateChange((_e,session)=>{if(session)showApp(session.user);});
-checkSession();
-
-// ============================================================
-// TABS
-// ============================================================
-const TABS = {
-  otd:'sec-otd', custo:'sec-custo', estoque:'sec-estoque',
-  nivel:'sec-nivel', dev:'sec-dev', prod:'sec-prod', upload:'sec-upload'
-};
-
-function switchTab(id, btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  Object.values(TABS).forEach(s=>{
-    const el=document.getElementById(s);
-    if(el){el.classList.remove('on');el.style.display='none';}
-  });
-  btn.classList.add('on');
-  const sec = document.getElementById(TABS[id]);
-  if(sec){sec.classList.add('on');sec.style.display='block';}
-}
-
-// init visibility
-Object.entries(TABS).forEach(([k,v])=>{
-  const el=document.getElementById(v);
-  if(el&&k!=='otd'){el.style.display='none';}
-});
-
-// ============================================================
-// FILE UPLOAD
-// ============================================================
-const files = {otd:null, custo:null, estoque:null};
-
-function dragOver(e,id){e.preventDefault();document.getElementById('box-'+id.replace('box-','')).classList.add('drag');}
-function dragLeave(id){document.getElementById(id).classList.remove('drag');}
-
-function dropFile(e,type){
-  e.preventDefault();
-  const id='box-'+type;
-  document.getElementById(id).classList.remove('drag');
-  const file=e.dataTransfer.files[0];
-  if(file) registerFile(file,type);
-}
-
-function fileSelected(input,type){
-  if(input.files[0]) registerFile(input.files[0],type);
-}
-
-function registerFile(file,type){
-  files[type]=file;
-  const box=document.getElementById('box-'+type);
-  box.classList.add('done');
-  box.classList.remove('drag');
-  document.getElementById('status-'+type).textContent='✓ '+file.name;
-  document.getElementById('status-'+type).style.color='#3B6D11';
-  // Enable process button if at least one file
-  document.getElementById('btn-process').disabled = false;
-}
-
-// ============================================================
-// PROCESS FILES
-// ============================================================
-const REGIOES_MAP = {
-  'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
-  'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
-  'PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste',
-  'DF':'Centro-Oeste','GO':'Centro-Oeste','MS':'Centro-Oeste','MT':'Centro-Oeste',
-  'ES':'Sudeste','MG':'Sudeste','RJ':'Sudeste','SP':'Sudeste',
-  'PR':'Sul','RS':'Sul','SC':'Sul'
-};
-
-function log(msg,type=''){
-  const box=document.getElementById('process-log');
-  box.style.display='block';
-  const line=document.createElement('div');
-  line.className='log-line '+(type||'');
-  line.textContent='['+ new Date().toLocaleTimeString('pt-BR')+'] '+msg;
-  box.appendChild(line);
-  box.scrollTop=box.scrollHeight;
-}
-
-async function processarTodos(){
-  const btn=document.getElementById('btn-process');
-  btn.disabled=true;
-  document.getElementById('process-log').innerHTML='';
-  document.getElementById('process-status').textContent='';
-
-  if(files.otd){
-    log('Processando OTD...','info');
-    try{
-      await processOTD(files.otd);
-      log('OTD processado com sucesso!','ok');
-      updateHistorico('OTD',files.otd.name);
-    }catch(e){
-      log('Erro no OTD: '+e.message,'err');
-    }
-  }
-
-  log('Concluído!','ok');
-  document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
-  btn.disabled=false;
-}
-
-function readExcel(file){
-  return new Promise((res,rej)=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      try{
-        const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-        const ws=wb.Sheets[wb.SheetNames[0]];
-        const data=XLSX.utils.sheet_to_json(ws,{defval:null});
-        res(data);
-      }catch(err){rej(err);}
-    };
-    reader.onerror=rej;
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-function classificar(status){
-  const s=String(status||'');
-  if(s==='Entregue no Prazo')    return 'on_time';
-  if(s==='Entregue em Atraso')   return 'off_time';
-  if(s==='Aguardando Embarque')  return 'hub';
-  if(s.includes('Pendente'))     return 'transito';
-  return 'outros';
-}
-
-async function processOTD(file){
-  log('Lendo arquivo Excel...','info');
-  const rows = await readExcel(file);
-  log('Linhas lidas: '+rows.length,'info');
-
-  // Fix column names
-  const processed = rows.map(r=>{
-    const fixed={};
-    Object.keys(r).forEach((k,i)=>{
-      const cleanKey=k.replace(/<[^>]*>/g,'').trim()||('col_'+i);
-      fixed[cleanKey]=r[k];
-    });
-    return fixed;
-  });
-
-  const VENDAS_NAT=['VENDA DE MERCADORIA ADQUIRIDA','VENDA DE PRODUCAO'];
-
-  // Helper: find column by multiple possible names (handles encoding variations)
-  function col(r, ...names){
-    for(const n of names){
-      if(r[n]!==undefined && r[n]!==null) return r[n];
-    }
-    // Fuzzy match - try to find key containing the base word
-    const keys=Object.keys(r);
-    for(const n of names){
-      const base=n.replace(/[^a-zA-Z0-9 ]/g,'').toLowerCase().substring(0,8);
-      const found=keys.find(k=>k.replace(/[^a-zA-Z0-9 ]/g,'').toLowerCase().includes(base));
-      if(found && r[found]!==undefined) return r[found];
-    }
-    return null;
-  }
-
-  // Helper: parse date from various formats
-  function parseDate(v){
-    if(!v) return null;
-    if(v instanceof Date) return isNaN(v)?null:v;
-    if(typeof v==='number') return new Date(Math.round((v-25569)*86400*1000)); // Excel serial date
-    const d=new Date(v); return isNaN(d)?null:d;
-  }
-
-  // Helper: get empresa
-  function getEmpresa(r){
-    return String(col(r,'Embarcador')||'').toUpperCase().includes('INOVALAB')?'INOVALAB':'GENOMMA';
-  }
-
-  // Helper: get UF
-  function getUF(r){ 
-    return String(col(r,'UF Destino','UF Dest','UF_Destino')||''); 
-  }
-
-  // Helper: get valor
-  function getValor(r){ 
-    const v=col(r,'Valor Total','Valor Nota','ValorTotal','valor_total');
-    return parseFloat(String(v||0).replace(',','.'))||0; 
-  }
-
-  // Helper: get natureza
-  function getNatureza(r){
-    const v=col(r,'Natureza da Operação','Natureza da Operacao','Natureza_da_Operacao');
-    return String(v||'');
-  }
-
-  // Helper: get status
-  function getStatus(r){
-    const v=col(r,'Status da Entrega','Status_da_Entrega');
-    return String(v||'');
-  }
-
-  // Helper: get transportador
-  function getTransp(r){
-    return String(col(r,'Transportador')||'').substring(0,32);
-  }
-
-  // Helper: get data emissao
-  function getDataEmissao(r){
-    return parseDate(col(r,'Data Emissão','Data Emissao','Data_Emissao'));
-  }
-
-  // Helper: get data entrega
-  function getDataEntrega(r){
-    return parseDate(col(r,'Data Entrega','Data Entregue','Data_Entrega'));
-  }
-
-  // Helper: get previsao entrega
-  function getPrevisao(r){
-    return parseDate(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
-  }
-
-  // Separate vendas and bonificacoes using helper
-  const vendas=processed.filter(r=>VENDAS_NAT.includes(getNatureza(r)));
-  const bonifs=processed.filter(r=>!VENDAS_NAT.includes(getNatureza(r)));
-  log('Notas de venda: '+vendas.length,'info');
-  log('Bonificações/Outros: '+bonifs.length,'info');
-
-  const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-
-  // Aggregate by month — VENDAS
-  const meses={};
-  vendas.forEach(r=>{
-    const tipo=classificar(getStatus(r));
-    const de=getDataEmissao(r);
-    if(!de) return;
-    const mes=de.getMonth()+1;
-    const val=getValor(r);
-    const emp=getEmpresa(r);
-    if(!meses[mes]) meses[mes]={
-      fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,qtd_genomma:0,qtd_inovalab:0,
-      on:0,off:0,hub:0,trs:0,
-      on_val:0,off_val:0,hub_val:0,trs_val:0,
-      nome:NOME_MES[mes]||('M'+mes)
-    };
-    const m=meses[mes];
-    m.fat+=val; m.qtd++;
-    if(emp==='GENOMMA'){m.fat_genomma+=val;m.qtd_genomma++;}
-    else{m.fat_inovalab+=val;m.qtd_inovalab++;}
-    if(tipo==='on_time'){m.on++;m.on_val+=val;}
-    else if(tipo==='off_time'){m.off++;m.off_val+=val;}
-    else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
-    else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
-  });
-
-  // Bonificacoes por mes
-  const bonif_mes={};
-  bonifs.forEach(r=>{
-    const de=getDataEmissao(r);
-    if(!de) return;
-    const mes=de.getMonth()+1;
-    const val=getValor(r);
-    if(!bonif_mes[mes]) bonif_mes[mes]={fat:0,qtd:0};
-    bonif_mes[mes].fat+=val;
-    bonif_mes[mes].qtd++;
-  });
-
-  // Round meses
-  Object.keys(meses).forEach(m=>{
-    const md=meses[m];
-    ['fat','fat_genomma','fat_inovalab','on_val','off_val','hub_val','trs_val'].forEach(k=>{
-      md[k]=Math.round(md[k]*100)/100;
-    });
-  });
-  Object.keys(bonif_mes).forEach(m=>{
-    bonif_mes[m].fat=Math.round(bonif_mes[m].fat*100)/100;
-  });
-
-  // Transportadoras
-  const transpMap={};
-  vendas.forEach(r=>{
-    const tipo=classificar(getStatus(r));
-    const val=getValor(r);
-    const t=getTransp(r);
-    if(!t) return;
-    if(!transpMap[t]) transpMap[t]={n:t,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0};
-    if(tipo==='on_time'){transpMap[t].fin++;transpMap[t].on++;}
-    else if(tipo==='off_time'){transpMap[t].fin++;transpMap[t].off++;}
-    else if(tipo==='hub'){transpMap[t].hub++;transpMap[t].nao_val+=val;}
-    else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].nao_val+=val;}
-  });
-  const transpList=Object.values(transpMap)
-    .map(t=>({...t,otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,nao_val:Math.round(t.nao_val*100)/100}))
-    .sort((a,b)=>b.fin-a.fin);
-
-  // Previsoes por quarter (bloco 3)
-  const Q_ENDS={Q1:new Date('2026-03-31'),Q2:new Date('2026-06-30'),Q3:new Date('2026-09-30'),Q4:new Date('2026-12-31')};
-  function getPrevQ(ts){
-    if(!ts) return 'Sem previsão';
-    const d=parseDate(ts); if(!d) return 'Sem previsão';
-    if(d<=Q_ENDS.Q1) return 'Q1';
-    if(d<=Q_ENDS.Q2) return 'Q2';
-    if(d<=Q_ENDS.Q3) return 'Q3';
-    return 'Q4';
-  }
-  const prevQ={};
-  processed.filter(r=>classificar(getStatus(r)).match(/hub|transito/)).forEach(r=>{
-    const pq=getPrevQ(getPrevisao(r));
-    const val=getValor(r);
-    const tipo=classificar(getStatus(r));
-    if(!prevQ[pq]) prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0};
-    prevQ[pq].qtd++;
-    prevQ[pq].valor+=val;
-    if(tipo==='hub') prevQ[pq].hub++;
-    else prevQ[pq].transito++;
-  });
-  const prevQLista=Object.values(prevQ).map(p=>({...p,valor:Math.round(p.valor*100)/100}))
-    .sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q));
-
-  // Regiões
-  const regMap={};
-  const diasRegMap={};
-  vendas.forEach(r=>{
-    const tipo=classificar(getStatus(r));
-    const uf=getUF(r);
-    const reg=REGIOES_MAP[uf]||'Outros';
-    const val=getValor(r);
-    // Dias Decorridos = time in transit for pending NFs
-    const diasDecorridos=parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0;
-
-    // transito stats - use Dias Decorridos
-    if(tipo==='transito'){
-      if(!regMap[reg]) regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
-      regMap[reg].atr_qtd++;
-      regMap[reg].atr_val+=val;
-      regMap[reg].dias_sum+=diasDecorridos;
-      if(!regMap[reg].ufs[uf]) regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
-      regMap[reg].ufs[uf].n++;
-      regMap[reg].ufs[uf].val+=val;
-      regMap[reg].ufs[uf].d_sum+=diasDecorridos;
-    }
-
-    // dias entrega - from emissao to actual delivery date
-    if(tipo==='on_time'||tipo==='off_time'){
-      const de=getDataEmissao(r);
-      const dent=getDataEntrega(r);
-      if(de&&dent){
-        const dias=Math.round((dent-de)/(1000*60*60*24));
-        if(dias>=0&&dias<=60){
-          const mes=de.getMonth()+1;
-          if(!diasRegMap[reg]) diasRegMap[reg]={};
-          if(!diasRegMap[reg][mes]) diasRegMap[reg][mes]={sum:0,n:0};
-          diasRegMap[reg][mes].sum+=dias;
-          diasRegMap[reg][mes].n++;
+    dadosNf.forEach(nf => {
+        const regiao = nf.Regiao || 'Outros';
+        if (!regioes[regiao]) {
+            regioes[regiao] = { total: 0, entregues: 0, somaDias: 0, onTime: 0 };
         }
-      }
-    }
-  });
 
-  const dias_mes={};
-  Object.keys(diasRegMap).forEach(reg=>{
-    dias_mes[reg]={};
-    Object.keys(diasRegMap[reg]).forEach(m=>{
-      const {sum,n}=diasRegMap[reg][m];
-      dias_mes[reg][parseInt(m)]=n>0?Math.round(sum/n*10)/10:0;
+        regioes[regiao].total++;
+
+        // CORREÇÃO DA CONTA: Só calcula média para quem tem Data de Entrega Real
+        if (nf.DataEntrega && nf.DataExpedicao) {
+            const inicio = new Date(nf.DataExpedicao);
+            const fim = new Date(nf.DataEntrega);
+            const diffDias = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24));
+            
+            if (diffDias >= 0) {
+                regioes[regiao].somaDias += diffDias;
+                regioes[regiao].entregues++;
+            }
+        }
+        
+        if (nf.StatusEntrega === 'On Time') {
+            regioes[regiao].onTime++;
+        }
     });
-  });
 
-  const regioes=['Sudeste','Nordeste','Centro-Oeste','Norte','Sul'].map(reg=>{
-    const rm=regMap[reg]||{r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
-    const ufs=Object.values(rm.ufs||{})
-      .map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0}))
-      .sort((a,b)=>b.n-a.n).slice(0,6);
-    return {
-      r:reg,atr_qtd:rm.atr_qtd,
-      atr_val:Math.round(rm.atr_val*100)/100,
-      dias_atr:rm.atr_qtd>0?Math.round(rm.dias_sum/rm.atr_qtd*10)/10:0,
-      media_ent:0,mediana:0,ufs
-    };
-  });
-
-  // Summary por empresa
-  const empresa_total={
-    GENOMMA:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0},
-    INOVALAB:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0}
-  };
-  vendas.forEach(r=>{
-    const emp=getEmpresa(r);
-    const tipo=classificar(getStatus(r));
-    const val=getValor(r);
-    empresa_total[emp].fat+=val;
-    empresa_total[emp].qtd++;
-    if(tipo==='on_time') empresa_total[emp].on++;
-    else if(tipo==='off_time') empresa_total[emp].off++;
-    else if(tipo==='hub') empresa_total[emp].hub++;
-    else if(tipo==='transito') empresa_total[emp].trs++;
-  });
-  Object.keys(empresa_total).forEach(e=>{
-    empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;
-  });
-
-  // Build payload
-  const payload = {
-    meses, bonif_mes, otd:transpList, regioes, dias_mes,
-    prevQ:prevQLista, empresa_total,
-    atualizado: new Date().toLocaleString('pt-BR'),
-    base_nome: file.name,
-    total_nfs: vendas.length,
-    total_bonif: bonifs.length
-  };
-
-  log('Salvando no banco...','info');
-  // Save to Supabase storage as JSON
-  const json=JSON.stringify(payload);
-  const blob=new Blob([json],{type:'application/json'});
-  const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json'});
-  if(error) throw new Error(error.message);
-
-  log('Dados salvos! Atualizando painel...','info');
-  renderOTD(payload);
+    return Object.keys(regioes).map(r => ({
+        nome: r,
+        mediaDias: regioes[r].entregues > 0 ? (regioes[r].somaDias / regioes[r].entregues).toFixed(1) : 0,
+        otd: ((regioes[r].onTime / regioes[r].total) * 100).toFixed(1)
+    }));
 }
 
-// ============================================================
-// LOAD OTD FROM STORAGE
-// ============================================================
-async function loadOTDFromStorage(){
-  try{
-    const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
-    if(error) return; // no data yet
-    const text=await data.text();
-    const payload=JSON.parse(text);
-    renderOTD(payload);
-  }catch(e){
-    // no data yet, show empty state
-  }
-}
+// Configuração de cores para o gráfico
+const chartColors = {
+    primary: '#185FA5',
+    accent: '#38BDF8',
+    grid: 'rgba(148, 163, 184, 0.1)'
+};
 
-// ============================================================
-// HISTORICO
-// ============================================================
-function updateHistorico(indicador, arquivo){
-  const tbody=document.getElementById('hist-tbody');
-  const row=document.createElement('tr');
-  row.innerHTML=`<td>${new Date().toLocaleString('pt-BR')}</td><td>${indicador}</td><td>${arquivo}</td><td>—</td><td><span class="badge badge-ok">Sucesso</span></td>`;
-  if(tbody.querySelector('td[colspan]')) tbody.innerHTML='';
-  tbody.insertBefore(row, tbody.firstChild);
-}
-
-// ============================================================
-// RENDER OTD
-// ============================================================
-let otdData=null;
-let otdFilter_state={type:'all',val:'all'};
-let fatChart=null,diasChart=null;
-
-const fmtM=v=>'R$ '+(v/1e6).toFixed(1)+'M';
-const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
-const MES_PALETTE=['#378ADD','#185FA5','#0C447C','#042C53','#85B7EB'];
-const REG_CORES={'Sudeste':'#185FA5','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
-
-function renderOTD(payload){
-  otdData=payload;
-  document.getElementById('otd-empty').style.display='none';
-  document.getElementById('otd-content').style.display='block';
-  document.getElementById('otd-update-text').innerHTML=
-    'Base: <strong>'+payload.base_nome+'</strong> &nbsp;·&nbsp; Atualizado em: <strong>'+payload.atualizado+'</strong>';
-
-  // Build filter buttons
-  const MK=Object.keys(payload.meses).map(Number).sort();
-  const QS=[...new Set(MK.map(m=>'Q'+Math.ceil(m/3)))].sort();
-  const MC={}; MK.forEach((m,i)=>MC[m]=MES_PALETTE[i]||'#185FA5');
-  payload._MK=MK; payload._MC=MC; payload._QS=QS;
-
-  const qc=document.getElementById('otd-q-btns'); qc.innerHTML='';
-  QS.forEach(q=>{const b=document.createElement('button');b.className='fbtn';b.textContent=q;b.onclick=function(){otdFilter(q,this,'q');};qc.appendChild(b);});
-  const mc=document.getElementById('otd-m-btns'); mc.innerHTML='';
-  MK.forEach(m=>{const b=document.createElement('button');b.className='fbtn';b.textContent=payload.meses[m].nome;b.onclick=function(){otdFilter(m,this,'m');};mc.appendChild(b);});
-
-  otdFilter_state={type:'all',val:'all'};
-  renderOTDChart(payload);
-}
-
-function otdFilter(v,btn,type){
-  if(!otdData) return;
-  document.querySelectorAll('#otd-fbar .fbtn').forEach(b=>b.classList.remove('on'));
-  if(type==='q'){otdFilter_state={type:'q',val:v};document.getElementById('otd-m-all').classList.add('on');}
-  else if(type==='m'){otdFilter_state={type:v==='all'?'all':'m',val:v};document.querySelectorAll('#otd-fbar .fbtn')[0].classList.add('on');}
-  else{otdFilter_state={type:'all',val:'all'};document.getElementById('otd-m-all').classList.add('on');}
-  btn.classList.add('on');
-  renderOTDChart(otdData);
-}
-
-function getOTDMeses(){
-  if(!otdData) return [];
-  const MK=otdData._MK||[];
-  if(otdFilter_state.type==='all') return MK;
-  if(otdFilter_state.type==='q') return MK.filter(m=>'Q'+Math.ceil(m/3)===otdFilter_state.val);
-  if(otdFilter_state.type==='m') return [parseInt(otdFilter_state.val)];
-  return MK;
-}
-
-function renderOTDChart(d){
-  const ms=getOTDMeses();
-  const MC=d._MC||{};
-  let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,on_val=0,off_val=0,hub_val=0,trs_val=0;
-  ms.forEach(m=>{const md=d.meses[m];if(!md)return;fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;});
-  const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val,nfin=hub+trs,nfin_val=hub_val+trs_val;
-
-  document.getElementById('o-fat').textContent=fmtM(fat);document.getElementById('o-fat-s').textContent=qtd.toLocaleString('pt-BR')+' NFs';
-  document.getElementById('o-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o-on-s').textContent=fmtM(on_val);
-  document.getElementById('o-off').textContent=off;
-  document.getElementById('o-hub').textContent=hub;document.getElementById('o-hub-s').textContent=fmtM(hub_val);
-  document.getElementById('o-trs').textContent=trs;document.getElementById('o-trs-s').textContent=fmtM(trs_val);
-  document.getElementById('o-otd').textContent=otd+'%';
-  document.getElementById('o-otd-s').textContent=on.toLocaleString('pt-BR')+' On Time de '+fin.toLocaleString('pt-BR')+' finalizadas';
-  document.getElementById('o-otd-bar').style.width=otd+'%';
-  document.getElementById('o2-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=off;
-  document.getElementById('o2-val').textContent=fmtM(fin_val);document.getElementById('o2-otd').textContent=otd+'%';
-  document.getElementById('o2-bar').style.width=fmtP(fin,qtd);document.getElementById('o2-pct').textContent=fmtP(fin,qtd);
-  document.getElementById('o3-hub').textContent=hub;document.getElementById('o3-hub-val').textContent=fmtM(hub_val);
-  document.getElementById('o3-trs').textContent=trs;document.getElementById('o3-trs-val').textContent=fmtM(trs_val);
-  document.getElementById('o3-total').textContent=nfin;document.getElementById('o3-total-val').textContent=fmtM(nfin_val);
-
-  // ---- BLOCO 1: Genomma vs Inovalab + Bonificações ----
-  const et=d.empresa_total||{};
-  const gFat=et.GENOMMA?.fat||0, gQtd=et.GENOMMA?.qtd||0;
-  const iFat=et.INOVALAB?.fat||0, iQtd=et.INOVALAB?.qtd||0;
-  const gOn=et.GENOMMA?.on||0, gOff=et.GENOMMA?.off||0;
-  const iOn=et.INOVALAB?.on||0, iOff=et.INOVALAB?.off||0;
-  const gFin=gOn+gOff, iFin=iOn+iOff;
-  const gOtd=gFin>0?((gOn/gFin)*100).toFixed(1):'—';
-  const iOtd=iFin>0?((iOn/iFin)*100).toFixed(1):'—';
-
-  document.getElementById('emp-kpis').innerHTML=
-    '<div style="background:#E6F1FB20;border:0.5px solid #185FA544;border-radius:var(--radius);padding:12px 16px">'
-    +'<div style="font-size:10px;font-weight:600;color:#0C447C;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Genomma Lab</div>'
-    +'<div style="display:flex;gap:20px;flex-wrap:wrap">'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:20px;font-weight:700;color:#185FA5">'+fmtM(gFat)+'</div><div style="font-size:10px;color:var(--text2)">'+gQtd.toLocaleString('pt-BR')+' NFs'+'</div></div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">OTD</div><div style="font-size:20px;font-weight:700;color:#3B6D11">'+gOtd+'%</div><div style="font-size:10px;color:var(--text2)">'+gOn+' on / '+gOff+' off'+'</div></div>'
-    +'</div></div>'
-    +'<div style="background:#EAF3DE20;border:0.5px solid #3B6D1144;border-radius:var(--radius);padding:12px 16px">'
-    +'<div style="font-size:10px;font-weight:600;color:#3B6D11;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Inovalab</div>'
-    +'<div style="display:flex;gap:20px;flex-wrap:wrap">'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:20px;font-weight:700;color:#1D9E75">'+fmtM(iFat)+'</div><div style="font-size:10px;color:var(--text2)">'+iQtd.toLocaleString('pt-BR')+' NFs'+'</div></div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">OTD</div><div style="font-size:20px;font-weight:700;color:#3B6D11">'+iOtd+'%</div><div style="font-size:10px;color:var(--text2)">'+iOn+' on / '+iOff+' off'+'</div></div>'
-    +'</div></div>';
-
-  // Month bars
-  const maxF=Math.max(...ms.map(m=>d.meses[m]?.fat||0),1);
-  document.getElementById('otd-mes-bars').innerHTML=ms.map(m=>{
-    const md=d.meses[m]; if(!md)return'';
-    const gBar=Math.round((md.fat_genomma||0)/maxF*100);
-    const iBar=Math.round((md.fat_inovalab||0)/maxF*100);
-    return'<div style="display:flex;align-items:center;gap:10px;padding:3px 0;font-size:11px">'
-      +'<span style="width:28px;color:var(--text2);font-weight:600">'+md.nome+'</span>'
-      +'<div style="flex:1;height:16px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative">'
-      +'<div style="position:absolute;left:0;height:100%;width:'+Math.round(md.fat/maxF*100)+'%;background:'+MC[m]+'22;border-radius:3px"></div>'
-      +'<div style="position:absolute;left:0;height:100%;width:'+gBar+'%;background:'+MC[m]+';border-radius:3px"></div>'
-      +'<div style="position:absolute;left:'+gBar+'%;height:100%;width:'+iBar+'%;background:#1D9E75;border-radius:0 3px 3px 0"></div>'
-      +'</div>'
-      +'<span style="width:54px;text-align:right;font-weight:600">'+fmtM(md.fat)+'</span>'
-      +'<span style="width:50px;text-align:right;color:var(--text2);font-size:10px">'+md.qtd+' NFs</span>'
-      +'</div>';
-  }).join('');
-
-  // Fat chart
-  if(fatChart) fatChart.destroy();
-  fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',
-    data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:[
-      {label:'CD + Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
-      {label:'Inovalab',data:ms.map(m=>d.meses[m]?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
-      {label:'Genomma',data:ms.map(m=>d.meses[m]?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12,padding:14,color:'var(--text2,#6b6b67)'}},
-        tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmtM(ctx.raw)}}
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
-        y:{grid:{color:'rgba(128,128,128,.06)'},stacked:true,border:{display:false},ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}
-      }}});
-
-  // Bonificações row (fonte menor abaixo)
-  const bm=d.bonif_mes||{};
-  const totalBonif=Object.values(bm).reduce((a,b)=>a+(b.fat||0),0);
-  const totalBonifQtd=Object.values(bm).reduce((a,b)=>a+(b.qtd||0),0);
-  let bonifHtml='<span style="font-weight:600;color:var(--text2)">Bonificações / Outros: </span>';
-  bonifHtml+=fmtM(totalBonif)+' · '+totalBonifQtd+' NFs &nbsp;';
-  ms.forEach(m=>{if(bm[m]&&bm[m].fat>0) bonifHtml+='<span style="margin-left:8px;background:var(--bg2);padding:2px 8px;border-radius:4px">'+d.meses[m]?.nome+': '+fmtM(bm[m].fat)+'</span>';});
-  document.getElementById('bonif-row').innerHTML=bonifHtml;
-
-  // ---- BLOCO 2: Entregas finalizadas ----
-  let r2='';
-  ms.forEach(m=>{const md=d.meses[m];if(!md)return;const f=md.on+md.off,o=f?((md.on/f)*100).toFixed(1)+'%':'—';
-    r2+='<tr><td>'+md.nome+'/'+new Date().getFullYear()+'</td>'
-      +'<td class="r" style="color:#3B6D11">'+md.on.toLocaleString('pt-BR')+'</td>'
-      +'<td class="r" style="color:'+(md.off>0?'#A32D2D':'var(--text2)')+'">'+md.off+'</td>'
-      +'<td class="r">'+f.toLocaleString('pt-BR')+'</td>'
-      +'<td class="r">'+fmtM(md.on_val+md.off_val)+'</td>'
-      +'<td class="r" style="color:#3B6D11;font-weight:600">'+o+'</td>'
-      +'<td class="r" style="color:var(--text2)">'+fmtP(f,md.qtd)+'</td></tr>';
-  });
-  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+on.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(off>0?'#A32D2D':'var(--text2)')+'">'+off+'</td><td class="r">'+fin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(fin_val)+'</td><td class="r" style="color:#3B6D11">'+otd+'%</td><td class="r">'+fmtP(fin,qtd)+'</td></tr>';
-  document.getElementById('o2-tbody').innerHTML=r2;
-
-  // ---- BLOCO 3: CD + Trânsito por mês ----
-  let r3='';
-  ms.forEach(m=>{const md=d.meses[m];if(!md||(md.hub+md.trs===0&&ms.length>1))return;
-    r3+='<tr><td>'+md.nome+'</td>'
-      +'<td class="r" style="color:#854F0B">'+(md.hub||'—')+'</td>'
-      +'<td class="r" style="color:#854F0B">'+(md.hub_val>0?fmtM(md.hub_val):'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(md.trs||'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(md.trs_val>0?fmtM(md.trs_val):'—')+'</td>'
-      +'<td class="r">'+(md.hub+md.trs||'—')+'</td>'
-      +'<td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td>'
-      +'<td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';
-  });
-  if(ms.length>1) r3+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r">'+nfin+'</td><td class="r">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
-  document.getElementById('o3-tbody').innerHTML=r3;
-
-  // ---- BLOCO 3b: Previsão por quarter ----
-  const prevQ=d.prevQ||[];
-  const qColors={'Q1':'#185FA5','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
-  let rPrev='';
-  prevQ.forEach(p=>{
-    const cor=qColors[p.q]||'#888';
-    rPrev+='<tr>'
-      +'<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+p.q+'</strong></span></td>'
-      +'<td class="r" style="color:#854F0B">'+(p.hub>0?p.hub:'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(p.transito>0?p.transito:'—')+'</td>'
-      +'<td class="r" style="font-weight:600">'+p.qtd+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+fmtM(p.valor)+'</td>'
-      +'</tr>';
-  });
-  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+p.qtd,valor:a.valor+p.valor,hub:a.hub+p.hub,trs:a.transito+p.transito}),{qtd:0,valor:0,hub:0,trs:0});
-  rPrev+='<tr class="tr-total"><td>Total pendente</td><td class="r" style="color:#854F0B">'+totPrev.hub+'</td><td class="r" style="color:#185FA5">'+totPrev.trs+'</td><td class="r">'+totPrev.qtd+'</td><td class="r" style="color:#A32D2D">'+fmtM(totPrev.valor)+'</td></tr>';
-  document.getElementById('o3-prev-tbody').innerHTML=rPrev;
-
-  // ---- BLOCO 4: Transportadoras ----
-  const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
-  document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
-    const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';
-    return'<tr><td>'+t.n+'</td>'
-      +'<td class="r">'+(t.fin||'—')+'</td>'
-      +'<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'
-      +'<td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td>'
-      +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
-      +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
-      +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'
-      +'<td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
-      +'</tr>';
-  }).join('');
-
-  // ---- BLOCO 5: Regiões ----
-  const tA=(d.regioes||[]).reduce((a,r)=>a+r.atr_qtd,0)||1;
-  document.getElementById('o5-kpis').innerHTML=(d.regioes||[]).map(r=>'<div class="kpi" style="border-left:3px solid '+(REG_CORES[r.r]||'#888')+'"><div class="kpi-lbl">'+r.r+'</div><div class="kpi-val" style="font-size:20px;color:'+(REG_CORES[r.r]||'#888')+'">'+r.atr_qtd+'</div><div class="kpi-sub">'+((r.atr_qtd/tA)*100).toFixed(0)+'% do trânsito</div></div>').join('');
-  document.getElementById('o5-cards').innerHTML=(d.regioes||[]).map(r=>{
-    const cor=REG_CORES[r.r]||'#888';
-    const mx=Math.max(...(r.ufs||[]).map(u=>u.n),1);
-    return'<div class="reg-card">'
-      +'<div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44"><span class="reg-name">'+r.r+'</span><span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div>'
-      +'<div class="reg-body">'
-      +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Dias decorridos (médio)</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Prazo médio entregues</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
-      +'<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'
-      +'<table class="reg-uf-table"><tbody>'
-      +(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')
-      +'</tbody></table></div></div>';
-  }).join('');
-
-  // Dias chart bloco 5
-  const rNames=Object.keys(d.dias_mes||{});
-  const rC=rNames.map(r=>REG_CORES[r]||'#888');
-  if(diasChart) diasChart.destroy();
-  diasChart=new Chart(document.getElementById('o5-chart'),{type:'line',
-    data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:rNames.map((r,i)=>({
-      label:r,
-      data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||null),
-      borderColor:rC[i],
-      backgroundColor:rC[i]+'18',
-      borderWidth:2.5,
-      pointRadius:5,
-      pointHoverRadius:7,
-      pointBackgroundColor:'#fff',
-      pointBorderColor:rC[i],
-      pointBorderWidth:2,
-      tension:.35,
-      spanGaps:false
-    }))},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+(ctx.raw?.toFixed(1)||'—')+'d'}}
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
-        y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},
-           ticks:{font:{size:11},callback:v=>v+'d'},
-           title:{display:true,text:'dias até entrega',font:{size:10},color:'#9b9b97'},
-           min:0}
-      }});
-  document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
+function renderizarGraficoBloco5(dadosProcessados) {
+    const ctx = document.getElementById('o5-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dadosProcessados.map(d => d.nome),
+            datasets: [{
+                label: 'Dias Médios de Trânsito',
+                data: dadosProcessados.map(d => d.mediaDias),
+                backgroundColor: chartColors.primary,
+                borderRadius: 4,
+                barThickness: 30
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: chartColors.grid },
+                    ticks: { font: { size: 10 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 10 } }
+                }
+            }
+        }
+    });
 }
 </script>
 </body>
