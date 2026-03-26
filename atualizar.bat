@@ -1,8 +1,19 @@
 @echo off
-echo Iniciando atualizacao da Torre de Controle...
+echo [1/4] Sincronizando com o GitHub...
+git pull origin main --rebase
+
+echo [2/4] Adicionando todos os arquivos alterados...
 git add .
-git commit -m "update automatico %date% %time%"
-git push
-echo.
-echo Tudo pronto! Codigo enviado para o GitHub.
+
+echo [3/4] Criando commit com data/hora automatica...
+set dt=%date% %time%
+git commit -m "Atualizacao automatica - %dt%"
+
+echo [4/4] Publicando no GitHub...
+git push origin main
+
+echo ============================================
+echo  Publicado com sucesso!
+echo  https://tpinheiro1986.github.io/torre-controle-logistica
+echo ============================================
 pause
