@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Torre de Controle — Logística</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;--border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);--radius:10px;--radius-lg:14px;}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}}
@@ -38,15 +39,22 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
 .btn-sm:hover{background:var(--bg2)}
-/* CONTENT */
+.admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500}
+/* TABS */
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 36px;display:flex}
+.tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text)}.tab.on{color:#185FA5;border-bottom-color:#185FA5;font-weight:500}
+.tab-upload-btn{margin-left:auto;color:#185FA5;font-weight:500}
+/* SECTIONS */
+.section{display:none}.section.on{display:block}
 .container{max-width:1300px;margin:0 auto;padding:32px 36px}
+/* DASHBOARD CARDS */
 .update-bar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text2)}
 .update-dot{width:7px;height:7px;border-radius:50%;background:#3B6D11;flex-shrink:0;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .page-header{margin-bottom:24px}
 .page-header h1{font-size:22px;font-weight:700;margin-bottom:4px}
 .page-header p{font-size:13px;color:var(--text2)}
-/* CARDS GRID */
 .dash-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .dash-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:box-shadow .2s,transform .15s;cursor:pointer;text-decoration:none;display:block}
 .dash-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);transform:translateY(-2px)}
@@ -60,8 +68,34 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .badge-live{font-size:10px;padding:3px 9px;border-radius:12px;font-weight:500;background:#EAF3DE;color:#3B6D11}
 .badge-soon{font-size:10px;padding:3px 9px;border-radius:12px;font-weight:500;background:var(--bg2);color:var(--text3);border:0.5px solid var(--border)}
 .arrow{font-size:14px;color:var(--text3)}.dash-card:hover .arrow{color:#185FA5}
-@media(max-width:900px){.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.container{padding:20px 16px}}
-@media(max-width:560px){.dash-grid{grid-template-columns:1fr}}
+/* UPLOAD SECTION */
+.upload-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:16px}
+.upload-card-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.upload-card-sub{font-size:12px;color:var(--text2);margin-bottom:22px}
+.upload-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.upload-box{border:1.5px dashed var(--border2);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-box:hover,.upload-box.drag{border-color:#185FA5;background:rgba(24,95,165,.03)}
+.upload-box.done{border-color:#3B6D11;background:rgba(59,109,17,.04);border-style:solid}
+.upload-box-icon{width:40px;height:40px;background:var(--bg2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.upload-box-icon svg{width:20px;height:20px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.upload-box.done .upload-box-icon{background:#EAF3DE}.upload-box.done .upload-box-icon svg{stroke:#3B6D11}
+.upload-box-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.upload-box-sub{font-size:10px;color:var(--text2)}
+.upload-box-status{font-size:10px;margin-top:6px;font-weight:500;color:var(--text3)}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.btn-process{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer}
+.btn-process:hover{background:#0C447C}.btn-process:disabled{background:#888;cursor:not-allowed}
+.process-log{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;display:none}
+.log-line{padding:2px 0;color:var(--text2)}.log-line.ok{color:#3B6D11}.log-line.err{color:#A32D2D}.log-line.info{color:#185FA5}
+/* HIST TABLE */
+.hist-table{width:100%;border-collapse:collapse;font-size:12px}
+.hist-table th{padding:7px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.hist-table td{padding:8px 12px;border-bottom:0.5px solid var(--border);color:var(--text)}
+.hist-table tr:last-child td{border-bottom:none}.hist-table tr:hover td{background:var(--bg2)}
+.badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block}
+.badge-ok{background:#EAF3DE;color:#3B6D11}.badge-proc{background:#E6F1FB;color:#185FA5}
+@media(max-width:900px){.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.upload-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.container{padding:20px 16px}}
+@media(max-width:560px){.dash-grid,.upload-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -90,90 +124,166 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
       <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
     </div>
     <div class="nav-right">
+      <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
       <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
       <button class="btn-sm" onclick="doLogout()">Sair</button>
     </div>
   </div>
+
+  <div class="tabs">
+    <div class="tab on" onclick="switchTab('dash',this)">Painéis</div>
+    <div class="tab tab-upload-btn" id="tab-upload" style="display:none" onclick="switchTab('upload',this)">⬆ Upload de Bases</div>
+  </div>
+
   <div class="container">
-    <div class="page-header">
-      <h1>Painéis Executivos</h1>
-      <p>Selecione um painel para visualizar os indicadores detalhados</p>
+
+    <!-- SEÇÃO PAINÉIS -->
+    <div class="section on" id="sec-dash">
+      <div class="page-header">
+        <h1>Painéis Executivos</h1>
+        <p>Selecione um painel para visualizar os indicadores detalhados</p>
+      </div>
+      <div class="update-bar"><span class="update-dot"></span><span>Torre de Controle Logística · Genomma Lab &nbsp;·&nbsp; <strong>Jan–Mar/2026</strong></span></div>
+      <div class="dash-grid">
+        <a class="dash-card" href="otd/index.html">
+          <div class="dash-card-top" style="background:#185FA5"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-icon" style="background:#E6F1FB"><svg stroke="#185FA5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="dash-card-title">On Time Delivery (OTD)</div>
+            <div class="dash-card-desc">Desempenho de entregas no prazo por transportadora, região e período. CD Logístico, trânsito e previsão por quarter.</div>
+            <div class="dash-card-meta"><span class="badge-live">● Ao vivo</span><span class="arrow">→</span></div>
+          </div>
+        </a>
+        <a class="dash-card" href="custo-servir/index.html">
+          <div class="dash-card-top" style="background:#1D9E75"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-icon" style="background:#E1F5EE"><svg stroke="#1D9E75" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="dash-card-title">Custo de Servir</div>
+            <div class="dash-card-desc">P&L por transportadora, região e empresa. % frete sobre faturamento, evolução mensal e comparativo Genomma vs Inovalab.</div>
+            <div class="dash-card-meta"><span class="badge-live">● Ao vivo</span><span class="arrow">→</span></div>
+          </div>
+        </a>
+        <a class="dash-card" href="estoque/index.html">
+          <div class="dash-card-top" style="background:#7F77DD"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-icon" style="background:#EEEDFE"><svg stroke="#7F77DD" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+            <div class="dash-card-title">Estoque / Armazenagem</div>
+            <div class="dash-card-desc">Posição de estoque por armazém, giro, cobertura em dias e ocupação de posições.</div>
+            <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+          </div>
+        </a>
+        <a class="dash-card" href="nivel-servico/index.html">
+          <div class="dash-card-top" style="background:#EF9F27"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-icon" style="background:#FAEEDA"><svg stroke="#EF9F27" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="dash-card-title">Nível de Serviço</div>
+            <div class="dash-card-desc">Fill rate, OTIF e disponibilidade de produto. Pedidos perfeitos por cliente e canal.</div>
+            <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+          </div>
+        </a>
+        <a class="dash-card" href="devolucoes/index.html">
+          <div class="dash-card-top" style="background:#E24B4A"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-icon" style="background:#FCEBEB"><svg stroke="#E24B4A" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
+            <div class="dash-card-title">Devoluções / Avarias</div>
+            <div class="dash-card-desc">Volume e valor de devoluções por motivo, cliente e transportadora. Taxa de avaria.</div>
+            <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+          </div>
+        </a>
+        <a class="dash-card" href="produtividade/index.html">
+          <div class="dash-card-top" style="background:#5DCAA5"></div>
+          <div class="dash-card-body">
+            <div class="dash-card-icon" style="background:#E1F5EE"><svg stroke="#1D9E75" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="dash-card-title">Produtividade Operacional</div>
+            <div class="dash-card-desc">Linhas separadas por hora, eficiência de equipes e produtividade por turno.</div>
+            <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+          </div>
+        </a>
+      </div>
+      <div style="text-align:center;padding:28px 0 8px;font-size:10px;color:var(--text3)">Torre de Controle Logística · Genomma Lab · Acesso restrito</div>
     </div>
-    <div class="update-bar"><span class="update-dot"></span><span>Torre de Controle Logística · Genomma Lab &nbsp;·&nbsp; <strong>Jan–Mar/2026</strong></span></div>
-    <div class="dash-grid">
 
-      <!-- OTD -->
-      <a class="dash-card" href="otd/index.html">
-        <div class="dash-card-top" style="background:#185FA5"></div>
-        <div class="dash-card-body">
-          <div class="dash-card-icon" style="background:#E6F1FB"><svg stroke="#185FA5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-          <div class="dash-card-title">On Time Delivery (OTD)</div>
-          <div class="dash-card-desc">Desempenho de entregas no prazo por transportadora, região e período. CD Logístico, trânsito e previsão por quarter.</div>
-          <div class="dash-card-meta"><span class="badge-live">● Ao vivo</span><span class="arrow">→</span></div>
+    <!-- SEÇÃO UPLOAD (admin only) -->
+    <div class="section" id="sec-upload">
+      <div class="upload-card">
+        <div class="upload-card-title">Upload de bases de dados</div>
+        <div class="upload-card-sub">Faça upload dos arquivos Excel para atualizar os indicadores automaticamente. Cada base é processada e salva no servidor.</div>
+        <div class="upload-grid">
+          <!-- OTD -->
+          <div class="upload-box" id="box-otd" ondragover="ev(event,'otd',1)" ondragleave="ev(event,'otd',0)" ondrop="drop(event,'otd')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'otd')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="upload-box-title">OTD — Entregas</div>
+            <div class="upload-box-sub">notas_sintetico.xlsx</div>
+            <div class="upload-box-status" id="st-otd">Aguardando arquivo...</div>
+          </div>
+          <!-- CUSTO DE SERVIR -->
+          <div class="upload-box" id="box-cs" ondragover="ev(event,'cs',1)" ondragleave="ev(event,'cs',0)" ondrop="drop(event,'cs')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'cs')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="upload-box-title">Custo de Servir</div>
+            <div class="upload-box-sub">CTE_EMITIDO.xlsx</div>
+            <div class="upload-box-status" id="st-cs">Aguardando arquivo...</div>
+          </div>
+          <!-- ESTOQUE -->
+          <div class="upload-box" id="box-est" ondragover="ev(event,'est',1)" ondragleave="ev(event,'est',0)" ondrop="drop(event,'est')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'est')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+            <div class="upload-box-title">Estoque</div>
+            <div class="upload-box-sub">base-estoque.xlsx</div>
+            <div class="upload-box-status" id="st-est">Aguardando arquivo...</div>
+          </div>
+          <!-- NÍVEL DE SERVIÇO -->
+          <div class="upload-box" id="box-niv" ondragover="ev(event,'niv',1)" ondragleave="ev(event,'niv',0)" ondrop="drop(event,'niv')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'niv')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="upload-box-title">Nível de Serviço</div>
+            <div class="upload-box-sub">base-nivel-servico.xlsx</div>
+            <div class="upload-box-status" id="st-niv">Aguardando arquivo...</div>
+          </div>
+          <!-- DEVOLUÇÕES -->
+          <div class="upload-box" id="box-dev" ondragover="ev(event,'dev',1)" ondragleave="ev(event,'dev',0)" ondrop="drop(event,'dev')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'dev')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
+            <div class="upload-box-title">Devoluções / Avarias</div>
+            <div class="upload-box-sub">base-devolucoes.xlsx</div>
+            <div class="upload-box-status" id="st-dev">Aguardando arquivo...</div>
+          </div>
+          <!-- PRODUTIVIDADE -->
+          <div class="upload-box" id="box-prod" ondragover="ev(event,'prod',1)" ondragleave="ev(event,'prod',0)" ondrop="drop(event,'prod')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'prod')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="upload-box-title">Produtividade</div>
+            <div class="upload-box-sub">base-produtividade.xlsx</div>
+            <div class="upload-box-status" id="st-prod">Aguardando arquivo...</div>
+          </div>
         </div>
-      </a>
-
-      <!-- CUSTO DE SERVIR -->
-      <a class="dash-card" href="custo-servir/index.html">
-        <div class="dash-card-top" style="background:#1D9E75"></div>
-        <div class="dash-card-body">
-          <div class="dash-card-icon" style="background:#E1F5EE"><svg stroke="#1D9E75" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-          <div class="dash-card-title">Custo de Servir</div>
-          <div class="dash-card-desc">P&L por transportadora, região e empresa. % frete sobre faturamento, evolução mensal e comparativo Genomma vs Inovalab.</div>
-          <div class="dash-card-meta"><span class="badge-live">● Ao vivo</span><span class="arrow">→</span></div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <button class="btn-process" id="btn-process" onclick="processarTodos()" disabled>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Processar e atualizar indicadores
+          </button>
+          <span style="font-size:11px;color:var(--text2)" id="proc-status"></span>
         </div>
-      </a>
+        <div class="process-log" id="process-log"></div>
+      </div>
 
-      <!-- ESTOQUE -->
-      <a class="dash-card" href="estoque/index.html">
-        <div class="dash-card-top" style="background:#7F77DD"></div>
-        <div class="dash-card-body">
-          <div class="dash-card-icon" style="background:#EEEDFE"><svg stroke="#7F77DD" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
-          <div class="dash-card-title">Estoque / Armazenagem</div>
-          <div class="dash-card-desc">Posição de estoque por armazém, giro, cobertura em dias e ocupação de posições.</div>
-          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
-        </div>
-      </a>
-
-      <!-- NÍVEL DE SERVIÇO -->
-      <a class="dash-card" href="nivel-servico/index.html">
-        <div class="dash-card-top" style="background:#EF9F27"></div>
-        <div class="dash-card-body">
-          <div class="dash-card-icon" style="background:#FAEEDA"><svg stroke="#EF9F27" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-          <div class="dash-card-title">Nível de Serviço</div>
-          <div class="dash-card-desc">Fill rate, OTIF e disponibilidade de produto. Pedidos perfeitos por cliente e canal.</div>
-          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
-        </div>
-      </a>
-
-      <!-- DEVOLUÇÕES -->
-      <a class="dash-card" href="devolucoes/index.html">
-        <div class="dash-card-top" style="background:#E24B4A"></div>
-        <div class="dash-card-body">
-          <div class="dash-card-icon" style="background:#FCEBEB"><svg stroke="#E24B4A" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
-          <div class="dash-card-title">Devoluções / Avarias</div>
-          <div class="dash-card-desc">Volume e valor de devoluções por motivo, cliente e transportadora. Taxa de avaria.</div>
-          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
-        </div>
-      </a>
-
-      <!-- PRODUTIVIDADE -->
-      <a class="dash-card" href="produtividade/index.html">
-        <div class="dash-card-top" style="background:#5DCAA5"></div>
-        <div class="dash-card-body">
-          <div class="dash-card-icon" style="background:#E1F5EE"><svg stroke="#1D9E75" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-          <div class="dash-card-title">Produtividade Operacional</div>
-          <div class="dash-card-desc">Linhas separadas por hora, eficiência de equipes e produtividade por turno.</div>
-          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
-        </div>
-      </a>
-
+      <!-- HISTÓRICO -->
+      <div class="upload-card">
+        <div class="upload-card-title">Histórico de atualizações</div>
+        <div class="upload-card-sub" style="margin-bottom:14px">Últimas bases processadas nesta sessão</div>
+        <table class="hist-table">
+          <thead><tr><th>Data/Hora</th><th>Indicador</th><th>Arquivo</th><th>Registros</th><th>Status</th></tr></thead>
+          <tbody id="hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Nenhum upload realizado ainda</td></tr></tbody>
+        </table>
+      </div>
     </div>
-    <div style="text-align:center;padding:28px 0 8px;font-size:10px;color:var(--text3)">Torre de Controle Logística · Genomma Lab · Acesso restrito</div>
+
   </div>
 </div>
 
 <script>
+// ── SUPABASE ────────────────────────────────────────────────
 const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
 const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
@@ -183,6 +293,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
 });
 let currentUser = null;
 
+// ── AUTH ─────────────────────────────────────────────────────
 async function checkSession(){
   try{
     if(window.location.hash&&window.location.hash.includes('access_token')){
@@ -194,7 +305,6 @@ async function checkSession(){
     showApp(session.user);
   }catch(e){showLogin();}
 }
-
 async function doLogin(){
   const email=document.getElementById('l-email').value.trim();
   const pass=document.getElementById('l-pass').value;
@@ -208,18 +318,16 @@ async function doLogin(){
     if(error){
       let msg=error.message;
       if(msg.includes('Invalid login')||msg.includes('invalid_credentials')) msg='E-mail ou senha incorretos.';
-      else if(msg.includes('fetch')||msg.includes('NetworkError')) msg='Erro de conexão. Verifique sua internet.';
+      else if(msg.includes('fetch')||msg.includes('NetworkError')) msg='Erro de conexão.';
       showErr(err,msg); btn.disabled=false; btn.textContent='Entrar';
     } else { showApp(data.user); }
   }catch(e){ showErr(err,'Erro: '+e.message); btn.disabled=false; btn.textContent='Entrar'; }
 }
-
 async function doLogout(){
   await sb.auth.signOut(); currentUser=null;
   document.getElementById('screen-app').style.display='none';
   document.getElementById('screen-login').style.display='flex';
 }
-
 function showLogin(){ document.getElementById('screen-login').style.display='flex'; document.getElementById('screen-app').style.display='none'; }
 function showApp(user){
   currentUser=user;
@@ -227,6 +335,10 @@ function showApp(user){
   document.getElementById('screen-app').style.display='block';
   document.getElementById('user-av').textContent=user.email.slice(0,2).toUpperCase();
   document.getElementById('user-em').textContent=user.email;
+  if(user.email===ADMIN_EMAIL){
+    document.getElementById('tab-upload').style.display='block';
+    document.getElementById('admin-badge').style.display='inline-block';
+  }
 }
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
 sb.auth.onAuthStateChange((event,session)=>{
@@ -234,6 +346,193 @@ sb.auth.onAuthStateChange((event,session)=>{
   else if(event==='SIGNED_OUT') showLogin();
 });
 checkSession();
+
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.section').forEach(s=>{s.classList.remove('on');s.style.display='none';});
+  btn.classList.add('on');
+  const sec=document.getElementById('sec-'+id);
+  if(sec){sec.classList.add('on');sec.style.display='block';}
+}
+
+// ── FILE UPLOAD ───────────────────────────────────────────────
+const files={otd:null,cs:null,est:null,niv:null,dev:null,prod:null};
+function ev(e,id,on){e.preventDefault();document.getElementById('box-'+id).classList.toggle('drag',!!on);}
+function drop(e,id){e.preventDefault();document.getElementById('box-'+id).classList.remove('drag');const f=e.dataTransfer.files[0];if(f)reg(f,id);}
+function pick(input,id){if(input.files[0])reg(input.files[0],id);}
+function reg(file,id){
+  files[id]=file;
+  document.getElementById('box-'+id).classList.add('done');
+  document.getElementById('st-'+id).textContent='✓ '+file.name;
+  document.getElementById('st-'+id).style.color='#3B6D11';
+  document.getElementById('btn-process').disabled=false;
+}
+
+// ── LOG ───────────────────────────────────────────────────────
+function log(msg,type=''){
+  const box=document.getElementById('process-log');
+  box.style.display='block';
+  const line=document.createElement('div');
+  line.className='log-line '+(type||'');
+  line.textContent='['+new Date().toLocaleTimeString('pt-BR')+'] '+msg;
+  box.appendChild(line); box.scrollTop=box.scrollHeight;
+}
+function addHist(indicador,arquivo,qtd){
+  const tb=document.getElementById('hist-tbody');
+  if(tb.querySelector('td[colspan]')) tb.innerHTML='';
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+new Date().toLocaleString('pt-BR')+'</td><td>'+indicador+'</td><td>'+arquivo+'</td><td>'+qtd+'</td><td><span class="badge badge-ok">✓ Salvo</span></td>';
+  tb.insertBefore(tr,tb.firstChild);
+}
+
+// ── PROCESS ───────────────────────────────────────────────────
+const REGIOES_MAP={'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte','AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste','PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste','DF':'Centro-Oeste','GO':'Centro-Oeste','MS':'Centro-Oeste','MT':'Centro-Oeste','ES':'Sudeste','MG':'Sudeste','RJ':'Sudeste','SP':'Sudeste','PR':'Sul','RS':'Sul','SC':'Sul'};
+const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+function readXL(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});res(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:null}));}catch(err){rej(err);}};
+    r.onerror=rej; r.readAsArrayBuffer(file);
+  });
+}
+
+async function saveStorage(path,payload){
+  try{
+    const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+    const {error}=await sb.storage.from('dashboards').upload(path,blob,{upsert:true,contentType:'application/json',cacheControl:'0'});
+    if(error) log('Aviso storage ('+path+'): '+error.message,'err');
+    else log('✓ Salvo: '+path,'ok');
+  }catch(e){log('Erro storage: '+e.message,'err');}
+}
+
+async function processarTodos(){
+  const btn=document.getElementById('btn-process');
+  btn.disabled=true;
+  document.getElementById('process-log').innerHTML='';
+  document.getElementById('proc-status').textContent='';
+
+  // OTD
+  if(files.otd){
+    log('Processando OTD...','info');
+    try{
+      const rows=await readXL(files.otd);
+      const VENDAS=['VENDA DE MERCADORIA ADQUIRIDA','VENDA DE PRODUCAO'];
+      function col(r,...names){for(const n of names){if(r[n]!==undefined&&r[n]!==null)return r[n];}const ks=Object.keys(r);for(const n of names){const b=n.replace(/[^a-zA-Z0-9]/g,'').toLowerCase().substr(0,7);const f=ks.find(k=>k.replace(/[^a-zA-Z0-9]/g,'').toLowerCase().includes(b));if(f)return r[f];}return null;}
+      function pd(v){if(!v)return null;if(v instanceof Date)return isNaN(v)?null:v;if(typeof v==='number')return new Date(Math.round((v-25569)*86400*1000));const d=new Date(v);return isNaN(d)?null:d;}
+      const nat=r=>String(col(r,'Natureza da Operação','Natureza da Operacao','Natureza_da_Operacao')||'');
+      const vendas=rows.filter(r=>VENDAS.includes(nat(r)));
+      const bonifs=rows.filter(r=>!VENDAS.includes(nat(r)));
+      const classificar=s=>{s=String(s||'');if(s==='Entregue no Prazo')return'on_time';if(s==='Entregue em Atraso')return'off_time';if(s==='Aguardando Embarque')return'hub';if(s.includes('Pendente'))return'transito';return'outros';};
+      const meses={},bonif_mes={},transpMap={},regMap={},diasRegMap={};
+      const empTot={GENOMMA:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0},INOVALAB:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0}};
+      vendas.forEach(r=>{
+        const tipo=classificar(col(r,'Status da Entrega','Status_da_Entrega'));
+        const de=pd(col(r,'Data Emissão','Data Emissao','Data_Emissao'));
+        if(!de)return;
+        const mes=de.getMonth()+1;
+        const val=parseFloat(String(col(r,'Valor Total','Valor Nota','ValorTotal')||0).replace(',','.'))||0;
+        const emp=String(col(r,'Embarcador')||'').toUpperCase().includes('INOVALAB')?'INOVALAB':'GENOMMA';
+        const uf=String(col(r,'UF Destino','UF Dest','UF_Destino')||'');
+        const reg=REGIOES_MAP[uf]||'Outros';
+        const dias=Math.abs(parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0);
+        const transp=String(col(r,'Transportador')||'').substr(0,32);
+        if(!meses[mes])meses[mes]={fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,on:0,off:0,hub:0,trs:0,on_val:0,off_val:0,hub_val:0,trs_val:0,nome:NOME_MES[mes]||('M'+mes)};
+        const m=meses[mes];
+        m.fat+=val;m.qtd++;
+        if(emp==='GENOMMA'){m.fat_genomma+=val;empTot.GENOMMA.fat+=val;empTot.GENOMMA.qtd++;}
+        else{m.fat_inovalab+=val;empTot.INOVALAB.fat+=val;empTot.INOVALAB.qtd++;}
+        if(tipo==='on_time'){m.on++;m.on_val+=val;if(empTot[emp])empTot[emp].on++;}
+        else if(tipo==='off_time'){m.off++;m.off_val+=val;if(empTot[emp])empTot[emp].off++;}
+        else if(tipo==='hub'){m.hub++;m.hub_val+=val;if(empTot[emp])empTot[emp].hub++;}
+        else if(tipo==='transito'){m.trs++;m.trs_val+=val;if(empTot[emp])empTot[emp].trs++;}
+        if(transp){if(!transpMap[transp])transpMap[transp]={n:transp,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0};if(tipo==='on_time'){transpMap[transp].fin++;transpMap[transp].on++;}else if(tipo==='off_time'){transpMap[transp].fin++;transpMap[transp].off++;}else if(tipo==='hub'){transpMap[transp].hub++;transpMap[transp].nao_val+=val;}else if(tipo==='transito'){transpMap[transp].trs++;transpMap[transp].nao_val+=val;}}
+        if(tipo==='transito'){if(!regMap[reg])regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};regMap[reg].atr_qtd++;regMap[reg].atr_val+=val;regMap[reg].dias_sum+=dias;if(!regMap[reg].ufs[uf])regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};regMap[reg].ufs[uf].n++;regMap[reg].ufs[uf].val+=val;regMap[reg].ufs[uf].d_sum+=dias;}
+        if(tipo==='on_time'||tipo==='off_time'){const dent=pd(col(r,'Data Entrega','Data Entregue','Data_Entrega'));if(de&&dent){const dd=Math.round((dent-de)/(1000*60*60*24));if(dd>=0&&dd<=60){if(!diasRegMap[reg])diasRegMap[reg]={};if(!diasRegMap[reg][mes])diasRegMap[reg][mes]={sum:0,n:0};diasRegMap[reg][mes].sum+=dd;diasRegMap[reg][mes].n++;}}}
+      });
+      bonifs.forEach(r=>{const de=pd(col(r,'Data Emissão','Data Emissao'));if(!de)return;const mes=de.getMonth()+1;const val=parseFloat(String(col(r,'Valor Total')||0).replace(',','.'))||0;if(!bonif_mes[mes])bonif_mes[mes]={fat:0,qtd:0};bonif_mes[mes].fat+=val;bonif_mes[mes].qtd++;});
+      const Q_ENDS={Q1:new Date('2026-03-31'),Q2:new Date('2026-06-30'),Q3:new Date('2026-09-30'),Q4:new Date('2026-12-31')};
+      const prevQ={};
+      rows.filter(r=>classificar(col(r,'Status da Entrega','Status_da_Entrega')).match(/hub|transito/)).forEach(r=>{
+        const prev=pd(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
+        let pq='Sem previsão';
+        if(prev){if(prev<=Q_ENDS.Q1)pq='Q1';else if(prev<=Q_ENDS.Q2)pq='Q2';else if(prev<=Q_ENDS.Q3)pq='Q3';else pq='Q4';}
+        const val=parseFloat(String(col(r,'Valor Total')||0).replace(',','.'))||0;
+        const tipo=classificar(col(r,'Status da Entrega','Status_da_Entrega'));
+        if(!prevQ[pq])prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0};
+        prevQ[pq].qtd++;prevQ[pq].valor+=val;
+        if(tipo==='hub')prevQ[pq].hub++;else prevQ[pq].transito++;
+      });
+      const dias_mes={};
+      Object.keys(diasRegMap).forEach(reg=>{dias_mes[reg]={};Object.keys(diasRegMap[reg]).forEach(m=>{const {sum,n}=diasRegMap[reg][m];dias_mes[reg][parseInt(m)]=n>0?Math.round(sum/n*10)/10:0;});});
+      const regioes=['Sudeste','Nordeste','Centro-Oeste','Norte','Sul'].map(reg=>{
+        const rm=regMap[reg]||{r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
+        const ufs=Object.values(rm.ufs||{}).map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0})).sort((a,b)=>b.n-a.n).slice(0,6);
+        const drm=diasRegMap[reg]||{};let eS=0,eN=0;Object.values(drm).forEach(v=>{eS+=v.sum;eN+=v.n;});
+        return{r:reg,atr_qtd:rm.atr_qtd,atr_val:Math.round(rm.atr_val*100)/100,dias_atr:rm.atr_qtd>0?Math.round(rm.dias_sum/rm.atr_qtd*10)/10:0,media_ent:eN>0?Math.round(eS/eN*10)/10:0,ufs};
+      });
+      const payload={meses,bonif_mes,otd:Object.values(transpMap).map(t=>({...t,otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,nao_val:Math.round(t.nao_val*100)/100})).sort((a,b)=>b.fin-a.fin),regioes,dias_mes,prevQ:Object.values(prevQ).sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q)),empresa_total:empTot,atualizado:new Date().toLocaleString('pt-BR'),base_nome:files.otd.name,total_nfs:vendas.length,total_bonif:bonifs.length};
+      await saveStorage('otd/dados.json',payload);
+      addHist('OTD',files.otd.name,vendas.length);
+      log('OTD concluído: '+vendas.length+' NFs','ok');
+    }catch(e){log('Erro OTD: '+e.message,'err');}
+  }
+
+  // CUSTO DE SERVIR (CTe)
+  if(files.cs){
+    log('Processando Custo de Servir (CTe)...','info');
+    try{
+      const rows=await readXL(files.cs);
+      function colC(r,...names){for(const n of names){if(r[n]!==undefined&&r[n]!==null)return r[n];}const ks=Object.keys(r);for(const n of names){const b=n.replace(/[^a-zA-Z0-9]/g,'').toLowerCase().substr(0,6);const f=ks.find(k=>k.replace(/[^a-zA-Z0-9]/g,'').toLowerCase().includes(b));if(f)return r[f];}return null;}
+      function getUF(s){if(!s)return'';const p=String(s).split(' - ');return p[p.length-1].trim().substr(0,2);}
+      function getEmp(n){const s=String(n||'').toUpperCase();if(s.includes('INOVALAB'))return'INOVALAB';if(s.includes('GENOMMA'))return'GENOMMA';return'OUTROS';}
+      const meses={},transpMap={},regMap={},empMap={GENOMMA:{frete:0,ctes:0},INOVALAB:{frete:0,ctes:0},OUTROS:{frete:0,ctes:0}};
+      rows.forEach(r=>{
+        const frete=Math.abs(parseFloat(String(colC(r,'Valor Cte','ValorCte','Valor CTe')||0).replace(',','.'))||0);
+        const dtRaw=colC(r,'DT Emissão','DT Emissao','Data Emissão','Data Emissao');
+        let dt=null;
+        if(dtRaw instanceof Date)dt=dtRaw;
+        else if(dtRaw){const d=new Date(dtRaw);if(!isNaN(d))dt=d;}
+        if(!dt||frete===0)return;
+        const mes=dt.getMonth()+1;const ano=dt.getFullYear();const chave=ano+'-'+mes;
+        const uf=getUF(colC(r,'Cidade - UF Destinatário','Cidade UF Destinatario','UF Destino'));
+        const reg=REGIOES_MAP[uf]||'Outros';
+        const emp=getEmp(colC(r,'Nome Remetente','Remetente'));
+        const transp=String(colC(r,'Nome Emitente','Emitente','Transportadora')||'').substr(0,35);
+        if(!meses[chave])meses[chave]={chave,mes,ano,nome:NOME_MES[mes]||('M'+mes),frete:0,ctes:0};
+        meses[chave].frete+=frete;meses[chave].ctes++;
+        if(!transpMap[transp])transpMap[transp]={n:transp,frete:0,ctes:0};
+        transpMap[transp].frete+=frete;transpMap[transp].ctes++;
+        if(!regMap[reg])regMap[reg]={r:reg,frete:0,ctes:0};
+        regMap[reg].frete+=frete;regMap[reg].ctes++;
+        if(empMap[emp]){empMap[emp].frete+=frete;empMap[emp].ctes++;}
+      });
+      const round=v=>Math.round(v*100)/100;
+      const payload={meses:Object.values(meses).map(m=>({...m,frete:round(m.frete)})).sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano),transportadoras:Object.values(transpMap).map(t=>({...t,frete:round(t.frete)})).sort((a,b)=>b.frete-a.frete),regioes:Object.values(regMap).map(r=>({...r,frete:round(r.frete)})).sort((a,b)=>b.frete-a.frete),empresas:{GENOMMA:{...empMap.GENOMMA,frete:round(empMap.GENOMMA.frete)},INOVALAB:{...empMap.INOVALAB,frete:round(empMap.INOVALAB.frete)},OUTROS:{...empMap.OUTROS,frete:round(empMap.OUTROS.frete)}},atualizado:new Date().toLocaleString('pt-BR'),base_nome:files.cs.name,total_ctes:rows.length};
+      await saveStorage('custo-servir/dados.json',payload);
+      addHist('Custo de Servir',files.cs.name,rows.length);
+      log('Custo de Servir concluído: '+rows.length+' CTes','ok');
+    }catch(e){log('Erro Custo de Servir: '+e.message,'err');}
+  }
+
+  // Outros módulos (estoque, nível, devoluções, produtividade) - save placeholder
+  for(const [key,label,path] of [['est','Estoque','estoque/dados.json'],['niv','Nível de Serviço','nivel-servico/dados.json'],['dev','Devoluções','devolucoes/dados.json'],['prod','Produtividade','produtividade/dados.json']]){
+    if(files[key]){
+      log('Processando '+label+'...','info');
+      try{
+        const rows=await readXL(files[key]);
+        await saveStorage(path,{atualizado:new Date().toLocaleString('pt-BR'),base_nome:files[key].name,total:rows.length});
+        addHist(label,files[key].name,rows.length);
+        log(label+' salvo: '+rows.length+' registros','ok');
+      }catch(e){log('Erro '+label+': '+e.message,'err');}
+    }
+  }
+
+  log('Tudo concluído!','ok');
+  document.getElementById('proc-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
+  btn.disabled=false;
+}
 </script>
 </body>
 </html>

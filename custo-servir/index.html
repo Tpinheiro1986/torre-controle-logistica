@@ -626,6 +626,14 @@ async function processarCTE() {
     renderCS(payload);
     log('✓ Concluído!', 'ok');
     document.getElementById('process-status').textContent = '✓ Atualizado em ' + new Date().toLocaleTimeString('pt-BR');
+    // Auto switch to dashboard
+    setTimeout(()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+      ['sec-dash','sec-upload'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='none';el.classList.remove('on');}});
+      document.getElementById('sec-dash').style.display='block';
+      document.getElementById('sec-dash').classList.add('on');
+      document.querySelectorAll('.tab')[0].classList.add('on');
+    }, 600);
 
   } catch(e) {
     log('Erro: ' + e.message, 'err');
@@ -635,12 +643,19 @@ async function processarCTE() {
 
 // ── LOAD FROM STORAGE ────────────────────────────────────────
 async function loadCSFromStorage() {
-  try {
-    const { data, error } = await sb.storage.from('dashboards').download('custo-servir/dados.json');
-    if (error || !data) return;
-    const payload = JSON.parse(await data.text());
-    renderCS(payload);
-  } catch(e) { console.log('loadCS:', e.message); }
+  for(let i=0; i<4; i++){
+    try{
+      const {data,error} = await sb.storage.from('dashboards').download('custo-servir/dados.json');
+      if(error){ console.log('loadCS:', error.message); break; }
+      if(!data) break;
+      const payload = JSON.parse(await data.text());
+      renderCS(payload);
+      return;
+    }catch(e){
+      console.log('loadCS attempt '+i+':', e.message);
+      await new Promise(r=>setTimeout(r,700));
+    }
+  }
 }
 
 // ── FILTER STATE ─────────────────────────────────────────────
@@ -844,10 +859,12 @@ function renderCSChart(d) {
 }
 
 // ── INIT ─────────────────────────────────────────────────────
-window._authOnSuccess = (user, isAdmin) => {
-  loadCSFromStorage();
-};
-window.addEventListener('DOMContentLoaded', () => authInit(window._authOnSuccess));
+window.addEventListener('load', function(){
+  window._authOnSuccess = function(user, isAdmin){
+    setTimeout(loadCSFromStorage, 500);
+  };
+  authInit(window._authOnSuccess);
+});
 </script>
 </body>
 </html>

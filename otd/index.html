@@ -53,6 +53,8 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
 .btn-sm:hover{background:var(--bg2)}
+.nav-back{font-size:11px;padding:5px 12px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px}
+.nav-back:hover{background:var(--bg2)}
 .admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500}
 
 /* TABS */
@@ -186,6 +188,7 @@ table.dt tr:hover td{background:var(--bg2)}
       <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
     </div>
     <div class="nav-right">
+      <a class="nav-back" href="../index.html">← Início</a>
       <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
       <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
       <button class="btn-sm" onclick="doLogout()">Sair</button>
