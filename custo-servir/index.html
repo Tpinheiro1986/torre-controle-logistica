@@ -7,8 +7,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="../_core/auth.js" defer></script>
-<script src="../_core/utils.js" defer></script>
 <style>
 :root{--bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;--border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);--radius:8px;--radius-lg:14px;--green:#1D9E75;--green-lt:#E1F5EE;--blue:#185FA5;--blue-lt:#E6F1FB;--red:#A32D2D;--red-lt:#FCEBEB;--amber:#854F0B;--amber-lt:#FAEEDA;}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}}
@@ -263,6 +261,201 @@ table.dt tr:hover td{background:var(--bg2)}
   </div>
 </div>
 
+<script>
+// ── AUTH CORE (embedded) ────────────────────────────────────
+// ============================================================
+// TORRE DE CONTROLE — AUTH CORE (blindado)
+// Compartilhado entre todos os módulos
+// NÃO EDITAR — qualquer mudança reflete em todo o projeto
+// ============================================================
+
+const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    flowType: 'implicit',
+    storageKey: 'torre-controle-auth'
+  }
+});
+
+let currentUser = null;
+
+async function authInit(onSuccess) {
+  try {
+    if (window.location.hash && window.location.hash.includes('access_token')) {
+      await new Promise(r => setTimeout(r, 800));
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+    const { data: { session }, error } = await sb.auth.getSession();
+    if (error || !session) { authShowLogin(); return; }
+    authShowApp(session.user, onSuccess);
+  } catch(e) { authShowLogin(); }
+}
+
+async function authDoLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const btn   = document.getElementById('btn-login');
+  const err   = document.getElementById('login-err');
+  err.style.display = 'none';
+  if (!email || !pass) { authShowErr(err, 'Preencha e-mail e senha.'); return; }
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      let msg = error.message;
+      if (msg.includes('Invalid login') || msg.includes('invalid_credentials')) msg = 'E-mail ou senha incorretos.';
+      else if (msg.includes('Email not confirmed')) msg = 'Confirme seu e-mail antes de entrar.';
+      else if (msg.includes('fetch') || msg.includes('NetworkError')) msg = 'Erro de conexão. Verifique sua internet.';
+      authShowErr(err, msg);
+      btn.disabled = false; btn.textContent = 'Entrar';
+    } else {
+      authShowApp(data.user, window._authOnSuccess);
+    }
+  } catch(e) {
+    authShowErr(err, 'Erro: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+
+async function authDoLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  authShowLogin();
+}
+
+function authShowLogin() {
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('screen-app').style.display = 'none';
+}
+
+function authShowApp(user, onSuccess) {
+  currentUser = user;
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'block';
+  const av = document.getElementById('user-av');
+  const em = document.getElementById('user-em');
+  if (av) av.textContent = user.email.slice(0, 2).toUpperCase();
+  if (em) em.textContent = user.email;
+  const isAdmin = user.email === ADMIN_EMAIL;
+  const uploadTab = document.getElementById('tab-upload');
+  const adminBadge = document.getElementById('admin-badge');
+  if (isAdmin && uploadTab) uploadTab.style.display = 'block';
+  if (isAdmin && adminBadge) adminBadge.style.display = 'inline-block';
+  if (onSuccess) onSuccess(user, isAdmin);
+}
+
+function authShowErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session && !currentUser) authShowApp(session.user, window._authOnSuccess);
+  else if (event === 'SIGNED_OUT') authShowLogin();
+});
+
+// Storage helpers
+async function storageUpload(path, payload) {
+  const json = JSON.stringify(payload);
+  const blob = new Blob([json], { type: 'application/json' });
+  const { error } = await sb.storage.from('dashboards').upload(path, blob, {
+    upsert: true, contentType: 'application/json', cacheControl: '0'
+  });
+  return error;
+}
+
+async function storageDownload(path) {
+  const { data, error } = await sb.storage.from('dashboards').download(path);
+  if (error || !data) return null;
+  const text = await data.text();
+  return JSON.parse(text);
+}
+
+
+// ── UTILS CORE (embedded) ───────────────────────────────────
+// ============================================================
+// TORRE DE CONTROLE — UTILS CORE
+// Funções utilitárias compartilhadas
+// ============================================================
+
+const fmtM  = v => 'R$ ' + (v / 1e6).toFixed(1) + 'M';
+const fmtMd = v => 'R$ ' + (v / 1e6).toFixed(2) + 'M';
+const fmtK  = v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v.toLocaleString('pt-BR');
+const fmtP  = (a, b) => b ? ((a / b) * 100).toFixed(1) + '%' : '—';
+const fmtPct= v => v.toFixed(1) + '%';
+
+const NOME_MES = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+const REGIOES_MAP = {
+  'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
+  'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
+  'PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste',
+  'DF':'Centro-Oeste','GO':'Centro-Oeste','MS':'Centro-Oeste','MT':'Centro-Oeste',
+  'ES':'Sudeste','MG':'Sudeste','RJ':'Sudeste','SP':'Sudeste',
+  'PR':'Sul','RS':'Sul','SC':'Sul'
+};
+
+const REG_CORES = {
+  'Sudeste':'#185FA5','Nordeste':'#EF9F27',
+  'Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'
+};
+
+const MES_PALETTE = ['#378ADD','#185FA5','#0C447C','#042C53','#85B7EB',
+                     '#5AA87B','#3B6D11','#EF9F27','#E24B4A','#7F77DD','#5DCAA5','#854F0B'];
+
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  if (typeof v === 'number') return new Date(Math.round((v - 25569) * 86400 * 1000));
+  const d = new Date(v); return isNaN(d) ? null : d;
+}
+
+function colFind(r, ...names) {
+  for (const n of names) {
+    if (r[n] !== undefined && r[n] !== null) return r[n];
+  }
+  const keys = Object.keys(r);
+  for (const n of names) {
+    const base = n.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().substring(0, 8);
+    const found = keys.find(k => k.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().includes(base));
+    if (found && r[found] !== undefined) return r[found];
+  }
+  return null;
+}
+
+function readExcel(file) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws, { defval: null });
+        res(data);
+      } catch(err) { rej(err); }
+    };
+    reader.onerror = rej;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// Log helper
+function logLine(boxId, msg, type = '') {
+  const box = document.getElementById(boxId);
+  if (!box) return;
+  box.style.display = 'block';
+  const line = document.createElement('div');
+  line.className = 'log-line ' + type;
+  line.textContent = '[' + new Date().toLocaleTimeString('pt-BR') + '] ' + msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+</script>
 <script>
 // ── TABS ─────────────────────────────────────────────────────
 function switchTab(id, btn) {

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torre de Controle — Logística</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;--border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);--radius:10px;--radius-lg:14px;}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
+/* LOGIN */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand-icon{width:38px;height:38px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-size:14px;font-weight:700}.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:6px}.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none}
+.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.10)}
+.btn-login{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-login:hover{background:#0C447C}.btn-login:disabled{background:#888;cursor:not-allowed}
+.login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+/* APP */
+#screen-app{display:none}
+.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 36px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-icon{width:30px;height:30px;background:#185FA5;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-title{font-size:14px;font-weight:700}.nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
+.user-av{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
+.btn-sm:hover{background:var(--bg2)}
+/* CONTENT */
+.container{max-width:1300px;margin:0 auto;padding:32px 36px}
+.update-bar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:9px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text2)}
+.update-dot{width:7px;height:7px;border-radius:50%;background:#3B6D11;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.page-header{margin-bottom:24px}
+.page-header h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.page-header p{font-size:13px;color:var(--text2)}
+/* CARDS GRID */
+.dash-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.dash-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:box-shadow .2s,transform .15s;cursor:pointer;text-decoration:none;display:block}
+.dash-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);transform:translateY(-2px)}
+.dash-card-top{height:5px}
+.dash-card-body{padding:20px 22px 18px}
+.dash-card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.dash-card-icon svg{width:22px;height:22px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dash-card-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.dash-card-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:16px}
+.dash-card-meta{display:flex;align-items:center;justify-content:space-between}
+.badge-live{font-size:10px;padding:3px 9px;border-radius:12px;font-weight:500;background:#EAF3DE;color:#3B6D11}
+.badge-soon{font-size:10px;padding:3px 9px;border-radius:12px;font-weight:500;background:var(--bg2);color:var(--text3);border:0.5px solid var(--border)}
+.arrow{font-size:14px;color:var(--text3)}.dash-card:hover .arrow{color:#185FA5}
+@media(max-width:900px){.dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.container{padding:20px 16px}}
+@media(max-width:560px){.dash-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="brand-name">Torre de Controle</div><div class="brand-sub">Logística · Genomma Lab</div></div>
+    </div>
+    <div class="login-title">Bem-vindo</div>
+    <div class="login-sub">Acesse com seu e-mail corporativo.</div>
+    <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="l-email" placeholder="seu@genommalab.com"/></div>
+    <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app">
+  <div class="topnav">
+    <div class="nav-brand">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
+    </div>
+    <div class="nav-right">
+      <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="page-header">
+      <h1>Painéis Executivos</h1>
+      <p>Selecione um painel para visualizar os indicadores detalhados</p>
+    </div>
+    <div class="update-bar"><span class="update-dot"></span><span>Torre de Controle Logística · Genomma Lab &nbsp;·&nbsp; <strong>Jan–Mar/2026</strong></span></div>
+    <div class="dash-grid">
+
+      <!-- OTD -->
+      <a class="dash-card" href="otd/index.html">
+        <div class="dash-card-top" style="background:#185FA5"></div>
+        <div class="dash-card-body">
+          <div class="dash-card-icon" style="background:#E6F1FB"><svg stroke="#185FA5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="dash-card-title">On Time Delivery (OTD)</div>
+          <div class="dash-card-desc">Desempenho de entregas no prazo por transportadora, região e período. CD Logístico, trânsito e previsão por quarter.</div>
+          <div class="dash-card-meta"><span class="badge-live">● Ao vivo</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+
+      <!-- CUSTO DE SERVIR -->
+      <a class="dash-card" href="custo-servir/index.html">
+        <div class="dash-card-top" style="background:#1D9E75"></div>
+        <div class="dash-card-body">
+          <div class="dash-card-icon" style="background:#E1F5EE"><svg stroke="#1D9E75" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="dash-card-title">Custo de Servir</div>
+          <div class="dash-card-desc">P&L por transportadora, região e empresa. % frete sobre faturamento, evolução mensal e comparativo Genomma vs Inovalab.</div>
+          <div class="dash-card-meta"><span class="badge-live">● Ao vivo</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+
+      <!-- ESTOQUE -->
+      <a class="dash-card" href="estoque/index.html">
+        <div class="dash-card-top" style="background:#7F77DD"></div>
+        <div class="dash-card-body">
+          <div class="dash-card-icon" style="background:#EEEDFE"><svg stroke="#7F77DD" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+          <div class="dash-card-title">Estoque / Armazenagem</div>
+          <div class="dash-card-desc">Posição de estoque por armazém, giro, cobertura em dias e ocupação de posições.</div>
+          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+
+      <!-- NÍVEL DE SERVIÇO -->
+      <a class="dash-card" href="nivel-servico/index.html">
+        <div class="dash-card-top" style="background:#EF9F27"></div>
+        <div class="dash-card-body">
+          <div class="dash-card-icon" style="background:#FAEEDA"><svg stroke="#EF9F27" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="dash-card-title">Nível de Serviço</div>
+          <div class="dash-card-desc">Fill rate, OTIF e disponibilidade de produto. Pedidos perfeitos por cliente e canal.</div>
+          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+
+      <!-- DEVOLUÇÕES -->
+      <a class="dash-card" href="devolucoes/index.html">
+        <div class="dash-card-top" style="background:#E24B4A"></div>
+        <div class="dash-card-body">
+          <div class="dash-card-icon" style="background:#FCEBEB"><svg stroke="#E24B4A" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
+          <div class="dash-card-title">Devoluções / Avarias</div>
+          <div class="dash-card-desc">Volume e valor de devoluções por motivo, cliente e transportadora. Taxa de avaria.</div>
+          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+
+      <!-- PRODUTIVIDADE -->
+      <a class="dash-card" href="produtividade/index.html">
+        <div class="dash-card-top" style="background:#5DCAA5"></div>
+        <div class="dash-card-body">
+          <div class="dash-card-icon" style="background:#E1F5EE"><svg stroke="#1D9E75" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div class="dash-card-title">Produtividade Operacional</div>
+          <div class="dash-card-desc">Linhas separadas por hora, eficiência de equipes e produtividade por turno.</div>
+          <div class="dash-card-meta"><span class="badge-soon">Em breve</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+
+    </div>
+    <div style="text-align:center;padding:28px 0 8px;font-size:10px;color:var(--text3)">Torre de Controle Logística · Genomma Lab · Acesso restrito</div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
+const {createClient} = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'torre-controle-auth'}
+});
+let currentUser = null;
+
+async function checkSession(){
+  try{
+    if(window.location.hash&&window.location.hash.includes('access_token')){
+      await new Promise(r=>setTimeout(r,800));
+      window.history.replaceState(null,'',window.location.pathname);
+    }
+    const {data:{session},error}=await sb.auth.getSession();
+    if(error||!session){showLogin();return;}
+    showApp(session.user);
+  }catch(e){showLogin();}
+}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const btn=document.getElementById('btn-login');
+  const err=document.getElementById('login-err');
+  err.style.display='none';
+  if(!email||!pass){showErr(err,'Preencha e-mail e senha.');return;}
+  btn.disabled=true; btn.textContent='Entrando…';
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){
+      let msg=error.message;
+      if(msg.includes('Invalid login')||msg.includes('invalid_credentials')) msg='E-mail ou senha incorretos.';
+      else if(msg.includes('fetch')||msg.includes('NetworkError')) msg='Erro de conexão. Verifique sua internet.';
+      showErr(err,msg); btn.disabled=false; btn.textContent='Entrar';
+    } else { showApp(data.user); }
+  }catch(e){ showErr(err,'Erro: '+e.message); btn.disabled=false; btn.textContent='Entrar'; }
+}
+
+async function doLogout(){
+  await sb.auth.signOut(); currentUser=null;
+  document.getElementById('screen-app').style.display='none';
+  document.getElementById('screen-login').style.display='flex';
+}
+
+function showLogin(){ document.getElementById('screen-login').style.display='flex'; document.getElementById('screen-app').style.display='none'; }
+function showApp(user){
+  currentUser=user;
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').style.display='block';
+  document.getElementById('user-av').textContent=user.email.slice(0,2).toUpperCase();
+  document.getElementById('user-em').textContent=user.email;
+}
+function showErr(el,msg){el.textContent=msg;el.style.display='block';}
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN'&&session&&!currentUser) showApp(session.user);
+  else if(event==='SIGNED_OUT') showLogin();
+});
+checkSession();
+</script>
+</body>
+</html>
