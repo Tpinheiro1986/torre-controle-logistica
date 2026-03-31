@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Custo de Servir — Torre de Controle</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--text3:#a0a09a;
+  --border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.18);
+  --r:8px;--rl:14px;
+  --green:#1D9E75;--green-lt:#E1F5EE;--green-dk:#0F6E56;
+  --blue:#185FA5;--blue-lt:#E6F1FB;
+  --red:#A32D2D;--red-lt:#FCEBEB;
+  --amber:#854F0B;--amber-lt:#FAEEDA;
+  --purple:#7F77DD;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;
+  --border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:13px;line-height:1.5}
+
+/* ── LOGIN ── */
+#scr-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.lcard{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px}
+.lb{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.lico{width:36px;height:36px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.lico svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ltit{font-size:22px;font-weight:700;margin-bottom:6px}
+.lsub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.fi{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);font-size:13px;outline:none}
+.fi:focus{border-color:var(--green)}
+.bp{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px}
+.bp:hover{background:var(--green-dk)}.bp:disabled{background:#888;cursor:not-allowed}
+.lerr{background:var(--red-lt);color:var(--red);border:0.5px solid #F7C1C1;border-radius:var(--r);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+
+/* ── APP ── */
+#scr-app{display:none}
+.nav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nbr{display:flex;align-items:center;gap:10px}
+.nico{width:28px;height:28px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.nico svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nti{font-size:13px;font-weight:700}
+.nsu{font-size:10px;color:var(--text2)}
+.nr{display:flex;align-items:center;gap:8px}
+.nbk{font-size:11px;padding:4px 12px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.nbk:hover{background:var(--bg2)}
+.uch{display:flex;align-items:center;gap:7px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
+.uav{width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.uem{font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bsm{font-size:11px;padding:3px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
+.bsm:hover{background:var(--bg2)}
+.abg{font-size:10px;padding:2px 8px;border-radius:12px;background:var(--green-lt);color:var(--green);font-weight:500}
+
+/* ── TABS ── */
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;display:flex;overflow-x:auto;scrollbar-width:none}
+.tab{font-size:13px;padding:11px 14px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--text)}.tab.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+
+/* ── FILTROS ── */
+.fbar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:8px 12px;margin-bottom:10px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.flbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;flex-shrink:0}
+.fdiv{width:0.5px;height:14px;background:var(--border2);margin:0 3px;flex-shrink:0}
+.fb{font-size:11px;padding:3px 9px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap}
+.fb:hover{background:var(--bg2)}.fb.on{background:var(--bg);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1400px;margin:0 auto;padding:20px 28px}
+.sec{display:none}.sec.on{display:block}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:10px}
+.slbl{font-size:9px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.sn{width:18px;height:18px;border-radius:50%;background:var(--green-lt);display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--green);flex-shrink:0}
+.krow{display:grid;gap:8px;margin-bottom:10px}
+.k5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.k4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.k3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.k2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:11px 13px}
+.kl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.kv{font-size:19px;font-weight:700;line-height:1.1}
+.ks{font-size:10px;color:var(--text2);margin-top:3px}
+.ubar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:8px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2)}
+.udot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
+.empty{text-align:center;padding:80px 20px;color:var(--text2)}
+.empty svg{width:44px;height:44px;margin:0 auto 14px;display:block;opacity:.25}
+/* TABLES */
+.tw{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;font-size:11px}
+table.dt th{padding:6px 9px;font-weight:600;color:var(--text2);border-bottom:0.5px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em;text-align:left;background:var(--bg2);white-space:nowrap}
+table.dt th.r,table.dt td.r{text-align:right}
+table.dt td{padding:6px 9px;border-bottom:0.5px solid var(--border);white-space:nowrap;vertical-align:middle}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tr:hover td{background:var(--bg2)}
+.tr-tot td{background:var(--bg2)!important;font-weight:700;border-top:0.5px solid var(--border2)!important}
+/* chip empresa */
+.chip{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.chip-g{background:var(--blue-lt);color:var(--blue)}
+.chip-i{background:var(--green-lt);color:var(--green)}
+
+@media(max-width:900px){.k5,.k4{grid-template-columns:repeat(2,minmax(0,1fr))}.k3{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:16px}}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="scr-login">
+  <div class="lcard">
+    <div class="lb">
+      <div class="lico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div><div style="font-size:14px;font-weight:700">Custo de Servir</div><div style="font-size:11px;color:var(--text2)">Torre de Controle · Genomma Lab</div></div>
+    </div>
+    <div class="ltit">Bem-vindo</div>
+    <div class="lsub">Acesse com seu e-mail corporativo.</div>
+    <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="l-em" placeholder="seu@genommalab.com"></div>
+    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="l-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="bp" id="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="scr-app">
+  <nav class="nav">
+    <div class="nbr">
+      <div class="nico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div><div class="nti">Custo de Servir</div><div class="nsu">Torre de Controle · Genomma Lab</div></div>
+    </div>
+    <div class="nr">
+      <a class="nbk" href="../index.html">← Início</a>
+      <span class="abg" id="abg" style="display:none">Admin</span>
+      <div class="uch"><div class="uav" id="uav">?</div><span class="uem" id="uem">—</span></div>
+      <button class="bsm" onclick="doLogout()">Sair</button>
+    </div>
+  </nav>
+
+  <div class="tabs">
+    <div class="tab on"  onclick="goTab('dash',this)">Dashboard</div>
+    <div class="tab"     onclick="goTab('transp',this)">Transportadoras</div>
+    <div class="tab"     onclick="goTab('regiao',this)">Regiões / UF</div>
+    <div class="tab"     onclick="goTab('cliente',this)">Clientes</div>
+    <div class="tab"     onclick="goTab('quarter',this)">Por Quarter</div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- EMPTY -->
+    <div id="cs-empty" class="empty">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <p style="font-weight:600;margin-bottom:6px">Aguardando dados</p>
+      <p style="font-size:11px">Execute <strong>ATUALIZAR.bat</strong> no servidor para processar os XMLs de CTe.</p>
+    </div>
+
+    <!-- MAIN -->
+    <div id="cs-main" style="display:none">
+
+      <!-- FILTROS -->
+      <div class="fbar">
+        <span class="flbl">Empresa</span>
+        <button class="fb on" data-g="emp" data-v="all" onclick="fil(this)">Todas</button>
+        <button class="fb"    data-g="emp" data-v="GENOMMA"  onclick="fil(this)">Genomma</button>
+        <button class="fb"    data-g="emp" data-v="INOVALAB" onclick="fil(this)">Inovalab</button>
+        <div class="fdiv"></div>
+        <span class="flbl">Ano</span>
+        <button class="fb on" data-g="ano" data-v="all" onclick="fil(this)">Todos</button>
+        <span id="f-anos"></span>
+        <div class="fdiv"></div>
+        <span class="flbl">Quarter</span>
+        <button class="fb on" data-g="qtr" data-v="all" onclick="fil(this)">Todos</button>
+        <span id="f-qtrs"></span>
+        <div class="fdiv"></div>
+        <span class="flbl">Mês</span>
+        <button class="fb on" data-g="mes" data-v="all" onclick="fil(this)">Todos</button>
+        <span id="f-meses"></span>
+        <div class="fdiv"></div>
+        <span class="flbl">Tipo Op.</span>
+        <button class="fb on" data-g="tipo" data-v="all" onclick="fil(this)">Todos</button>
+        <button class="fb"    data-g="tipo" data-v="CIF" onclick="fil(this)">CIF</button>
+        <button class="fb"    data-g="tipo" data-v="FOB" onclick="fil(this)">FOB</button>
+        <div class="fdiv"></div>
+        <span class="flbl">Região</span>
+        <button class="fb on" data-g="reg" data-v="all"          onclick="fil(this)">Todas</button>
+        <button class="fb"    data-g="reg" data-v="Sudeste"       onclick="fil(this)">Sudeste</button>
+        <button class="fb"    data-g="reg" data-v="Nordeste"      onclick="fil(this)">Nordeste</button>
+        <button class="fb"    data-g="reg" data-v="Centro-Oeste"  onclick="fil(this)">C-Oeste</button>
+        <button class="fb"    data-g="reg" data-v="Sul"           onclick="fil(this)">Sul</button>
+        <button class="fb"    data-g="reg" data-v="Norte"         onclick="fil(this)">Norte</button>
+      </div>
+
+      <!-- UPDATE BAR -->
+      <div class="ubar"><span class="udot"></span><span id="ubar-txt">—</span></div>
+
+      <!-- ══ DASHBOARD ══ -->
+      <div class="sec on" id="sec-dash">
+        <div class="krow k5" id="k-dash"></div>
+        <div style="display:grid;grid-template-columns:3fr 2fr;gap:10px;margin-bottom:10px">
+          <div class="card">
+            <div class="slbl"><span class="sn">1</span>%CTS por mês — frete / mercadoria transportada</div>
+            <div id="leg1" style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--text2)"></div>
+            <div style="position:relative;height:210px"><canvas id="c1"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">2</span>Genomma vs Inovalab</div>
+            <div id="emp-cds"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="slbl"><span class="sn">3</span>%CTS por tipo de operação — CIF vs FOB</div>
+          <div id="leg3" style="display:flex;gap:10px;margin-bottom:8px;font-size:11px;color:var(--text2)"></div>
+          <div style="position:relative;height:150px"><canvas id="c3"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ══ TRANSPORTADORAS ══ -->
+      <div class="sec" id="sec-transp">
+        <div class="card">
+          <div class="slbl"><span class="sn">1</span>%CTS Frete/Mercadoria por transportadora</div>
+          <div id="ct-wrap" style="position:relative;height:480px;margin-bottom:16px"><canvas id="ct1"></canvas></div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Transportadora</th>
+              <th class="r">CTes</th>
+              <th class="r" style="color:var(--red)">Frete Total</th>
+              <th class="r" style="color:var(--blue)">Mercadoria</th>
+              <th class="r" style="color:var(--amber)">%CTS Total</th>
+              <th class="r">%CTS Genomma</th>
+              <th class="r">%CTS Inovalab</th>
+              <th style="min-width:70px">Participação</th>
+            </tr></thead>
+            <tbody id="tb-tr"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- ══ REGIÕES / UF ══ -->
+      <div class="sec" id="sec-regiao">
+        <div class="krow" id="k-reg"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div class="card">
+            <div class="slbl"><span class="sn">1</span>%CTS por região — ordenado</div>
+            <div style="position:relative;height:240px"><canvas id="cr1"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">2</span>Frete por região</div>
+            <div style="position:relative;height:240px"><canvas id="cr2"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="slbl"><span class="sn">3</span>Top UFs por custo de frete</div>
+          <div id="uf-wrap" style="position:relative;height:460px"><canvas id="cr3"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="slbl"><span class="sn">4</span>Detalhamento por região</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Região</th><th class="r">CTes</th>
+              <th class="r" style="color:var(--red)">Frete</th>
+              <th class="r" style="color:var(--blue)">Mercadoria</th>
+              <th class="r" style="color:var(--amber)">%CTS</th>
+              <th style="min-width:70px">Participação</th>
+            </tr></thead>
+            <tbody id="tb-reg"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- ══ CLIENTES ══ -->
+      <div class="sec" id="sec-cliente">
+        <div class="card">
+          <div class="slbl"><span class="sn">1</span>Clientes — %CTS Frete/Mercadoria por empresa — ordenado por %CTS</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>#</th><th>Cliente</th><th>Empresa</th>
+              <th>Região</th><th>UF</th>
+              <th class="r">CTes</th>
+              <th class="r" style="color:var(--red)">Frete</th>
+              <th class="r" style="color:var(--blue)">Mercadoria</th>
+              <th class="r" style="color:var(--amber)">%CTS</th>
+              <th style="min-width:70px">Nível</th>
+            </tr></thead>
+            <tbody id="tb-cli"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- ══ QUARTER ══ -->
+      <div class="sec" id="sec-quarter">
+        <div class="card">
+          <div class="slbl"><span class="sn">1</span>%CTS por quarter</div>
+          <div style="position:relative;height:220px;margin-bottom:14px"><canvas id="cq1"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="slbl"><span class="sn">2</span>Genomma vs Inovalab — frete por quarter (acumulado)</div>
+          <div style="position:relative;height:200px;margin-bottom:14px"><canvas id="cq2"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="slbl"><span class="sn">3</span>Resumo por quarter</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Quarter</th><th class="r">CTes</th>
+              <th class="r" style="color:var(--red)">Frete</th>
+              <th class="r" style="color:var(--blue)">Mercadoria</th>
+              <th class="r" style="color:var(--amber)">%CTS</th>
+              <th class="r">Genomma Frete</th>
+              <th class="r">Inovalab Frete</th>
+            </tr></thead>
+            <tbody id="tb-qtr"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div><!-- /cs-main -->
+  </div><!-- /wrap -->
+</div><!-- /scr-app -->
+
+<script>
+// ─── SUPABASE AUTH ───────────────────────────────────────────
+const SURL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
+const SANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONwI5';
+const ADMIN = 'thiago_balao@yahoo.com.br';
+const {createClient} = supabase;
+const sb = createClient(SURL, SANON, {
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,
+        flowType:'implicit',storageKey:'torre-controle-auth'}
+});
+let user = null;
+
+async function checkSession(){
+  if(location.hash.includes('access_token')){await new Promise(r=>setTimeout(r,800));history.replaceState(null,'',location.pathname);}
+  const {data:{session}} = await sb.auth.getSession();
+  session ? showApp(session.user) : showLogin();
+}
+async function doLogin(){
+  const em=document.getElementById('l-em').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  const btn=document.getElementById('btn-login');
+  const err=document.getElementById('lerr');
+  err.style.display='none';
+  if(!em||!pw){err.textContent='Preencha e-mail e senha.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Entrando…';
+  const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});
+  if(error){
+    let m=error.message;
+    if(m.includes('Invalid login')||m.includes('invalid_credentials'))m='E-mail ou senha incorretos.';
+    err.textContent=m;err.style.display='block';btn.disabled=false;btn.textContent='Entrar';
+  }else showApp(data.user);
+}
+async function doLogout(){await sb.auth.signOut();user=null;showLogin();}
+function showLogin(){document.getElementById('scr-login').style.display='flex';document.getElementById('scr-app').style.display='none';}
+function showApp(u){
+  user=u;
+  document.getElementById('scr-login').style.display='none';
+  document.getElementById('scr-app').style.display='block';
+  document.getElementById('uav').textContent=u.email.slice(0,2).toUpperCase();
+  document.getElementById('uem').textContent=u.email;
+  if(u.email===ADMIN)document.getElementById('abg').style.display='inline-block';
+  setTimeout(loadData,400);
+}
+sb.auth.onAuthStateChange((ev,ses)=>{
+  if(ev==='SIGNED_IN'&&ses&&!user)showApp(ses.user);
+  else if(ev==='SIGNED_OUT')showLogin();
+});
+
+// ─── TABS ────────────────────────────────────────────────────
+const TIDS=['dash','transp','regiao','cliente','quarter'];
+let curTab='dash';
+function goTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  TIDS.forEach(s=>{const el=document.getElementById('sec-'+s);if(el){el.classList.remove('on');el.style.display='none';}});
+  btn.classList.add('on');
+  const sec=document.getElementById('sec-'+id);
+  if(sec){sec.classList.add('on');sec.style.display='block';}
+  curTab=id;renderTab(id);
+}
+TIDS.slice(1).forEach(s=>{const el=document.getElementById('sec-'+s);if(el)el.style.display='none';});
+
+// ─── DATA ────────────────────────────────────────────────────
+let D=null;
+async function loadData(){
+  for(let i=0;i<4;i++){
+    try{
+      const {data,error}=await sb.storage.from('dashboards').download('custo-servir/dados.json');
+      if(error||!data){await new Promise(r=>setTimeout(r,600));continue;}
+      D=JSON.parse(await data.text());
+      initDash(); return;
+    }catch(e){await new Promise(r=>setTimeout(r,600));}
+  }
+}
+
+// ─── FILTROS ─────────────────────────────────────────────────
+const F={emp:'all',ano:'all',qtr:'all',mes:'all',tipo:'all',reg:'all'};
+const CH={};
+
+function fil(btn){
+  const g=btn.dataset.g,v=btn.dataset.v;
+  document.querySelectorAll(`.fb[data-g="${g}"]`).forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); F[g]=v;
+  // reset cascata
+  if(g==='ano'){
+    F.qtr='all';F.mes='all';
+    document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
+    document.querySelector('.fb[data-g="qtr"][data-v="all"]').classList.add('on');
+    document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');
+  }
+  if(g==='qtr'&&v!=='all'){
+    F.mes='all';
+    document.querySelectorAll('.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
+    document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');
+  }
+  renderTab(curTab);
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+const RC={Sudeste:'#185FA5',Nordeste:'#EF9F27','Centro-Oeste':'#1D9E75',Sul:'#7F77DD',Norte:'#5DCAA5',Outros:'#888780'};
+const fM =v=>'R$'+(v/1e6).toFixed(2)+'M';
+const fK =v=>v>=1e6?'R$'+(v/1e6).toFixed(1)+'M':v>=1000?'R$'+(v/1e3).toFixed(0)+'K':'R$'+Math.round(v);
+const pf =v=>v!=null?v.toFixed(2)+'%':'—';
+const cor=v=>v==null?'var(--text2)':v>10?'#A32D2D':v>5?'#854F0B':'#3B6D11';
+const ch =(c,id)=>{const el=document.getElementById(id);if(CH[c]){CH[c].destroy();}; return el;}
+
+// filtra array de meses do D
+function fMeses(){
+  return (D.meses||[]).filter(m=>
+    (F.ano==='all'||String(m.ano)===F.ano)&&
+    (F.mes==='all'||String(m.mes)===F.mes)&&
+    (F.qtr==='all'||`Q${Math.ceil(m.mes/3)}/${String(m.ano).slice(2)}`===F.qtr)
+  );
+}
+// Para transportadoras/regiões/clientes, filtra usando os dados do servidor
+// Nota: como os dados estão pré-agregados, filtramos por empresa quando possível
+function getTotais(){
+  const ms=fMeses();
+  let f=0,m=0,n=0,gf=0,gm=0,inf=0,inm=0;
+  ms.forEach(x=>{
+    const gScale=F.emp==='GENOMMA'?1:F.emp==='INOVALAB'?0:1;
+    const iScale=F.emp==='INOVALAB'?1:F.emp==='GENOMMA'?0:1;
+    if(F.emp==='GENOMMA'){f+=x.genomma_frete;m+=x.genomma_merc;n+=x.ctes;}
+    else if(F.emp==='INOVALAB'){f+=x.inovalab_frete;m+=x.inovalab_merc;n+=x.ctes;}
+    else{f+=x.frete;m+=x.v_merc;n+=x.ctes;}
+    gf+=x.genomma_frete;gm+=x.genomma_merc;
+    inf+=x.inovalab_frete;inm+=x.inovalab_merc;
+  });
+  return {f,m,n,pct:m>0?+(f/m*100).toFixed(2):null,
+    gf,gm,gPct:gm>0?+(gf/gm*100).toFixed(2):null,
+    inf,inm,iPct:inm>0?+(inf/inm*100).toFixed(2):null};
+}
+function getTransps(){
+  if(F.emp==='all'&&F.tipo==='all'&&F.reg==='all') return D.transportadoras||[];
+  // filtra por empresa quando selecionado — usa dados do servidor como aproximação
+  return (D.transportadoras||[]).map(t=>({
+    ...t,
+    frete: F.emp==='GENOMMA'?t.genomma_frete:F.emp==='INOVALAB'?t.inovalab_frete:t.frete,
+    v_merc: F.emp==='GENOMMA'?(t.genomma_frete/(t.pct_cts||1)*100):F.emp==='INOVALAB'?(t.inovalab_frete/(t.pct_cts||1)*100):t.v_merc,
+    pct_cts: F.emp==='GENOMMA'?t.pct_genomma:F.emp==='INOVALAB'?t.pct_inovalab:t.pct_cts,
+  })).filter(t=>t.frete>0).sort((a,b)=>b.frete-a.frete);
+}
+function getRegs(){
+  return (D.regioes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg);
+}
+function getClis(){
+  return (D.clientes||[]).filter(c=>
+    (F.emp==='all'||c.empresa===F.emp)&&
+    (F.reg==='all'||c.regiao===F.reg)
+  ).sort((a,b)=>(b.pct_cts||0)-(a.pct_cts||0));
+}
+function getQtrs(){
+  return (D.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano);
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+function initDash(){
+  document.getElementById('cs-empty').style.display='none';
+  document.getElementById('cs-main').style.display='block';
+
+  // update bar
+  const t=D.totais||{};
+  document.getElementById('ubar-txt').innerHTML=
+    'Atualizado: <strong>'+(D.atualizado||'—')+'</strong>'
+    +' &nbsp;·&nbsp; <strong>'+(t.ctes||0).toLocaleString('pt-BR')+'</strong> CTes processados'
+    +' &nbsp;·&nbsp; Anos: <strong>'+(D.anos_filtro||[]).join(', ')+'</strong>'
+    +' &nbsp;·&nbsp; Novos nesta execução: <strong>'+(D.novos_nesta_execucao||0)+'</strong>';
+
+  // filtros dinâmicos — Anos
+  const anos=[...new Set((D.meses||[]).map(m=>m.ano))].sort();
+  const fa=document.getElementById('f-anos');fa.innerHTML='';
+  anos.forEach(a=>{const b=mk_fb(String(a),'ano',String(a));fa.appendChild(b);});
+
+  // Quarters
+  const fq=document.getElementById('f-qtrs');fq.innerHTML='';
+  [...new Set((D.quarters||[]).map(q=>q.q))].sort().forEach(q=>{fq.appendChild(mk_fb(q,'qtr',q));});
+
+  // Meses
+  const fm2=document.getElementById('f-meses');fm2.innerHTML='';
+  (D.meses||[]).forEach(m=>{fm2.appendChild(mk_fb(m.nome+'/'+String(m.ano).slice(2),'mes',String(m.mes)));});
+
+  renderTab('dash');
+}
+function mk_fb(label,g,v){
+  const b=document.createElement('button');b.className='fb';b.textContent=label;
+  b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;
+}
+
+// ─── RENDER ──────────────────────────────────────────────────
+function renderTab(id){
+  if(id==='dash')    renderDash();
+  if(id==='transp')  renderTransp();
+  if(id==='regiao')  renderRegiao();
+  if(id==='cliente') renderCliente();
+  if(id==='quarter') renderQuarter();
+}
+
+// DASHBOARD
+function renderDash(){
+  const tot=getTotais();
+  document.getElementById('k-dash').innerHTML=
+    kpi('Frete Total',fM(tot.f),tot.n.toLocaleString('pt-BR')+' CTes','var(--red)')+
+    kpi('Mercadoria',fM(tot.m),'valor transportado','var(--blue)')+
+    kpi('%CTS Total',pf(tot.pct),'frete / mercadoria','var(--amber)')+
+    kpi('Genomma %CTS',pf(tot.gPct),fM(tot.gf),'#185FA5')+
+    kpi('Inovalab %CTS',pf(tot.iPct),fM(tot.inf),'var(--green)');
+
+  document.getElementById('emp-cds').innerHTML=
+    empCard('Genomma Lab','#185FA5',tot.gf,tot.gm)+
+    '<div style="height:8px"></div>'+
+    empCard('Inovalab','var(--green)',tot.inf,tot.inm);
+
+  buildC1();buildC3();
+}
+function kpi(l,v,s,co){return`<div class="kpi"><div class="kl">${l}</div><div class="kv" style="color:${co}">${v}</div><div class="ks">${s}</div></div>`;}
+function empCard(nome,co,f,m){
+  const p=m>0?pf(+(f/m*100).toFixed(2)):'—';
+  return`<div style="border:0.5px solid var(--border);border-left:3px solid ${co};border-radius:var(--r);padding:11px 13px">
+    <div style="font-size:9px;font-weight:600;color:${co};text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">${nome}</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div><div style="font-size:9px;color:var(--text2);margin-bottom:2px">Frete</div><div style="font-size:17px;font-weight:700;color:var(--red)">${fM(f)}</div></div>
+      <div><div style="font-size:9px;color:var(--text2);margin-bottom:2px">Mercadoria</div><div style="font-size:17px;font-weight:700;color:var(--blue)">${fM(m)}</div></div>
+      <div><div style="font-size:9px;color:var(--text2);margin-bottom:2px">%CTS</div><div style="font-size:17px;font-weight:700;color:var(--amber)">${p}</div></div>
+    </div>
+  </div>`;
+}
+
+function buildC1(){
+  const el=ch('c1','c1'); if(!el)return;
+  const ms=fMeses();
+  const labels=ms.map(m=>m.nome+(ms.length>12?'/'+String(m.ano).slice(2):''));
+  const ds=[];
+  const emps=F.emp==='all'?['GENOMMA','INOVALAB']:[F.emp];
+  const cols={GENOMMA:'#185FA5',INOVALAB:'#1D9E75'};
+  emps.forEach(e=>{
+    const key=e==='GENOMMA'?'pct_genomma':'pct_inovalab';
+    ds.push({label:e[0]+e.slice(1).toLowerCase(),data:ms.map(m=>m[key]),
+      borderColor:cols[e],backgroundColor:cols[e]+'20',
+      pointBackgroundColor:'#fff',pointBorderColor:cols[e],pointBorderWidth:2,
+      pointRadius:4,borderWidth:2.5,tension:.3,spanGaps:true});
+  });
+  if(F.emp==='all') ds.push({label:'Total',data:ms.map(m=>m.pct_cts),
+    borderColor:'#EF9F27',backgroundColor:'transparent',
+    pointRadius:3,borderWidth:1.5,borderDash:[4,3],tension:.3,spanGaps:true});
+  document.getElementById('leg1').innerHTML=ds.map(d=>
+    `<span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;background:${d.borderColor};display:inline-block;border-radius:2px"></span>${d.label}</span>`).join('');
+  CH.c1=new Chart(el,{type:'line',data:{labels,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.raw!=null?c.raw+'%':'—')}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false,maxRotation:45},border:{display:false}},
+              y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},min:0}}}});
+}
+
+function buildC3(){
+  const el=ch('c3','c3');if(!el)return;
+  const tipos=D.tipos||{};
+  const emps=F.emp==='all'?['GENOMMA','INOVALAB']:[F.emp];
+  const tps=F.tipo==='all'?['CIF','FOB']:[F.tipo];
+  const labels=[],vals=[],bgs=[];
+  const cc={CIF:{GENOMMA:'#185FA5',INOVALAB:'#85B7EB'},FOB:{GENOMMA:'#1D9E75',INOVALAB:'#9FE1CB'}};
+  tps.forEach(tp=>{emps.forEach(e=>{
+    const d=tipos[tp];if(!d)return;
+    const v=e==='GENOMMA'?d.pct_genomma:d.pct_inovalab;
+    if(v==null)return;
+    labels.push(tp+' '+e.slice(0,3));vals.push(v);bgs.push(cc[tp]?.[e]||'#888');
+  });});
+  document.getElementById('leg3').innerHTML=labels.map((l,i)=>
+    `<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:${bgs[i]}"></span>${l}: ${vals[i]}%</span>`).join('');
+  CH.c3=new Chart(el,{type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:bgs,borderWidth:0,borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false},border:{display:false}},
+              y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},min:0}}}});
+}
+
+// TRANSPORTADORAS
+function renderTransp(){
+  const trs=getTransps();
+  const totalF=trs.reduce((s,t)=>s+t.frete,0)||1;
+  const top=trs.slice(0,15);
+  const wrap=document.getElementById('ct-wrap');
+  wrap.style.height=Math.max(280,(top.length*36+80))+'px';
+  const el=ch('ct1','ct1');if(!el)return;
+  CH.ct1=new Chart(el,{type:'bar',
+    data:{labels:top.map(t=>t.nome.substring(0,35)),datasets:[
+      {label:'%CTS',data:top.map(t=>t.pct_cts),backgroundColor:'#E24B4A88',borderColor:'#E24B4A',borderWidth:1.5,borderRadius:4,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[c.raw+'%','Frete: '+fM(top[c.dataIndex].frete)]}}},
+      scales:{y:{grid:{display:false},ticks:{font:{size:10}},border:{display:false}},
+              x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'}}}}});
+  document.getElementById('tb-tr').innerHTML=trs.map(t=>{
+    const w=Math.round(t.frete/totalF*100);
+    return`<tr>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${t.nome}</td>
+      <td class="r">${t.ctes}</td>
+      <td class="r" style="color:var(--red)">${fM(t.frete)}</td>
+      <td class="r" style="color:var(--blue)">${fM(t.v_merc)}</td>
+      <td class="r" style="color:${cor(t.pct_cts)};font-weight:600">${pf(t.pct_cts)}</td>
+      <td class="r">${pf(t.pct_genomma)}</td>
+      <td class="r">${pf(t.pct_inovalab)}</td>
+      <td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:${w}%;background:#E24B4A;border-radius:3px"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// REGIÕES
+function renderRegiao(){
+  const regs=getRegs();
+  const totalF=regs.reduce((s,r)=>s+r.frete,0)||1;
+  // kpi row
+  const krow=document.getElementById('k-reg');
+  krow.className='krow'; krow.style.gridTemplateColumns=`repeat(${Math.min(regs.length,5)},minmax(0,1fr))`;
+  krow.innerHTML=regs.map(r=>`<div class="kpi" style="border-left:3px solid ${RC[r.regiao]||'#888'}">
+    <div class="kl">${r.regiao}</div><div class="kv" style="color:var(--red)">${fM(r.frete)}</div>
+    <div class="ks">${pf(r.pct_cts)} · ${r.ctes} CTes</div></div>`).join('');
+
+  // gráfico %CTS ordenado
+  const byPct=[...regs].sort((a,b)=>(b.pct_cts||0)-(a.pct_cts||0));
+  let el=ch('cr1','cr1');if(el){
+    CH.cr1=new Chart(el,{type:'bar',data:{labels:byPct.map(r=>r.regiao.replace('Centro-Oeste','C-O')),
+      datasets:[{data:byPct.map(r=>r.pct_cts),backgroundColor:byPct.map(r=>RC[r.regiao]||'#888'),borderWidth:0,borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>[c.raw+'%','Frete: '+fM(byPct[c.dataIndex].frete)]}}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false},border:{display:false}},
+                y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},min:0}}}});}
+
+  // donut frete
+  el=ch('cr2','cr2');if(el){
+    CH.cr2=new Chart(el,{type:'doughnut',data:{labels:regs.map(r=>r.regiao),
+      datasets:[{data:regs.map(r=>r.frete),backgroundColor:regs.map(r=>RC[r.regiao]||'#888'),borderWidth:0,hoverOffset:4}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},
+        tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+pf(+(c.raw/totalF*100).toFixed(2))+')'}}}}});}
+
+  // UFs
+  const ufs=(D.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg).slice(0,12);
+  const wrap=document.getElementById('uf-wrap');wrap.style.height=Math.max(240,ufs.length*40+80)+'px';
+  el=ch('cr3','cr3');if(el){
+    CH.cr3=new Chart(el,{type:'bar',data:{labels:ufs.map(u=>u.uf),
+      datasets:[{data:ufs.map(u=>u.frete),backgroundColor:ufs.map(u=>RC[u.regiao]||'#378ADD'),borderWidth:0,borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>[fK(c.raw),'%CTS: '+pf(ufs[c.dataIndex].pct_cts)]}}},
+        scales:{y:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
+                x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)}}}}});}
+
+  document.getElementById('tb-reg').innerHTML=regs.map(r=>{
+    const w=Math.round(r.frete/totalF*100);
+    return`<tr>
+      <td><span style="display:inline-flex;align-items:center;gap:6px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${RC[r.regiao]||'#888'}"></span>
+        <strong>${r.regiao}</strong></span></td>
+      <td class="r">${r.ctes}</td>
+      <td class="r" style="color:var(--red)">${fM(r.frete)}</td>
+      <td class="r" style="color:var(--blue)">${fM(r.v_merc)}</td>
+      <td class="r" style="color:${cor(r.pct_cts)};font-weight:600">${pf(r.pct_cts)}</td>
+      <td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:${w}%;background:${RC[r.regiao]||'#888'};border-radius:3px"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// CLIENTES
+function renderCliente(){
+  const clis=getClis();
+  const maxF=clis[0]?.frete||1;
+  document.getElementById('tb-cli').innerHTML=clis.map((c,i)=>`<tr>
+    <td style="color:var(--text2);font-size:10px">${i+1}</td>
+    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;font-weight:500">${c.nome}</td>
+    <td><span class="chip ${c.empresa==='GENOMMA'?'chip-g':'chip-i'}">${c.empresa}</span></td>
+    <td style="font-size:10px;color:var(--text2)">${c.regiao||'—'}</td>
+    <td style="font-size:10px;color:var(--text2)">${c.uf||'—'}</td>
+    <td class="r">${c.ctes}</td>
+    <td class="r" style="color:var(--red)">${fK(c.frete)}</td>
+    <td class="r" style="color:var(--blue)">${fK(c.v_merc)}</td>
+    <td class="r" style="color:${cor(c.pct_cts)};font-weight:600">${pf(c.pct_cts)}</td>
+    <td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:${Math.round(c.frete/maxF*100)}%;background:${cor(c.pct_cts)};border-radius:3px"></div></div></td>
+  </tr>`).join('');
+}
+
+// QUARTER
+function renderQuarter(){
+  const qs=getQtrs();if(!qs.length)return;
+  let el=ch('cq1','cq1');if(el){
+    CH.cq1=new Chart(el,{type:'bar',data:{labels:qs.map(q=>q.q),datasets:[
+      {label:'%CTS',data:qs.map(q=>q.pct_cts),backgroundColor:'#E24B4A88',borderColor:'#E24B4A',borderWidth:1.5,borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>[c.raw+'%','Frete: '+fM(qs[c.dataIndex].frete)]}}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:11},autoSkip:false},border:{display:false}},
+                y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:11},callback:v=>v+'%'},min:0}}}});}
+
+  el=ch('cq2','cq2');if(el){
+    CH.cq2=new Chart(el,{type:'bar',data:{labels:qs.map(q=>q.q),datasets:[
+      {label:'Inovalab',data:qs.map(q=>q.inovalab_frete),backgroundColor:'#1D9E75',borderWidth:0,borderRadius:0,stack:'s'},
+      {label:'Genomma', data:qs.map(q=>q.genomma_frete), backgroundColor:'#185FA5',borderWidth:0,borderRadius:4,stack:'s'}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+fM(c.raw)}}},
+        scales:{x:{grid:{display:false},ticks:{font:{size:11},autoSkip:false},border:{display:false}},
+                y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},stacked:true,ticks:{font:{size:10},callback:v=>fK(v)}}}}});}
+
+  const totF=qs.reduce((s,q)=>s+q.frete,0);
+  const totM=qs.reduce((s,q)=>s+q.v_merc,0);
+  const totG=qs.reduce((s,q)=>s+q.genomma_frete,0);
+  const totI=qs.reduce((s,q)=>s+q.inovalab_frete,0);
+  document.getElementById('tb-qtr').innerHTML=
+    qs.map(q=>`<tr>
+      <td><strong>${q.q}</strong></td>
+      <td class="r">${q.ctes}</td>
+      <td class="r" style="color:var(--red)">${fM(q.frete)}</td>
+      <td class="r" style="color:var(--blue)">${fM(q.v_merc)}</td>
+      <td class="r" style="color:${cor(q.pct_cts)};font-weight:600">${pf(q.pct_cts)}</td>
+      <td class="r" style="color:var(--blue)">${fM(q.genomma_frete)}</td>
+      <td class="r" style="color:var(--green)">${fM(q.inovalab_frete)}</td>
+    </tr>`).join('')+
+    `<tr class="tr-tot"><td>Total</td><td class="r">${qs.reduce((s,q)=>s+q.ctes,0)}</td>
+    <td class="r" style="color:var(--red)">${fM(totF)}</td>
+    <td class="r" style="color:var(--blue)">${fM(totM)}</td>
+    <td class="r">${totM>0?pf(+(totF/totM*100).toFixed(2)):'—'}</td>
+    <td class="r" style="color:var(--blue)">${fM(totG)}</td>
+    <td class="r" style="color:var(--green)">${fM(totI)}</td></tr>`;
+}
+
+// ─── BOOT ────────────────────────────────────────────────────
+window.addEventListener('load', checkSession);
+</script>
+</body>
+</html>
