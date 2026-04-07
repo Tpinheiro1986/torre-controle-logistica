@@ -275,13 +275,15 @@ function initDash(){
   document.getElementById('cnt-out').textContent=(r.outbound_ctes||0).toLocaleString('pt-BR')+' CTes';
   document.getElementById('cnt-in').textContent=(r.inbound_ctes||0).toLocaleString('pt-BR')+' CTes';
   document.getElementById('cnt-rev').textContent=(r.reversa_ctes||0).toLocaleString('pt-BR')+' CTes';
-  const allM=[...(D.outbound?.meses||[]),...(D.inbound?.meses||[]),...(D.reversa?.meses||[])];
+  const allM=[...(D.outbound?.meses||[]),...(D.inbound?.meses||[]),...(D.reversa?.meses||[])].map(m=>({
+    ...m, mes_nome: m.mes_nome||m.nome||('M'+m.mes)
+  }));
   const anos=[...new Set(allM.map(m=>m.ano))].sort();
   const fa=document.getElementById('f-anos');fa.innerHTML='';anos.forEach(a=>{fa.appendChild(mkb(String(a),'ano',String(a)));});
   const allQ=[...new Set([...(D.outbound?.quarters||[]),...(D.inbound?.quarters||[]),...(D.reversa?.quarters||[])].map(q=>q.q))].sort();
   const fq=document.getElementById('f-qtrs');fq.innerHTML='';allQ.forEach(q=>{fq.appendChild(mkb(q,'qtr',q));});
   const mU=[...new Map(allM.map(m=>[m.ano+'-'+m.mes,m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
-  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb(m.mes_nome+'/'+String(m.ano).slice(2),'mes',String(m.mes)));});
+  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',String(m.mes)));});
   renderAll();
 }
 function mkb(label,g,v){const b=document.createElement('button');b.className='fb';b.textContent=label;b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;}
@@ -323,7 +325,14 @@ function getTot(){
   ms.forEach(x=>{if(F.emp==='GENOMMA'){f+=x.genomma_frete;m+=x.genomma_merc;}else if(F.emp==='INOVALAB'){f+=x.inovalab_frete;m+=x.inovalab_merc;}else{f+=x.frete;m+=x.v_merc;}n+=x.ctes;gf+=x.genomma_frete;gm+=x.genomma_merc;inf+=x.inovalab_frete;inm+=x.inovalab_merc;});
   return{f,m,n,pct:m>0?+(f/m*100).toFixed(2):null,gf,gm,gPct:gm>0?+(gf/gm*100).toFixed(2):null,inf,inm,iPct:inm>0?+(inf/inm*100).toFixed(2):null};
 }
-function getRegs(){const d=getD();if(!d)return[];return(d.regioes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg);}
+function getRegs(){
+  const d=getD();if(!d)return[];
+  return (d.regioes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg).map(r=>{
+    if(F.emp==='GENOMMA')  return {...r,frete:r.genomma_frete||0,v_merc:r.genomma_merc||0,pct_cts:r.pct_genomma};
+    if(F.emp==='INOVALAB') return {...r,frete:r.inovalab_frete||0,v_merc:r.inovalab_merc||0,pct_cts:r.pct_inovalab};
+    return r;
+  }).filter(r=>r.frete>0);
+}
 function getTrs(){
   const d=getD();if(!d)return[];let t=d.transportadoras||[];
   if(F.emp==='GENOMMA')return t.filter(x=>x.genomma_frete>0).map(x=>({...x,frete:x.genomma_frete,pct_cts:x.pct_genomma})).sort((a,b)=>b.frete-a.frete);
@@ -332,7 +341,14 @@ function getTrs(){
 }
 function getClis(){const d=getD();if(!d)return[];return(d.clientes||[]).filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg)).sort((a,b)=>(b.pct_cts||0)-(a.pct_cts||0));}
 function getRems(){const d=getD();if(!d)return[];return(d.remetentes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg);}
-function getQs(){const d=getD();if(!d)return[];return(d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano);}
+function getQs(){
+  const d=getD();if(!d)return[];
+  return (d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano).map(q=>{
+    if(F.emp==='GENOMMA')  return {...q,frete:q.genomma_frete||0,v_merc:q.genomma_merc||0,pct_cts:q.pct_genomma};
+    if(F.emp==='INOVALAB') return {...q,frete:q.inovalab_frete||0,v_merc:q.inovalab_merc||0,pct_cts:q.pct_inovalab};
+    return q;
+  });
+}
 
 function renderAll(){renderTab(curTab);}
 function renderTab(id){if(id==='dash')rDash();if(id==='transp')rTr();if(id==='regiao')rReg();if(id==='cliente')rCli();if(id==='remetente')rRem();if(id==='quarter')rQ();}
@@ -348,7 +364,7 @@ function rDash(){
 }
 function bC1(){
   const el=ch('c1');if(!el)return;const ms=fMs();
-  const labels=ms.map(m=>m.mes_nome+(ms.length>12?'/'+String(m.ano).slice(2):''));
+  const labels=ms.map(m=>(m.mes_nome||m.nome||'M'+m.mes)+(ms.length>12?'/'+String(m.ano).slice(2):''));
   const ds=[];const emps=F.emp==='all'?['GENOMMA','INOVALAB']:[F.emp];
   const cols={GENOMMA:'#185FA5',INOVALAB:'#1D9E75'};
   emps.forEach(e=>{const k=e==='GENOMMA'?'pct_genomma':'pct_inovalab';ds.push({label:e[0]+e.slice(1).toLowerCase(),data:ms.map(m=>m[k]),borderColor:cols[e],backgroundColor:cols[e]+'18',pointBackgroundColor:'#fff',pointBorderColor:cols[e],pointBorderWidth:2,pointRadius:4,borderWidth:2.5,tension:.3,spanGaps:true,fill:true});});
@@ -378,7 +394,11 @@ function rReg(){
   const bP=[...regs].sort((a,b)=>(b.pct_cts||0)-(a.pct_cts||0));
   let el=ch('cr1');if(el)CH.cr1=new Chart(el,{type:'bar',data:{labels:bP.map(r=>r.regiao.replace('Centro-Oeste','C-O')),datasets:[{data:bP.map(r=>r.pct_cts),backgroundColor:bP.map(r=>RC[r.regiao]||'#888'),borderWidth:0,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[pf(c.raw),'Frete: '+fM(bP[c.dataIndex].frete)]}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false},border:{display:false}},y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},min:0}}}});
   el=ch('cr2');if(el)CH.cr2=new Chart(el,{type:'doughnut',data:{labels:regs.map(r=>r.regiao),datasets:[{data:regs.map(r=>r.frete),backgroundColor:regs.map(r=>RC[r.regiao]||'#888'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
-  const d=getD();const ufs=(d?.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg).slice(0,12);
+  const d=getD();
+  let ufsRaw=(d?.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg);
+  if(F.emp==='GENOMMA')  ufsRaw=ufsRaw.map(u=>({...u,frete:u.genomma_frete||0,v_merc:u.genomma_merc||0,pct_cts:u.pct_genomma}));
+  else if(F.emp==='INOVALAB') ufsRaw=ufsRaw.map(u=>({...u,frete:u.inovalab_frete||0,v_merc:u.inovalab_merc||0,pct_cts:u.pct_inovalab}));
+  const ufs=ufsRaw.filter(u=>u.frete>0).sort((a,b)=>b.frete-a.frete).slice(0,12);
   const wrap=document.getElementById('uf-wrap');wrap.style.height=Math.max(240,ufs.length*40+80)+'px';
   el=ch('cr3');if(el)CH.cr3=new Chart(el,{type:'bar',data:{labels:ufs.map(u=>u.uf),datasets:[{data:ufs.map(u=>u.frete),backgroundColor:ufs.map(u=>RC[u.regiao]||OP_COR[curOp]),borderWidth:0,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[fK(c.raw),'%CTS: '+pf(ufs[c.dataIndex].pct_cts)]}}},scales:{y:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)}}}}});
   document.getElementById('tb-reg').innerHTML=regs.map(r=>'<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+(RC[r.regiao]||'#888')+'"></span><strong>'+r.regiao+'</strong></span></td><td class="r">'+r.ctes+'</td><td class="r" style="color:var(--red)">'+fM(r.frete)+'</td><td class="r" style="color:#185FA5">'+(r.v_merc>0?fM(r.v_merc):'—')+'</td><td class="r" style="color:'+cP(r.pct_cts)+';font-weight:600">'+pf(r.pct_cts)+'</td><td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(r.frete/totalF*100)+'%;background:'+(RC[r.regiao]||'#888')+';border-radius:3px"></div></div></td></tr>').join('');

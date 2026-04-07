@@ -32,7 +32,7 @@ ESTADO_FILE    = "cte_estado.json"
 LOG_FILE       = "cte_processador.log"
 
 SUPABASE_URL   = "https://ennsbpibfnuwlvtodukg.supabase.co"
-SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50"   # <- cole a chave Legacy service_role
+SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NDgzNywiZXhwIjoyMDg5OTYwODM3fQ.gnCLe-XvoWJoiVEG4jRCPCdX8OsevXACk0TISgo9S04"   # <- cole a chave Legacy service_role
 BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 
@@ -61,6 +61,11 @@ INBOUND_REMETENTES = [
     "CONNECTA",
     "PORTO SECO SUL",
     "ATHENAS",
+    # Novos fornecedores
+    "FIRMO CAVALCANTI",
+    "RCR REPRESENTACOES",
+    "DELL COMPUTADORES",
+    "GOOXXY",
 ]
 
 # ===============================================================
@@ -316,13 +321,17 @@ def _agg_op(ctes):
         if e=="INOVALAB": bt2["inf"]+=f; bt2["inm"]+=m
 
         if rg not in by_reg:
-            by_reg[rg]={"regiao":rg,"f":0,"m":0,"n":0}
+            by_reg[rg]={"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
         by_reg[rg]["f"]+=f; by_reg[rg]["m"]+=m; by_reg[rg]["n"]+=1
+        if e=="GENOMMA":  by_reg[rg]["gf"]+=f; by_reg[rg]["gm"]+=m
+        if e=="INOVALAB": by_reg[rg]["inf"]+=f; by_reg[rg]["inm"]+=m
 
         if uf:
             if uf not in by_uf:
-                by_uf[uf]={"uf":uf,"regiao":rg,"f":0,"m":0,"n":0}
+                by_uf[uf]={"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
             by_uf[uf]["f"]+=f; by_uf[uf]["m"]+=m; by_uf[uf]["n"]+=1
+            if e=="GENOMMA":  by_uf[uf]["gf"]+=f; by_uf[uf]["gm"]+=m
+            if e=="INOVALAB": by_uf[uf]["inf"]+=f; by_uf[uf]["inm"]+=m
 
         # remetente (util para inbound/reversa)
         rk = c.get("rem_cnpj") or rem
@@ -348,13 +357,17 @@ def _agg_op(ctes):
     qmap={}
     for m2 in meses_out:
         qk=f"Q{((m2['mes']-1)//3)+1}/{str(m2['ano'])[2:]}"
-        if qk not in qmap: qmap[qk]={"q":qk,"ano":m2["ano"],"f":0,"m":0,"n":0,"gf":0,"inf":0}
+        if qk not in qmap: qmap[qk]={"q":qk,"ano":m2["ano"],"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
         qmap[qk]["f"]+=m2["frete"]; qmap[qk]["m"]+=m2["v_merc"]; qmap[qk]["n"]+=m2["ctes"]
-        qmap[qk]["gf"]+=m2["genomma_frete"]; qmap[qk]["inf"]+=m2["inovalab_frete"]
+        qmap[qk]["gf"]+=m2["genomma_frete"]; qmap[qk]["gm"]+=m2["genomma_merc"]
+        qmap[qk]["inf"]+=m2["inovalab_frete"]; qmap[qk]["inm"]+=m2["inovalab_merc"]
     quarters_out=sorted([{"q":v["q"],"ano":v["ano"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
-        "genomma_frete":_r(v["gf"]),"inovalab_frete":_r(v["inf"]),
+        "genomma_frete":_r(v["gf"]),"genomma_merc":_r(v["gm"]),
+        "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
+        "pct_genomma":_p(v["gf"],v["gm"]),
+        "pct_inovalab":_p(v["inf"],v["inm"]),
     } for v in qmap.values()],key=lambda x:(x["ano"],x["q"]))
 
     transp_out=sorted([{"nome":v["nome"],"cnpj":v["cnpj"],
@@ -368,11 +381,19 @@ def _agg_op(ctes):
     regs_out=sorted([{"regiao":v["regiao"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
+        "genomma_frete":_r(v["gf"]),"genomma_merc":_r(v["gm"]),
+        "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
+        "pct_genomma":_p(v["gf"],v["gm"]),
+        "pct_inovalab":_p(v["inf"],v["inm"]),
     } for v in by_reg.values()],key=lambda x:x["frete"],reverse=True)
 
     ufs_out=sorted([{"uf":v["uf"],"regiao":v["regiao"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
+        "genomma_frete":_r(v["gf"]),"genomma_merc":_r(v["gm"]),
+        "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
+        "pct_genomma":_p(v["gf"],v["gm"]),
+        "pct_inovalab":_p(v["inf"],v["inm"]),
     } for v in by_uf.values()],key=lambda x:x["frete"],reverse=True)
 
     rem_out=sorted([{"nome":v["nome"],"cnpj":v["cnpj"],
@@ -457,12 +478,62 @@ def publicar(payload: dict) -> bool:
 # ───────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tudo",  action="store_true")
-    parser.add_argument("--pasta", default=PASTA_CTE)
+    parser.add_argument("--tudo",          action="store_true", help="Reprocessa todos os XMLs do zero")
+    parser.add_argument("--reclassificar", action="store_true", help="Reclassifica historico sem reler XMLs (rapido)")
+    parser.add_argument("--pasta",         default=PASTA_CTE)
     args = parser.parse_args()
     pasta = args.pasta
-
     ts_inicio = datetime.now()
+
+    # ── MODO RAPIDO: reclassifica historico sem reler XMLs ──────
+    if args.reclassificar:
+        print("\n" + "="*58)
+        print("  TORRE DE CONTROLE -- RECLASSIFICACAO RAPIDA")
+        print("  Aplica novas regras ao historico sem reler XMLs")
+        print("="*58)
+        estado = load_estado()
+        ctes = estado.get("ctes", [])
+        if not ctes:
+            print("\n  Historico vazio. Rode REPROCESSAR_TUDO primeiro.")
+            input("  Pressione Enter..."); sys.exit(0)
+        log.info(f"Reclassificando {len(ctes):,} CTes...")
+        alterados = 0
+        for c in ctes:
+            op_antiga = c.get("operacao", "")
+            op_nova = classificar_op(
+                c.get("rem_cnpj",""), c.get("rem_nome",""),
+                c.get("cli_cnpj",""), c.get("cliente","")
+            )
+            if op_antiga != op_nova:
+                c["operacao"] = op_nova
+                alterados += 1
+        log.info(f"  {alterados:,} CTes reclassificados")
+        log.info("Agregando...")
+        dados = agregar(ctes)
+        dados["atualizado"]           = ts_inicio.strftime("%d/%m/%Y %H:%M")
+        dados["pasta_origem"]         = pasta
+        dados["anos_filtro"]          = ANOS_FILTRO
+        dados["novos_nesta_execucao"] = 0
+        dados["cancelamentos"]        = 0
+        with open("cte_dados.json","w",encoding="utf-8") as f:
+            json.dump(dados,f,ensure_ascii=False,indent=2)
+        estado["ctes"]            = ctes
+        estado["ultima_execucao"] = ts_inicio.isoformat()
+        estado["atualizado"]      = dados["atualizado"]
+        save_estado(estado)
+        ok = publicar(dados)
+        r  = dados["resumo"]
+        print("\n" + "="*58 + "\n  RESUMO\n" + "="*58)
+        print(f"  CTes no historico    : {len(ctes):,}")
+        print(f"  CTes reclassificados : {alterados:,}")
+        print(f"  Outbound : {r['outbound_ctes']:,} CTes | R$ {r['outbound_frete']:,.2f}")
+        print(f"  Inbound  : {r['inbound_ctes']:,} CTes | R$ {r['inbound_frete']:,.2f}")
+        print(f"  Reversa  : {r['reversa_ctes']:,} CTes | R$ {r['reversa_frete']:,.2f}")
+        print("="*58)
+        print(f"  {'OK Dashboard atualizado!' if ok else 'ERRO Publicacao falhou'}")
+        input("  Pressione Enter..."); sys.exit(0)
+    # ────────────────────────────────────────────────────────────
+
     print("\n" + "="*58)
     print("  TORRE DE CONTROLE -- PROCESSADOR DE CTe  v5")
     print(f"  Pasta  : {pasta}")
@@ -491,25 +562,47 @@ def main():
         except Exception:
             ultima_ts = None
 
-    # busca arquivos
+    # busca arquivos — usa os.scandir (muito mais rapido que glob em rede)
+    # no modo incremental, filtra por mtime JA durante a varredura (1 passagem so)
     log.info("Buscando XMLs...")
     ts_b = datetime.now()
     xmls_214, xmls_383 = [], []
-    for fp in glob.glob(os.path.join(pasta,"**","*.xml"),recursive=True) + \
-              glob.glob(os.path.join(pasta,"**","*.XML"),recursive=True):
-        n = os.path.basename(fp)
-        if   n.startswith(PREFIXO_CTE):          xmls_214.append(fp)
-        elif n.startswith(PREFIXO_CANCELAMENTO):  xmls_383.append(fp)
+    cands_214, cands_383 = [], []
 
-    log.info(f"  {len(xmls_214):,} CTe ({PREFIXO_CTE}*) | {len(xmls_383):,} Cancelamento ({PREFIXO_CANCELAMENTO}*) em {(datetime.now()-ts_b).seconds}s")
+    def scan_dir(pasta_raiz):
+        """Percorre diretorios recursivamente via scandir — rapido em rede."""
+        stack = [pasta_raiz]
+        while stack:
+            cur = stack.pop()
+            try:
+                with os.scandir(cur) as it:
+                    for entry in it:
+                        try:
+                            if entry.is_dir(follow_symlinks=False):
+                                stack.append(entry.path)
+                            elif entry.is_file(follow_symlinks=False):
+                                n = entry.name
+                                nl = n.lower()
+                                if not nl.endswith('.xml'):
+                                    continue
+                                if n.startswith(PREFIXO_CTE):
+                                    xmls_214.append(entry.path)
+                                    if ultima_ts is None or entry.stat().st_mtime > ultima_ts:
+                                        cands_214.append(entry.path)
+                                elif n.startswith(PREFIXO_CANCELAMENTO):
+                                    xmls_383.append(entry.path)
+                                    if ultima_ts is None or entry.stat().st_mtime > ultima_ts:
+                                        cands_383.append(entry.path)
+                        except (PermissionError, OSError):
+                            continue
+            except (PermissionError, OSError):
+                continue
 
-    # filtra por mtime
+    scan_dir(pasta)
+    elapsed_b = (datetime.now()-ts_b).seconds
+    log.info(f"  {len(xmls_214):,} CTe ({PREFIXO_CTE}*) | {len(xmls_383):,} Cancelamento ({PREFIXO_CANCELAMENTO}*) em {elapsed_b}s")
     if ultima_ts:
-        cands_214 = [f for f in xmls_214 if os.path.getmtime(f) > ultima_ts]
-        cands_383 = [f for f in xmls_383 if os.path.getmtime(f) > ultima_ts]
         log.info(f"  Novos: {len(cands_214):,} CTe | {len(cands_383):,} Cancelamento")
-    else:
-        cands_214, cands_383 = xmls_214, xmls_383
 
     # cancelamentos
     novos_cancel = 0
