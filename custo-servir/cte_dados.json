@@ -1,0 +1,5287 @@
+{
+  "outbound": {
+    "totais": {
+      "frete": 13585962.23,
+      "v_merc": 476673955.39,
+      "ctes": 5689,
+      "pct_cts": 2.85,
+      "genomma_frete": 12712463.49,
+      "inovalab_frete": 856096.02,
+      "pct_genomma": 2.74,
+      "pct_inovalab": 6.5
+    },
+    "empresas": {
+      "GENOMMA": {
+        "frete": 12712463.49,
+        "v_merc": 463284285.58,
+        "ctes": 5523,
+        "pct_cts": 2.74
+      },
+      "INOVALAB": {
+        "frete": 856096.02,
+        "v_merc": 13179976.64,
+        "ctes": 162,
+        "pct_cts": 6.5
+      },
+      "OUTROS": {
+        "frete": 17402.72,
+        "v_merc": 209693.17,
+        "ctes": 4,
+        "pct_cts": 8.3
+      }
+    },
+    "tipos": {
+      "CIF": {
+        "frete": 13585962.23,
+        "v_merc": 476673955.39,
+        "ctes": 5689,
+        "pct_cts": 2.85,
+        "pct_genomma": 2.74,
+        "pct_inovalab": 6.5
+      },
+      "FOB": {
+        "frete": 0,
+        "v_merc": 0,
+        "ctes": 0,
+        "pct_cts": null,
+        "pct_genomma": null,
+        "pct_inovalab": null
+      }
+    },
+    "meses": [
+      {
+        "chave": "2025-01",
+        "ano": 2025,
+        "mes": 1,
+        "nome": "Jan",
+        "frete": 743572.48,
+        "v_merc": 22941705.12,
+        "ctes": 343,
+        "pct_cts": 3.24,
+        "genomma_frete": 743572.48,
+        "genomma_merc": 22941705.12,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.24,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-02",
+        "ano": 2025,
+        "mes": 2,
+        "nome": "Fev",
+        "frete": 764884.35,
+        "v_merc": 26592305.3,
+        "ctes": 355,
+        "pct_cts": 2.88,
+        "genomma_frete": 762384.35,
+        "genomma_merc": 26525545.84,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.87,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-03",
+        "ano": 2025,
+        "mes": 3,
+        "nome": "Mar",
+        "frete": 1403261.14,
+        "v_merc": 45694035.29,
+        "ctes": 579,
+        "pct_cts": 3.07,
+        "genomma_frete": 1402507.12,
+        "genomma_merc": 45693639.29,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.07,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-04",
+        "ano": 2025,
+        "mes": 4,
+        "nome": "Abr",
+        "frete": 415585.4,
+        "v_merc": 13758065.93,
+        "ctes": 296,
+        "pct_cts": 3.02,
+        "genomma_frete": 411570.4,
+        "genomma_merc": 13628914.67,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.02,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-05",
+        "ano": 2025,
+        "mes": 5,
+        "nome": "Mai",
+        "frete": 1113611.49,
+        "v_merc": 38108898.32,
+        "ctes": 488,
+        "pct_cts": 2.92,
+        "genomma_frete": 1113611.49,
+        "genomma_merc": 38108898.32,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.92,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-06",
+        "ano": 2025,
+        "mes": 6,
+        "nome": "Jun",
+        "frete": 1540039.29,
+        "v_merc": 60306890.74,
+        "ctes": 449,
+        "pct_cts": 2.55,
+        "genomma_frete": 1529905.59,
+        "genomma_merc": 60293504.29,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.54,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-07",
+        "ano": 2025,
+        "mes": 7,
+        "nome": "Jul",
+        "frete": 454449.59,
+        "v_merc": 18717980.02,
+        "ctes": 300,
+        "pct_cts": 2.43,
+        "genomma_frete": 454449.59,
+        "genomma_merc": 18717980.02,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.43,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-08",
+        "ano": 2025,
+        "mes": 8,
+        "nome": "Ago",
+        "frete": 772384.94,
+        "v_merc": 26925630.51,
+        "ctes": 408,
+        "pct_cts": 2.87,
+        "genomma_frete": 772384.94,
+        "genomma_merc": 26925630.51,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.87,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-09",
+        "ano": 2025,
+        "mes": 9,
+        "nome": "Set",
+        "frete": 1416032.57,
+        "v_merc": 49394866.95,
+        "ctes": 375,
+        "pct_cts": 2.87,
+        "genomma_frete": 1416032.57,
+        "genomma_merc": 49394866.95,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.87,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-10",
+        "ano": 2025,
+        "mes": 10,
+        "nome": "Out",
+        "frete": 515340.74,
+        "v_merc": 17026381.31,
+        "ctes": 280,
+        "pct_cts": 3.03,
+        "genomma_frete": 515340.74,
+        "genomma_merc": 17026381.31,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.03,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-11",
+        "ano": 2025,
+        "mes": 11,
+        "nome": "Nov",
+        "frete": 806547.13,
+        "v_merc": 27016128.12,
+        "ctes": 392,
+        "pct_cts": 2.99,
+        "genomma_frete": 806547.13,
+        "genomma_merc": 27016128.12,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.99,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-12",
+        "ano": 2025,
+        "mes": 12,
+        "nome": "Dez",
+        "frete": 1028203.25,
+        "v_merc": 44122849.04,
+        "ctes": 352,
+        "pct_cts": 2.33,
+        "genomma_frete": 1028203.25,
+        "genomma_merc": 44122849.04,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.33,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-01",
+        "ano": 2026,
+        "mes": 1,
+        "nome": "Jan",
+        "frete": 595549.05,
+        "v_merc": 17594833.27,
+        "ctes": 251,
+        "pct_cts": 3.38,
+        "genomma_frete": 595549.05,
+        "genomma_merc": 17594833.27,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.38,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-02",
+        "ano": 2026,
+        "mes": 2,
+        "nome": "Fev",
+        "frete": 423186.04,
+        "v_merc": 14051377.76,
+        "ctes": 294,
+        "pct_cts": 3.01,
+        "genomma_frete": 323369.54,
+        "genomma_merc": 12568453.15,
+        "inovalab_frete": 99816.5,
+        "inovalab_merc": 1482924.61,
+        "pct_genomma": 2.57,
+        "pct_inovalab": 6.73
+      },
+      {
+        "chave": "2026-03",
+        "ano": 2026,
+        "mes": 3,
+        "nome": "Mar",
+        "frete": 1511150.11,
+        "v_merc": 49951981.41,
+        "ctes": 469,
+        "pct_cts": 3.03,
+        "genomma_frete": 785981.18,
+        "genomma_merc": 38794789.59,
+        "inovalab_frete": 725168.93,
+        "inovalab_merc": 11157191.82,
+        "pct_genomma": 2.03,
+        "pct_inovalab": 6.5
+      },
+      {
+        "chave": "2026-04",
+        "ano": 2026,
+        "mes": 4,
+        "nome": "Abr",
+        "frete": 82164.66,
+        "v_merc": 4470026.3,
+        "ctes": 58,
+        "pct_cts": 1.84,
+        "genomma_frete": 51054.07,
+        "genomma_merc": 3930166.09,
+        "inovalab_frete": 31110.59,
+        "inovalab_merc": 539860.21,
+        "pct_genomma": 1.3,
+        "pct_inovalab": 5.76
+      }
+    ],
+    "quarters": [
+      {
+        "q": "Q1/25",
+        "ano": 2025,
+        "frete": 2911717.97,
+        "v_merc": 95228045.71,
+        "ctes": 1277,
+        "pct_cts": 3.06,
+        "genomma_frete": 2908463.95,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q2/25",
+        "ano": 2025,
+        "frete": 3069236.18,
+        "v_merc": 112173854.99,
+        "ctes": 1233,
+        "pct_cts": 2.74,
+        "genomma_frete": 3055087.48,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q3/25",
+        "ano": 2025,
+        "frete": 2642867.1,
+        "v_merc": 95038477.48,
+        "ctes": 1083,
+        "pct_cts": 2.78,
+        "genomma_frete": 2642867.1,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q4/25",
+        "ano": 2025,
+        "frete": 2350091.12,
+        "v_merc": 88165358.47,
+        "ctes": 1024,
+        "pct_cts": 2.67,
+        "genomma_frete": 2350091.12,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q1/26",
+        "ano": 2026,
+        "frete": 2529885.2,
+        "v_merc": 81598192.44,
+        "ctes": 1014,
+        "pct_cts": 3.1,
+        "genomma_frete": 1704899.77,
+        "inovalab_frete": 824985.43
+      },
+      {
+        "q": "Q2/26",
+        "ano": 2026,
+        "frete": 82164.66,
+        "v_merc": 4470026.3,
+        "ctes": 58,
+        "pct_cts": 1.84,
+        "genomma_frete": 51054.07,
+        "inovalab_frete": 31110.59
+      }
+    ],
+    "transportadoras": [
+      {
+        "nome": "ATIVA DISTR E LOGISTICA LTDA",
+        "cnpj": "01125797000701",
+        "frete": 4323080.74,
+        "v_merc": 161781072.29,
+        "ctes": 3035,
+        "pct_cts": 2.67,
+        "pct_genomma": 2.61,
+        "pct_inovalab": 11.75,
+        "genomma_frete": 4192554.56,
+        "inovalab_frete": 130526.18
+      },
+      {
+        "nome": "FL BRASIL HOLDING LOGISTICA E TRANSPORTE LTDA",
+        "cnpj": "18233211007576",
+        "frete": 3225002.52,
+        "v_merc": 62785148.57,
+        "ctes": 1576,
+        "pct_cts": 5.14,
+        "pct_genomma": 4.96,
+        "pct_inovalab": 25.26,
+        "genomma_frete": 3084653.42,
+        "inovalab_frete": 140349.1
+      },
+      {
+        "nome": "LD CARGO - SOLUCOES LOGISTICAS LTDA",
+        "cnpj": "36321523000187",
+        "frete": 1990512.98,
+        "v_merc": 88389871.21,
+        "ctes": 215,
+        "pct_cts": 2.25,
+        "pct_genomma": 2.1,
+        "pct_inovalab": 5.96,
+        "genomma_frete": 1782124.25,
+        "inovalab_frete": 208388.73
+      },
+      {
+        "nome": "TRANSCUNHA LTDA",
+        "cnpj": "00850928000246",
+        "frete": 1608717.81,
+        "v_merc": 65844620.93,
+        "ctes": 181,
+        "pct_cts": 2.44,
+        "pct_genomma": 2.33,
+        "pct_inovalab": 4.37,
+        "genomma_frete": 1453462.12,
+        "inovalab_frete": 151240.69
+      },
+      {
+        "nome": "COOPERATIVA DOS TRANSPORTADORES DO VALE - COOTRAVALE",
+        "cnpj": "00680933002030",
+        "frete": 868967.78,
+        "v_merc": 13802629.87,
+        "ctes": 71,
+        "pct_cts": 6.3,
+        "pct_genomma": 5.93,
+        "pct_inovalab": 10.74,
+        "genomma_frete": 756537.04,
+        "inovalab_frete": 112430.74
+      },
+      {
+        "nome": "ALA URB TRANSPORTES E LOGISTICA LTDA",
+        "cnpj": "20051163000100",
+        "frete": 447184.57,
+        "v_merc": 22312156.5,
+        "ctes": 117,
+        "pct_cts": 2.0,
+        "pct_genomma": 1.82,
+        "pct_inovalab": 3.27,
+        "genomma_frete": 368363.1,
+        "inovalab_frete": 68687.77
+      },
+      {
+        "nome": "EXPRESSO MINAS FRIOS LTDA",
+        "cnpj": "05151226000107",
+        "frete": 346274.98,
+        "v_merc": 15915376.63,
+        "ctes": 55,
+        "pct_cts": 2.18,
+        "pct_genomma": 2.12,
+        "pct_inovalab": 2.95,
+        "genomma_frete": 316101.72,
+        "inovalab_frete": 27673.26
+      },
+      {
+        "nome": "FAZENDA SAO JUDAS LOGISTICA LTDA",
+        "cnpj": "23850588000178",
+        "frete": 308452.46,
+        "v_merc": 11772118.16,
+        "ctes": 114,
+        "pct_cts": 2.62,
+        "pct_genomma": 2.62,
+        "pct_inovalab": null,
+        "genomma_frete": 308452.46,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "TRANSBEN TRANSPORTES LTDA 1818 UBER",
+        "cnpj": "03523549000906",
+        "frete": 123338.12,
+        "v_merc": 6203092.53,
+        "ctes": 13,
+        "pct_cts": 1.99,
+        "pct_genomma": 1.86,
+        "pct_inovalab": 3.61,
+        "genomma_frete": 106538.57,
+        "inovalab_frete": 16799.55
+      },
+      {
+        "nome": "NTM EXPRESS TRANSPORTES EIRELI ME",
+        "cnpj": "27752626000100",
+        "frete": 100496.85,
+        "v_merc": 718808.29,
+        "ctes": 7,
+        "pct_cts": 13.98,
+        "pct_genomma": 13.98,
+        "pct_inovalab": null,
+        "genomma_frete": 100496.85,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "MADRI EXPRESS LOGISTICA LTDA",
+        "cnpj": "05882643000120",
+        "frete": 52699.38,
+        "v_merc": 4707823.03,
+        "ctes": 38,
+        "pct_cts": 1.12,
+        "pct_genomma": 1.12,
+        "pct_inovalab": null,
+        "genomma_frete": 52699.38,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "SOLUCIONA LOGISTICA E TRANSPORTE LTDA",
+        "cnpj": "19700976000103",
+        "frete": 47417.34,
+        "v_merc": 4330310.15,
+        "ctes": 15,
+        "pct_cts": 1.1,
+        "pct_genomma": 1.1,
+        "pct_inovalab": null,
+        "genomma_frete": 47417.34,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "MKT LOG LOGISTICA INTEGRADA LTDA",
+        "cnpj": "15769911000155",
+        "frete": 29741.98,
+        "v_merc": 249996.0,
+        "ctes": 129,
+        "pct_cts": 11.9,
+        "pct_genomma": 11.61,
+        "pct_inovalab": null,
+        "genomma_frete": 28987.96,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "G LOG TRANSPORTES RODOVIARIO LTDA",
+        "cnpj": "20872887000115",
+        "frete": 21607.11,
+        "v_merc": 2440909.6,
+        "ctes": 39,
+        "pct_cts": 0.89,
+        "pct_genomma": 0.89,
+        "pct_inovalab": null,
+        "genomma_frete": 21607.11,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "HLN Transportes e Logistica Ltda",
+        "cnpj": "50569035000114",
+        "frete": 21000.0,
+        "v_merc": 7556861.0,
+        "ctes": 7,
+        "pct_cts": 0.28,
+        "pct_genomma": 0.28,
+        "pct_inovalab": null,
+        "genomma_frete": 21000.0,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "QUASAR TRANSPORTE E LOGÍSTICA LTDA",
+        "cnpj": "02317708000287",
+        "frete": 12848.24,
+        "v_merc": 728436.92,
+        "ctes": 6,
+        "pct_cts": 1.76,
+        "pct_genomma": 1.76,
+        "pct_inovalab": null,
+        "genomma_frete": 12848.24,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "SLIM LOG SERVICOS LOGISTICOS LTDA",
+        "cnpj": "18485037000112",
+        "frete": 11030.81,
+        "v_merc": 468340.25,
+        "ctes": 2,
+        "pct_cts": 2.36,
+        "pct_genomma": 2.36,
+        "pct_inovalab": null,
+        "genomma_frete": 11030.81,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "DIOR DE AZEVEDO TRANSPORTES LTDA",
+        "cnpj": "05777666000174",
+        "frete": 10682.45,
+        "v_merc": 3617748.29,
+        "ctes": 29,
+        "pct_cts": 0.3,
+        "pct_genomma": 0.3,
+        "pct_inovalab": null,
+        "genomma_frete": 10682.45,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "LIBFARMA DISTRIBUIDORA DE MEDI",
+        "cnpj": "33962636000173",
+        "frete": 9374.58,
+        "v_merc": 224172.9,
+        "ctes": 6,
+        "pct_cts": 4.18,
+        "pct_genomma": 4.18,
+        "pct_inovalab": null,
+        "genomma_frete": 9374.58,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "TSG LOG TRANSPORTES E ARM. LTDA",
+        "cnpj": "28545604000132",
+        "frete": 8605.06,
+        "v_merc": 1242958.48,
+        "ctes": 5,
+        "pct_cts": 0.69,
+        "pct_genomma": 0.69,
+        "pct_inovalab": null,
+        "genomma_frete": 8605.06,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "EPOCA TRANSPORTE E LOGISTICA LTDA",
+        "cnpj": "19479536000160",
+        "frete": 5781.28,
+        "v_merc": 676623.29,
+        "ctes": 3,
+        "pct_cts": 0.85,
+        "pct_genomma": 0.85,
+        "pct_inovalab": null,
+        "genomma_frete": 5781.28,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "FAMILY FIGUEIREDO E CUNHA LTDA",
+        "cnpj": "10730615000127",
+        "frete": 2671.3,
+        "v_merc": 150739.45,
+        "ctes": 2,
+        "pct_cts": 1.77,
+        "pct_genomma": 1.77,
+        "pct_inovalab": null,
+        "genomma_frete": 2671.3,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "SOLIDEZ TRANSPORTES LTDA",
+        "cnpj": "00833219000252",
+        "frete": 2425.03,
+        "v_merc": 85660.17,
+        "ctes": 5,
+        "pct_cts": 2.83,
+        "pct_genomma": 2.83,
+        "pct_inovalab": null,
+        "genomma_frete": 2425.03,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "LOGFAR LOGISTICA LTDA",
+        "cnpj": "05530576001903",
+        "frete": 2132.01,
+        "v_merc": 180252.07,
+        "ctes": 3,
+        "pct_cts": 1.18,
+        "pct_genomma": 1.18,
+        "pct_inovalab": null,
+        "genomma_frete": 2132.01,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "D.M.X LOGISTICA E SERVICOS AUXILIARES LTDA",
+        "cnpj": "27406208000161",
+        "frete": 1500.0,
+        "v_merc": 153070.48,
+        "ctes": 1,
+        "pct_cts": 0.98,
+        "pct_genomma": 0.98,
+        "pct_inovalab": null,
+        "genomma_frete": 1500.0,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "LL TRANSPORTES E LOGISTICA LTDA",
+        "cnpj": "26153828000173",
+        "frete": 1200.0,
+        "v_merc": 125601.03,
+        "ctes": 2,
+        "pct_cts": 0.96,
+        "pct_genomma": 0.96,
+        "pct_inovalab": null,
+        "genomma_frete": 1200.0,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "UPS DO BRASIL REMESSAS EXPRESSAS LTDA",
+        "cnpj": "74155052000173",
+        "frete": 1116.18,
+        "v_merc": 0.0,
+        "ctes": 1,
+        "pct_cts": null,
+        "pct_genomma": null,
+        "pct_inovalab": null,
+        "genomma_frete": 1116.18,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "ATIVA DISTRIBUICAO E LOGISTICA",
+        "cnpj": "01125797003301",
+        "frete": 1103.96,
+        "v_merc": 78720.16,
+        "ctes": 4,
+        "pct_cts": 1.4,
+        "pct_genomma": 1.4,
+        "pct_inovalab": null,
+        "genomma_frete": 1103.96,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "R&R ISA'S TRANSPORTES LTDA",
+        "cnpj": "35856333000100",
+        "frete": 729.05,
+        "v_merc": 36370.56,
+        "ctes": 2,
+        "pct_cts": 2.0,
+        "pct_genomma": 2.0,
+        "pct_inovalab": null,
+        "genomma_frete": 729.05,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "LIBFARMA DISTRIBUIDORA DE MEDICAMENTOS E PRODUTOS HOSPITALAR",
+        "cnpj": "33962636000173",
+        "frete": 234.05,
+        "v_merc": 49082.39,
+        "ctes": 2,
+        "pct_cts": 0.48,
+        "pct_genomma": 0.48,
+        "pct_inovalab": null,
+        "genomma_frete": 234.05,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "COMAR LOGISTICA LTDA",
+        "cnpj": "20275520000114",
+        "frete": 33.59,
+        "v_merc": 29562.87,
+        "ctes": 2,
+        "pct_cts": 0.11,
+        "pct_genomma": 0.11,
+        "pct_inovalab": null,
+        "genomma_frete": 33.59,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "TRANSUL ENCOMENDAS LTDA ME",
+        "cnpj": "11253589000156",
+        "frete": 0.02,
+        "v_merc": 15821.32,
+        "ctes": 2,
+        "pct_cts": 0.0,
+        "pct_genomma": 0.0,
+        "pct_inovalab": null,
+        "genomma_frete": 0.02,
+        "inovalab_frete": 0
+      }
+    ],
+    "regioes": [
+      {
+        "regiao": "Sudeste",
+        "frete": 5596578.49,
+        "v_merc": 288800396.93,
+        "ctes": 2627,
+        "pct_cts": 1.94
+      },
+      {
+        "regiao": "Nordeste",
+        "frete": 3425628.02,
+        "v_merc": 69386193.93,
+        "ctes": 1310,
+        "pct_cts": 4.94
+      },
+      {
+        "regiao": "Centro-Oeste",
+        "frete": 1903997.71,
+        "v_merc": 55365707.72,
+        "ctes": 778,
+        "pct_cts": 3.44
+      },
+      {
+        "regiao": "Sul",
+        "frete": 1395733.03,
+        "v_merc": 47186800.25,
+        "ctes": 707,
+        "pct_cts": 2.96
+      },
+      {
+        "regiao": "Norte",
+        "frete": 1264024.98,
+        "v_merc": 15934856.56,
+        "ctes": 267,
+        "pct_cts": 7.93
+      }
+    ],
+    "ufs": [
+      {
+        "uf": "ES",
+        "regiao": "Sudeste",
+        "frete": 2075824.17,
+        "v_merc": 105444239.7,
+        "ctes": 561,
+        "pct_cts": 1.97
+      },
+      {
+        "uf": "SP",
+        "regiao": "Sudeste",
+        "frete": 2047962.34,
+        "v_merc": 124420995.82,
+        "ctes": 1072,
+        "pct_cts": 1.65
+      },
+      {
+        "uf": "GO",
+        "regiao": "Centro-Oeste",
+        "frete": 1518002.15,
+        "v_merc": 44742565.6,
+        "ctes": 522,
+        "pct_cts": 3.39
+      },
+      {
+        "uf": "CE",
+        "regiao": "Nordeste",
+        "frete": 1114532.56,
+        "v_merc": 22150424.12,
+        "ctes": 287,
+        "pct_cts": 5.03
+      },
+      {
+        "uf": "PA",
+        "regiao": "Norte",
+        "frete": 954581.32,
+        "v_merc": 11913911.62,
+        "ctes": 181,
+        "pct_cts": 8.01
+      },
+      {
+        "uf": "RS",
+        "regiao": "Sul",
+        "frete": 782499.68,
+        "v_merc": 28670414.21,
+        "ctes": 316,
+        "pct_cts": 2.73
+      },
+      {
+        "uf": "PE",
+        "regiao": "Nordeste",
+        "frete": 782248.64,
+        "v_merc": 14533449.18,
+        "ctes": 309,
+        "pct_cts": 5.38
+      },
+      {
+        "uf": "BA",
+        "regiao": "Nordeste",
+        "frete": 771355.07,
+        "v_merc": 16709503.58,
+        "ctes": 293,
+        "pct_cts": 4.62
+      },
+      {
+        "uf": "RJ",
+        "regiao": "Sudeste",
+        "frete": 750608.69,
+        "v_merc": 29892043.56,
+        "ctes": 431,
+        "pct_cts": 2.51
+      },
+      {
+        "uf": "MG",
+        "regiao": "Sudeste",
+        "frete": 722183.29,
+        "v_merc": 29043117.85,
+        "ctes": 563,
+        "pct_cts": 2.49
+      },
+      {
+        "uf": "PR",
+        "regiao": "Sul",
+        "frete": 422027.69,
+        "v_merc": 12860718.12,
+        "ctes": 269,
+        "pct_cts": 3.28
+      },
+      {
+        "uf": "MT",
+        "regiao": "Centro-Oeste",
+        "frete": 285986.93,
+        "v_merc": 7237235.47,
+        "ctes": 148,
+        "pct_cts": 3.95
+      },
+      {
+        "uf": "AM",
+        "regiao": "Norte",
+        "frete": 274544.12,
+        "v_merc": 3465739.29,
+        "ctes": 58,
+        "pct_cts": 7.92
+      },
+      {
+        "uf": "MA",
+        "regiao": "Nordeste",
+        "frete": 273330.3,
+        "v_merc": 5506022.01,
+        "ctes": 135,
+        "pct_cts": 4.96
+      },
+      {
+        "uf": "PB",
+        "regiao": "Nordeste",
+        "frete": 212138.91,
+        "v_merc": 3844275.6,
+        "ctes": 88,
+        "pct_cts": 5.52
+      },
+      {
+        "uf": "SC",
+        "regiao": "Sul",
+        "frete": 191205.66,
+        "v_merc": 5655667.92,
+        "ctes": 122,
+        "pct_cts": 3.38
+      },
+      {
+        "uf": "PI",
+        "regiao": "Nordeste",
+        "frete": 136666.87,
+        "v_merc": 2866238.32,
+        "ctes": 69,
+        "pct_cts": 4.77
+      },
+      {
+        "uf": "DF",
+        "regiao": "Centro-Oeste",
+        "frete": 95520.06,
+        "v_merc": 3167764.87,
+        "ctes": 95,
+        "pct_cts": 3.02
+      },
+      {
+        "uf": "RN",
+        "regiao": "Nordeste",
+        "frete": 72863.05,
+        "v_merc": 1856952.03,
+        "ctes": 62,
+        "pct_cts": 3.92
+      },
+      {
+        "uf": "AL",
+        "regiao": "Nordeste",
+        "frete": 62492.62,
+        "v_merc": 1919329.09,
+        "ctes": 67,
+        "pct_cts": 3.26
+      },
+      {
+        "uf": "AC",
+        "regiao": "Norte",
+        "frete": 29172.32,
+        "v_merc": 414520.85,
+        "ctes": 12,
+        "pct_cts": 7.04
+      },
+      {
+        "uf": "TO",
+        "regiao": "Norte",
+        "frete": 4844.7,
+        "v_merc": 123016.92,
+        "ctes": 14,
+        "pct_cts": 3.94
+      },
+      {
+        "uf": "MS",
+        "regiao": "Centro-Oeste",
+        "frete": 4488.57,
+        "v_merc": 218141.78,
+        "ctes": 13,
+        "pct_cts": 2.06
+      },
+      {
+        "uf": "RO",
+        "regiao": "Norte",
+        "frete": 882.52,
+        "v_merc": 17667.88,
+        "ctes": 2,
+        "pct_cts": 5.0
+      }
+    ],
+    "clientes": [
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865184295",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 449034.58,
+        "v_merc": 32800358.56,
+        "ctes": 158,
+        "pct_cts": 1.37
+      },
+      {
+        "nome": "SOLFARMA COMERCIO DE PRODUTOS FARMACEUTICOS S.A.",
+        "cnpj": "46054219000840",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 448862.49,
+        "v_merc": 21920229.1,
+        "ctes": 57,
+        "pct_cts": 2.05
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S.A",
+        "cnpj": "06626253012400",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 438878.1,
+        "v_merc": 9535043.83,
+        "ctes": 73,
+        "pct_cts": 4.6
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865046305",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 410257.68,
+        "v_merc": 10128692.17,
+        "ctes": 135,
+        "pct_cts": 4.05
+      },
+      {
+        "nome": "DROGARIA SAO PAULO S.A",
+        "cnpj": "61412110052384",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 357010.33,
+        "v_merc": 27211537.87,
+        "ctes": 124,
+        "pct_cts": 1.31
+      },
+      {
+        "nome": "D CENTER DISTRIBUIDORA LTDA",
+        "cnpj": "05651966001508",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 351695.13,
+        "v_merc": 15872709.96,
+        "ctes": 67,
+        "pct_cts": 2.22
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865073701",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 316622.1,
+        "v_merc": 18644358.6,
+        "ctes": 155,
+        "pct_cts": 1.7
+      },
+      {
+        "nome": "NAZARIA DIST PROD FARMA LTDA",
+        "cnpj": "07224991001379",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 296682.46,
+        "v_merc": 4132002.92,
+        "ctes": 28,
+        "pct_cts": 7.18
+      },
+      {
+        "nome": "IMIFARMA PROD FCEUTICO E C SA",
+        "cnpj": "04899316034284",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 267267.15,
+        "v_merc": 3038504.69,
+        "ctes": 57,
+        "pct_cts": 8.8
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865051309",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 266317.18,
+        "v_merc": 11387612.29,
+        "ctes": 137,
+        "pct_cts": 2.34
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865342460",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 257231.18,
+        "v_merc": 10368236.1,
+        "ctes": 23,
+        "pct_cts": 2.48
+      },
+      {
+        "nome": "RAIADROGASIL SA",
+        "cnpj": "61585865212841",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 251435.31,
+        "v_merc": 4053739.93,
+        "ctes": 76,
+        "pct_cts": 6.2
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253063315",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 221815.47,
+        "v_merc": 3402567.33,
+        "ctes": 54,
+        "pct_cts": 6.52
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865134000",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 210712.72,
+        "v_merc": 3147766.3,
+        "ctes": 78,
+        "pct_cts": 6.69
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+        "cnpj": "06626253057935",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 209971.32,
+        "v_merc": 6514870.5,
+        "ctes": 73,
+        "pct_cts": 3.22
+      },
+      {
+        "nome": "DROGARIAS PACHECO S/A",
+        "cnpj": "33438250000167",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 205481.6,
+        "v_merc": 9715493.31,
+        "ctes": 96,
+        "pct_cts": 2.11
+      },
+      {
+        "nome": "DROGARIA SAO PAULO S A",
+        "cnpj": "61412110095350",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 199197.24,
+        "v_merc": 6279375.69,
+        "ctes": 106,
+        "pct_cts": 3.17
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288406",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 195658.51,
+        "v_merc": 1793042.82,
+        "ctes": 52,
+        "pct_cts": 10.91
+      },
+      {
+        "nome": "PHARMA LOG PROD FARMACE LTDA",
+        "cnpj": "13485130000294",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 190351.9,
+        "v_merc": 8975035.56,
+        "ctes": 58,
+        "pct_cts": 2.12
+      },
+      {
+        "nome": "PANPHARMA DIST MEDIC LTDA",
+        "cnpj": "01206820002655",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 189116.4,
+        "v_merc": 2714601.27,
+        "ctes": 31,
+        "pct_cts": 6.97
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865163298",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 178240.25,
+        "v_merc": 4068872.06,
+        "ctes": 72,
+        "pct_cts": 4.38
+      },
+      {
+        "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA",
+        "cnpj": "15436940001762",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 174835.62,
+        "v_merc": 3607264.85,
+        "ctes": 38,
+        "pct_cts": 4.85
+      },
+      {
+        "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E C",
+        "cnpj": "04899316025293",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 170821.42,
+        "v_merc": 2438931.87,
+        "ctes": 53,
+        "pct_cts": 7.0
+      },
+      {
+        "nome": "GENESIO A MENDES  CIA LTDA",
+        "cnpj": "82873068000573",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 170248.16,
+        "v_merc": 5354864.66,
+        "ctes": 32,
+        "pct_cts": 3.18
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA (SIMOES",
+        "cnpj": "06626253087508",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 166712.83,
+        "v_merc": 2951076.81,
+        "ctes": 58,
+        "pct_cts": 5.65
+      },
+      {
+        "nome": "PROFARMA DIST. PROD. FARMACEUTICOS",
+        "cnpj": "45453214004220",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 163160.49,
+        "v_merc": 12910348.55,
+        "ctes": 51,
+        "pct_cts": 1.26
+      },
+      {
+        "nome": "VENANCIO PROD FARMACE LTDA",
+        "cnpj": "00285753002568",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 161342.51,
+        "v_merc": 5283654.15,
+        "ctes": 89,
+        "pct_cts": 3.05
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288660",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "MT",
+        "frete": 153045.6,
+        "v_merc": 3492284.62,
+        "ctes": 55,
+        "pct_cts": 4.38
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865065440",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 148102.06,
+        "v_merc": 6525600.11,
+        "ctes": 89,
+        "pct_cts": 2.27
+      },
+      {
+        "nome": "UNIMARKA DISTRIBUIDORA S/A",
+        "cnpj": "05997742000408",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 147779.94,
+        "v_merc": 5832940.27,
+        "ctes": 19,
+        "pct_cts": 2.53
+      },
+      {
+        "nome": "MINALBA ALIMENTOS E BEBIDAS LTDA",
+        "cnpj": "54505052000300",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 143316.91,
+        "v_merc": 4754410.24,
+        "ctes": 30,
+        "pct_cts": 3.01
+      },
+      {
+        "nome": "IMIFARMA PRODUTOS FARMAC E COSMETICOS SA",
+        "cnpj": "04899316035175",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "MA",
+        "frete": 142581.24,
+        "v_merc": 2805713.63,
+        "ctes": 61,
+        "pct_cts": 5.08
+      },
+      {
+        "nome": "COM DE MEDIC BRAIR LTDA",
+        "cnpj": "88212113111947",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 142428.24,
+        "v_merc": 5986727.83,
+        "ctes": 31,
+        "pct_cts": 2.38
+      },
+      {
+        "nome": "REAL DISTRIBUITORA LOGISTICA L",
+        "cnpj": "03785066000122",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 142176.14,
+        "v_merc": 4628968.32,
+        "ctes": 21,
+        "pct_cts": 3.07
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820003465",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 141979.04,
+        "v_merc": 5587658.69,
+        "ctes": 18,
+        "pct_cts": 2.54
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865065954",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 141595.77,
+        "v_merc": 5784729.04,
+        "ctes": 97,
+        "pct_cts": 2.45
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611032290",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 137090.26,
+        "v_merc": 5722666.8,
+        "ctes": 70,
+        "pct_cts": 2.4
+      },
+      {
+        "nome": "COM DE MEDIC BRAIR LTDA",
+        "cnpj": "88212113016014",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 134249.11,
+        "v_merc": 5864416.61,
+        "ctes": 29,
+        "pct_cts": 2.29
+      },
+      {
+        "nome": "DIST DE MEDICAMENTOS SANTA CRUZ LTDA",
+        "cnpj": "61940292006682",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "AM",
+        "frete": 133284.86,
+        "v_merc": 1024386.72,
+        "ctes": 26,
+        "pct_cts": 13.01
+      },
+      {
+        "nome": "DROG ARAUJO S/A",
+        "cnpj": "17256512002917",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 130657.15,
+        "v_merc": 6276540.89,
+        "ctes": 66,
+        "pct_cts": 2.08
+      },
+      {
+        "nome": "PROFARMA DISTRIBUIDORA DE PRODUTOS",
+        "cnpj": "45453214001808",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 130599.91,
+        "v_merc": 8737466.92,
+        "ctes": 40,
+        "pct_cts": 1.49
+      },
+      {
+        "nome": "DROG SAO PAULO SA",
+        "cnpj": "61412110062002",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 126934.31,
+        "v_merc": 2083385.81,
+        "ctes": 57,
+        "pct_cts": 6.09
+      },
+      {
+        "nome": "SOORETAMA COM DE PROD ALIM LTDA",
+        "cnpj": "27311109000104",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 125201.91,
+        "v_merc": 1048241.9,
+        "ctes": 22,
+        "pct_cts": 11.94
+      },
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+        "cnpj": "61940292007220",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 119329.68,
+        "v_merc": 11062925.73,
+        "ctes": 25,
+        "pct_cts": 1.08
+      },
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ",
+        "cnpj": "61940292005287",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 115576.54,
+        "v_merc": 2560524.95,
+        "ctes": 34,
+        "pct_cts": 4.51
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865242244",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 111136.68,
+        "v_merc": 3397544.21,
+        "ctes": 85,
+        "pct_cts": 3.27
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820001500",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 106807.55,
+        "v_merc": 2400712.91,
+        "ctes": 31,
+        "pct_cts": 4.45
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001026",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 105236.07,
+        "v_merc": 1954956.81,
+        "ctes": 26,
+        "pct_cts": 5.38
+      },
+      {
+        "nome": "DISTR VALE DAS ACACIAS LTDA",
+        "cnpj": "13311080000148",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 98001.92,
+        "v_merc": 1203417.3,
+        "ctes": 31,
+        "pct_cts": 8.14
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991000992",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 94837.86,
+        "v_merc": 1867470.41,
+        "ctes": 25,
+        "pct_cts": 5.08
+      },
+      {
+        "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+        "cnpj": "84521053000148",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "AM",
+        "frete": 92395.82,
+        "v_merc": 1550801.8,
+        "ctes": 15,
+        "pct_cts": 5.96
+      },
+      {
+        "nome": "GENESIO A. MENDES & CIA. LTDA",
+        "cnpj": "82873068000140",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "SC",
+        "frete": 86794.68,
+        "v_merc": 2580489.6,
+        "ctes": 25,
+        "pct_cts": 3.36
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865040960",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 79905.14,
+        "v_merc": 3286701.36,
+        "ctes": 92,
+        "pct_cts": 2.43
+      },
+      {
+        "nome": "NAZARIA DISTR DE PROD FARM LTDA",
+        "cnpj": "07224991000135",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 78117.76,
+        "v_merc": 1892894.17,
+        "ctes": 24,
+        "pct_cts": 4.13
+      },
+      {
+        "nome": "MARTINS COMERCIO E SERVICOS DE DIST RIBUICAO S/A",
+        "cnpj": "43214055000107",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 75497.72,
+        "v_merc": 2602525.32,
+        "ctes": 18,
+        "pct_cts": 2.9
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAME LTDA",
+        "cnpj": "01206820001683",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "MT",
+        "frete": 74916.99,
+        "v_merc": 2065404.14,
+        "ctes": 37,
+        "pct_cts": 3.63
+      },
+      {
+        "nome": "DROG PACHECO S/A",
+        "cnpj": "33438250044539",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 72158.35,
+        "v_merc": 2790664.78,
+        "ctes": 67,
+        "pct_cts": 2.59
+      },
+      {
+        "nome": "NAZARIA DISTRIB PROD FARMACEUTICO LTDA",
+        "cnpj": "07224991002189",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 67149.43,
+        "v_merc": 1093783.34,
+        "ctes": 22,
+        "pct_cts": 6.14
+      },
+      {
+        "nome": "PANPHARMA DIST DE MEDICAMENTOS LTDA",
+        "cnpj": "01206820000873",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 67071.58,
+        "v_merc": 2416681.89,
+        "ctes": 28,
+        "pct_cts": 2.78
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940000367",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 67030.52,
+        "v_merc": 3719332.28,
+        "ctes": 32,
+        "pct_cts": 1.8
+      },
+      {
+        "nome": "IMIFARMA PROD FARMACE COSM S/A",
+        "cnpj": "04899316053661",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 66805.29,
+        "v_merc": 3446408.79,
+        "ctes": 52,
+        "pct_cts": 1.94
+      },
+      {
+        "nome": "JOHNMAR COM E REP LTDA",
+        "cnpj": "79022877000133",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "SC",
+        "frete": 66380.94,
+        "v_merc": 1856909.49,
+        "ctes": 37,
+        "pct_cts": 3.57
+      },
+      {
+        "nome": "PROFARMA DISTDE PRODFARMACSA",
+        "cnpj": "45453214002367",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 65827.14,
+        "v_merc": 2085247.04,
+        "ctes": 38,
+        "pct_cts": 3.16
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611051162",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 63724.98,
+        "v_merc": 1702801.63,
+        "ctes": 58,
+        "pct_cts": 3.74
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940000952",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 63328.13,
+        "v_merc": 3156494.09,
+        "ctes": 30,
+        "pct_cts": 2.01
+      },
+      {
+        "nome": "DROG PACHECO S/A",
+        "cnpj": "33438250025666",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 62816.73,
+        "v_merc": 1841048.22,
+        "ctes": 64,
+        "pct_cts": 3.41
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940001410",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 62141.02,
+        "v_merc": 2252510.74,
+        "ctes": 29,
+        "pct_cts": 2.76
+      },
+      {
+        "nome": "DIST MEDIC SANTA CRUZ LTDA",
+        "cnpj": "61940292005520",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 60010.21,
+        "v_merc": 2375959.42,
+        "ctes": 31,
+        "pct_cts": 2.53
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865337202",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 59338.2,
+        "v_merc": 1017730.21,
+        "ctes": 33,
+        "pct_cts": 5.83
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820003201",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 58615.27,
+        "v_merc": 2324418.09,
+        "ctes": 26,
+        "pct_cts": 2.52
+      },
+      {
+        "nome": "ARCOZ DISTRIBUIDORA LTDA",
+        "cnpj": "37639126000110",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 57006.32,
+        "v_merc": 3740906.09,
+        "ctes": 42,
+        "pct_cts": 1.52
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292007069",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 54810.34,
+        "v_merc": 797317.83,
+        "ctes": 17,
+        "pct_cts": 6.87
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+        "cnpj": "06626253119809",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 52802.55,
+        "v_merc": 1634351.34,
+        "ctes": 59,
+        "pct_cts": 3.23
+      },
+      {
+        "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+        "cnpj": "00048785002892",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 51295.53,
+        "v_merc": 357945.75,
+        "ctes": 2,
+        "pct_cts": 14.33
+      },
+      {
+        "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+        "cnpj": "00048785003279",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 50641.1,
+        "v_merc": 423545.15,
+        "ctes": 2,
+        "pct_cts": 11.96
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001883",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 50611.68,
+        "v_merc": 654458.59,
+        "ctes": 22,
+        "pct_cts": 7.73
+      },
+      {
+        "nome": "SB COMERCIO LTDA",
+        "cnpj": "04429478000192",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "AM",
+        "frete": 48863.44,
+        "v_merc": 890550.77,
+        "ctes": 17,
+        "pct_cts": 5.49
+      },
+      {
+        "nome": "PROFARMA DISTRIBUIDORA DE PRODUTOS",
+        "cnpj": "43015537000219",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 48736.81,
+        "v_merc": 1384540.05,
+        "ctes": 32,
+        "pct_cts": 3.52
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820003708",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 48578.07,
+        "v_merc": 1371542.89,
+        "ctes": 29,
+        "pct_cts": 3.54
+      },
+      {
+        "nome": "PHARMA LOG PROD FARMACE LTDA",
+        "cnpj": "13485130000103",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 48221.74,
+        "v_merc": 683849.07,
+        "ctes": 24,
+        "pct_cts": 7.05
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292001290",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 47635.11,
+        "v_merc": 2254070.76,
+        "ctes": 35,
+        "pct_cts": 2.11
+      },
+      {
+        "nome": "DIST CENTRO OESTE DE MEDICAMENTOS LTDA",
+        "cnpj": "66438011000328",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 47359.74,
+        "v_merc": 941275.72,
+        "ctes": 22,
+        "pct_cts": 5.03
+      },
+      {
+        "nome": "PANPHARMA DISTR DE MEDIC LTDA",
+        "cnpj": "01206820000440",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 46116.48,
+        "v_merc": 984295.43,
+        "ctes": 23,
+        "pct_cts": 4.69
+      },
+      {
+        "nome": "NAZARIA DISTR PROD FARM LTDA",
+        "cnpj": "07224991000640",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "MA",
+        "frete": 45982.72,
+        "v_merc": 1153296.07,
+        "ctes": 21,
+        "pct_cts": 3.99
+      },
+      {
+        "nome": "GENESIO A MENDES E CIA LTDA",
+        "cnpj": "82873068000735",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 45530.18,
+        "v_merc": 1394126.37,
+        "ctes": 26,
+        "pct_cts": 3.27
+      },
+      {
+        "nome": "SENDAS DISTRIBUIDORA SA",
+        "cnpj": "06057223027703",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 42261.48,
+        "v_merc": 2079556.28,
+        "ctes": 19,
+        "pct_cts": 2.03
+      },
+      {
+        "nome": "ELOFARMA DISTR LTDA",
+        "cnpj": "23048790000261",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 42152.36,
+        "v_merc": 1320757.86,
+        "ctes": 13,
+        "pct_cts": 3.19
+      },
+      {
+        "nome": "DISTR DE MED SANTA CRUZ LTDA",
+        "cnpj": "61940292006410",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 41525.41,
+        "v_merc": 942056.58,
+        "ctes": 32,
+        "pct_cts": 4.41
+      },
+      {
+        "nome": "RCR REPRESENTACOES E SERVICOS LTDA",
+        "cnpj": "03262073000140",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 41200.0,
+        "v_merc": 3952128.26,
+        "ctes": 8,
+        "pct_cts": 1.04
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAME LTDA",
+        "cnpj": "01206820001179",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 41143.22,
+        "v_merc": 1171721.77,
+        "ctes": 25,
+        "pct_cts": 3.51
+      },
+      {
+        "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+        "cnpj": "00048785004674",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 39298.8,
+        "v_merc": 468287.65,
+        "ctes": 2,
+        "pct_cts": 8.39
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991000801",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "RN",
+        "frete": 36631.1,
+        "v_merc": 987304.48,
+        "ctes": 26,
+        "pct_cts": 3.71
+      },
+      {
+        "nome": "NAZARIA DIST DE PRODS FARMA LTDA",
+        "cnpj": "07224991001530",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 36078.54,
+        "v_merc": 844750.42,
+        "ctes": 19,
+        "pct_cts": 4.27
+      },
+      {
+        "nome": "RCR REPRESENTACOES E SERVICOS LTDA",
+        "cnpj": "03262073000573",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 35041.8,
+        "v_merc": 3414737.4,
+        "ctes": 7,
+        "pct_cts": 1.03
+      },
+      {
+        "nome": "J SLEIMAN S.A. COM DE PROD DE HIG E ALIM",
+        "cnpj": "07216054000219",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 34371.79,
+        "v_merc": 912126.77,
+        "ctes": 12,
+        "pct_cts": 3.77
+      },
+      {
+        "nome": "DIST MEDIC SANTA CRUZ LTDA",
+        "cnpj": "61940292005600",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 33956.28,
+        "v_merc": 1086937.04,
+        "ctes": 28,
+        "pct_cts": 3.12
+      },
+      {
+        "nome": "PROFARMA DIST DE PROD FARM S/A",
+        "cnpj": "45453214002448",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 33950.17,
+        "v_merc": 1205335.88,
+        "ctes": 28,
+        "pct_cts": 2.82
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001964",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "MA",
+        "frete": 33940.94,
+        "v_merc": 420884.07,
+        "ctes": 17,
+        "pct_cts": 8.06
+      },
+      {
+        "nome": "PROFARMA DISTRIBUIDORA DE PRODUTOS",
+        "cnpj": "45453214002014",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 31796.06,
+        "v_merc": 1033618.6,
+        "ctes": 31,
+        "pct_cts": 3.08
+      },
+      {
+        "nome": "PANPHARMA DIST MEDIC LTDA",
+        "cnpj": "01206820002493",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "AL",
+        "frete": 31743.06,
+        "v_merc": 1218183.59,
+        "ctes": 30,
+        "pct_cts": 2.61
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991002006",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "MA",
+        "frete": 31529.47,
+        "v_merc": 567238.33,
+        "ctes": 18,
+        "pct_cts": 5.56
+      },
+      {
+        "nome": "NORTE SUL REAL DISTRIB E LOGIST LTDA",
+        "cnpj": "11322774000155",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "MT",
+        "frete": 30579.48,
+        "v_merc": 700418.16,
+        "ctes": 11,
+        "pct_cts": 4.37
+      },
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ",
+        "cnpj": "61940292006500",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "RN",
+        "frete": 28976.71,
+        "v_merc": 696372.54,
+        "ctes": 21,
+        "pct_cts": 4.16
+      },
+      {
+        "nome": "RB DISTR COM CONS MED E MERC LTDA",
+        "cnpj": "07987265000255",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "AC",
+        "frete": 28803.8,
+        "v_merc": 407566.61,
+        "ctes": 11,
+        "pct_cts": 7.07
+      },
+      {
+        "nome": "MILFARMA COML LTDA",
+        "cnpj": "08241229000120",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 28771.92,
+        "v_merc": 1321713.21,
+        "ctes": 24,
+        "pct_cts": 2.18
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611026133",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 27442.18,
+        "v_merc": 985863.39,
+        "ctes": 43,
+        "pct_cts": 2.78
+      },
+      {
+        "nome": "GENOMMA LABORATORIES DO BR",
+        "cnpj": "09080907000182",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 27016.38,
+        "v_merc": 662949.29,
+        "ctes": 48,
+        "pct_cts": 4.08
+      },
+      {
+        "nome": "INDUSTRIAL E COML BELLA PLUS LTDA",
+        "cnpj": "02029746000315",
+        "empresa": "OUTROS",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 24239.98,
+        "v_merc": 540174.09,
+        "ctes": 4,
+        "pct_cts": 4.49
+      },
+      {
+        "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LT",
+        "cnpj": "22417427000122",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 23793.85,
+        "v_merc": 569544.1,
+        "ctes": 11,
+        "pct_cts": 4.18
+      },
+      {
+        "nome": "ARCOZ DISTRIBUIDORA LTDA",
+        "cnpj": "37639126000200",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 23775.42,
+        "v_merc": 1966190.33,
+        "ctes": 13,
+        "pct_cts": 1.21
+      },
+      {
+        "nome": "PROFARMA DIST DE PROD FARM SA",
+        "cnpj": "45453214002529",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 22866.71,
+        "v_merc": 348666.55,
+        "ctes": 19,
+        "pct_cts": 6.56
+      },
+      {
+        "nome": "PROFARMA DIST PROD FARMACEUTICOS SA",
+        "cnpj": "45453214004149",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "MT",
+        "frete": 22229.48,
+        "v_merc": 917388.88,
+        "ctes": 31,
+        "pct_cts": 2.42
+      },
+      {
+        "nome": "PWS DISTRIBUIDORA DE COSMETICOS LTDA",
+        "cnpj": "34427999000171",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 21000.0,
+        "v_merc": 7556861.0,
+        "ctes": 7,
+        "pct_cts": 0.28
+      },
+      {
+        "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL, LTD",
+        "cnpj": "15436940001681",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 20962.66,
+        "v_merc": 473770.76,
+        "ctes": 18,
+        "pct_cts": 4.42
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001700",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "MA",
+        "frete": 19295.93,
+        "v_merc": 558889.91,
+        "ctes": 18,
+        "pct_cts": 3.45
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940001177",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 19091.27,
+        "v_merc": 635613.23,
+        "ctes": 24,
+        "pct_cts": 3.0
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292007301",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 18405.7,
+        "v_merc": 344296.43,
+        "ctes": 25,
+        "pct_cts": 5.35
+      },
+      {
+        "nome": "PROFARMA DIST PROD FARMACEUTICOS SA",
+        "cnpj": "45453214004068",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 17702.83,
+        "v_merc": 290659.4,
+        "ctes": 18,
+        "pct_cts": 6.09
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820003899",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 16409.52,
+        "v_merc": 771955.82,
+        "ctes": 27,
+        "pct_cts": 2.13
+      },
+      {
+        "nome": "DMA DISTR SA",
+        "cnpj": "01928075013501",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 16240.64,
+        "v_merc": 757848.92,
+        "ctes": 4,
+        "pct_cts": 2.14
+      },
+      {
+        "nome": "GIASSI & CIA LTDA",
+        "cnpj": "83648477000105",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "SC",
+        "frete": 15458.49,
+        "v_merc": 451975.33,
+        "ctes": 15,
+        "pct_cts": 3.42
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292001702",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 15050.67,
+        "v_merc": 1110148.2,
+        "ctes": 14,
+        "pct_cts": 1.36
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001107",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "AL",
+        "frete": 14775.53,
+        "v_merc": 241113.6,
+        "ctes": 13,
+        "pct_cts": 6.13
+      },
+      {
+        "nome": "CASAS GUANABARA COMESTIVEIS LTDA",
+        "cnpj": "33130543002207",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 14562.35,
+        "v_merc": 826365.39,
+        "ctes": 3,
+        "pct_cts": 1.76
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820003546",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 14530.41,
+        "v_merc": 326100.04,
+        "ctes": 20,
+        "pct_cts": 4.46
+      },
+      {
+        "nome": "TAUSTE SUPERMERCADOS LTDA",
+        "cnpj": "65897910001306",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 14521.75,
+        "v_merc": 687909.51,
+        "ctes": 15,
+        "pct_cts": 2.11
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292007140",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 14390.45,
+        "v_merc": 1134549.63,
+        "ctes": 19,
+        "pct_cts": 1.27
+      },
+      {
+        "nome": "A ANGELONI E CIA LTDA",
+        "cnpj": "83646984006906",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "SC",
+        "frete": 14309.57,
+        "v_merc": 389752.07,
+        "ctes": 23,
+        "pct_cts": 3.67
+      },
+      {
+        "nome": "COMPANHIA BRAS DE DISTR",
+        "cnpj": "47508411083264",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 13981.72,
+        "v_merc": 359309.47,
+        "ctes": 12,
+        "pct_cts": 3.89
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253149384",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 13595.21,
+        "v_merc": 212284.0,
+        "ctes": 2,
+        "pct_cts": 6.4
+      },
+      {
+        "nome": "ROGE GOIAS DISTRIBUIDORA LTDA",
+        "cnpj": "09274480000153",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 12848.24,
+        "v_merc": 728436.92,
+        "ctes": 6,
+        "pct_cts": 1.76
+      },
+      {
+        "nome": "PROFARMA DISTDE PRODFARMACSA",
+        "cnpj": "45453214002790",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 11621.99,
+        "v_merc": 609975.1,
+        "ctes": 20,
+        "pct_cts": 1.91
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001298",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 11568.09,
+        "v_merc": 433335.68,
+        "ctes": 19,
+        "pct_cts": 2.67
+      },
+      {
+        "nome": "GENESIO A MENDES E CIA LTDA",
+        "cnpj": "82873068000654",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 11439.23,
+        "v_merc": 778813.22,
+        "ctes": 13,
+        "pct_cts": 1.47
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991002340",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "AL",
+        "frete": 10256.83,
+        "v_merc": 288746.04,
+        "ctes": 11,
+        "pct_cts": 3.55
+      },
+      {
+        "nome": "LEBON PRODUTOS QUIM. FARM. LTDA",
+        "cnpj": "87375952000178",
+        "empresa": "OUTROS",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 10133.7,
+        "v_merc": 13386.45,
+        "ctes": 1,
+        "pct_cts": 75.7
+      },
+      {
+        "nome": "SENDAS DISTRIBUIDORA SA",
+        "cnpj": "06057223046830",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 10034.72,
+        "v_merc": 161552.95,
+        "ctes": 3,
+        "pct_cts": 6.21
+      },
+      {
+        "nome": "PROFARMA DISTRIB PROD FARMACEUTICOS",
+        "cnpj": "45453214003924",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 9656.16,
+        "v_merc": 498292.21,
+        "ctes": 15,
+        "pct_cts": 1.94
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAM",
+        "cnpj": "01206820003112",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 9645.05,
+        "v_merc": 358160.46,
+        "ctes": 17,
+        "pct_cts": 2.69
+      },
+      {
+        "nome": "PANPHARMA DISTR DE MEDIC LTDA",
+        "cnpj": "01206820000954",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 9269.72,
+        "v_merc": 913851.07,
+        "ctes": 16,
+        "pct_cts": 1.01
+      },
+      {
+        "nome": "PROFARMA DISTRIB PROD FARMACEUTICOS SA",
+        "cnpj": "45453214001042",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 8904.01,
+        "v_merc": 361213.82,
+        "ctes": 21,
+        "pct_cts": 2.47
+      },
+      {
+        "nome": "SOLFARMA COMERCIO DE PRODUTOS FARMACEUTICOS S.A.",
+        "cnpj": "46054219000174",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 8867.83,
+        "v_merc": 361841.19,
+        "ctes": 1,
+        "pct_cts": 2.45
+      },
+      {
+        "nome": "PROFARMA DISTR PROD FARM SA",
+        "cnpj": "45453214003681",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 8798.24,
+        "v_merc": 334653.66,
+        "ctes": 22,
+        "pct_cts": 2.63
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292006925",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 8517.94,
+        "v_merc": 569177.08,
+        "ctes": 19,
+        "pct_cts": 1.5
+      },
+      {
+        "nome": "MARTINS COM SERV DE DIST S/A",
+        "cnpj": "43214055004013",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 7978.1,
+        "v_merc": 258215.63,
+        "ctes": 11,
+        "pct_cts": 3.09
+      },
+      {
+        "nome": "EPOCA COM E DISTR DE PROD ALIM EIND LTDA",
+        "cnpj": "08450457000100",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 7760.5,
+        "v_merc": 709733.65,
+        "ctes": 5,
+        "pct_cts": 1.09
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LT",
+        "cnpj": "61940292005368",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 7727.42,
+        "v_merc": 643136.02,
+        "ctes": 13,
+        "pct_cts": 1.2
+      },
+      {
+        "nome": "GIANINA SAO PAULO DISTR LTDA",
+        "cnpj": "34107370000144",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 6950.06,
+        "v_merc": 250979.85,
+        "ctes": 9,
+        "pct_cts": 2.77
+      },
+      {
+        "nome": "PROFARMA DIST PROD FCEUTICO SA",
+        "cnpj": "45453214003843",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "RN",
+        "frete": 6693.24,
+        "v_merc": 162648.59,
+        "ctes": 14,
+        "pct_cts": 4.12
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940003463",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 6459.86,
+        "v_merc": 328729.17,
+        "ctes": 7,
+        "pct_cts": 1.97
+      },
+      {
+        "nome": "PROFARMA DIST.PROD.FARMACEUTICOS S/",
+        "cnpj": "45453214003177",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 6335.27,
+        "v_merc": 173329.31,
+        "ctes": 13,
+        "pct_cts": 3.66
+      },
+      {
+        "nome": "MAPPEL INDUSTRIA DE EMBALAGENS S.A.",
+        "cnpj": "01233103000326",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 6321.3,
+        "v_merc": 300426.0,
+        "ctes": 3,
+        "pct_cts": 2.1
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292005872",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "SC",
+        "frete": 6228.41,
+        "v_merc": 437810.44,
+        "ctes": 15,
+        "pct_cts": 1.42
+      },
+      {
+        "nome": "PANPHARMA DISTRIB DE MEDIC LTDA",
+        "cnpj": "01206820003031",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 5969.35,
+        "v_merc": 369541.68,
+        "ctes": 15,
+        "pct_cts": 1.62
+      },
+      {
+        "nome": "SB COMERCIO LTDA",
+        "cnpj": "04429478017915",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 5856.8,
+        "v_merc": 235759.92,
+        "ctes": 13,
+        "pct_cts": 2.48
+      },
+      {
+        "nome": "PROFARMA DISTRIBUIDORA DE PRODUTOS FARMA",
+        "cnpj": "45453214002952",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "AL",
+        "frete": 5717.2,
+        "v_merc": 171285.86,
+        "ctes": 13,
+        "pct_cts": 3.34
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865374159",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 5706.46,
+        "v_merc": 362325.33,
+        "ctes": 5,
+        "pct_cts": 1.57
+      },
+      {
+        "nome": "GENESIO A MENDES E CIA LTDA",
+        "cnpj": "82873068000816",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 5555.42,
+        "v_merc": 415386.88,
+        "ctes": 15,
+        "pct_cts": 1.34
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292000218",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 5230.7,
+        "v_merc": 291323.63,
+        "ctes": 13,
+        "pct_cts": 1.8
+      },
+      {
+        "nome": "DECONSULT MARKETING LTDA",
+        "cnpj": "09384473000104",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 4983.96,
+        "v_merc": 62460.72,
+        "ctes": 2,
+        "pct_cts": 7.98
+      },
+      {
+        "nome": "COMERCIAL VITA NORTE LTDA",
+        "cnpj": "70089974000179",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 4702.44,
+        "v_merc": 90645.79,
+        "ctes": 2,
+        "pct_cts": 5.19
+      },
+      {
+        "nome": "PANPHARMA DISTR DE MEDIC LTDA",
+        "cnpj": "01206820003384",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 4617.6,
+        "v_merc": 239800.24,
+        "ctes": 10,
+        "pct_cts": 1.93
+      },
+      {
+        "nome": "DROG SAO PAULO SA",
+        "cnpj": "61412110137371",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 4354.32,
+        "v_merc": 148324.29,
+        "ctes": 10,
+        "pct_cts": 2.94
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292004710",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 4311.18,
+        "v_merc": 198220.91,
+        "ctes": 6,
+        "pct_cts": 2.17
+      },
+      {
+        "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUI",
+        "cnpj": "43214055001189",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 4169.02,
+        "v_merc": 64403.37,
+        "ctes": 2,
+        "pct_cts": 6.47
+      },
+      {
+        "nome": "MUNDIALMIX COM DE ALIM LTDA",
+        "cnpj": "82956160000173",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "SC",
+        "frete": 3760.68,
+        "v_merc": 36149.53,
+        "ctes": 3,
+        "pct_cts": 10.4
+      },
+      {
+        "nome": "PANPHARMA DISTR DE MEDIC LTDA",
+        "cnpj": "01206820000369",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 3561.68,
+        "v_merc": 130646.19,
+        "ctes": 4,
+        "pct_cts": 2.73
+      },
+      {
+        "nome": "PROFARMA DISTR DE PROD FARMACE SA",
+        "cnpj": "45453214002286",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 3550.98,
+        "v_merc": 170099.29,
+        "ctes": 7,
+        "pct_cts": 2.09
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223032375",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 3379.38,
+        "v_merc": 53922.11,
+        "ctes": 5,
+        "pct_cts": 6.27
+      },
+      {
+        "nome": "COMPANHIA BRASILEIRA DE DISTRIBUICAO",
+        "cnpj": "47508411136562",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 3313.59,
+        "v_merc": 38117.33,
+        "ctes": 4,
+        "pct_cts": 8.69
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223031808",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 3283.54,
+        "v_merc": 52479.48,
+        "ctes": 5,
+        "pct_cts": 6.26
+      },
+      {
+        "nome": "ULTRAFARMA SAUDE LTDA",
+        "cnpj": "02543945001408",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 3230.74,
+        "v_merc": 132172.62,
+        "ctes": 5,
+        "pct_cts": 2.44
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223032022",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 3199.37,
+        "v_merc": 51698.77,
+        "ctes": 5,
+        "pct_cts": 6.19
+      },
+      {
+        "nome": "GIANINA RIO CLARO DISTRIBUICAO HIGIENE E PERFUMARIA LTDA",
+        "cnpj": "24715566000168",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 3175.66,
+        "v_merc": 86750.21,
+        "ctes": 6,
+        "pct_cts": 3.66
+      },
+      {
+        "nome": "GIANINA DRACENA DISTR LTDA",
+        "cnpj": "13262385000107",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 3175.62,
+        "v_merc": 79172.22,
+        "ctes": 8,
+        "pct_cts": 4.01
+      },
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+        "cnpj": "61940292004981",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 2924.8,
+        "v_merc": 88622.65,
+        "ctes": 2,
+        "pct_cts": 3.3
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223034157",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 2840.64,
+        "v_merc": 43360.11,
+        "ctes": 5,
+        "pct_cts": 6.55
+      },
+      {
+        "nome": "SENDAS DISTRIBUIDORA S A",
+        "cnpj": "06057223053968",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "TO",
+        "frete": 2546.37,
+        "v_merc": 66526.61,
+        "ctes": 7,
+        "pct_cts": 3.83
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223023031",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 2386.09,
+        "v_merc": 52792.51,
+        "ctes": 5,
+        "pct_cts": 4.52
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223039205",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 2305.45,
+        "v_merc": 42799.53,
+        "ctes": 5,
+        "pct_cts": 5.39
+      },
+      {
+        "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUI",
+        "cnpj": "43214055001693",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 2301.18,
+        "v_merc": 51507.64,
+        "ctes": 4,
+        "pct_cts": 4.47
+      },
+      {
+        "nome": "SENDAS DISTRIBUIDORA S A",
+        "cnpj": "06057223038900",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "TO",
+        "frete": 2298.33,
+        "v_merc": 56490.31,
+        "ctes": 7,
+        "pct_cts": 4.07
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223052643",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 2269.92,
+        "v_merc": 53006.16,
+        "ctes": 5,
+        "pct_cts": 4.28
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223022906",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 2265.16,
+        "v_merc": 43990.31,
+        "ctes": 5,
+        "pct_cts": 5.15
+      },
+      {
+        "nome": "SOGAMAX DISTR DE PROD FARMA LTDA",
+        "cnpj": "00857492000217",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 2169.35,
+        "v_merc": 105099.92,
+        "ctes": 9,
+        "pct_cts": 2.06
+      },
+      {
+        "nome": "SERVIMED COMERCIAL LTDA",
+        "cnpj": "44463156002551",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "MS",
+        "frete": 2132.01,
+        "v_merc": 180252.07,
+        "ctes": 3,
+        "pct_cts": 1.18
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223053372",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 2124.29,
+        "v_merc": 50910.16,
+        "ctes": 5,
+        "pct_cts": 4.17
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223037253",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 2121.5,
+        "v_merc": 28617.73,
+        "ctes": 4,
+        "pct_cts": 7.41
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223034319",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 2086.37,
+        "v_merc": 36477.22,
+        "ctes": 5,
+        "pct_cts": 5.72
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223034408",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 2079.59,
+        "v_merc": 33698.94,
+        "ctes": 5,
+        "pct_cts": 6.17
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223054000",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 2047.26,
+        "v_merc": 106060.29,
+        "ctes": 6,
+        "pct_cts": 1.93
+      },
+      {
+        "nome": "CIA BRAS DE DISTR",
+        "cnpj": "47508411251906",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 1980.88,
+        "v_merc": 48534.96,
+        "ctes": 3,
+        "pct_cts": 4.08
+      },
+      {
+        "nome": "FIRMO CAVALCANTI LTDA",
+        "cnpj": "27280857000169",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 1717.67,
+        "v_merc": 27149.28,
+        "ctes": 4,
+        "pct_cts": 6.33
+      },
+      {
+        "nome": "PROFARMA DIST. PROD. FARMACEUTICOS",
+        "cnpj": "45453214002600",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 1665.18,
+        "v_merc": 64878.58,
+        "ctes": 6,
+        "pct_cts": 2.57
+      },
+      {
+        "nome": "VENANCIO PROD FARMA LTDA",
+        "cnpj": "00285753001324",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 1465.38,
+        "v_merc": 100455.48,
+        "ctes": 2,
+        "pct_cts": 1.46
+      },
+      {
+        "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
+        "cnpj": "09080907000506",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 1456.73,
+        "v_merc": 3876.9,
+        "ctes": 1,
+        "pct_cts": 37.57
+      },
+      {
+        "nome": "ANAD ASSOC NAC DE ASSIT.DIAB",
+        "cnpj": "51602654000126",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 1357.89,
+        "v_merc": 10534.32,
+        "ctes": 5,
+        "pct_cts": 12.89
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223044110",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 1317.83,
+        "v_merc": 28243.13,
+        "ctes": 5,
+        "pct_cts": 4.67
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223054344",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 1123.88,
+        "v_merc": 37572.32,
+        "ctes": 4,
+        "pct_cts": 2.99
+      },
+      {
+        "nome": "PANPHARMA DIST MEDIC LTDA",
+        "cnpj": "01206820001764",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "MS",
+        "frete": 1120.46,
+        "v_merc": 28139.71,
+        "ctes": 5,
+        "pct_cts": 3.98
+      }
+    ],
+    "remetentes": [
+      {
+        "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
+        "cnpj": "09080907000506",
+        "frete": 12680902.62,
+        "v_merc": 463030808.68,
+        "ctes": 5393,
+        "pct_cts": 2.74
+      },
+      {
+        "nome": "INOVALAB DO BRASIL LTDA.",
+        "cnpj": "60698771000126",
+        "frete": 856096.02,
+        "v_merc": 13179976.64,
+        "ctes": 162,
+        "pct_cts": 6.5
+      },
+      {
+        "nome": "GENOMMA LABORATORIES DO BRASIL LTDA.",
+        "cnpj": "09080907000182",
+        "frete": 31560.87,
+        "v_merc": 253476.9,
+        "ctes": 130,
+        "pct_cts": 12.45
+      },
+      {
+        "nome": "Prakolar Rotulos Autoadesivos Ltda",
+        "cnpj": "02929563000194",
+        "frete": 10133.7,
+        "v_merc": 13386.45,
+        "ctes": 1,
+        "pct_cts": 75.7
+      },
+      {
+        "nome": "PLASTEK DO BRASIL IND. E COM. LTDA",
+        "cnpj": "02978706000158",
+        "frete": 6515.0,
+        "v_merc": 195910.72,
+        "ctes": 2,
+        "pct_cts": 3.33
+      },
+      {
+        "nome": "MKT LOG LOGISTICA INTEGRADA LTDA",
+        "cnpj": "15769911000155",
+        "frete": 754.02,
+        "v_merc": 396.0,
+        "ctes": 1,
+        "pct_cts": 190.41
+      }
+    ]
+  },
+  "inbound": {
+    "totais": {
+      "frete": 1804830.32,
+      "v_merc": 98828593.39,
+      "ctes": 523,
+      "pct_cts": 1.83,
+      "genomma_frete": 1650529.96,
+      "inovalab_frete": 154300.36,
+      "pct_genomma": 1.7,
+      "pct_inovalab": 8.67
+    },
+    "empresas": {
+      "GENOMMA": {
+        "frete": 1650529.96,
+        "v_merc": 97048780.24,
+        "ctes": 464,
+        "pct_cts": 1.7
+      },
+      "INOVALAB": {
+        "frete": 154300.36,
+        "v_merc": 1779813.15,
+        "ctes": 59,
+        "pct_cts": 8.67
+      },
+      "OUTROS": {
+        "frete": 0,
+        "v_merc": 0,
+        "ctes": 0,
+        "pct_cts": null
+      }
+    },
+    "tipos": {
+      "CIF": {
+        "frete": 1804830.32,
+        "v_merc": 98828593.39,
+        "ctes": 523,
+        "pct_cts": 1.83,
+        "pct_genomma": 1.7,
+        "pct_inovalab": 8.67
+      },
+      "FOB": {
+        "frete": 0,
+        "v_merc": 0,
+        "ctes": 0,
+        "pct_cts": null,
+        "pct_genomma": null,
+        "pct_inovalab": null
+      }
+    },
+    "meses": [
+      {
+        "chave": "2025-01",
+        "ano": 2025,
+        "mes": 1,
+        "nome": "Jan",
+        "frete": 41568.4,
+        "v_merc": 2448223.32,
+        "ctes": 12,
+        "pct_cts": 1.7,
+        "genomma_frete": 41568.4,
+        "genomma_merc": 2448223.32,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.7,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-02",
+        "ano": 2025,
+        "mes": 2,
+        "nome": "Fev",
+        "frete": 98878.49,
+        "v_merc": 4814112.75,
+        "ctes": 27,
+        "pct_cts": 2.05,
+        "genomma_frete": 98878.49,
+        "genomma_merc": 4814112.75,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.05,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-03",
+        "ano": 2025,
+        "mes": 3,
+        "nome": "Mar",
+        "frete": 155511.2,
+        "v_merc": 8453980.6,
+        "ctes": 49,
+        "pct_cts": 1.84,
+        "genomma_frete": 155511.2,
+        "genomma_merc": 8453980.6,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.84,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-04",
+        "ano": 2025,
+        "mes": 4,
+        "nome": "Abr",
+        "frete": 68825.49,
+        "v_merc": 4156544.26,
+        "ctes": 19,
+        "pct_cts": 1.66,
+        "genomma_frete": 68825.49,
+        "genomma_merc": 4156544.26,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.66,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-05",
+        "ano": 2025,
+        "mes": 5,
+        "nome": "Mai",
+        "frete": 119195.0,
+        "v_merc": 5865154.42,
+        "ctes": 32,
+        "pct_cts": 2.03,
+        "genomma_frete": 119195.0,
+        "genomma_merc": 5865154.42,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.03,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-06",
+        "ano": 2025,
+        "mes": 6,
+        "nome": "Jun",
+        "frete": 126577.89,
+        "v_merc": 7637848.86,
+        "ctes": 29,
+        "pct_cts": 1.66,
+        "genomma_frete": 126577.89,
+        "genomma_merc": 7637848.86,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.66,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-07",
+        "ano": 2025,
+        "mes": 7,
+        "nome": "Jul",
+        "frete": 156845.77,
+        "v_merc": 9948415.76,
+        "ctes": 44,
+        "pct_cts": 1.58,
+        "genomma_frete": 156845.77,
+        "genomma_merc": 9948415.76,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.58,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-08",
+        "ano": 2025,
+        "mes": 8,
+        "nome": "Ago",
+        "frete": 125882.43,
+        "v_merc": 4663775.68,
+        "ctes": 33,
+        "pct_cts": 2.7,
+        "genomma_frete": 125882.43,
+        "genomma_merc": 4663775.68,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.7,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-09",
+        "ano": 2025,
+        "mes": 9,
+        "nome": "Set",
+        "frete": 61875.28,
+        "v_merc": 6281902.66,
+        "ctes": 16,
+        "pct_cts": 0.98,
+        "genomma_frete": 61875.28,
+        "genomma_merc": 6281902.66,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 0.98,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-10",
+        "ano": 2025,
+        "mes": 10,
+        "nome": "Out",
+        "frete": 135700.32,
+        "v_merc": 6330105.4,
+        "ctes": 48,
+        "pct_cts": 2.14,
+        "genomma_frete": 135700.32,
+        "genomma_merc": 6330105.4,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.14,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-11",
+        "ano": 2025,
+        "mes": 11,
+        "nome": "Nov",
+        "frete": 147555.8,
+        "v_merc": 7919053.11,
+        "ctes": 41,
+        "pct_cts": 1.86,
+        "genomma_frete": 147555.8,
+        "genomma_merc": 7919053.11,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.86,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-12",
+        "ano": 2025,
+        "mes": 12,
+        "nome": "Dez",
+        "frete": 154582.27,
+        "v_merc": 9553831.7,
+        "ctes": 50,
+        "pct_cts": 1.62,
+        "genomma_frete": 154582.27,
+        "genomma_merc": 9553831.7,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.62,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-01",
+        "ano": 2026,
+        "mes": 1,
+        "nome": "Jan",
+        "frete": 58171.53,
+        "v_merc": 3782035.03,
+        "ctes": 19,
+        "pct_cts": 1.54,
+        "genomma_frete": 58171.53,
+        "genomma_merc": 3782035.03,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.54,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-02",
+        "ano": 2026,
+        "mes": 2,
+        "nome": "Fev",
+        "frete": 173688.45,
+        "v_merc": 8340828.08,
+        "ctes": 47,
+        "pct_cts": 2.08,
+        "genomma_frete": 117063.27,
+        "genomma_merc": 7650149.19,
+        "inovalab_frete": 56625.18,
+        "inovalab_merc": 690678.89,
+        "pct_genomma": 1.53,
+        "pct_inovalab": 8.2
+      },
+      {
+        "chave": "2026-03",
+        "ano": 2026,
+        "mes": 3,
+        "nome": "Mar",
+        "frete": 155712.13,
+        "v_merc": 8107730.45,
+        "ctes": 48,
+        "pct_cts": 1.92,
+        "genomma_frete": 78036.95,
+        "genomma_merc": 7237557.39,
+        "inovalab_frete": 77675.18,
+        "inovalab_merc": 870173.06,
+        "pct_genomma": 1.08,
+        "pct_inovalab": 8.93
+      },
+      {
+        "chave": "2026-04",
+        "ano": 2026,
+        "mes": 4,
+        "nome": "Abr",
+        "frete": 24259.87,
+        "v_merc": 525051.31,
+        "ctes": 9,
+        "pct_cts": 4.62,
+        "genomma_frete": 4259.87,
+        "genomma_merc": 306090.11,
+        "inovalab_frete": 20000.0,
+        "inovalab_merc": 218961.2,
+        "pct_genomma": 1.39,
+        "pct_inovalab": 9.13
+      }
+    ],
+    "quarters": [
+      {
+        "q": "Q1/25",
+        "ano": 2025,
+        "frete": 295958.09,
+        "v_merc": 15716316.67,
+        "ctes": 88,
+        "pct_cts": 1.88,
+        "genomma_frete": 295958.09,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q2/25",
+        "ano": 2025,
+        "frete": 314598.38,
+        "v_merc": 17659547.54,
+        "ctes": 80,
+        "pct_cts": 1.78,
+        "genomma_frete": 314598.38,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q3/25",
+        "ano": 2025,
+        "frete": 344603.48,
+        "v_merc": 20894094.1,
+        "ctes": 93,
+        "pct_cts": 1.65,
+        "genomma_frete": 344603.48,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q4/25",
+        "ano": 2025,
+        "frete": 437838.39,
+        "v_merc": 23802990.21,
+        "ctes": 139,
+        "pct_cts": 1.84,
+        "genomma_frete": 437838.39,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q1/26",
+        "ano": 2026,
+        "frete": 387572.11,
+        "v_merc": 20230593.56,
+        "ctes": 114,
+        "pct_cts": 1.92,
+        "genomma_frete": 253271.75,
+        "inovalab_frete": 134300.36
+      },
+      {
+        "q": "Q2/26",
+        "ano": 2026,
+        "frete": 24259.87,
+        "v_merc": 525051.31,
+        "ctes": 9,
+        "pct_cts": 4.62,
+        "genomma_frete": 4259.87,
+        "inovalab_frete": 20000.0
+      }
+    ],
+    "transportadoras": [
+      {
+        "nome": "TRANSCUNHA LTDA",
+        "cnpj": "00850928000246",
+        "frete": 861930.69,
+        "v_merc": 63691209.39,
+        "ctes": 170,
+        "pct_cts": 1.35,
+        "pct_genomma": 1.35,
+        "pct_inovalab": 4.25,
+        "genomma_frete": 857980.69,
+        "inovalab_frete": 3950.0
+      },
+      {
+        "nome": "AGT TRANSPORTES E LOGISTICA LTDA",
+        "cnpj": "08375009000199",
+        "frete": 822500.0,
+        "v_merc": 28386865.02,
+        "ctes": 329,
+        "pct_cts": 2.9,
+        "pct_genomma": 2.54,
+        "pct_inovalab": 9.22,
+        "genomma_frete": 682500.0,
+        "inovalab_frete": 140000.0
+      },
+      {
+        "nome": "LD CARGO - SOLUCOES LOGISTICAS LTDA",
+        "cnpj": "36321523000187",
+        "frete": 36826.67,
+        "v_merc": 2775565.26,
+        "ctes": 7,
+        "pct_cts": 1.33,
+        "pct_genomma": 1.33,
+        "pct_inovalab": null,
+        "genomma_frete": 36826.67,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "EXPRESSO MINAS FRIOS LTDA",
+        "cnpj": "05151226000379",
+        "frete": 35047.54,
+        "v_merc": 3008902.51,
+        "ctes": 7,
+        "pct_cts": 1.16,
+        "pct_genomma": 1.16,
+        "pct_inovalab": null,
+        "genomma_frete": 35047.54,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "COOPERATIVA DOS TRANSPORTADORES DO VALE - COOTRAVALE",
+        "cnpj": "00680933000339",
+        "frete": 32802.46,
+        "v_merc": 722660.3,
+        "ctes": 6,
+        "pct_cts": 4.54,
+        "pct_genomma": 4.05,
+        "pct_inovalab": 6.13,
+        "genomma_frete": 22452.1,
+        "inovalab_frete": 10350.36
+      },
+      {
+        "nome": "AGILGROUP LOGISTICA LTDA",
+        "cnpj": "09494467000100",
+        "frete": 15490.0,
+        "v_merc": 240690.91,
+        "ctes": 2,
+        "pct_cts": 6.44,
+        "pct_genomma": 6.44,
+        "pct_inovalab": null,
+        "genomma_frete": 15490.0,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "ATIVA DISTR E LOGISTICA LTDA",
+        "cnpj": "01125797003565",
+        "frete": 232.96,
+        "v_merc": 2700.0,
+        "ctes": 2,
+        "pct_cts": 8.63,
+        "pct_genomma": 8.63,
+        "pct_inovalab": null,
+        "genomma_frete": 232.96,
+        "inovalab_frete": 0
+      }
+    ],
+    "regioes": [
+      {
+        "regiao": "Sudeste",
+        "frete": 1804830.32,
+        "v_merc": 98828593.39,
+        "ctes": 523,
+        "pct_cts": 1.83
+      }
+    ],
+    "ufs": [
+      {
+        "uf": "MG",
+        "regiao": "Sudeste",
+        "frete": 1804830.32,
+        "v_merc": 98828593.39,
+        "ctes": 523,
+        "pct_cts": 1.83
+      }
+    ],
+    "clientes": [
+      {
+        "nome": "GENOMMA LABORATORIES DO BRASIL LTDA.",
+        "cnpj": "09080907000506",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 1650529.96,
+        "v_merc": 97048780.24,
+        "ctes": 464,
+        "pct_cts": 1.7
+      },
+      {
+        "nome": "INOVALAB DO BRASIL LTDA",
+        "cnpj": "60698771000126",
+        "empresa": "INOVALAB",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 154300.36,
+        "v_merc": 1779813.15,
+        "ctes": 59,
+        "pct_cts": 8.67
+      }
+    ],
+    "remetentes": [
+      {
+        "nome": "GRECO E GUERREIRO SP ENVASE LTDA",
+        "cnpj": "22104606000100",
+        "frete": 855269.76,
+        "v_merc": 29051886.86,
+        "ctes": 336,
+        "pct_cts": 2.94
+      },
+      {
+        "nome": "TBC PERFUMES E COSMETICOS LTDA",
+        "cnpj": "04660567000145",
+        "frete": 186512.1,
+        "v_merc": 14393287.9,
+        "ctes": 46,
+        "pct_cts": 1.3
+      },
+      {
+        "nome": "ANOVIS INDUSTRIAL FARMACEUTICA LTDA.",
+        "cnpj": "19426695000104",
+        "frete": 130011.25,
+        "v_merc": 15294416.14,
+        "ctes": 29,
+        "pct_cts": 0.85
+      },
+      {
+        "nome": "AIRELA INDUSTRIA FARMACEUTICA LTDA",
+        "cnpj": "01858973000129",
+        "frete": 129700.0,
+        "v_merc": 1649132.0,
+        "ctes": 12,
+        "pct_cts": 7.86
+      },
+      {
+        "nome": "LEBON PRODUTOS QUIMICOS FARMACEUTICOS LTDA",
+        "cnpj": "87375952000178",
+        "frete": 109785.53,
+        "v_merc": 5356912.9,
+        "ctes": 9,
+        "pct_cts": 2.05
+      },
+      {
+        "nome": "UNITHER INDUSTRIA FARMACEUTICA LTDA.",
+        "cnpj": "04656253000179",
+        "frete": 99891.93,
+        "v_merc": 3397311.01,
+        "ctes": 14,
+        "pct_cts": 2.94
+      },
+      {
+        "nome": "INDUSTRIAL E COMERCIAL BELLA PLUS LTDA",
+        "cnpj": "02029746000315",
+        "frete": 74455.5,
+        "v_merc": 4299939.9,
+        "ctes": 20,
+        "pct_cts": 1.73
+      },
+      {
+        "nome": "UNIAO QUIMICA FARMACEUTICA NACIONAL S A",
+        "cnpj": "60665981000975",
+        "frete": 49854.77,
+        "v_merc": 12130969.76,
+        "ctes": 12,
+        "pct_cts": 0.41
+      },
+      {
+        "nome": "MAPPEL INDUSTRIA DE EMBALAGENS S.A.",
+        "cnpj": "01233103000326",
+        "frete": 48447.68,
+        "v_merc": 5800551.64,
+        "ctes": 9,
+        "pct_cts": 0.84
+      },
+      {
+        "nome": "BRASTERAPICA PHARMACEUTICA LTDA.",
+        "cnpj": "46179008000320",
+        "frete": 33970.0,
+        "v_merc": 2066361.25,
+        "ctes": 8,
+        "pct_cts": 1.64
+      },
+      {
+        "nome": "NANOVETORES TECNOLOGIA S/A",
+        "cnpj": "04334187000110",
+        "frete": 16713.87,
+        "v_merc": 642336.29,
+        "ctes": 2,
+        "pct_cts": 2.6
+      },
+      {
+        "nome": "UNIAO QUIMICA FARMACEUTICA NACIONAL S A",
+        "cnpj": "60665981001270",
+        "frete": 15616.18,
+        "v_merc": 1442172.78,
+        "ctes": 4,
+        "pct_cts": 1.08
+      },
+      {
+        "nome": "CONNECTA IMPORTACAO E EXPORTACAO LTDA",
+        "cnpj": "04581264000137",
+        "frete": 15490.0,
+        "v_merc": 240690.91,
+        "ctes": 2,
+        "pct_cts": 6.44
+      },
+      {
+        "nome": "THERASKIN FARMCEUTICA LTDA",
+        "cnpj": "61517397000188",
+        "frete": 12848.9,
+        "v_merc": 891179.74,
+        "ctes": 3,
+        "pct_cts": 1.44
+      },
+      {
+        "nome": "PORTO SECO SUL DE MINAS LTDA",
+        "cnpj": "21378906001277",
+        "frete": 11000.0,
+        "v_merc": 980022.17,
+        "ctes": 11,
+        "pct_cts": 1.12
+      },
+      {
+        "nome": "ATHENAS INDUSTRIA E TERCEIRIZACAO DE COSMETICOS LTDA",
+        "cnpj": "01287021000100",
+        "frete": 8030.0,
+        "v_merc": 468861.68,
+        "ctes": 2,
+        "pct_cts": 1.71
+      },
+      {
+        "nome": "GLENMARK FARMACEUTICA LTDA",
+        "cnpj": "44363661000580",
+        "frete": 6999.89,
+        "v_merc": 719860.46,
+        "ctes": 2,
+        "pct_cts": 0.97
+      },
+      {
+        "nome": "SEAL LACRES IND.E COM.LACRES",
+        "cnpj": "06215096000191",
+        "frete": 232.96,
+        "v_merc": 2700.0,
+        "ctes": 2,
+        "pct_cts": 8.63
+      }
+    ]
+  },
+  "reversa": {
+    "totais": {
+      "frete": 96276.19,
+      "v_merc": 3088544.82,
+      "ctes": 742,
+      "pct_cts": 3.12,
+      "genomma_frete": 96260.42,
+      "inovalab_frete": 15.77,
+      "pct_genomma": 3.12,
+      "pct_inovalab": 31.6
+    },
+    "empresas": {
+      "GENOMMA": {
+        "frete": 96260.42,
+        "v_merc": 3088494.91,
+        "ctes": 740,
+        "pct_cts": 3.12
+      },
+      "INOVALAB": {
+        "frete": 15.77,
+        "v_merc": 49.91,
+        "ctes": 2,
+        "pct_cts": 31.6
+      },
+      "OUTROS": {
+        "frete": 0,
+        "v_merc": 0,
+        "ctes": 0,
+        "pct_cts": null
+      }
+    },
+    "tipos": {
+      "CIF": {
+        "frete": 51330.27,
+        "v_merc": 2064218.32,
+        "ctes": 274,
+        "pct_cts": 2.49,
+        "pct_genomma": 2.49,
+        "pct_inovalab": 2.35
+      },
+      "FOB": {
+        "frete": 44945.92,
+        "v_merc": 1024326.5,
+        "ctes": 468,
+        "pct_cts": 4.39,
+        "pct_genomma": 4.39,
+        "pct_inovalab": 199.06
+      }
+    },
+    "meses": [
+      {
+        "chave": "2025-01",
+        "ano": 2025,
+        "mes": 1,
+        "nome": "Jan",
+        "frete": 12241.83,
+        "v_merc": 278820.84,
+        "ctes": 52,
+        "pct_cts": 4.39,
+        "genomma_frete": 12241.83,
+        "genomma_merc": 278820.84,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 4.39,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-02",
+        "ano": 2025,
+        "mes": 2,
+        "nome": "Fev",
+        "frete": 4010.82,
+        "v_merc": 91789.47,
+        "ctes": 42,
+        "pct_cts": 4.37,
+        "genomma_frete": 4010.82,
+        "genomma_merc": 91789.47,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 4.37,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-03",
+        "ano": 2025,
+        "mes": 3,
+        "nome": "Mar",
+        "frete": 3816.03,
+        "v_merc": 130277.81,
+        "ctes": 64,
+        "pct_cts": 2.93,
+        "genomma_frete": 3816.03,
+        "genomma_merc": 130277.81,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.93,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-04",
+        "ano": 2025,
+        "mes": 4,
+        "nome": "Abr",
+        "frete": 6401.27,
+        "v_merc": 301325.67,
+        "ctes": 55,
+        "pct_cts": 2.12,
+        "genomma_frete": 6401.27,
+        "genomma_merc": 301325.67,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.12,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-05",
+        "ano": 2025,
+        "mes": 5,
+        "nome": "Mai",
+        "frete": 7156.32,
+        "v_merc": 150438.52,
+        "ctes": 85,
+        "pct_cts": 4.76,
+        "genomma_frete": 7156.32,
+        "genomma_merc": 150438.52,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 4.76,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-06",
+        "ano": 2025,
+        "mes": 6,
+        "nome": "Jun",
+        "frete": 6009.03,
+        "v_merc": 205240.97,
+        "ctes": 66,
+        "pct_cts": 2.93,
+        "genomma_frete": 6009.03,
+        "genomma_merc": 205240.97,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 2.93,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-07",
+        "ano": 2025,
+        "mes": 7,
+        "nome": "Jul",
+        "frete": 16967.15,
+        "v_merc": 287040.24,
+        "ctes": 49,
+        "pct_cts": 5.91,
+        "genomma_frete": 16967.15,
+        "genomma_merc": 287040.24,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 5.91,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-08",
+        "ano": 2025,
+        "mes": 8,
+        "nome": "Ago",
+        "frete": 3536.28,
+        "v_merc": 36327.51,
+        "ctes": 32,
+        "pct_cts": 9.73,
+        "genomma_frete": 3536.28,
+        "genomma_merc": 36327.51,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 9.73,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-09",
+        "ano": 2025,
+        "mes": 9,
+        "nome": "Set",
+        "frete": 5050.35,
+        "v_merc": 115660.34,
+        "ctes": 65,
+        "pct_cts": 4.37,
+        "genomma_frete": 5050.35,
+        "genomma_merc": 115660.34,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 4.37,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-10",
+        "ano": 2025,
+        "mes": 10,
+        "nome": "Out",
+        "frete": 2411.98,
+        "v_merc": 67838.01,
+        "ctes": 36,
+        "pct_cts": 3.56,
+        "genomma_frete": 2411.98,
+        "genomma_merc": 67838.01,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.56,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-11",
+        "ano": 2025,
+        "mes": 11,
+        "nome": "Nov",
+        "frete": 6626.03,
+        "v_merc": 949434.45,
+        "ctes": 39,
+        "pct_cts": 0.7,
+        "genomma_frete": 6626.03,
+        "genomma_merc": 949434.45,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 0.7,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2025-12",
+        "ano": 2025,
+        "mes": 12,
+        "nome": "Dez",
+        "frete": 8595.13,
+        "v_merc": 204660.52,
+        "ctes": 62,
+        "pct_cts": 4.2,
+        "genomma_frete": 8595.13,
+        "genomma_merc": 204660.52,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 4.2,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-01",
+        "ano": 2026,
+        "mes": 1,
+        "nome": "Jan",
+        "frete": 1942.74,
+        "v_merc": 62051.85,
+        "ctes": 30,
+        "pct_cts": 3.13,
+        "genomma_frete": 1942.74,
+        "genomma_merc": 62051.85,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 3.13,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-02",
+        "ano": 2026,
+        "mes": 2,
+        "nome": "Fev",
+        "frete": 1199.67,
+        "v_merc": 76169.48,
+        "ctes": 21,
+        "pct_cts": 1.58,
+        "genomma_frete": 1199.67,
+        "genomma_merc": 76169.48,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 1.58,
+        "pct_inovalab": null
+      },
+      {
+        "chave": "2026-03",
+        "ano": 2026,
+        "mes": 3,
+        "nome": "Mar",
+        "frete": 10126.29,
+        "v_merc": 130684.98,
+        "ctes": 40,
+        "pct_cts": 7.75,
+        "genomma_frete": 10110.52,
+        "genomma_merc": 130635.07,
+        "inovalab_frete": 15.77,
+        "inovalab_merc": 49.91,
+        "pct_genomma": 7.74,
+        "pct_inovalab": 31.6
+      },
+      {
+        "chave": "2026-04",
+        "ano": 2026,
+        "mes": 4,
+        "nome": "Abr",
+        "frete": 185.27,
+        "v_merc": 784.16,
+        "ctes": 4,
+        "pct_cts": 23.63,
+        "genomma_frete": 185.27,
+        "genomma_merc": 784.16,
+        "inovalab_frete": 0,
+        "inovalab_merc": 0,
+        "pct_genomma": 23.63,
+        "pct_inovalab": null
+      }
+    ],
+    "quarters": [
+      {
+        "q": "Q1/25",
+        "ano": 2025,
+        "frete": 20068.68,
+        "v_merc": 500888.12,
+        "ctes": 158,
+        "pct_cts": 4.01,
+        "genomma_frete": 20068.68,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q2/25",
+        "ano": 2025,
+        "frete": 19566.62,
+        "v_merc": 657005.16,
+        "ctes": 206,
+        "pct_cts": 2.98,
+        "genomma_frete": 19566.62,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q3/25",
+        "ano": 2025,
+        "frete": 25553.78,
+        "v_merc": 439028.09,
+        "ctes": 146,
+        "pct_cts": 5.82,
+        "genomma_frete": 25553.78,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q4/25",
+        "ano": 2025,
+        "frete": 17633.14,
+        "v_merc": 1221932.98,
+        "ctes": 137,
+        "pct_cts": 1.44,
+        "genomma_frete": 17633.14,
+        "inovalab_frete": 0
+      },
+      {
+        "q": "Q1/26",
+        "ano": 2026,
+        "frete": 13268.7,
+        "v_merc": 268906.31,
+        "ctes": 91,
+        "pct_cts": 4.93,
+        "genomma_frete": 13252.93,
+        "inovalab_frete": 15.77
+      },
+      {
+        "q": "Q2/26",
+        "ano": 2026,
+        "frete": 185.27,
+        "v_merc": 784.16,
+        "ctes": 4,
+        "pct_cts": 23.63,
+        "genomma_frete": 185.27,
+        "inovalab_frete": 0
+      }
+    ],
+    "transportadoras": [
+      {
+        "nome": "FL BRASIL HOLDING LOGISTICA E TRANSPORTE LTDA",
+        "cnpj": "18233211004046",
+        "frete": 45255.17,
+        "v_merc": 1032234.73,
+        "ctes": 469,
+        "pct_cts": 4.38,
+        "pct_genomma": 4.38,
+        "pct_inovalab": 199.06,
+        "genomma_frete": 45240.4,
+        "inovalab_frete": 14.77
+      },
+      {
+        "nome": "TRANSCUNHA LTDA",
+        "cnpj": "00850928000165",
+        "frete": 11664.0,
+        "v_merc": 352176.3,
+        "ctes": 6,
+        "pct_cts": 3.31,
+        "pct_genomma": 3.31,
+        "pct_inovalab": null,
+        "genomma_frete": 11664.0,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "FAZENDA SAO JUDAS LOGISTICA LTDA",
+        "cnpj": "23850588000178",
+        "frete": 11500.0,
+        "v_merc": 124242.05,
+        "ctes": 1,
+        "pct_cts": 9.26,
+        "pct_genomma": 9.26,
+        "pct_inovalab": null,
+        "genomma_frete": 11500.0,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "ATIVA DISTR E LOGISTICA LTDA",
+        "cnpj": "01125797002402",
+        "frete": 9829.89,
+        "v_merc": 371758.64,
+        "ctes": 179,
+        "pct_cts": 2.64,
+        "pct_genomma": 2.64,
+        "pct_inovalab": null,
+        "genomma_frete": 9829.89,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "EXPRESSO MINAS FRIOS LTDA",
+        "cnpj": "05151226000107",
+        "frete": 8446.01,
+        "v_merc": 975508.5,
+        "ctes": 6,
+        "pct_cts": 0.87,
+        "pct_genomma": 0.87,
+        "pct_inovalab": null,
+        "genomma_frete": 8446.01,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "ALA URB TRANSPORTES E LOGISTICA LTDA",
+        "cnpj": "20051163000100",
+        "frete": 3779.42,
+        "v_merc": 97024.07,
+        "ctes": 4,
+        "pct_cts": 3.9,
+        "pct_genomma": 3.9,
+        "pct_inovalab": null,
+        "genomma_frete": 3779.42,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "ATIVA DISTRIBUICAO E LOGISTICA",
+        "cnpj": "01125797003301",
+        "frete": 3256.27,
+        "v_merc": 43916.73,
+        "ctes": 57,
+        "pct_cts": 7.41,
+        "pct_genomma": 7.41,
+        "pct_inovalab": null,
+        "genomma_frete": 3256.27,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "LD CARGO - SOLUCOES LOGISTICAS LTDA",
+        "cnpj": "36321523000187",
+        "frete": 2005.09,
+        "v_merc": 82134.49,
+        "ctes": 15,
+        "pct_cts": 2.44,
+        "pct_genomma": 2.44,
+        "pct_inovalab": 2.35,
+        "genomma_frete": 2004.09,
+        "inovalab_frete": 1.0
+      },
+      {
+        "nome": "UPS DO BRASIL REMESSAS EXPRESSAS LTDA",
+        "cnpj": "74155052000335",
+        "frete": 362.12,
+        "v_merc": 7500.0,
+        "ctes": 2,
+        "pct_cts": 4.83,
+        "pct_genomma": 4.83,
+        "pct_inovalab": null,
+        "genomma_frete": 362.12,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "MKT LOG LOGISTICA INTEGRADA LTDA",
+        "cnpj": "15769911000155",
+        "frete": 178.1,
+        "v_merc": 1950.0,
+        "ctes": 1,
+        "pct_cts": 9.13,
+        "pct_genomma": 9.13,
+        "pct_inovalab": null,
+        "genomma_frete": 178.1,
+        "inovalab_frete": 0
+      },
+      {
+        "nome": "COOPERATIVA DOS TRANSPORTADORES DO VALE - COOTRAVALE",
+        "cnpj": "00680933000339",
+        "frete": 0.12,
+        "v_merc": 99.31,
+        "ctes": 2,
+        "pct_cts": 0.12,
+        "pct_genomma": 0.12,
+        "pct_inovalab": null,
+        "genomma_frete": 0.12,
+        "inovalab_frete": 0
+      }
+    ],
+    "regioes": [
+      {
+        "regiao": "Sudeste",
+        "frete": 96263.84,
+        "v_merc": 3051150.06,
+        "ctes": 741,
+        "pct_cts": 3.16
+      },
+      {
+        "regiao": "Centro-Oeste",
+        "frete": 12.35,
+        "v_merc": 37394.76,
+        "ctes": 1,
+        "pct_cts": 0.03
+      }
+    ],
+    "ufs": [
+      {
+        "uf": "MG",
+        "regiao": "Sudeste",
+        "frete": 94241.81,
+        "v_merc": 3001022.18,
+        "ctes": 736,
+        "pct_cts": 3.14
+      },
+      {
+        "uf": "SP",
+        "regiao": "Sudeste",
+        "frete": 2022.03,
+        "v_merc": 50127.88,
+        "ctes": 5,
+        "pct_cts": 4.03
+      },
+      {
+        "uf": "GO",
+        "regiao": "Centro-Oeste",
+        "frete": 12.35,
+        "v_merc": 37394.76,
+        "ctes": 1,
+        "pct_cts": 0.03
+      }
+    ],
+    "clientes": [
+      {
+        "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
+        "cnpj": "09080907000506",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 93929.14,
+        "v_merc": 3030458.8,
+        "ctes": 734,
+        "pct_cts": 3.1
+      },
+      {
+        "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
+        "cnpj": "09080907000182",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 2331.28,
+        "v_merc": 58036.11,
+        "ctes": 6,
+        "pct_cts": 4.02
+      },
+      {
+        "nome": "INOVALAB DO BRASIL LTDA.",
+        "cnpj": "60698771000126",
+        "empresa": "INOVALAB",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 15.77,
+        "v_merc": 49.91,
+        "ctes": 2,
+        "pct_cts": 31.6
+      }
+    ],
+    "remetentes": [
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA LTDA",
+        "cnpj": "61940292006500",
+        "frete": 13719.8,
+        "v_merc": 141612.16,
+        "ctes": 10,
+        "pct_cts": 9.69
+      },
+      {
+        "nome": "DROGARIA SAO PAULO S A",
+        "cnpj": "61412110095350",
+        "frete": 7591.32,
+        "v_merc": 226835.43,
+        "ctes": 22,
+        "pct_cts": 3.35
+      },
+      {
+        "nome": "COMERCIO DE MEDICAMENTOS BRAIR LTDA",
+        "cnpj": "88212113111947",
+        "frete": 7000.0,
+        "v_merc": 84346.47,
+        "ctes": 1,
+        "pct_cts": 8.3
+      },
+      {
+        "nome": "PHARMA LOG PROD FARMACE LTDA",
+        "cnpj": "13485130000103",
+        "frete": 4697.45,
+        "v_merc": 265883.14,
+        "ctes": 3,
+        "pct_cts": 1.77
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865184295",
+        "frete": 3852.48,
+        "v_merc": 888557.74,
+        "ctes": 6,
+        "pct_cts": 0.43
+      },
+      {
+        "nome": "DROG SAO PAULO S.A",
+        "cnpj": "61412110052384",
+        "frete": 3597.92,
+        "v_merc": 88303.27,
+        "ctes": 8,
+        "pct_cts": 4.07
+      },
+      {
+        "nome": "SENDAS DISTRIBUIDORA SA",
+        "cnpj": "06057223046830",
+        "frete": 3227.68,
+        "v_merc": 63401.67,
+        "ctes": 1,
+        "pct_cts": 5.09
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S.A",
+        "cnpj": "06626253012400",
+        "frete": 2566.18,
+        "v_merc": 33544.61,
+        "ctes": 20,
+        "pct_cts": 7.65
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MED LTDA",
+        "cnpj": "01206820002493",
+        "frete": 2368.77,
+        "v_merc": 45417.34,
+        "ctes": 4,
+        "pct_cts": 5.22
+      },
+      {
+        "nome": "DIST MEDIC SANTA CRUZ LTDA",
+        "cnpj": "61940292005287",
+        "frete": 1977.54,
+        "v_merc": 16731.74,
+        "ctes": 8,
+        "pct_cts": 11.82
+      },
+      {
+        "nome": "PANPHARMA DIST DE MEDICAMENTOS LTDA",
+        "cnpj": "01206820003201",
+        "frete": 1943.37,
+        "v_merc": 23223.93,
+        "ctes": 9,
+        "pct_cts": 8.37
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991002340",
+        "frete": 1940.94,
+        "v_merc": 61046.8,
+        "ctes": 4,
+        "pct_cts": 3.18
+      },
+      {
+        "nome": "REAL DISTRIBUITORA LOGISTICA L",
+        "cnpj": "03785066000122",
+        "frete": 1912.35,
+        "v_merc": 74789.52,
+        "ctes": 2,
+        "pct_cts": 2.56
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253063315",
+        "frete": 1825.36,
+        "v_merc": 24104.06,
+        "ctes": 12,
+        "pct_cts": 7.57
+      },
+      {
+        "nome": "SENDAS DISTRIBUIDORA S/A",
+        "cnpj": "06057223027703",
+        "frete": 1704.42,
+        "v_merc": 82409.64,
+        "ctes": 2,
+        "pct_cts": 2.07
+      },
+      {
+        "nome": "DIST.DE MED.SANTA CRUZ LTDA",
+        "cnpj": "61940292005600",
+        "frete": 1556.52,
+        "v_merc": 30914.6,
+        "ctes": 11,
+        "pct_cts": 5.03
+      },
+      {
+        "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E COSMET",
+        "cnpj": "04899316034284",
+        "frete": 1418.2,
+        "v_merc": 22706.89,
+        "ctes": 16,
+        "pct_cts": 6.25
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865342460",
+        "frete": 1254.6,
+        "v_merc": 14019.04,
+        "ctes": 4,
+        "pct_cts": 8.95
+      },
+      {
+        "nome": "PROFARMA DISTR DE PROD FARMACE SA",
+        "cnpj": "45453214004220",
+        "frete": 1195.56,
+        "v_merc": 59644.4,
+        "ctes": 3,
+        "pct_cts": 2.0
+      },
+      {
+        "nome": "HB DISTRIBUIDORA DE PERFUMARIA LTDA",
+        "cnpj": "43015537000219",
+        "frete": 1079.26,
+        "v_merc": 56114.19,
+        "ctes": 1,
+        "pct_cts": 1.92
+      },
+      {
+        "nome": "DELL COMPUTADORES DO BRASIL LTDA",
+        "cnpj": "72381189001001",
+        "frete": 1058.32,
+        "v_merc": 38743.9,
+        "ctes": 1,
+        "pct_cts": 2.73
+      },
+      {
+        "nome": "SRM - MAET EMBALAGENS LTDA",
+        "cnpj": "09601564000154",
+        "frete": 1016.68,
+        "v_merc": 3769.7,
+        "ctes": 1,
+        "pct_cts": 26.97
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865134000",
+        "frete": 985.51,
+        "v_merc": 23110.74,
+        "ctes": 18,
+        "pct_cts": 4.26
+      },
+      {
+        "nome": "PHARMA LOG PROD FARMACE LTDA",
+        "cnpj": "13485130000294",
+        "frete": 977.28,
+        "v_merc": 14460.2,
+        "ctes": 29,
+        "pct_cts": 6.76
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAME",
+        "cnpj": "01206820003112",
+        "frete": 965.42,
+        "v_merc": 10049.44,
+        "ctes": 7,
+        "pct_cts": 9.61
+      },
+      {
+        "nome": "PROFARMA DIST PROD FCEUTICO SA",
+        "cnpj": "45453214004149",
+        "frete": 913.64,
+        "v_merc": 35741.53,
+        "ctes": 10,
+        "pct_cts": 2.56
+      },
+      {
+        "nome": "DROGARIAS PACHECO S/A",
+        "cnpj": "33438250000167",
+        "frete": 883.47,
+        "v_merc": 21935.42,
+        "ctes": 11,
+        "pct_cts": 4.03
+      },
+      {
+        "nome": "RAIA DROGASIL S A",
+        "cnpj": "61585865163298",
+        "frete": 874.68,
+        "v_merc": 27219.13,
+        "ctes": 22,
+        "pct_cts": 3.21
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865051309",
+        "frete": 868.04,
+        "v_merc": 10077.72,
+        "ctes": 20,
+        "pct_cts": 8.61
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865046305",
+        "frete": 840.74,
+        "v_merc": 20682.89,
+        "ctes": 27,
+        "pct_cts": 4.06
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253087508",
+        "frete": 774.47,
+        "v_merc": 46860.5,
+        "ctes": 15,
+        "pct_cts": 1.65
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865065954",
+        "frete": 764.39,
+        "v_merc": 93976.39,
+        "ctes": 3,
+        "pct_cts": 0.81
+      },
+      {
+        "nome": "PANPHARMA DIST MEDIC LTDA",
+        "cnpj": "01206820002655",
+        "frete": 713.46,
+        "v_merc": 4567.8,
+        "ctes": 11,
+        "pct_cts": 15.62
+      },
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ",
+        "cnpj": "61940292006259",
+        "frete": 692.41,
+        "v_merc": 20241.64,
+        "ctes": 3,
+        "pct_cts": 3.42
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001026",
+        "frete": 674.14,
+        "v_merc": 5057.34,
+        "ctes": 8,
+        "pct_cts": 13.33
+      },
+      {
+        "nome": "IMIFARMA PROD FARM E COSMETICOS SA",
+        "cnpj": "04899316025293",
+        "frete": 670.9,
+        "v_merc": 11914.96,
+        "ctes": 14,
+        "pct_cts": 5.63
+      },
+      {
+        "nome": "PROFARMA DIST PROD FCEUTICO SA",
+        "cnpj": "45453214002367",
+        "frete": 625.42,
+        "v_merc": 36936.78,
+        "ctes": 1,
+        "pct_cts": 1.69
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865073701",
+        "frete": 604.62,
+        "v_merc": 14568.0,
+        "ctes": 9,
+        "pct_cts": 4.15
+      },
+      {
+        "nome": "DROG PACHECO S/A",
+        "cnpj": "33438250025666",
+        "frete": 576.2,
+        "v_merc": 9915.74,
+        "ctes": 5,
+        "pct_cts": 5.81
+      },
+      {
+        "nome": "GOOXXY BRASIL S.A.",
+        "cnpj": "33971496000108",
+        "frete": 566.88,
+        "v_merc": 68831.2,
+        "ctes": 1,
+        "pct_cts": 0.82
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991000801",
+        "frete": 545.21,
+        "v_merc": 11876.82,
+        "ctes": 10,
+        "pct_cts": 4.59
+      },
+      {
+        "nome": "IMIFARMA PROD FARMA E COSM SA",
+        "cnpj": "04899316035175",
+        "frete": 540.35,
+        "v_merc": 3402.18,
+        "ctes": 29,
+        "pct_cts": 15.88
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+        "cnpj": "06626253119809",
+        "frete": 521.26,
+        "v_merc": 34839.72,
+        "ctes": 6,
+        "pct_cts": 1.5
+      },
+      {
+        "nome": "DIST MEDIC SANTA CRUZ LTDA",
+        "cnpj": "61940292007220",
+        "frete": 490.78,
+        "v_merc": 12969.71,
+        "ctes": 2,
+        "pct_cts": 3.78
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288406",
+        "frete": 485.51,
+        "v_merc": 10755.87,
+        "ctes": 18,
+        "pct_cts": 4.51
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288660",
+        "frete": 481.55,
+        "v_merc": 5987.9,
+        "ctes": 16,
+        "pct_cts": 8.04
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865212841",
+        "frete": 474.63,
+        "v_merc": 14695.28,
+        "ctes": 19,
+        "pct_cts": 3.23
+      },
+      {
+        "nome": "SOLFARMA COM PROD FCEUTICO S A",
+        "cnpj": "46054219000840",
+        "frete": 469.82,
+        "v_merc": 9001.48,
+        "ctes": 3,
+        "pct_cts": 5.22
+      },
+      {
+        "nome": "ELOFARMA DISTR LTDA",
+        "cnpj": "23048790000261",
+        "frete": 423.49,
+        "v_merc": 1933.98,
+        "ctes": 1,
+        "pct_cts": 21.9
+      },
+      {
+        "nome": "PROFARMA DIST. PROD. FARMACEUTICOS",
+        "cnpj": "45453214004068",
+        "frete": 390.48,
+        "v_merc": 6861.67,
+        "ctes": 7,
+        "pct_cts": 5.69
+      },
+      {
+        "nome": "PROFARMA DIST.DE PROD.FARM. SA",
+        "cnpj": "45453214002790",
+        "frete": 389.36,
+        "v_merc": 12658.5,
+        "ctes": 7,
+        "pct_cts": 3.08
+      },
+      {
+        "nome": "NAZARIA DIST PROD FARMA LTDA",
+        "cnpj": "07224991001379",
+        "frete": 366.87,
+        "v_merc": 1445.36,
+        "ctes": 6,
+        "pct_cts": 25.38
+      },
+      {
+        "nome": "DROGARIA S O PAULO SA",
+        "cnpj": "61412110062002",
+        "frete": 348.66,
+        "v_merc": 4855.2,
+        "ctes": 10,
+        "pct_cts": 7.18
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MED LTDA",
+        "cnpj": "01206820001179",
+        "frete": 346.25,
+        "v_merc": 5986.21,
+        "ctes": 9,
+        "pct_cts": 5.78
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S.A.",
+        "cnpj": "06626253057935",
+        "frete": 320.16,
+        "v_merc": 1397.53,
+        "ctes": 7,
+        "pct_cts": 22.91
+      },
+      {
+        "nome": "PROFARMA DISTR DE PROD FARM SA",
+        "cnpj": "45453214003681",
+        "frete": 307.6,
+        "v_merc": 8151.36,
+        "ctes": 8,
+        "pct_cts": 3.77
+      },
+      {
+        "nome": "PROFARMA DIST PROD FCEUTICO SA",
+        "cnpj": "45453214003843",
+        "frete": 280.68,
+        "v_merc": 3356.32,
+        "ctes": 3,
+        "pct_cts": 8.36
+      },
+      {
+        "nome": "PANPHARMA DIST MEDIC LTDA",
+        "cnpj": "01206820001500",
+        "frete": 274.62,
+        "v_merc": 1412.99,
+        "ctes": 4,
+        "pct_cts": 19.44
+      },
+      {
+        "nome": "COM DE MEDIC BRAIR LTDA",
+        "cnpj": "88212113016014",
+        "frete": 263.08,
+        "v_merc": 3211.2,
+        "ctes": 2,
+        "pct_cts": 8.19
+      },
+      {
+        "nome": "JOHNMAR COM E REP LTDA",
+        "cnpj": "79022877000133",
+        "frete": 252.8,
+        "v_merc": 2107.04,
+        "ctes": 4,
+        "pct_cts": 12.0
+      },
+      {
+        "nome": "TAUSTE SUPERMERCADOS LTDA",
+        "cnpj": "65897910001306",
+        "frete": 234.9,
+        "v_merc": 3324.62,
+        "ctes": 2,
+        "pct_cts": 7.07
+      },
+      {
+        "nome": "DROG ARAUJO S/A",
+        "cnpj": "17256512002917",
+        "frete": 233.95,
+        "v_merc": 892.1,
+        "ctes": 4,
+        "pct_cts": 26.22
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865065440",
+        "frete": 223.92,
+        "v_merc": 3420.74,
+        "ctes": 6,
+        "pct_cts": 6.55
+      },
+      {
+        "nome": "PROFARMA DIST DE PROD FARMA SA",
+        "cnpj": "45453214002952",
+        "frete": 219.77,
+        "v_merc": 2303.14,
+        "ctes": 5,
+        "pct_cts": 9.54
+      },
+      {
+        "nome": "J. SLEIMAN S.A. COMERCIO DE PRODUTOS DE",
+        "cnpj": "07216054000219",
+        "frete": 217.3,
+        "v_merc": 3433.28,
+        "ctes": 4,
+        "pct_cts": 6.33
+      },
+      {
+        "nome": "NORTE SUL REAL DIST. E LOG. LTDA",
+        "cnpj": "11322774000155",
+        "frete": 200.12,
+        "v_merc": 3834.73,
+        "ctes": 5,
+        "pct_cts": 5.22
+      },
+      {
+        "nome": "DROG PACHECO S/A",
+        "cnpj": "33438250044539",
+        "frete": 200.1,
+        "v_merc": 2235.96,
+        "ctes": 2,
+        "pct_cts": 8.95
+      },
+      {
+        "nome": "ETIENE RODRIGUES DOS SANTOS",
+        "cnpj": "",
+        "frete": 194.26,
+        "v_merc": 4000.0,
+        "ctes": 1,
+        "pct_cts": 4.86
+      },
+      {
+        "nome": "PROFARMA DISTR DE PROD FARMACE SA",
+        "cnpj": "45453214002448",
+        "frete": 187.79,
+        "v_merc": 7597.33,
+        "ctes": 8,
+        "pct_cts": 2.47
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611026133",
+        "frete": 186.75,
+        "v_merc": 2104.57,
+        "ctes": 2,
+        "pct_cts": 8.87
+      },
+      {
+        "nome": "DROGARIA BRIGADEIRO TOBIAS LTDA-EPP",
+        "cnpj": "74457243000190",
+        "frete": 178.1,
+        "v_merc": 1950.0,
+        "ctes": 1,
+        "pct_cts": 9.13
+      },
+      {
+        "nome": "NAZARIA DISTR DE PROD FARM LTDA",
+        "cnpj": "07224991000135",
+        "frete": 174.18,
+        "v_merc": 3296.73,
+        "ctes": 12,
+        "pct_cts": 5.28
+      },
+      {
+        "nome": "DISTR DE MED SANTA CRUZ LTDA",
+        "cnpj": "61940292006410",
+        "frete": 169.75,
+        "v_merc": 5719.89,
+        "ctes": 10,
+        "pct_cts": 2.97
+      },
+      {
+        "nome": "ANTONIO REGIS BORSA",
+        "cnpj": "",
+        "frete": 167.86,
+        "v_merc": 3500.0,
+        "ctes": 1,
+        "pct_cts": 4.8
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991000992",
+        "frete": 159.81,
+        "v_merc": 5562.51,
+        "ctes": 9,
+        "pct_cts": 2.87
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+        "cnpj": "01206820003546",
+        "frete": 157.85,
+        "v_merc": 2988.78,
+        "ctes": 4,
+        "pct_cts": 5.28
+      },
+      {
+        "nome": "SB COMERCIO LTDA SB LOG",
+        "cnpj": "04429478017915",
+        "frete": 157.76,
+        "v_merc": 944.64,
+        "ctes": 6,
+        "pct_cts": 16.7
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223022906",
+        "frete": 146.18,
+        "v_merc": 3921.24,
+        "ctes": 2,
+        "pct_cts": 3.73
+      },
+      {
+        "nome": "SUPERMERCADOS MUNDIAL LTDA",
+        "cnpj": "33304981000110",
+        "frete": 137.92,
+        "v_merc": 1986.7,
+        "ctes": 1,
+        "pct_cts": 6.94
+      },
+      {
+        "nome": "NAZARIA DIST DE PRODS FARMA LTDA",
+        "cnpj": "07224991001530",
+        "frete": 137.29,
+        "v_merc": 643.75,
+        "ctes": 8,
+        "pct_cts": 21.33
+      },
+      {
+        "nome": "VENANCIO PROD FARMACE LTDA",
+        "cnpj": "00285753002568",
+        "frete": 136.13,
+        "v_merc": 1727.87,
+        "ctes": 2,
+        "pct_cts": 7.88
+      },
+      {
+        "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LT",
+        "cnpj": "22417427000122",
+        "frete": 136.04,
+        "v_merc": 9281.33,
+        "ctes": 7,
+        "pct_cts": 1.47
+      },
+      {
+        "nome": "SENDAS DISTR S/A",
+        "cnpj": "06057223032022",
+        "frete": 135.45,
+        "v_merc": 430.44,
+        "ctes": 1,
+        "pct_cts": 31.47
+      },
+      {
+        "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA LTDA",
+        "cnpj": "61940292006682",
+        "frete": 133.04,
+        "v_merc": 916.84,
+        "ctes": 7,
+        "pct_cts": 14.51
+      },
+      {
+        "nome": "IMIFARMA PROD FARMACE COSM S/A",
+        "cnpj": "04899316053661",
+        "frete": 130.53,
+        "v_merc": 473.16,
+        "ctes": 2,
+        "pct_cts": 27.59
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611032290",
+        "frete": 126.08,
+        "v_merc": 2192.42,
+        "ctes": 21,
+        "pct_cts": 5.75
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865040960",
+        "frete": 117.93,
+        "v_merc": 695.41,
+        "ctes": 2,
+        "pct_cts": 16.96
+      },
+      {
+        "nome": "DIST MEDIC SANTA CRUZ LTDA",
+        "cnpj": "61940292005520",
+        "frete": 103.61,
+        "v_merc": 3442.0,
+        "ctes": 6,
+        "pct_cts": 3.01
+      },
+      {
+        "nome": "DIST CENTRO OESTE MEDICAMENTOS",
+        "cnpj": "66438011000328",
+        "frete": 97.86,
+        "v_merc": 263.92,
+        "ctes": 1,
+        "pct_cts": 37.08
+      },
+      {
+        "nome": "DISTR DE MEDIC STA CRUZ LTDA",
+        "cnpj": "61940292007301",
+        "frete": 95.63,
+        "v_merc": 102.98,
+        "ctes": 2,
+        "pct_cts": 92.86
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS",
+        "cnpj": "01206820001683",
+        "frete": 90.12,
+        "v_merc": 921.76,
+        "ctes": 6,
+        "pct_cts": 9.78
+      },
+      {
+        "nome": "NAZARIA DIST PROD FARMACEUTICOS LTDA",
+        "cnpj": "07224991002006",
+        "frete": 88.2,
+        "v_merc": 255.65,
+        "ctes": 6,
+        "pct_cts": 34.5
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611051162",
+        "frete": 84.63,
+        "v_merc": 3773.27,
+        "ctes": 4,
+        "pct_cts": 2.24
+      },
+      {
+        "nome": "PROFARMA DISTR DE PROD FARMACEUTICOS S/A",
+        "cnpj": "45453214001808",
+        "frete": 76.13,
+        "v_merc": 923.05,
+        "ctes": 3,
+        "pct_cts": 8.25
+      },
+      {
+        "nome": "PANPHARMA DIST MEDIC LTDA",
+        "cnpj": "01206820000873",
+        "frete": 61.73,
+        "v_merc": 389.52,
+        "ctes": 4,
+        "pct_cts": 15.85
+      },
+      {
+        "nome": "TAPAJOS COMERCIO DE MEDICAMENT",
+        "cnpj": "84521053000148",
+        "frete": 59.34,
+        "v_merc": 1445.73,
+        "ctes": 3,
+        "pct_cts": 4.1
+      },
+      {
+        "nome": "NAZARIA DIST DE PROD FARMAC LTDA",
+        "cnpj": "07224991002189",
+        "frete": 52.96,
+        "v_merc": 263.81,
+        "ctes": 3,
+        "pct_cts": 20.08
+      },
+      {
+        "nome": "SC DISTRIBUICAO LTDA",
+        "cnpj": "01206820003899",
+        "frete": 48.21,
+        "v_merc": 781.37,
+        "ctes": 3,
+        "pct_cts": 6.17
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865242244",
+        "frete": 42.56,
+        "v_merc": 3335.43,
+        "ctes": 7,
+        "pct_cts": 1.28
+      },
+      {
+        "nome": "GENESIO A MENDES E CIA LTDA",
+        "cnpj": "82873068000735",
+        "frete": 24.65,
+        "v_merc": 341.45,
+        "ctes": 1,
+        "pct_cts": 7.22
+      }
+    ]
+  },
+  "resumo": {
+    "outbound_ctes": 5689,
+    "inbound_ctes": 523,
+    "reversa_ctes": 742,
+    "total_ctes": 6954,
+    "outbound_frete": 13585962.23,
+    "inbound_frete": 1804830.32,
+    "reversa_frete": 96276.19,
+    "total_frete": 15487068.74
+  },
+  "atualizado": "07/04/2026 13:02",
+  "pasta_origem": "Y:\\ERP-12\\TOTVSCOLAB20-PRD\\RECEIVED",
+  "anos_filtro": [
+    2025,
+    2026
+  ],
+  "novos_nesta_execucao": 6954,
+  "cancelamentos": 506
+}

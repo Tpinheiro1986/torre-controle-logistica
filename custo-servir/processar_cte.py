@@ -43,9 +43,24 @@ PREFIXO_CTE          = "214"
 PREFIXO_CANCELAMENTO = "383"
 
 # Remetentes Inbound (busca parcial no nome, maiusculas)
+# Qualquer CTe cujo remetente contenha um desses termos e tenha
+# Genomma/Inovalab como destinatario sera classificado como INBOUND.
 INBOUND_REMETENTES = [
+    # Lista original
     "TBC", "MARIOL", "BELLA PLUS", "CRA MAIS", "SEAL LACRES",
     "GLENMARK", "BRASTERAPIC", "INOVAT GUARU", "THERASKIN",
+    # Fornecedores adicionados
+    "GRECO E GUERREIRO",
+    "ANOVIS",
+    "AIRELA",
+    "LEBON",
+    "UNITHER",
+    "UNIAO QUIMICA",
+    "MAPPEL",
+    "NANOVETORES",
+    "CONNECTA",
+    "PORTO SECO SUL",
+    "ATHENAS",
 ]
 
 # ===============================================================
