@@ -540,7 +540,7 @@ function switchTab(id, btn){
   btn.classList.add('on');
   const sec = document.getElementById(TABS[id]);
   if(sec){sec.classList.add('on');sec.style.display='block';}
-  if(id==='transp') renderTransp();
+  if(id==='transp'){ renderTransp(); }
 }
 
 // init visibility
@@ -992,6 +992,25 @@ function renderTransp(){
   if(!otdData) return;
   const d = otdData;
   const list = d.otd || []; // transpList from processOTD
+
+  // Recalculate prazo_medio if missing (e.g. loaded from storage without it)
+  list.forEach(t => {
+    if(t.prazo_medio == null && t.dias_n > 0) {
+      t.prazo_medio = Math.round(t.dias_sum / t.dias_n * 10) / 10;
+    }
+    if(t.otd == null && t.fin > 0) {
+      t.otd = Math.round(t.on / t.fin * 1000) / 10;
+    }
+    // Also fix nested ufs and regs
+    (t.ufs||[]).forEach(u => {
+      if(u.prazo_medio == null && u.dias_n > 0) u.prazo_medio = Math.round(u.dias_sum / u.dias_n * 10) / 10;
+      if(u.otd == null && u.fin > 0) u.otd = Math.round(u.on / u.fin * 1000) / 10;
+    });
+    (t.regs||[]).forEach(rg => {
+      if(rg.prazo_medio == null && rg.dias_n > 0) rg.prazo_medio = Math.round(rg.dias_sum / rg.dias_n * 10) / 10;
+      if(rg.otd == null && rg.fin > 0) rg.otd = Math.round(rg.on / rg.fin * 1000) / 10;
+    });
+  });
 
   // Only show transportadoras with at least 1 finalized delivery
   const fin = list.filter(t => t.fin > 0);
