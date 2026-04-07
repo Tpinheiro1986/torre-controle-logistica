@@ -1,50 +1,56 @@
 """
-TORRE DE CONTROLE — PROCESSADOR DE CTe XML  v4
-===============================================
-REGRAS DE ARQUIVO:
-  265xxxxx.xml  → CTe emitido — processa normalmente
-  383xxxxx.xml  → Cancelamento de CTe — remove o CTe do histórico
+TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v5
+================================================
+CLASSIFICACAO DE OPERACAO:
+  OUTBOUND : rem = Genomma/Inovalab  -> cliente
+  INBOUND  : rem = fornecedor known  -> dest = Genomma/Inovalab em Extrema
+  REVERSA  : rem = cliente qualquer  -> dest = Genomma/Inovalab (devolucao)
 
-MODO INCREMENTAL ULTRARRÁPIDO:
-  - Só verifica mtime do arquivo (sem abrir XMLs antigos)
-  - Processa somente arquivos modificados após a última execução
-  - Cancelamentos removem o CTe correspondente da agregação
+REGRAS DE ARQUIVO:
+  214xxxxx.xml -> CTe emitido
+  383xxxxx.xml -> Cancelamento de CTe
 
 USO:
-  python processar_cte.py          → incremental (só novos/cancelamentos)
-  python processar_cte.py --tudo   → reprocessa tudo do zero
+  python processar_cte.py          -> incremental (so novos)
+  python processar_cte.py --tudo   -> reprocessa tudo do zero
   python processar_cte.py --pasta X
 """
 
 import os, sys, glob, json, argparse, logging
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import multiprocessing
 import requests
 
-# ═══════════════════════════════════════════════════════════════
-#  CONFIGURAÇÃO
-# ═══════════════════════════════════════════════════════════════
+# ===============================================================
+#  CONFIGURACAO -- edite apenas esta secao
+# ===============================================================
 PASTA_CTE      = r"Y:\ERP-12\TOTVSCOLAB20-PRD\RECEIVED"
 ANOS_FILTRO    = [2025, 2026]
 ESTADO_FILE    = "cte_estado.json"
 LOG_FILE       = "cte_processador.log"
 
 SUPABASE_URL   = "https://ennsbpibfnuwlvtodukg.supabase.co"
-SUPABASE_ANON  = "sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONwI5"
+SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50"   # <- cole a chave Legacy service_role
 BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 
 CNPJ_GENOMMA   = "09080907000506"
 CNPJ_INOVALAB  = "05510999000167"
 
-# Prefixos de arquivo que serão processados
-PREFIXO_CTE        = "214"   # CTe emitido
-PREFIXO_CANCELAMENTO = "383" # Evento de cancelamento de CTe
+PREFIXO_CTE          = "214"
+PREFIXO_CANCELAMENTO = "383"
 
-# ═══════════════════════════════════════════════════════════════
-NS_CTE   = {"cte":   "http://www.portalfiscal.inf.br/cte"}
-NS_EVENT = {"cte":   "http://www.portalfiscal.inf.br/cte",
-            "ev":    "http://www.portalfiscal.inf.br/cte"}
+# Remetentes Inbound (busca parcial no nome, maiusculas)
+INBOUND_REMETENTES = [
+    "TBC", "MARIOL", "BELLA PLUS", "CRA MAIS", "SEAL LACRES",
+    "GLENMARK", "BRASTERAPIC", "INOVAT GUARU", "THERASKIN",
+]
+
+# ===============================================================
+NS_CTE = {"cte": "http://www.portalfiscal.inf.br/cte"}
+CNPJS_GI = set()  # preenchido no inicio do main
 
 REGIOES = {
     "AC":"Norte","AM":"Norte","AP":"Norte","PA":"Norte","RO":"Norte","RR":"Norte","TO":"Norte",
@@ -68,31 +74,45 @@ log = logging.getLogger(__name__)
 
 
 # ───────────────────────────────────────────────────────────────
+#  CLASSIFICACAO DA OPERACAO
+# ───────────────────────────────────────────────────────────────
+def classificar_op(rem_cnpj, rem_nome, dest_cnpj, dest_nome):
+    ru = (rem_nome  or "").upper()
+    du = (dest_nome or "").upper()
+
+    rem_gi  = rem_cnpj  in {CNPJ_GENOMMA, CNPJ_INOVALAB} or "GENOMMA" in ru or "INOVALAB" in ru
+    dest_gi = dest_cnpj in {CNPJ_GENOMMA, CNPJ_INOVALAB} or "GENOMMA" in du or "INOVALAB" in du
+
+    if rem_gi:
+        return "OUTBOUND"
+
+    if dest_gi:
+        for nome in INBOUND_REMETENTES:
+            if nome in ru:
+                return "INBOUND"
+        return "REVERSA"
+
+    return "OUTBOUND"   # padrao
+
+
+# ───────────────────────────────────────────────────────────────
 #  ESTADO
 # ───────────────────────────────────────────────────────────────
 def load_estado():
-    # tenta estado v4
     if os.path.exists(ESTADO_FILE):
         try:
             return json.load(open(ESTADO_FILE, encoding="utf-8"))
         except Exception:
             pass
-    # migra do histórico antigo se existir
     for fname in ("cte_historico.json",):
         if os.path.exists(fname):
             try:
                 h = json.load(open(fname, encoding="utf-8"))
-                log.info(f"  Migrando {fname} para {ESTADO_FILE}...")
-                return {
-                    "chaves":       h.get("chaves", []),
-                    "cancelados":   [],
-                    "ctes":         h.get("ctes", []),
-                    "ultima_execucao": None,
-                    "atualizado":   h.get("atualizado"),
-                }
+                return {"chaves": h.get("chaves", []), "cancelados": [],
+                        "ctes": h.get("ctes", []), "ultima_execucao": None}
             except Exception:
                 pass
-    return {"chaves": [], "cancelados": [], "ctes": [], "ultima_execucao": None, "atualizado": None}
+    return {"chaves": [], "cancelados": [], "ctes": [], "ultima_execucao": None}
 
 def save_estado(e):
     with open(ESTADO_FILE, "w", encoding="utf-8") as f:
@@ -100,19 +120,17 @@ def save_estado(e):
 
 
 # ───────────────────────────────────────────────────────────────
-#  PARSE CTe (265)
+#  PARSE CTe
 # ───────────────────────────────────────────────────────────────
-def _txt(root, tag, ns=None):
-    ns = ns or NS_CTE
-    el = root.find(".//" + tag, ns)
+def _txt(root, tag):
+    el = root.find(".//" + tag, NS_CTE)
     return el.text.strip() if el is not None and el.text else None
 
 def parse_cte(filepath: str):
-    """Processa arquivo 265 (CTe emitido). Retorna dict ou None."""
     try:
         tree = ET.parse(filepath)
         root = tree.getroot()
-    except ET.ParseError:
+    except (ET.ParseError, FileNotFoundError, OSError):
         return None
 
     if _txt(root, "cte:cStat") != "100":
@@ -147,17 +165,28 @@ def parse_cte(filepath: str):
         rem_cnpj = (rem.findtext("cte:CNPJ",  namespaces=NS_CTE) or "").strip()
         rem_nome = (rem.findtext("cte:xNome", namespaces=NS_CTE) or "").strip()
 
-    if   rem_cnpj == CNPJ_GENOMMA:        empresa = "GENOMMA"
-    elif rem_cnpj == CNPJ_INOVALAB:       empresa = "INOVALAB"
-    elif "GENOMMA"  in rem_nome.upper():  empresa = "GENOMMA"
-    elif "INOVALAB" in rem_nome.upper():  empresa = "INOVALAB"
-    else:                                 empresa = "OUTROS"
-
     dest = root.find(".//cte:dest", NS_CTE)
     cli_nome = cli_cnpj = ""
     if dest is not None:
         cli_nome = (dest.findtext("cte:xNome", namespaces=NS_CTE) or "").strip()[:60]
         cli_cnpj = (dest.findtext("cte:CNPJ",  namespaces=NS_CTE) or "").strip()
+
+    # empresa = quem e Genomma/Inovalab no CTe
+    ru = rem_nome.upper()
+    if rem_cnpj == CNPJ_GENOMMA or "GENOMMA" in ru:
+        empresa = "GENOMMA"
+    elif rem_cnpj == CNPJ_INOVALAB or "INOVALAB" in ru:
+        empresa = "INOVALAB"
+    else:
+        du = cli_nome.upper()
+        if cli_cnpj == CNPJ_GENOMMA or "GENOMMA" in du:
+            empresa = "GENOMMA"
+        elif cli_cnpj == CNPJ_INOVALAB or "INOVALAB" in du:
+            empresa = "INOVALAB"
+        else:
+            empresa = "OUTROS"
+
+    operacao = classificar_op(rem_cnpj, rem_nome, cli_cnpj, cli_nome)
 
     uf_dest  = (_txt(root, "cte:UFFim")   or "").strip()
     mun_dest = (_txt(root, "cte:xMunFim") or "").strip()
@@ -183,6 +212,9 @@ def parse_cte(filepath: str):
         "mes_nome":    MNOME[dt.month],
         "dt_emissao":  dt.strftime("%Y-%m-%d"),
         "empresa":     empresa,
+        "operacao":    operacao,   # OUTBOUND / INBOUND / REVERSA
+        "rem_nome":    rem_nome[:60],
+        "rem_cnpj":    rem_cnpj,
         "transp_nome": transp_nome,
         "transp_cnpj": transp_cnpj,
         "cliente":     cli_nome,
@@ -198,60 +230,53 @@ def parse_cte(filepath: str):
 
 
 # ───────────────────────────────────────────────────────────────
-#  PARSE CANCELAMENTO (383)
+#  PARSE CANCELAMENTO
 # ───────────────────────────────────────────────────────────────
 def parse_cancelamento(filepath: str):
-    """
-    Processa arquivo 383 (evento de cancelamento).
-    Retorna a chave do CTe cancelado, ou None se inválido.
-    Tenta múltiplos namespaces pois o XML de evento pode variar.
-    """
     try:
         tree = ET.parse(filepath)
         root = tree.getroot()
-    except ET.ParseError:
+    except (ET.ParseError, FileNotFoundError, OSError):
         return None
 
-    # Tenta encontrar chCTe em qualquer namespace
     for el in root.iter():
         tag = el.tag.split("}")[-1] if "}" in el.tag else el.tag
-        if tag == "chCTe" and el.text:
+        if tag == "chCTe" and el.text and len(el.text.strip()) == 44:
             chave = el.text.strip()
-            if len(chave) == 44:
-                # Confirma que é cancelamento buscando tpEvento ou cStat de cancelamento
-                for el2 in root.iter():
-                    tag2 = el2.tag.split("}")[-1] if "}" in el2.tag else el2.tag
-                    if tag2 == "tpEvento" and el2.text in ("110111", "110112"):
-                        return chave
-                    if tag2 == "cStat" and el2.text == "135":
-                        return chave
-                # Se não confirmou mas tem chave de 44 dígitos, assume cancelamento
-                return chave
-
+            for el2 in root.iter():
+                tag2 = el2.tag.split("}")[-1] if "}" in el2.tag else el2.tag
+                if tag2 == "tpEvento" and el2.text in ("110111", "110112"):
+                    return chave
+                if tag2 == "cStat" and el2.text == "135":
+                    return chave
+            return chave
     return None
 
 
 # ───────────────────────────────────────────────────────────────
-#  AGREGAÇÃO
+#  AGREGACAO
 # ───────────────────────────────────────────────────────────────
 _r = lambda v: round(v, 2)
 _p = lambda f, m: round(f/m*100, 2) if m > 0 else None
 
-def agregar(ctes: list) -> dict:
+def _agg_op(ctes):
+    """Agrega um subconjunto de CTes (por operacao)."""
     by_mes    = {}
     by_emp    = {e: {"f":0,"m":0,"n":0} for e in ("GENOMMA","INOVALAB","OUTROS")}
     by_tipo   = {t: {"f":0,"m":0,"n":0,"gf":0,"gm":0,"if_":0,"im":0} for t in ("CIF","FOB")}
     by_transp = {}
     by_reg    = {}
     by_uf     = {}
+    by_rem    = {}   # para inbound/reversa: agrupa por remetente
     by_cli    = {}
 
     for c in ctes:
         f, m, e, tp = c["v_frete"], c["v_merc"], c["empresa"], c["tipo_op"]
         uf, rg = c["uf_dest"], c["regiao"]
-        tr = c.get("transp_nome") or "Sem nome"
-        cl = c.get("cli_cnpj") or c.get("cliente") or "—"
-        mk = f"{c['ano']}-{c['mes']:02d}"
+        tr  = c.get("transp_nome") or "Sem nome"
+        cl  = c.get("cli_cnpj")   or c.get("cliente") or "?"
+        rem = c.get("rem_nome")   or "?"
+        mk  = f"{c['ano']}-{c['mes']:02d}"
 
         bep = by_emp.get(e, by_emp["OUTROS"])
         bep["f"]+=f; bep["m"]+=m; bep["n"]+=1
@@ -284,6 +309,12 @@ def agregar(ctes: list) -> dict:
                 by_uf[uf]={"uf":uf,"regiao":rg,"f":0,"m":0,"n":0}
             by_uf[uf]["f"]+=f; by_uf[uf]["m"]+=m; by_uf[uf]["n"]+=1
 
+        # remetente (util para inbound/reversa)
+        rk = c.get("rem_cnpj") or rem
+        if rk not in by_rem:
+            by_rem[rk]={"nome":rem,"cnpj":c.get("rem_cnpj",""),"f":0,"m":0,"n":0}
+        by_rem[rk]["f"]+=f; by_rem[rk]["m"]+=m; by_rem[rk]["n"]+=1
+
         if cl not in by_cli:
             by_cli[cl]={"nome":c.get("cliente",""),"cnpj":c.get("cli_cnpj",""),
                         "empresa":e,"regiao":rg,"uf":uf,"f":0,"m":0,"n":0}
@@ -292,19 +323,19 @@ def agregar(ctes: list) -> dict:
     meses_out = sorted([{
         "chave":v["chave"],"ano":v["ano"],"mes":v["mes"],"nome":v["nome"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
-        "pct_cts":    _p(v["f"],  v["m"]),
-        "genomma_frete":  _r(v["gf"]),  "genomma_merc":  _r(v["gm"]),
-        "inovalab_frete": _r(v["inf"]), "inovalab_merc": _r(v["inm"]),
-        "pct_genomma":  _p(v["gf"],  v["gm"]),
-        "pct_inovalab": _p(v["inf"], v["inm"]),
-    } for v in by_mes.values()], key=lambda x:(x["ano"],x["mes"]))
+        "pct_cts":_p(v["f"],v["m"]),
+        "genomma_frete":_r(v["gf"]),"genomma_merc":_r(v["gm"]),
+        "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
+        "pct_genomma":_p(v["gf"],v["gm"]),
+        "pct_inovalab":_p(v["inf"],v["inm"]),
+    } for v in by_mes.values()],key=lambda x:(x["ano"],x["mes"]))
 
     qmap={}
-    for m in meses_out:
-        qk=f"Q{((m['mes']-1)//3)+1}/{str(m['ano'])[2:]}"
-        if qk not in qmap: qmap[qk]={"q":qk,"ano":m["ano"],"f":0,"m":0,"n":0,"gf":0,"inf":0}
-        qmap[qk]["f"]+=m["frete"]; qmap[qk]["m"]+=m["v_merc"]; qmap[qk]["n"]+=m["ctes"]
-        qmap[qk]["gf"]+=m["genomma_frete"]; qmap[qk]["inf"]+=m["inovalab_frete"]
+    for m2 in meses_out:
+        qk=f"Q{((m2['mes']-1)//3)+1}/{str(m2['ano'])[2:]}"
+        if qk not in qmap: qmap[qk]={"q":qk,"ano":m2["ano"],"f":0,"m":0,"n":0,"gf":0,"inf":0}
+        qmap[qk]["f"]+=m2["frete"]; qmap[qk]["m"]+=m2["v_merc"]; qmap[qk]["n"]+=m2["ctes"]
+        qmap[qk]["gf"]+=m2["genomma_frete"]; qmap[qk]["inf"]+=m2["inovalab_frete"]
     quarters_out=sorted([{"q":v["q"],"ano":v["ano"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
@@ -328,6 +359,11 @@ def agregar(ctes: list) -> dict:
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
     } for v in by_uf.values()],key=lambda x:x["frete"],reverse=True)
+
+    rem_out=sorted([{"nome":v["nome"],"cnpj":v["cnpj"],
+        "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
+        "pct_cts":_p(v["f"],v["m"]),
+    } for v in by_rem.values()],key=lambda x:x["frete"],reverse=True)[:100]
 
     clis_out=sorted([{"nome":v["nome"],"cnpj":v["cnpj"],"empresa":v["empresa"],
         "regiao":v["regiao"],"uf":v["uf"],
@@ -357,7 +393,30 @@ def agregar(ctes: list) -> dict:
         "empresas":emps_out,"tipos":tipos_out,
         "meses":meses_out,"quarters":quarters_out,
         "transportadoras":transp_out,"regioes":regs_out,
-        "ufs":ufs_out,"clientes":clis_out,
+        "ufs":ufs_out,"clientes":clis_out,"remetentes":rem_out,
+    }
+
+
+def agregar(ctes: list) -> dict:
+    """Agrega todos os CTes separando por operacao."""
+    out_ctes = [c for c in ctes if c.get("operacao")=="OUTBOUND"]
+    in_ctes  = [c for c in ctes if c.get("operacao")=="INBOUND"]
+    rev_ctes = [c for c in ctes if c.get("operacao")=="REVERSA"]
+
+    return {
+        "outbound": _agg_op(out_ctes),
+        "inbound":  _agg_op(in_ctes),
+        "reversa":  _agg_op(rev_ctes),
+        "resumo": {
+            "outbound_ctes":  len(out_ctes),
+            "inbound_ctes":   len(in_ctes),
+            "reversa_ctes":   len(rev_ctes),
+            "total_ctes":     len(ctes),
+            "outbound_frete": _r(sum(c["v_frete"] for c in out_ctes)),
+            "inbound_frete":  _r(sum(c["v_frete"] for c in in_ctes)),
+            "reversa_frete":  _r(sum(c["v_frete"] for c in rev_ctes)),
+            "total_frete":    _r(sum(c["v_frete"] for c in ctes)),
+        }
     }
 
 
@@ -367,199 +426,180 @@ def agregar(ctes: list) -> dict:
 def publicar(payload: dict) -> bool:
     data = json.dumps(payload, ensure_ascii=False, separators=(",",":")).encode("utf-8")
     url  = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_JSON}"
-    hdrs = {"Authorization":f"Bearer {SUPABASE_ANON}","Content-Type":"application/json",
+    hdrs = {"Authorization":f"Bearer {SUPABASE_KEY}","Content-Type":"application/json",
             "x-upsert":"true","cache-control":"no-cache"}
     try:
-        r = requests.post(url, data=data, headers=hdrs, timeout=30)
+        r = requests.post(url, data=data, headers=hdrs, timeout=60)
         if r.status_code in (200,201,204):
-            log.info("  ✓ Publicado no Supabase"); return True
-        log.error(f"  ✗ Supabase {r.status_code}: {r.text[:300]}"); return False
+            log.info("  OK Publicado no Supabase"); return True
+        log.error(f"  ERRO Supabase {r.status_code}: {r.text[:300]}"); return False
     except Exception as e:
-        log.error(f"  ✗ Conexão: {e}"); return False
+        log.error(f"  ERRO Conexao: {e}"); return False
 
 
 # ───────────────────────────────────────────────────────────────
 #  MAIN
 # ───────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="Torre de Controle — Processador CTe v4")
-    parser.add_argument("--tudo",  action="store_true", help="Reprocessa tudo do zero")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tudo",  action="store_true")
     parser.add_argument("--pasta", default=PASTA_CTE)
     args = parser.parse_args()
     pasta = args.pasta
 
     ts_inicio = datetime.now()
-    print("\n" + "═"*58)
-    print("  TORRE DE CONTROLE — PROCESSADOR DE CTe  v4")
+    print("\n" + "="*58)
+    print("  TORRE DE CONTROLE -- PROCESSADOR DE CTe  v5")
     print(f"  Pasta  : {pasta}")
-    print(f"  Filtro : arquivos 265* (CTe) e 383* (Cancelamento)")
-    print(f"  Modo   : {'COMPLETO (--tudo)' if args.tudo else 'INCREMENTAL (só novos)'}")
-    print("═"*58)
+    print(f"  Filtro : {PREFIXO_CTE}* (CTe) e {PREFIXO_CANCELAMENTO}* (Cancelamento)")
+    print(f"  Modo   : {'COMPLETO (--tudo)' if args.tudo else 'INCREMENTAL (so novos)'}")
+    print("="*58)
 
     if not os.path.exists(pasta):
-        log.error(f"Pasta não encontrada: {pasta}")
-        print(f"\n  ✗ Pasta não encontrada: {pasta}")
+        log.error(f"Pasta nao encontrada: {pasta}")
         input("\n  Pressione Enter..."); sys.exit(1)
 
-    # ── carrega estado ─────────────────────────────────────
     if args.tudo:
-        estado = {"chaves":[],"cancelados":[],"ctes":[],"ultima_execucao":None,"atualizado":None}
-        log.info("Modo --tudo: estado zerado")
+        estado = {"chaves":[],"cancelados":[],"ctes":[],"ultima_execucao":None}
     else:
         estado = load_estado()
-        if "cancelados" not in estado:
-            estado["cancelados"] = []
+        if "cancelados" not in estado: estado["cancelados"] = []
 
-    chaves_ok      = set(estado.get("chaves", []))
-    chaves_cancel  = set(estado.get("cancelados", []))
-    ultima_ts      = None
+    chaves_ok     = set(estado.get("chaves",    []))
+    chaves_cancel = set(estado.get("cancelados",[]))
+    ultima_ts     = None
 
     if not args.tudo and estado.get("ultima_execucao"):
         try:
             ultima_ts = datetime.fromisoformat(estado["ultima_execucao"]).timestamp()
-            log.info(f"Histórico: {len(chaves_ok):,} CTes | última execução: {estado['ultima_execucao']}")
-            log.info(f"  → só arquivos modificados após essa data")
+            log.info(f"Historico: {len(chaves_ok):,} CTes | ultima exec: {estado['ultima_execucao']}")
         except Exception:
             ultima_ts = None
 
-    # ── busca arquivos 265* e 383* ─────────────────────────
+    # busca arquivos
     log.info("Buscando XMLs...")
-    ts_busca = datetime.now()
+    ts_b = datetime.now()
+    xmls_214, xmls_383 = [], []
+    for fp in glob.glob(os.path.join(pasta,"**","*.xml"),recursive=True) + \
+              glob.glob(os.path.join(pasta,"**","*.XML"),recursive=True):
+        n = os.path.basename(fp)
+        if   n.startswith(PREFIXO_CTE):          xmls_214.append(fp)
+        elif n.startswith(PREFIXO_CANCELAMENTO):  xmls_383.append(fp)
 
-    xmls_265 = []
-    xmls_383 = []
-    for fp in glob.glob(os.path.join(pasta, "**", "*.xml"), recursive=True):
-        nome = os.path.basename(fp)
-        if nome.startswith(PREFIXO_CTE):
-            xmls_265.append(fp)
-        elif nome.startswith(PREFIXO_CANCELAMENTO):
-            xmls_383.append(fp)
-    # Também testa maiúsculas
-    for fp in glob.glob(os.path.join(pasta, "**", "*.XML"), recursive=True):
-        nome = os.path.basename(fp)
-        if nome.startswith(PREFIXO_CTE):
-            xmls_265.append(fp)
-        elif nome.startswith(PREFIXO_CANCELAMENTO):
-            xmls_383.append(fp)
+    log.info(f"  {len(xmls_214):,} CTe ({PREFIXO_CTE}*) | {len(xmls_383):,} Cancelamento ({PREFIXO_CANCELAMENTO}*) em {(datetime.now()-ts_b).seconds}s")
 
-    elapsed_busca = (datetime.now()-ts_busca).seconds
-    log.info(f"  {len(xmls_265):,} arquivos CTe (265*) encontrados")
-    log.info(f"  {len(xmls_383):,} arquivos Cancelamento (383*) encontrados")
-    log.info(f"  Busca concluída em {elapsed_busca}s")
-
-    # ── filtra por mtime ───────────────────────────────────
+    # filtra por mtime
     if ultima_ts:
-        cands_265 = [fp for fp in xmls_265 if os.path.getmtime(fp) > ultima_ts]
-        cands_383 = [fp for fp in xmls_383 if os.path.getmtime(fp) > ultima_ts]
-        log.info(f"  Novos desde última execução: {len(cands_265):,} CTes | {len(cands_383):,} Cancelamentos")
+        cands_214 = [f for f in xmls_214 if os.path.getmtime(f) > ultima_ts]
+        cands_383 = [f for f in xmls_383 if os.path.getmtime(f) > ultima_ts]
+        log.info(f"  Novos: {len(cands_214):,} CTe | {len(cands_383):,} Cancelamento")
     else:
-        cands_265 = xmls_265
-        cands_383 = xmls_383
+        cands_214, cands_383 = xmls_214, xmls_383
 
-    # ── processa cancelamentos primeiro ────────────────────
-    novos_cancelados = 0
-    ts_proc = datetime.now()
+    # cancelamentos
+    novos_cancel = 0
+    ts_p = datetime.now()
     for fp in cands_383:
-        chave_cancelada = parse_cancelamento(fp)
-        if chave_cancelada and chave_cancelada not in chaves_cancel:
-            chaves_cancel.add(chave_cancelada)
-            novos_cancelados += 1
-            log.debug(f"  Cancelamento: {chave_cancelada}")
+        ch = parse_cancelamento(fp)
+        if ch and ch not in chaves_cancel:
+            chaves_cancel.add(ch); novos_cancel += 1
+    if novos_cancel:
+        log.info(f"  {novos_cancel:,} cancelamentos novos")
 
-    if novos_cancelados:
-        log.info(f"  {novos_cancelados:,} cancelamentos novos processados")
-
-    # ── processa CTes novos (265) ──────────────────────────
+    # CTes novos -- paralelo
     novos_ctes = []
-    for i, fp in enumerate(cands_265, 1):
-        if i % 2000 == 0:
-            elapsed = (datetime.now()-ts_proc).seconds
-            log.info(f"  {i:,}/{len(cands_265):,} — {len(novos_ctes):,} novos — {elapsed}s")
+    n_workers = max(1, min(multiprocessing.cpu_count()-1, 8))
+    log.info(f"  Processando com {n_workers} workers paralelos...")
+    BATCH = 5000
+    total_proc = 0
+    for bs in range(0, len(cands_214), BATCH):
+        batch = cands_214[bs:bs+BATCH]
+        with ProcessPoolExecutor(max_workers=n_workers) as ex:
+            futs = {ex.submit(parse_cte, fp): fp for fp in batch}
+            for fut in as_completed(futs):
+                total_proc += 1
+                if total_proc % 2000 == 0:
+                    log.info(f"  {total_proc:,}/{len(cands_214):,} -- {len(novos_ctes):,} novos -- {(datetime.now()-ts_p).seconds}s")
+                try:
+                    res = fut.result()
+                except Exception:
+                    continue
+                if res is None or res["chave"] in chaves_ok or res["chave"] in chaves_cancel:
+                    continue
+                novos_ctes.append(res)
+                chaves_ok.add(res["chave"])
 
-        resultado = parse_cte(fp)
-        if resultado is None:
-            continue
-        if resultado["chave"] in chaves_ok:
-            continue
-        if resultado["chave"] in chaves_cancel:
-            log.debug(f"  CTe cancelado ignorado: {resultado['chave']}")
-            continue
+    log.info(f"  {len(novos_ctes):,} CTes novos em {(datetime.now()-ts_p).seconds}s")
 
-        novos_ctes.append(resultado)
-        chaves_ok.add(resultado["chave"])
+    # aplica cancelamentos
+    hist = estado.get("ctes", [])
+    rem_hist = 0
+    if novos_cancel and hist:
+        antes = len(hist)
+        hist = [c for c in hist if c["chave"] not in chaves_cancel]
+        rem_hist = antes - len(hist)
+        if rem_hist: log.info(f"  {rem_hist:,} CTes removidos por cancelamento")
 
-    log.info(f"  ✓ {len(novos_ctes):,} CTes novos | {novos_cancelados:,} cancelamentos em {(datetime.now()-ts_proc).seconds}s")
+    # migra CTes antigos sem campo operacao
+    for c in hist:
+        if "operacao" not in c:
+            c["operacao"] = classificar_op(
+                c.get("rem_cnpj",""), c.get("rem_nome",""),
+                c.get("cli_cnpj",""), c.get("cliente","")
+            )
 
-    # ── aplica cancelamentos ao histórico existente ────────
-    historico_anterior = estado.get("ctes", [])
-    cancelados_removidos = 0
-    if novos_cancelados and historico_anterior:
-        antes = len(historico_anterior)
-        historico_anterior = [c for c in historico_anterior if c["chave"] not in chaves_cancel]
-        cancelados_removidos = antes - len(historico_anterior)
-        if cancelados_removidos:
-            log.info(f"  {cancelados_removidos:,} CTes removidos do histórico por cancelamento")
-
-    if not novos_ctes and not novos_cancelados and not args.tudo:
+    if not novos_ctes and not novos_cancel and not args.tudo:
         estado["ultima_execucao"] = ts_inicio.isoformat()
         save_estado(estado)
-        print(f"\n  Nenhuma novidade. Dashboard já atualizado!")
+        print("\n  Nenhum CTe novo. Dashboard ja atualizado!")
         input("\n  Pressione Enter..."); sys.exit(0)
 
-    # ── agrega ─────────────────────────────────────────────
-    todos_ctes = historico_anterior + novos_ctes
-    log.info(f"Agregando {len(todos_ctes):,} CTes ativos...")
-    ts_agg = datetime.now()
-    dados = agregar(todos_ctes)
-    log.info(f"  ✓ Agregação em {(datetime.now()-ts_agg).seconds}s")
-
+    todos = hist + novos_ctes
+    log.info(f"Agregando {len(todos):,} CTes...")
+    dados = agregar(todos)
     dados["atualizado"]           = ts_inicio.strftime("%d/%m/%Y %H:%M")
     dados["pasta_origem"]         = pasta
     dados["anos_filtro"]          = ANOS_FILTRO
     dados["novos_nesta_execucao"] = len(novos_ctes)
-    dados["cancelamentos"]        = novos_cancelados
-    dados["total_265"]            = len(xmls_265)
-    dados["total_383"]            = len(xmls_383)
+    dados["cancelamentos"]        = novos_cancel
 
-    # ── salva local ────────────────────────────────────────
     with open("cte_dados.json","w",encoding="utf-8") as f:
         json.dump(dados,f,ensure_ascii=False,indent=2)
-    log.info("  ✓ cte_dados.json salvo")
+    log.info("  OK cte_dados.json salvo")
 
-    # ── atualiza estado ────────────────────────────────────
     estado["chaves"]          = list(chaves_ok)
     estado["cancelados"]      = list(chaves_cancel)
-    estado["ctes"]            = todos_ctes
+    estado["ctes"]            = todos
     estado["ultima_execucao"] = ts_inicio.isoformat()
-    estado["atualizado"]      = dados["atualizado"]
     save_estado(estado)
-    log.info(f"  ✓ Estado salvo: {len(todos_ctes):,} CTes ativos | {len(chaves_cancel):,} cancelados")
 
-    # ── publica ────────────────────────────────────────────
     ok = publicar(dados)
 
-    # ── resumo ─────────────────────────────────────────────
-    t = dados["totais"]
-    total_tempo = (datetime.now()-ts_inicio).seconds
-    print("\n" + "═"*58 + "\n  RESUMO\n" + "═"*58)
-    print(f"  Tempo total       : {total_tempo}s")
-    print(f"  Arquivos 265*     : {len(xmls_265):>10,}")
-    print(f"  Arquivos 383*     : {len(xmls_383):>10,}")
-    print(f"  CTes novos        : {len(novos_ctes):>10,}")
-    print(f"  Cancelamentos     : {novos_cancelados:>10,}")
-    print(f"  Removidos do hist : {cancelados_removidos:>10,}")
-    print(f"  CTes ativos       : {len(todos_ctes):>10,}")
-    print(f"  Frete total       : R$ {t['frete']:>14,.2f}")
-    print(f"  Mercadoria        : R$ {t['v_merc']:>14,.2f}")
-    print(f"  %CTS              : {(str(t['pct_cts'])+'%') if t['pct_cts'] else '—':>11}")
-    print(f"  Genomma %CTS      : {(str(t['pct_genomma'])+'%') if t.get('pct_genomma') else '—':>11}")
-    print(f"  Inovalab %CTS     : {(str(t['pct_inovalab'])+'%') if t.get('pct_inovalab') else '—':>11}")
-    print(f"  Transportadoras   : {len(dados['transportadoras']):>10,}")
-    print(f"  Clientes          : {len(dados['clientes']):>10,}")
-    print("═"*58)
-    print(f"\n  {'✓ Dashboard atualizado!' if ok else '⚠  Publicação falhou — veja o log'}")
+    r = dados["resumo"]
+    tt = (datetime.now()-ts_inicio).seconds
+    print("\n" + "="*58 + "\n  RESUMO\n" + "="*58)
+    print(f"  Tempo total     : {tt}s")
+    print(f"  CTes novos      : {len(novos_ctes):>10,}")
+    print(f"  CTes ativos     : {len(todos):>10,}")
+    print(f"  --- OUTBOUND ---")
+    print(f"  CTes            : {r['outbound_ctes']:>10,}")
+    print(f"  Frete           : R$ {r['outbound_frete']:>13,.2f}")
+    t = dados["outbound"]["totais"]
+    print(f"  Mercadoria      : R$ {t['v_merc']:>13,.2f}")
+    print(f"  %CTS            : {(str(t['pct_cts'])+'%') if t['pct_cts'] else '---':>10}")
+    print(f"  Genomma %CTS    : {(str(t['pct_genomma'])+'%') if t.get('pct_genomma') else '---':>10}")
+    print(f"  Inovalab %CTS   : {(str(t['pct_inovalab'])+'%') if t.get('pct_inovalab') else '---':>10}")
+    print(f"  --- INBOUND  ---")
+    print(f"  CTes            : {r['inbound_ctes']:>10,}")
+    print(f"  Frete           : R$ {r['inbound_frete']:>13,.2f}")
+    print(f"  --- REVERSA  ---")
+    print(f"  CTes            : {r['reversa_ctes']:>10,}")
+    print(f"  Frete           : R$ {r['reversa_frete']:>13,.2f}")
+    print("="*58)
+    print(f"\n  {'OK Dashboard atualizado!' if ok else 'ERRO Publicacao falhou -- veja o log'}")
     print("  https://tpinheiro1986.github.io/torre-controle-logistica/custo-servir/\n")
     input("  Pressione Enter para fechar...")
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     main()
