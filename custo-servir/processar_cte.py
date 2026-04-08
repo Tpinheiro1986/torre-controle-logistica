@@ -391,8 +391,14 @@ def _agg_op(ctes):
         # cliente/destinatario
         if cl not in by_cli:
             by_cli[cl] = {"nome":c.get("cliente",""),"cnpj":c.get("cli_cnpj",""),
-                          "empresa":e,"regiao":rg,"uf":uf,"f":0,"m":0,"n":0}
+                          "empresa":e,"regiao":rg,"uf":uf,"f":0,"m":0,"n":0,"anos":{}}
         by_cli[cl]["f"]+=f; by_cli[cl]["m"]+=m; by_cli[cl]["n"]+=1
+        ano_k = str(c["ano"])
+        if ano_k not in by_cli[cl]["anos"]:
+            by_cli[cl]["anos"][ano_k] = {"f":0,"m":0,"n":0}
+        by_cli[cl]["anos"][ano_k]["f"]+=f
+        by_cli[cl]["anos"][ano_k]["m"]+=m
+        by_cli[cl]["anos"][ano_k]["n"]+=1
 
     # meses
     meses_out = sorted([{
@@ -470,7 +476,10 @@ def _agg_op(ctes):
         "regiao":v["regiao"],"uf":v["uf"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
-    } for v in by_cli.values()], key=lambda x:x["frete"], reverse=True)[:200]
+        "anos":{ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
+                     "pct_cts":_p(d["f"],d["m"])}
+                for ano,d in v["anos"].items()},
+    } for v in by_cli.values()], key=lambda x:x["v_merc"], reverse=True)[:200]
 
     emps_out = {e: {"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
         "pct_cts":_p(d["f"],d["m"])} for e,d in by_emp.items()}

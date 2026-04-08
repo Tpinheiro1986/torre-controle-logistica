@@ -343,7 +343,21 @@ function getTrs(){
   if(F.emp==='INOVALAB')return t.filter(x=>x.inovalab_frete>0).map(x=>({...x,frete:x.inovalab_frete,pct_cts:x.pct_inovalab})).sort((a,b)=>b.frete-a.frete);
   return t;
 }
-function getClis(){const d=getD();if(!d)return[];return(d.clientes||[]).filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg)).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));}
+function getClis(){
+  const d=getD();if(!d)return[];
+  let clis=d.clientes||[];
+  // filter by empresa and regiao
+  clis=clis.filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg));
+  // filter/aggregate by ano
+  if(F.ano!=='all'){
+    clis=clis.map(c=>{
+      const a=c.anos&&c.anos[F.ano];
+      if(!a||a.frete===0) return null;
+      return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
+    }).filter(Boolean);
+  }
+  return clis.filter(c=>c.frete>0).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
+}
 function getRems(){const d=getD();if(!d)return[];return(d.remetentes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg).sort((a,b)=>b.frete-a.frete);}
 function getQs(){
   const d=getD();if(!d)return[];
