@@ -358,44 +358,63 @@ def _agg_op(ctes):
         if e=="GENOMMA":  bm["gf"]+=f;  bm["gm"]+=m
         if e=="INOVALAB": bm["inf"]+=f; bm["inm"]+=m
 
+        ano_k = str(c["ano"])
+
         # transportadora
         if tr not in by_transp:
             by_transp[tr] = {"nome":tr,"cnpj":c.get("transp_cnpj",""),
-                             "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+                             "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{}}
         bt2 = by_transp[tr]
         bt2["f"]+=f; bt2["m"]+=m; bt2["n"]+=1
         if e=="GENOMMA":  bt2["gf"]+=f;  bt2["gm"]+=m
         if e=="INOVALAB": bt2["inf"]+=f; bt2["inm"]+=m
+        if ano_k not in bt2["anos"]:
+            bt2["anos"][ano_k]={"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+        at=bt2["anos"][ano_k]; at["f"]+=f; at["m"]+=m; at["n"]+=1
+        if e=="GENOMMA":  at["gf"]+=f; at["gm"]+=m
+        if e=="INOVALAB": at["inf"]+=f; at["inm"]+=m
 
         # regiao
         if rg not in by_reg:
-            by_reg[rg] = {"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+            by_reg[rg] = {"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{}}
         by_reg[rg]["f"]+=f; by_reg[rg]["m"]+=m; by_reg[rg]["n"]+=1
         if e=="GENOMMA":  by_reg[rg]["gf"]+=f; by_reg[rg]["gm"]+=m
         if e=="INOVALAB": by_reg[rg]["inf"]+=f; by_reg[rg]["inm"]+=m
+        if ano_k not in by_reg[rg]["anos"]:
+            by_reg[rg]["anos"][ano_k]={"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+        ar=by_reg[rg]["anos"][ano_k]; ar["f"]+=f; ar["m"]+=m; ar["n"]+=1
+        if e=="GENOMMA":  ar["gf"]+=f; ar["gm"]+=m
+        if e=="INOVALAB": ar["inf"]+=f; ar["inm"]+=m
 
         # UF
         if uf:
             if uf not in by_uf:
-                by_uf[uf] = {"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+                by_uf[uf] = {"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{}}
             by_uf[uf]["f"]+=f; by_uf[uf]["m"]+=m; by_uf[uf]["n"]+=1
             if e=="GENOMMA":  by_uf[uf]["gf"]+=f; by_uf[uf]["gm"]+=m
             if e=="INOVALAB": by_uf[uf]["inf"]+=f; by_uf[uf]["inm"]+=m
+            if ano_k not in by_uf[uf]["anos"]:
+                by_uf[uf]["anos"][ano_k]={"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+            au=by_uf[uf]["anos"][ano_k]; au["f"]+=f; au["m"]+=m; au["n"]+=1
+            if e=="GENOMMA":  au["gf"]+=f; au["gm"]+=m
+            if e=="INOVALAB": au["inf"]+=f; au["inm"]+=m
 
         # remetente (inbound/reversa)
         if rk not in by_rem:
             by_rem[rk] = {"nome":c.get("rem_nome",""),"cnpj":c.get("rem_cnpj",""),
-                          "f":0,"m":0,"n":0}
+                          "f":0,"m":0,"n":0,"anos":{}}
         by_rem[rk]["f"]+=f; by_rem[rk]["m"]+=m; by_rem[rk]["n"]+=1
+        if ano_k not in by_rem[rk]["anos"]:
+            by_rem[rk]["anos"][ano_k]={"f":0,"m":0,"n":0}
+        by_rem[rk]["anos"][ano_k]["f"]+=f; by_rem[rk]["anos"][ano_k]["m"]+=m; by_rem[rk]["anos"][ano_k]["n"]+=1
 
         # cliente/destinatario
         if cl not in by_cli:
             by_cli[cl] = {"nome":c.get("cliente",""),"cnpj":c.get("cli_cnpj",""),
                           "empresa":e,"regiao":rg,"uf":uf,"f":0,"m":0,"n":0,"anos":{}}
         by_cli[cl]["f"]+=f; by_cli[cl]["m"]+=m; by_cli[cl]["n"]+=1
-        ano_k = str(c["ano"])
         if ano_k not in by_cli[cl]["anos"]:
-            by_cli[cl]["anos"][ano_k] = {"f":0,"m":0,"n":0}
+            by_cli[cl]["anos"][ano_k]={"f":0,"m":0,"n":0}
         by_cli[cl]["anos"][ano_k]["f"]+=f
         by_cli[cl]["anos"][ano_k]["m"]+=m
         by_cli[cl]["anos"][ano_k]["n"]+=1
@@ -432,6 +451,13 @@ def _agg_op(ctes):
     } for v in qmap.values()], key=lambda x:(x["ano"],x["q"]))
 
     # transportadoras
+    def _agg_anos(anos_raw):
+        return {ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
+                     "pct_cts":_p(d["f"],d["m"]),
+                     "genomma_frete":_r(d["gf"]),"inovalab_frete":_r(d["inf"]),
+                     "pct_genomma":_p(d["gf"],d["gm"]),
+                     "pct_inovalab":_p(d["inf"],d["inm"])}
+                for ano,d in anos_raw.items()}
     transp_out = sorted([{
         "nome":v["nome"],"cnpj":v["cnpj"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
@@ -439,6 +465,7 @@ def _agg_op(ctes):
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
         "genomma_frete":_r(v["gf"]),"inovalab_frete":_r(v["inf"]),
+        "anos":_agg_anos(v.get("anos",{})),
     } for v in by_transp.values()], key=lambda x:x["frete"], reverse=True)
 
     # regioes
@@ -450,6 +477,7 @@ def _agg_op(ctes):
         "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
+        "anos":_agg_anos(v.get("anos",{})),
     } for v in by_reg.values()], key=lambda x:x["frete"], reverse=True)
 
     # UFs
@@ -461,6 +489,7 @@ def _agg_op(ctes):
         "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
+        "anos":_agg_anos(v.get("anos",{})),
     } for v in by_uf.values()], key=lambda x:x["frete"], reverse=True)
 
     # remetentes top 100
@@ -468,6 +497,9 @@ def _agg_op(ctes):
         "nome":v["nome"],"cnpj":v["cnpj"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
+        "anos":{ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
+                     "pct_cts":_p(d["f"],d["m"])}
+                for ano,d in v.get("anos",{}).items()},
     } for v in by_rem.values()], key=lambda x:x["frete"], reverse=True)[:100]
 
     # clientes top 200
