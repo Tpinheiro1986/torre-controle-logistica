@@ -108,7 +108,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="tab" onclick="goTab('regiao',this)">Regiões / UF</div>
     <div class="tab" id="tab-cli" onclick="goTab('cliente',this)">Clientes</div>
     <div class="tab" id="tab-rem" onclick="goTab('remetente',this)" style="display:none">Remetentes</div>
-    <div class="tab" onclick="goTab('quarter',this)">Por Quarter</div>
+    <div class="tab" onclick="goTab('quarter',this)">Quarter</div>
   </div>
   <div class="wrap">
     <div id="cs-empty" class="empty"><p style="font-weight:600;margin-bottom:6px">Aguardando dados</p><p style="font-size:11px">Execute <strong>ATUALIZAR.bat</strong> para processar os XMLs.</p></div>
@@ -300,6 +300,11 @@ function setOp(op,btn){
   curOp=op;
   document.querySelectorAll('.opbtn').forEach(b=>{b.className='opbtn';});
   btn.className='opbtn '+OP_CLS[op];
+  // Reset mês e quarter ao trocar operação (anos podem ser diferentes)
+  F.mes='all';F.qtr='all';
+  document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
+  const aq=document.querySelector('.fb[data-g="qtr"][data-v="all"]');if(aq)aq.classList.add('on');
+  const am=document.querySelector('.fb[data-g="mes"][data-v="all"]');if(am)am.classList.add('on');
   document.getElementById('tab-cli').style.display=op==='outbound'?'block':'none';
   document.getElementById('tab-rem').style.display=op!=='outbound'?'block':'none';
   document.getElementById('transp-title').textContent='%CTS por transportadora — '+OP_LBL[op];
@@ -322,83 +327,171 @@ function fil(btn){
   const g=btn.dataset.g,v=btn.dataset.v;
   document.querySelectorAll('.fb[data-g="'+g+'"]').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');F[g]=v;
-  if(g==='ano'){F.qtr='all';F.mes='all';document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));document.querySelector('.fb[data-g="qtr"][data-v="all"]').classList.add('on');document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');}
-  if(g==='qtr'&&v!=='all'){F.mes='all';document.querySelectorAll('.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');}
+  // Ao mudar ANO: limpa quarter e mês
+  if(g==='ano'){
+    F.qtr='all';F.mes='all';
+    document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
+    const aq=document.querySelector('.fb[data-g="qtr"][data-v="all"]');if(aq)aq.classList.add('on');
+    const am=document.querySelector('.fb[data-g="mes"][data-v="all"]');if(am)am.classList.add('on');
+  }
+  // Ao mudar QUARTER: limpa mês
+  if(g==='qtr'&&v!=='all'){
+    F.mes='all';
+    document.querySelectorAll('.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
+    const am=document.querySelector('.fb[data-g="mes"][data-v="all"]');if(am)am.classList.add('on');
+  }
+  // Ao mudar MÊS para um valor específico: limpa quarter
+  if(g==='mes'&&v!=='all'){
+    F.qtr='all';
+    document.querySelectorAll('.fb[data-g="qtr"]').forEach(b=>b.classList.remove('on'));
+    const aq=document.querySelector('.fb[data-g="qtr"][data-v="all"]');if(aq)aq.classList.add('on');
+  }
   renderAll();
+}
+
+// ============================================================
+// HELPERS DE FILTRO
+// ============================================================
+
+// Retorna true se o mês/ano de um item bate com os filtros ativos
+function _mesOk(ano, mes){
+  if(F.ano!=='all' && String(ano)!==F.ano) return false;
+  if(F.mes!=='all' && String(mes)!==F.mes) return false;
+  if(F.qtr!=='all'){
+    const qEsperado='Q'+Math.ceil(mes/3)+'/'+String(ano).slice(2);
+    if(qEsperado!==F.qtr) return false;
+  }
+  return true;
+}
+
+// Agrega frete/merc de um objeto que tem sub-chave por ano/mes
+// Usado para transportadoras, regiões, clientes, remetentes
+// quando filtro de mês ou quarter está ativo
+function _agregaMesMes(obj){
+  // Se não há filtro de mês/quarter ativo, usa os totais por ano normalmente
+  if(F.mes==='all' && F.qtr==='all'){
+    if(F.ano==='all') return {frete:obj.frete,v_merc:obj.v_merc,genomma_frete:obj.genomma_frete||0,genomma_merc:obj.genomma_merc||0,inovalab_frete:obj.inovalab_frete||0,inovalab_merc:obj.inovalab_merc||0,ctes:obj.ctes,pct_cts:obj.pct_cts,pct_genomma:obj.pct_genomma,pct_inovalab:obj.pct_inovalab};
+    const a=obj.anos&&obj.anos[F.ano]; if(!a) return null;
+    return {frete:a.frete||0,v_merc:a.v_merc||0,genomma_frete:a.genomma_frete||0,genomma_merc:a.genomma_merc||0,inovalab_frete:a.inovalab_frete||0,inovalab_merc:a.inovalab_merc||0,ctes:a.ctes||0,pct_cts:a.pct_cts,pct_genomma:a.pct_genomma,pct_inovalab:a.pct_inovalab};
+  }
+  // Filtro de mês/quarter ativo — soma apenas os meses que batem
+  const meses=obj.meses_detalhe||[];
+  let f=0,m=0,gf=0,gm=0,inf=0,inm=0,n=0;
+  meses.forEach(mx=>{
+    if(!_mesOk(mx.ano,mx.mes)) return;
+    f+=mx.frete||0; m+=mx.v_merc||0;
+    gf+=mx.genomma_frete||0; gm+=mx.genomma_merc||0;
+    inf+=mx.inovalab_frete||0; inm+=mx.inovalab_merc||0;
+    n+=mx.ctes||0;
+  });
+  if(f===0&&gf===0&&inf===0) return null;
+  const pct=m>0?+(f/m*100).toFixed(2):null;
+  const pG=gm>0?+(gf/gm*100).toFixed(2):null;
+  const pI=inm>0?+(inf/inm*100).toFixed(2):null;
+  return {frete:f,v_merc:m,genomma_frete:gf,genomma_merc:gm,inovalab_frete:inf,inovalab_merc:inm,ctes:n,pct_cts:pct,pct_genomma:pG,pct_inovalab:pI};
+}
+
+// Aplica filtro de empresa sobre um agregado já calculado
+function _empFilter(ag){
+  if(!ag) return null;
+  let frete=ag.frete,merc=ag.v_merc,pct=ag.pct_cts;
+  if(F.emp==='GENOMMA'){frete=ag.genomma_frete||0;merc=ag.genomma_merc||0;pct=ag.pct_genomma;}
+  else if(F.emp==='INOVALAB'){frete=ag.inovalab_frete||0;merc=ag.inovalab_merc||0;pct=ag.pct_inovalab;}
+  return frete>0?{...ag,frete,v_merc:merc,pct_cts:pct}:null;
 }
 
 function fMs(){
   const d=getD();if(!d)return[];
-  return (d.meses||[]).filter(m=>
-    (F.ano==='all'||String(m.ano)===F.ano)&&
-    (F.mes==='all'||String(m.mes)===F.mes)&&
-    (F.qtr==='all'||'Q'+Math.ceil(m.mes/3)+'/'+String(m.ano).slice(2)===F.qtr)
-  ).map(m=>({...m,mes_nome:m.mes_nome||m.nome||('M'+m.mes)}));
+  return (d.meses||[]).filter(m=>_mesOk(m.ano,m.mes)).map(m=>({...m,mes_nome:m.mes_nome||m.nome||('M'+m.mes)}));
 }
+
 function getTot(){
   const ms=fMs();let f=0,m=0,n=0,gf=0,gm=0,inf=0,inm=0;
-  ms.forEach(x=>{if(F.emp==='GENOMMA'){f+=x.genomma_frete;m+=x.genomma_merc;}else if(F.emp==='INOVALAB'){f+=x.inovalab_frete;m+=x.inovalab_merc;}else{f+=x.frete;m+=x.v_merc;}n+=x.ctes;gf+=x.genomma_frete;gm+=x.genomma_merc;inf+=x.inovalab_frete;inm+=x.inovalab_merc;});
+  ms.forEach(x=>{
+    if(F.emp==='GENOMMA'){f+=x.genomma_frete||0;m+=x.genomma_merc||0;}
+    else if(F.emp==='INOVALAB'){f+=x.inovalab_frete||0;m+=x.inovalab_merc||0;}
+    else{f+=x.frete||0;m+=x.v_merc||0;}
+    n+=x.ctes||0;gf+=x.genomma_frete||0;gm+=x.genomma_merc||0;inf+=x.inovalab_frete||0;inm+=x.inovalab_merc||0;
+  });
   return{f,m,n,pct:m>0?+(f/m*100).toFixed(2):null,gf,gm,gPct:gm>0?+(gf/gm*100).toFixed(2):null,inf,inm,iPct:inm>0?+(inf/inm*100).toFixed(2):null};
 }
+
 function getRegs(){
   const d=getD();if(!d)return[];
-  return (d.regioes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg).map(r=>{
-    if(F.ano==='all'){
-      let frete=r.frete,merc=r.v_merc,pct=r.pct_cts;
-      if(F.emp==='GENOMMA'){frete=r.genomma_frete||0;merc=r.genomma_merc||0;pct=r.pct_genomma;}
-      else if(F.emp==='INOVALAB'){frete=r.inovalab_frete||0;merc=r.inovalab_merc||0;pct=r.pct_inovalab;}
-      return frete>0?{...r,frete,v_merc:merc,pct_cts:pct}:null;
-    }
-    const a=r.anos&&r.anos[F.ano];if(!a)return null;
-    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
-    return frete>0?{...r,frete,v_merc:merc,pct_cts:pct}:null;
-  }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
+  return (d.regioes||[])
+    .filter(r=>F.reg==='all'||r.regiao===F.reg)
+    .map(r=>{const ag=_agregaMesMes(r);return _empFilter(ag)?{...r,..._empFilter(ag)}:null;})
+    .filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
+
 function getTrs(){
   const d=getD();if(!d)return[];
-  return (d.transportadoras||[]).map(t=>{
-    if(F.ano==='all'){
-      let frete=t.frete,merc=t.v_merc,pct=t.pct_cts;
-      if(F.emp==='GENOMMA'){frete=t.genomma_frete||0;merc=0;pct=t.pct_genomma;}
-      else if(F.emp==='INOVALAB'){frete=t.inovalab_frete||0;merc=0;pct=t.pct_inovalab;}
-      return frete>0?{...t,frete,v_merc:merc,pct_cts:pct}:null;
-    }
-    const a=t.anos&&t.anos[F.ano];if(!a)return null;
-    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=0;pct=a.pct_inovalab;}
-    return frete>0?{...t,frete,v_merc:merc,pct_cts:pct}:null;
-  }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
+  return (d.transportadoras||[])
+    .map(t=>{const ag=_agregaMesMes(t);return _empFilter(ag)?{...t,..._empFilter(ag)}:null;})
+    .filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
+
 function getClis(){
   const d=getD();if(!d)return[];
-  let clis=d.clientes||[];
-  // filter by empresa and regiao
-  clis=clis.filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg));
-  // filter/aggregate by ano
-  if(F.ano!=='all'){
-    clis=clis.map(c=>{
-      const a=c.anos&&c.anos[F.ano];
-      if(!a||a.frete===0) return null;
-      return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
-    }).filter(Boolean);
-  }
-  return clis.filter(c=>c.frete>0).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
+  return (d.clientes||[])
+    .filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg))
+    .map(c=>{
+      // clientes: tenta meses_detalhe, fallback para anos
+      if((F.mes!=='all'||F.qtr!=='all') && c.meses_detalhe){
+        const ag=_agregaMesMes(c); if(!ag||ag.frete===0) return null;
+        return {...c,...ag};
+      }
+      if(F.ano!=='all'){
+        const a=c.anos&&c.anos[F.ano]; if(!a||a.frete===0) return null;
+        return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
+      }
+      return c.frete>0?c:null;
+    })
+    .filter(Boolean).filter(c=>c.frete>0).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
 }
+
 function getRems(){
   const d=getD();if(!d)return[];
-  return (d.remetentes||[]).map(r=>{
-    if(F.ano==='all') return r.frete>0?r:null;
-    const a=r.anos&&r.anos[F.ano];if(!a)return null;
-    return a.frete>0?{...r,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts}:null;
-  }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
+  return (d.remetentes||[])
+    .map(r=>{
+      if((F.mes!=='all'||F.qtr!=='all') && r.meses_detalhe){
+        const ag=_agregaMesMes(r); if(!ag||ag.frete===0) return null;
+        return {...r,...ag};
+      }
+      if(F.ano!=='all'){
+        const a=r.anos&&r.anos[F.ano]; if(!a||a.frete===0) return null;
+        return {...r,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
+      }
+      return r.frete>0?r:null;
+    })
+    .filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
+
 function getQs(){
   const d=getD();if(!d)return[];
-  let qs=(d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano);
-  if(F.emp==='GENOMMA')  return qs.map(q=>({...q,frete:q.genomma_frete||0,v_merc:q.genomma_merc||0,pct_cts:q.pct_genomma}));
+  // Se filtro de mês está ativo, recalcula quarters a partir dos meses filtrados
+  if(F.mes!=='all'){
+    const ms=fMs(); const qMap={};
+    ms.forEach(m=>{
+      const q='Q'+Math.ceil(m.mes/3)+'/'+String(m.ano).slice(2);
+      if(!qMap[q]) qMap[q]={q,ano:m.ano,ctes:0,frete:0,v_merc:0,genomma_frete:0,genomma_merc:0,inovalab_frete:0,inovalab_merc:0};
+      const x=qMap[q];
+      x.ctes+=m.ctes||0;x.frete+=m.frete||0;x.v_merc+=m.v_merc||0;
+      x.genomma_frete+=m.genomma_frete||0;x.genomma_merc+=m.genomma_merc||0;
+      x.inovalab_frete+=m.inovalab_frete||0;x.inovalab_merc+=m.inovalab_merc||0;
+    });
+    let qs=Object.values(qMap).sort((a,b)=>a.q.localeCompare(b.q));
+    qs=qs.map(q=>({...q,pct_cts:q.v_merc>0?+(q.frete/q.v_merc*100).toFixed(2):null,pct_genomma:q.genomma_merc>0?+(q.genomma_frete/q.genomma_merc*100).toFixed(2):null,pct_inovalab:q.inovalab_merc>0?+(q.inovalab_frete/q.inovalab_merc*100).toFixed(2):null}));
+    if(F.emp==='GENOMMA') return qs.map(q=>({...q,frete:q.genomma_frete,v_merc:q.genomma_merc,pct_cts:q.pct_genomma}));
+    if(F.emp==='INOVALAB') return qs.map(q=>({...q,frete:q.inovalab_frete,v_merc:q.inovalab_merc,pct_cts:q.pct_inovalab}));
+    return qs;
+  }
+  let qs=(d.quarters||[]).filter(q=>{
+    if(F.ano!=='all'&&String(q.ano)!==F.ano) return false;
+    if(F.qtr!=='all'&&q.q!==F.qtr) return false;
+    return true;
+  });
+  if(F.emp==='GENOMMA') return qs.map(q=>({...q,frete:q.genomma_frete||0,v_merc:q.genomma_merc||0,pct_cts:q.pct_genomma}));
   if(F.emp==='INOVALAB') return qs.map(q=>({...q,frete:q.inovalab_frete||0,v_merc:q.inovalab_merc||0,pct_cts:q.pct_inovalab}));
   return qs;
 }
@@ -449,17 +542,8 @@ function rReg(){
   el=ch('cr2');if(el)CH.cr2=new Chart(el,{type:'doughnut',data:{labels:regs.map(r=>r.regiao),datasets:[{data:regs.map(r=>r.frete),backgroundColor:regs.map(r=>RC[r.regiao]||'#888'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
   const d=getD();
   const ufs=(d?.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg).map(u=>{
-    if(F.ano==='all'){
-      let frete=u.frete,merc=u.v_merc,pct=u.pct_cts;
-      if(F.emp==='GENOMMA'){frete=u.genomma_frete||0;merc=u.genomma_merc||0;pct=u.pct_genomma;}
-      else if(F.emp==='INOVALAB'){frete=u.inovalab_frete||0;merc=u.inovalab_merc||0;pct=u.pct_inovalab;}
-      return frete>0?{...u,frete,v_merc:merc,pct_cts:pct}:null;
-    }
-    const a=u.anos&&u.anos[F.ano];if(!a)return null;
-    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
-    return frete>0?{...u,frete,v_merc:merc,pct_cts:pct}:null;
+    const ag=_agregaMesMes(u); const r=_empFilter(ag); if(!r) return null;
+    return {...u,...r};
   }).filter(Boolean).sort((a,b)=>b.frete-a.frete).slice(0,12);
   const wrap=document.getElementById('uf-wrap');wrap.style.height=Math.max(240,ufs.length*40+80)+'px';
   el=ch('cr3');if(el)CH.cr3=new Chart(el,{type:'bar',data:{labels:ufs.map(u=>u.uf),datasets:[{data:ufs.map(u=>u.frete),backgroundColor:ufs.map(u=>RC[u.regiao]||OP_COR[curOp]),borderWidth:0,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[fK(c.raw),'%CTS: '+pf(ufs[c.dataIndex].pct_cts)]}}},scales:{y:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)}}}}});

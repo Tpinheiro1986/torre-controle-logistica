@@ -1,0 +1,45 @@
+name: Deploy to Supabase Storage
+
+on:
+  push:
+    branches:
+      - main  # troque para "master" se seu branch principal tiver esse nome
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependência Supabase JS
+        run: npm install @supabase/supabase-js
+
+      - name: Upload index.html para Supabase Storage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          node -e "
+          const { createClient } = require('@supabase/supabase-js');
+          const fs = require('fs');
+
+          const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+
+          const file = fs.readFileSync('./index.html');
+          const { Blob } = require('buffer');
+          const blob = new Blob([file], { type: 'text/html' });
+
+          sb.storage.from('dashboards')
+            .upload('index.html', blob, { upsert: true, contentType: 'text/html', cacheControl: '0' })
+            .then(({ error }) => {
+              if (error) { console.error('Erro:', error.message); process.exit(1); }
+              else console.log('✓ index.html publicado com sucesso!');
+            });
+          "

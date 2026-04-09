@@ -798,3 +798,107 @@
 2026-04-07 13:34:47,606 [INFO] Agregando 6,954 CTes...
 2026-04-07 13:34:47,743 [INFO]   OK cte_dados.json salvo
 2026-04-07 13:34:50,859 [ERROR]   ERRO Supabase 400: {"statusCode":"403","error":"Unauthorized","message":"new row violates row-level security policy"}
+2026-04-07 13:57:21,112 [INFO] Historico: 6,954 CTes | ultima exec: 2026-04-07T13:02:47.490140
+2026-04-07 13:57:21,113 [INFO] Buscando XMLs...
+2026-04-07 14:02:32,514 [INFO]   115,122 CTe (214*) | 1,452 Cancelamento (383*) em 311s
+2026-04-07 16:56:03,179 [INFO] Historico: 6,954 CTes | ultima exec: 2026-04-07T13:02:47.490140
+2026-04-07 16:56:03,180 [INFO] Buscando XMLs...
+2026-04-07 17:03:14,981 [INFO]   115,134 CTe (214*) | 1,452 Cancelamento (383*) em 431s
+2026-04-07 19:20:17,266 [INFO] Historico: 6,954 CTes | ultima exec: 2026-04-07T13:02:47.490140
+2026-04-07 19:20:17,267 [INFO] Buscando XMLs...
+2026-04-07 19:21:51,175 [INFO]   57,569 CTe (214*) | 726 Cancelamento (383*) em 93s
+2026-04-07 19:21:51,176 [INFO]   Novos: 11 CTe | 0 Cancelamento
+2026-04-07 19:21:51,176 [INFO]   Processando com 7 workers paralelos...
+2026-04-07 19:21:51,902 [INFO]   11 CTes novos em 0s
+2026-04-07 19:21:51,904 [INFO] Agregando 6,965 CTes...
+2026-04-07 19:21:51,938 [INFO]   OK cte_dados.json salvo
+2026-04-07 19:21:53,909 [INFO]   OK Publicado no Supabase
+2026-04-07 19:31:21,223 [INFO] Historico: 6,965 CTes | ultima exec: 2026-04-07T19:20:17.165565
+2026-04-07 19:31:21,224 [INFO] Buscando XMLs...
+2026-04-07 19:32:50,326 [INFO]   57,569 CTe (214*) | 726 Cancelamento (383*) em 89s
+2026-04-07 19:32:50,327 [INFO]   Novos: 0 CTe | 0 Cancelamento
+2026-04-07 19:32:50,327 [INFO]   Processando com 7 workers paralelos...
+2026-04-07 19:32:50,328 [INFO]   0 CTes novos em 0s
+2026-04-07 19:38:45,377 [INFO] Buscando XMLs...
+2026-04-07 19:40:19,647 [INFO]   57,570 CTe (214*) | 726 Cancelamento (383*) em 94s
+2026-04-07 19:41:15,172 [INFO]   506 cancelamentos novos
+2026-04-07 19:41:15,173 [INFO]   Processando com 7 workers paralelos...
+2026-04-07 19:41:48,087 [INFO]   2,000/57,570 -- 0 novos -- 88s
+2026-04-07 19:42:20,730 [INFO]   4,000/57,570 -- 0 novos -- 121s
+2026-04-07 19:42:54,542 [INFO]   6,000/57,570 -- 0 novos -- 154s
+2026-04-07 19:43:27,058 [INFO]   8,000/57,570 -- 0 novos -- 187s
+2026-04-07 19:43:59,809 [INFO]   10,000/57,570 -- 0 novos -- 220s
+2026-04-07 19:44:33,270 [INFO]   12,000/57,570 -- 0 novos -- 253s
+2026-04-07 19:45:06,772 [INFO]   14,000/57,570 -- 0 novos -- 287s
+2026-04-07 19:45:39,747 [INFO]   16,000/57,570 -- 0 novos -- 320s
+2026-04-07 19:46:12,826 [INFO]   18,000/57,570 -- 0 novos -- 353s
+2026-04-07 19:46:48,462 [INFO]   20,000/57,570 -- 0 novos -- 388s
+2026-04-07 19:47:26,692 [INFO]   22,000/57,570 -- 0 novos -- 427s
+2026-04-07 19:47:59,301 [INFO]   24,000/57,570 -- 0 novos -- 459s
+2026-04-07 19:48:32,789 [INFO]   26,000/57,570 -- 0 novos -- 493s
+2026-04-07 19:49:05,500 [INFO]   28,000/57,570 -- 1,298 novos -- 525s
+2026-04-07 19:49:37,447 [INFO]   30,000/57,570 -- 2,273 novos -- 557s
+2026-04-07 19:50:11,754 [INFO]   32,000/57,570 -- 2,987 novos -- 592s
+2026-04-07 19:50:44,212 [INFO]   34,000/57,570 -- 3,391 novos -- 624s
+2026-04-07 19:51:17,349 [INFO]   36,000/57,570 -- 4,700 novos -- 657s
+2026-04-07 19:51:50,637 [INFO]   38,000/57,570 -- 6,360 novos -- 690s
+2026-04-07 19:52:22,906 [INFO]   40,000/57,570 -- 6,966 novos -- 723s
+2026-04-07 19:52:56,326 [INFO]   42,000/57,570 -- 6,966 novos -- 756s
+2026-04-07 19:53:28,470 [INFO]   44,000/57,570 -- 6,966 novos -- 788s
+2026-04-07 19:54:01,500 [INFO]   46,000/57,570 -- 6,966 novos -- 821s
+2026-04-07 19:54:33,861 [INFO]   48,000/57,570 -- 6,966 novos -- 854s
+2026-04-07 19:55:06,724 [INFO]   50,000/57,570 -- 6,966 novos -- 887s
+2026-04-07 19:55:39,840 [INFO]   52,000/57,570 -- 6,966 novos -- 920s
+2026-04-07 19:56:12,580 [INFO]   54,000/57,570 -- 6,966 novos -- 952s
+2026-04-07 19:56:45,367 [INFO]   56,000/57,570 -- 6,966 novos -- 985s
+2026-04-07 19:57:12,814 [INFO]   6,966 CTes novos em 1013s
+2026-04-07 19:57:12,815 [INFO] Agregando 6,966 CTes...
+2026-04-07 19:57:12,902 [INFO]   OK cte_dados.json salvo
+2026-04-07 19:57:14,980 [INFO]   OK Publicado no Supabase
+2026-04-07 20:31:05,347 [INFO] Reclassificando 6,966 CTes...
+2026-04-07 20:31:05,354 [INFO]   2 CTes reclassificados
+2026-04-07 20:31:05,355 [INFO] Agregando...
+2026-04-07 20:31:07,128 [INFO]   OK Publicado no Supabase
+2026-04-07 20:37:15,515 [INFO] Reclassificando 6,966 CTes...
+2026-04-07 20:37:15,521 [INFO]   0 CTes reclassificados
+2026-04-07 20:37:15,522 [INFO] Agregando...
+2026-04-07 20:37:17,084 [INFO]   OK Publicado no Supabase
+2026-04-07 21:12:15,283 [INFO] Reclassificando 6,966 CTes...
+2026-04-07 21:12:15,290 [INFO]   0 reclassificados | 0 descartados (rem vazio)
+2026-04-07 21:12:15,290 [INFO] Agregando...
+2026-04-07 21:12:16,799 [INFO]   OK Publicado no Supabase
+2026-04-07 21:41:13,168 [INFO] Reclassificando 6,966 CTes...
+2026-04-07 21:41:13,180 [INFO]   1 reclassificados | 0 descartados (rem vazio)
+2026-04-07 21:41:13,180 [INFO] Agregando...
+2026-04-07 21:41:14,995 [INFO]   OK Publicado no Supabase
+2026-04-07 22:05:16,526 [INFO] Reclassificando 6,966 CTes...
+2026-04-07 22:05:16,534 [INFO]   0 reclassificados | 0 descartados (rem vazio)
+2026-04-07 22:05:16,535 [INFO] Agregando...
+2026-04-07 22:05:18,389 [INFO]   OK Publicado no Supabase
+2026-04-07 22:24:48,670 [INFO] Reclassificando 6,966 CTes...
+2026-04-07 22:24:48,686 [INFO]   0 reclassificados | 0 descartados (rem vazio)
+2026-04-07 22:24:48,687 [INFO] Agregando...
+2026-04-07 22:24:50,516 [INFO]   OK Publicado no Supabase
+2026-04-09 09:50:33,382 [INFO] Reclassificando 6,966 CTes...
+2026-04-09 09:50:33,400 [INFO]   0 reclassificados | 0 descartados (rem vazio)
+2026-04-09 09:50:33,401 [INFO] Agregando...
+2026-04-09 09:50:36,279 [INFO]   OK Publicado no Supabase
+2026-04-09 09:54:42,148 [INFO] Reclassificando 6,966 CTes...
+2026-04-09 09:54:42,167 [INFO]   0 reclassificados | 0 descartados (rem vazio)
+2026-04-09 09:54:42,168 [INFO] Agregando...
+2026-04-09 09:54:45,023 [INFO]   OK Publicado no Supabase
+2026-04-09 11:03:10,358 [INFO] Historico: 6,966 CTes | ultima exec: 2026-04-09T09:54:42.065198
+2026-04-09 11:03:10,359 [INFO] Buscando XMLs...
+2026-04-09 11:04:39,990 [INFO]   57,610 CTe | 726 Canc. em 89s
+2026-04-09 11:04:39,991 [INFO]   Novos: 0 CTe | 0 Cancelamento
+2026-04-09 11:04:39,992 [INFO]   Processando com 7 workers...
+2026-04-09 11:04:39,993 [INFO]   0 CTes novos em 0s
+2026-04-09 15:29:23,342 [INFO] Historico: 6,966 CTes | ultima exec: 2026-04-09T11:03:10.193526
+2026-04-09 15:29:23,343 [INFO] Buscando XMLs...
+2026-04-09 15:30:54,397 [INFO]   57,612 CTe | 726 Canc. em 91s
+2026-04-09 15:30:54,399 [INFO]   Novos: 2 CTe | 0 Cancelamento
+2026-04-09 15:30:54,400 [INFO]   Processando com 7 workers...
+2026-04-09 15:30:55,061 [INFO]   2 CTes novos em 0s
+2026-04-09 15:30:55,089 [INFO] Agregando 6,968 CTes...
+2026-04-09 15:30:55,242 [INFO]   OK cte_dados.json salvo
+2026-04-09 15:30:58,231 [INFO]   OK Publicado no Supabase
