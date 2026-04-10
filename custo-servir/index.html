@@ -415,24 +415,51 @@ function _empApply(obj){
 // Filtro de mês/quarter: não é possível filtrar entidades sem meses_detalhe,
 // então exibe o escopo mais próximo disponível (ano se ano filtrado, total caso contrário)
 function _resolveEntidade(obj){
-  // Determina o ano alvo: direto do filtro ano, ou extraído do filtro mes (formato ano-mes)
-  let anoAlvo = F.ano!=='all' ? F.ano : null;
-  if(!anoAlvo && F.mes!=='all' && F.mes.includes('-')) anoAlvo = F.mes.split('-')[0];
-  if(!anoAlvo && F.qtr!=='all'){
-    // extrai ano do quarter ex: "Q1/25" -> 2025
-    const parts=F.qtr.split('/'); if(parts[1]) anoAlvo='20'+parts[1];
-  }
-  if(anoAlvo){
-    const a=obj.anos&&obj.anos[anoAlvo];
-    if(!a) return null;
-    const merged={...obj,...a,
-      frete:a.frete||0, v_merc:a.v_merc||0, ctes:a.ctes||0,
-      genomma_frete:a.genomma_frete||0, genomma_merc:a.genomma_merc||0,
-      inovalab_frete:a.inovalab_frete||0, inovalab_merc:a.inovalab_merc||0,
-      pct_cts:a.pct_cts, pct_genomma:a.pct_genomma, pct_inovalab:a.pct_inovalab
+  // Filtro de mês específico — usa meses breakdown
+  if(F.mes!=='all' && obj.meses){
+    const d=obj.meses[F.mes];
+    if(!d||d.frete===0) return null;
+    const merged={...obj,...d,
+      frete:d.frete||0,v_merc:d.v_merc||0,ctes:d.ctes||0,
+      genomma_frete:d.genomma_frete||0,genomma_merc:d.genomma_merc||0,
+      inovalab_frete:d.inovalab_frete||0,inovalab_merc:d.inovalab_merc||0,
+      pct_cts:d.pct_cts,pct_genomma:d.pct_genomma,pct_inovalab:d.pct_inovalab
     };
     return _empApply(merged);
   }
+  // Filtro de quarter — soma os meses do quarter
+  if(F.qtr!=='all' && obj.meses){
+    let f=0,m=0,n=0,gf=0,gm=0,inf=0,inm=0;
+    Object.values(obj.meses).forEach(d=>{
+      const q='Q'+Math.ceil(d.mes/3)+'/'+String(d.ano).slice(2);
+      if(q!==F.qtr) return;
+      if(F.ano!=='all'&&String(d.ano)!==F.ano) return;
+      f+=d.frete||0;m+=d.v_merc||0;n+=d.ctes||0;
+      gf+=d.genomma_frete||0;gm+=d.genomma_merc||0;
+      inf+=d.inovalab_frete||0;inm+=d.inovalab_merc||0;
+    });
+    if(f===0&&gf===0&&inf===0) return null;
+    const merged={...obj,frete:f,v_merc:m,ctes:n,
+      genomma_frete:gf,genomma_merc:gm,inovalab_frete:inf,inovalab_merc:inm,
+      pct_cts:m>0?+(f/m*100).toFixed(2):null,
+      pct_genomma:gm>0?+(gf/gm*100).toFixed(2):null,
+      pct_inovalab:inm>0?+(inf/inm*100).toFixed(2):null
+    };
+    return _empApply(merged);
+  }
+  // Filtro de ano — usa anos breakdown
+  if(F.ano!=='all'){
+    const a=obj.anos&&obj.anos[F.ano];
+    if(!a) return null;
+    const merged={...obj,...a,
+      frete:a.frete||0,v_merc:a.v_merc||0,ctes:a.ctes||0,
+      genomma_frete:a.genomma_frete||0,genomma_merc:a.genomma_merc||0,
+      inovalab_frete:a.inovalab_frete||0,inovalab_merc:a.inovalab_merc||0,
+      pct_cts:a.pct_cts,pct_genomma:a.pct_genomma,pct_inovalab:a.pct_inovalab
+    };
+    return _empApply(merged);
+  }
+  // Sem filtro temporal — usa totais
   return _empApply(obj);
 }
 
@@ -456,9 +483,23 @@ function getClis(){
   return (d.clientes||[])
     .filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg))
     .map(c=>{
-      const anoAlvo=F.ano!=='all'?F.ano:((F.mes!=='all'||F.qtr!=='all')&&Object.keys(c.anos||{}).length===1?Object.keys(c.anos)[0]:null);
-      if(anoAlvo){
-        const a=c.anos&&c.anos[anoAlvo]; if(!a||!a.frete) return null;
+      if(F.mes!=='all'){
+        const mx=c.meses&&c.meses[F.mes]; if(!mx||!mx.frete) return null;
+        return {...c,frete:mx.frete,v_merc:mx.v_merc,ctes:mx.ctes,pct_cts:mx.pct_cts};
+      }
+      if(F.qtr!=='all'&&c.meses){
+        let f=0,m=0,n=0;
+        Object.values(c.meses).forEach(mx=>{
+          const q='Q'+Math.ceil(mx.mes/3)+'/'+String(mx.ano).slice(2);
+          if(q!==F.qtr) return;
+          if(F.ano!=='all'&&String(mx.ano)!==F.ano) return;
+          f+=mx.frete||0;m+=mx.v_merc||0;n+=mx.ctes||0;
+        });
+        if(f===0) return null;
+        return {...c,frete:f,v_merc:m,ctes:n,pct_cts:m>0?+(f/m*100).toFixed(2):null};
+      }
+      if(F.ano!=='all'){
+        const a=c.anos&&c.anos[F.ano]; if(!a||!a.frete) return null;
         return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
       }
       return c.frete>0?c:null;
@@ -470,9 +511,23 @@ function getRems(){
   const d=getD();if(!d)return[];
   return (d.remetentes||[])
     .map(r=>{
-      const anoAlvo=F.ano!=='all'?F.ano:null;
-      if(anoAlvo){
-        const a=r.anos&&r.anos[anoAlvo]; if(!a||!a.frete) return null;
+      if(F.mes!=='all'){
+        const mx=r.meses&&r.meses[F.mes]; if(!mx||!mx.frete) return null;
+        return {...r,frete:mx.frete,v_merc:mx.v_merc,ctes:mx.ctes,pct_cts:mx.pct_cts};
+      }
+      if(F.qtr!=='all'&&r.meses){
+        let f=0,m=0,n=0;
+        Object.values(r.meses).forEach(mx=>{
+          const q='Q'+Math.ceil(mx.mes/3)+'/'+String(mx.ano).slice(2);
+          if(q!==F.qtr) return;
+          if(F.ano!=='all'&&String(mx.ano)!==F.ano) return;
+          f+=mx.frete||0;m+=mx.v_merc||0;n+=mx.ctes||0;
+        });
+        if(f===0) return null;
+        return {...r,frete:f,v_merc:m,ctes:n,pct_cts:m>0?+(f/m*100).toFixed(2):null};
+      }
+      if(F.ano!=='all'){
+        const a=r.anos&&r.anos[F.ano]; if(!a||!a.frete) return null;
         return {...r,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
       }
       return r.frete>0?r:null;
