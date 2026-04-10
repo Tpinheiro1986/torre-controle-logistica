@@ -290,8 +290,8 @@ function initDash(){
   const fa=document.getElementById('f-anos');fa.innerHTML='';anos.forEach(a=>{fa.appendChild(mkb(String(a),'ano',String(a)));});
   const allQ=[...new Set([...(D.outbound?.quarters||[]),...(D.inbound?.quarters||[]),...(D.reversa?.quarters||[])].map(q=>q.q))].sort();
   const fq=document.getElementById('f-qtrs');fq.innerHTML='';allQ.forEach(q=>{fq.appendChild(mkb(q,'qtr',q));});
-  const mU=[...new Map(allM.map(m=>[m.ano+'-'+m.mes,m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
-  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',m.ano+'-'+m.mes));});
+  const mU=[...new Map(allM.map(m=>[m.ano+'-'+String(m.mes).padStart(2,'0'),m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
+  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',m.ano+'-'+String(m.mes).padStart(2,'0')));});
   renderAll();
 }
 function mkb(label,g,v){const b=document.createElement('button');b.className='fb';b.textContent=label;b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;}
@@ -361,12 +361,8 @@ function fil(btn){
 function _mesOk(ano, mes){
   if(F.ano!=='all' && String(ano)!==F.ano) return false;
   if(F.mes!=='all'){
-    // F.mes pode ser "ano-mes" (ex: "2025-3") ou só "mes" (legado)
-    if(F.mes.includes('-')){
-      if(F.mes!==ano+'-'+mes) return false;
-    } else {
-      if(String(mes)!==F.mes) return false;
-    }
+    const mesKey=ano+'-'+String(mes).padStart(2,'0');
+    if(F.mes!==mesKey) return false;
   }
   if(F.qtr!=='all'){
     const q='Q'+Math.ceil(mes/3)+'/'+String(ano).slice(2);
