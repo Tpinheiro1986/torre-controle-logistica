@@ -359,11 +359,12 @@ def _agg_op(ctes):
         if e=="INOVALAB": bm["inf"]+=f; bm["inm"]+=m
 
         ano_k = str(c["ano"])
+        mes_k = mk  # ex: "2025-03"
 
         # transportadora
         if tr not in by_transp:
             by_transp[tr] = {"nome":tr,"cnpj":c.get("transp_cnpj",""),
-                             "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{}}
+                             "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{},"meses":{}}
         bt2 = by_transp[tr]
         bt2["f"]+=f; bt2["m"]+=m; bt2["n"]+=1
         if e=="GENOMMA":  bt2["gf"]+=f;  bt2["gm"]+=m
@@ -373,10 +374,15 @@ def _agg_op(ctes):
         at=bt2["anos"][ano_k]; at["f"]+=f; at["m"]+=m; at["n"]+=1
         if e=="GENOMMA":  at["gf"]+=f; at["gm"]+=m
         if e=="INOVALAB": at["inf"]+=f; at["inm"]+=m
+        if mes_k not in bt2["meses"]:
+            bt2["meses"][mes_k]={"ano":c["ano"],"mes":c["mes"],"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+        bmt=bt2["meses"][mes_k]; bmt["f"]+=f; bmt["m"]+=m; bmt["n"]+=1
+        if e=="GENOMMA":  bmt["gf"]+=f; bmt["gm"]+=m
+        if e=="INOVALAB": bmt["inf"]+=f; bmt["inm"]+=m
 
         # regiao
         if rg not in by_reg:
-            by_reg[rg] = {"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{}}
+            by_reg[rg] = {"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{},"meses":{}}
         by_reg[rg]["f"]+=f; by_reg[rg]["m"]+=m; by_reg[rg]["n"]+=1
         if e=="GENOMMA":  by_reg[rg]["gf"]+=f; by_reg[rg]["gm"]+=m
         if e=="INOVALAB": by_reg[rg]["inf"]+=f; by_reg[rg]["inm"]+=m
@@ -385,11 +391,16 @@ def _agg_op(ctes):
         ar=by_reg[rg]["anos"][ano_k]; ar["f"]+=f; ar["m"]+=m; ar["n"]+=1
         if e=="GENOMMA":  ar["gf"]+=f; ar["gm"]+=m
         if e=="INOVALAB": ar["inf"]+=f; ar["inm"]+=m
+        if mes_k not in by_reg[rg]["meses"]:
+            by_reg[rg]["meses"][mes_k]={"ano":c["ano"],"mes":c["mes"],"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+        brm=by_reg[rg]["meses"][mes_k]; brm["f"]+=f; brm["m"]+=m; brm["n"]+=1
+        if e=="GENOMMA":  brm["gf"]+=f; brm["gm"]+=m
+        if e=="INOVALAB": brm["inf"]+=f; brm["inm"]+=m
 
         # UF
         if uf:
             if uf not in by_uf:
-                by_uf[uf] = {"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{}}
+                by_uf[uf] = {"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{},"meses":{}}
             by_uf[uf]["f"]+=f; by_uf[uf]["m"]+=m; by_uf[uf]["n"]+=1
             if e=="GENOMMA":  by_uf[uf]["gf"]+=f; by_uf[uf]["gm"]+=m
             if e=="INOVALAB": by_uf[uf]["inf"]+=f; by_uf[uf]["inm"]+=m
@@ -398,6 +409,11 @@ def _agg_op(ctes):
             au=by_uf[uf]["anos"][ano_k]; au["f"]+=f; au["m"]+=m; au["n"]+=1
             if e=="GENOMMA":  au["gf"]+=f; au["gm"]+=m
             if e=="INOVALAB": au["inf"]+=f; au["inm"]+=m
+            if mes_k not in by_uf[uf]["meses"]:
+                by_uf[uf]["meses"][mes_k]={"ano":c["ano"],"mes":c["mes"],"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+            bum=by_uf[uf]["meses"][mes_k]; bum["f"]+=f; bum["m"]+=m; bum["n"]+=1
+            if e=="GENOMMA":  bum["gf"]+=f; bum["gm"]+=m
+            if e=="INOVALAB": bum["inf"]+=f; bum["inm"]+=m
 
         # remetente (inbound/reversa)
         if rk not in by_rem:
@@ -411,13 +427,18 @@ def _agg_op(ctes):
         # cliente/destinatario
         if cl not in by_cli:
             by_cli[cl] = {"nome":c.get("cliente",""),"cnpj":c.get("cli_cnpj",""),
-                          "empresa":e,"regiao":rg,"uf":uf,"f":0,"m":0,"n":0,"anos":{}}
+                          "empresa":e,"regiao":rg,"uf":uf,"cidade":c.get("mun_dest",""),"f":0,"m":0,"n":0,"anos":{},"meses":{}}
         by_cli[cl]["f"]+=f; by_cli[cl]["m"]+=m; by_cli[cl]["n"]+=1
         if ano_k not in by_cli[cl]["anos"]:
             by_cli[cl]["anos"][ano_k]={"f":0,"m":0,"n":0}
         by_cli[cl]["anos"][ano_k]["f"]+=f
         by_cli[cl]["anos"][ano_k]["m"]+=m
         by_cli[cl]["anos"][ano_k]["n"]+=1
+        if mes_k not in by_cli[cl]["meses"]:
+            by_cli[cl]["meses"][mes_k]={"ano":c["ano"],"mes":c["mes"],"f":0,"m":0,"n":0}
+        by_cli[cl]["meses"][mes_k]["f"]+=f
+        by_cli[cl]["meses"][mes_k]["m"]+=m
+        by_cli[cl]["meses"][mes_k]["n"]+=1
 
     # meses
     meses_out = sorted([{
@@ -454,10 +475,22 @@ def _agg_op(ctes):
     def _agg_anos(anos_raw):
         return {ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
                      "pct_cts":_p(d["f"],d["m"]),
-                     "genomma_frete":_r(d["gf"]),"inovalab_frete":_r(d["inf"]),
-                     "pct_genomma":_p(d["gf"],d["gm"]),
-                     "pct_inovalab":_p(d["inf"],d["inm"])}
+                     "genomma_frete":_r(d["gf"]),"genomma_merc":_r(d.get("gm",0)),
+                     "inovalab_frete":_r(d["inf"]),"inovalab_merc":_r(d.get("inm",0)),
+                     "pct_genomma":_p(d["gf"],d.get("gm",0)),
+                     "pct_inovalab":_p(d["inf"],d.get("inm",0))}
                 for ano,d in anos_raw.items()}
+
+    def _agg_meses(meses_raw):
+        return {k:{"ano":d["ano"],"mes":d["mes"],
+                   "frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
+                   "pct_cts":_p(d["f"],d["m"]),
+                   "genomma_frete":_r(d["gf"]),"genomma_merc":_r(d["gm"]),
+                   "inovalab_frete":_r(d["inf"]),"inovalab_merc":_r(d["inm"]),
+                   "pct_genomma":_p(d["gf"],d["gm"]),
+                   "pct_inovalab":_p(d["inf"],d["inm"])}
+                for k,d in meses_raw.items()}
+
     transp_out = sorted([{
         "nome":v["nome"],"cnpj":v["cnpj"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
@@ -466,6 +499,7 @@ def _agg_op(ctes):
         "pct_inovalab":_p(v["inf"],v["inm"]),
         "genomma_frete":_r(v["gf"]),"inovalab_frete":_r(v["inf"]),
         "anos":_agg_anos(v.get("anos",{})),
+        "meses":_agg_meses(v.get("meses",{})),
     } for v in by_transp.values()], key=lambda x:x["frete"], reverse=True)
 
     # regioes
@@ -478,6 +512,7 @@ def _agg_op(ctes):
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
         "anos":_agg_anos(v.get("anos",{})),
+        "meses":_agg_meses(v.get("meses",{})),
     } for v in by_reg.values()], key=lambda x:x["frete"], reverse=True)
 
     # UFs
@@ -490,6 +525,7 @@ def _agg_op(ctes):
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
         "anos":_agg_anos(v.get("anos",{})),
+        "meses":_agg_meses(v.get("meses",{})),
     } for v in by_uf.values()], key=lambda x:x["frete"], reverse=True)
 
     # remetentes top 100
@@ -505,12 +541,16 @@ def _agg_op(ctes):
     # clientes top 200
     clis_out = sorted([{
         "nome":v["nome"],"cnpj":v["cnpj"],"empresa":v["empresa"],
-        "regiao":v["regiao"],"uf":v["uf"],
+        "regiao":v["regiao"],"uf":v["uf"],"cidade":v.get("cidade",""),
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
         "anos":{ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
                      "pct_cts":_p(d["f"],d["m"])}
                 for ano,d in v["anos"].items()},
+        "meses":{k:{"ano":d["ano"],"mes":d["mes"],
+                    "frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
+                    "pct_cts":_p(d["f"],d["m"])}
+                 for k,d in v.get("meses",{}).items()},
     } for v in by_cli.values()], key=lambda x:x["v_merc"], reverse=True)[:200]
 
     emps_out = {e: {"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
