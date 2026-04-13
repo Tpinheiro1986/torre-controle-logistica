@@ -179,7 +179,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
       <div class="sec" id="sec-cliente">
         <div class="card"><div class="slbl"><span class="sn">1</span>Clientes — %CTS maior para menor</div>
           <div class="tw"><table class="dt"><thead><tr>
-            <th>#</th><th>Cliente</th><th>Empresa</th><th>Região</th><th>UF</th>
+            <th>#</th><th>Cliente</th><th>Empresa</th><th>Região</th><th>UF</th><th>Cidade</th>
             <th class="r">CTes</th><th class="r" style="color:var(--red)">Frete</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th><th style="min-width:70px">Nível</th>
@@ -610,7 +610,7 @@ function rReg(){
 }
 function rCli(){
   const clis=getClis();const maxF=clis[0]?.frete||1;
-  document.getElementById('tb-cli').innerHTML=clis.map((c,i)=>'<tr><td style="color:var(--text2);font-size:10px">'+(i+1)+'</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+c.nome+'</td><td><span class="chip '+(c.empresa==='GENOMMA'?'chip-g':'chip-i')+'">'+c.empresa+'</span></td><td style="font-size:10px;color:var(--text2)">'+(c.regiao||'—')+'</td><td style="font-size:10px;color:var(--text2)">'+(c.uf||'—')+'</td><td class="r">'+c.ctes+'</td><td class="r" style="color:var(--red)">'+fK(c.frete)+'</td><td class="r" style="color:#185FA5">'+(c.v_merc>0?fK(c.v_merc):'—')+'</td><td class="r" style="color:'+cP(c.pct_cts)+';font-weight:600">'+pf(c.pct_cts)+'</td><td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(c.frete/maxF*100)+'%;background:'+cP(c.pct_cts)+';border-radius:3px"></div></div></td></tr>').join('');
+  document.getElementById('tb-cli').innerHTML=clis.map((c,i)=>'<tr><td style="color:var(--text2);font-size:10px">'+(i+1)+'</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+c.nome+'</td><td><span class="chip '+(c.empresa==='GENOMMA'?'chip-g':'chip-i')+'">'+c.empresa+'</span></td><td style="font-size:10px;color:var(--text2)">'+(c.regiao||'—')+'</td><td style="font-size:10px;color:var(--text2)">'+(c.uf||'—')+'</td><td style="font-size:10px;color:var(--text2)">'+(c.cidade||'—')+'</td><td class="r">'+c.ctes+'</td><td class="r" style="color:var(--red)">'+fK(c.frete)+'</td><td class="r" style="color:#185FA5">'+(c.v_merc>0?fK(c.v_merc):'—')+'</td><td class="r" style="color:'+cP(c.pct_cts)+';font-weight:600">'+pf(c.pct_cts)+'</td><td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(c.frete/maxF*100)+'%;background:'+cP(c.pct_cts)+';border-radius:3px"></div></div></td></tr>').join('');
 }
 function rRem(){
   const rems=getRems();const maxF=rems[0]?.frete||1;
