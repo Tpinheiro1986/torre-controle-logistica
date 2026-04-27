@@ -264,27 +264,61 @@ def parse_cte(filepath: str):
             try: peso = float(q.findtext("cte:qCarga", namespaces=NS) or 0)
             except: pass
 
+    # Numero do CTe e serie
+    ide = root.find(".//cte:ide", NS)
+    n_cte = serie_cte = cfop = ""
+    if ide is not None:
+        n_cte    = ide.findtext("cte:nCT",   namespaces=NS) or ""
+        serie_cte= ide.findtext("cte:serie", namespaces=NS) or ""
+        cfop     = ide.findtext("cte:CFOP",  namespaces=NS) or ""
+
+    # Protocolo e status descritivo
+    prot = root.find(".//cte:infProt", NS)
+    n_prot = status_desc = ""
+    if prot is not None:
+        n_prot      = prot.findtext("cte:nProt",   namespaces=NS) or ""
+        status_desc = prot.findtext("cte:xMotivo", namespaces=NS) or ""
+
+    # Notas Fiscais referenciadas (extrai numero da chave NF-e posicao 25:34)
+    nfs = []
+    for nfe in root.findall(".//cte:infNFe", NS):
+        ch = nfe.findtext("cte:chave", namespaces=NS) or ""
+        if len(ch) == 44:
+            nf_num = str(int(ch[25:34]))  # remove zeros a esquerda
+            nfs.append(nf_num)
+    # NF modelo 1/1A
+    for nf in root.findall(".//cte:infNF", NS):
+        num = nf.findtext("cte:nNF", namespaces=NS) or ""
+        if num: nfs.append(num)
+    nfs_str = "; ".join(nfs[:10])  # max 10 NFs por CTe
+
     return {
-        "chave":       chave,
-        "ano":         dt.year,
-        "mes":         dt.month,
-        "mes_nome":    MNOME[dt.month],
-        "dt_emissao":  dt.strftime("%Y-%m-%d"),
-        "empresa":     empresa,
-        "operacao":    operacao,
-        "rem_nome":    rem_nome[:60],
-        "rem_cnpj":    rem_cnpj,
-        "transp_nome": transp_nome,
-        "transp_cnpj": transp_cnpj,
-        "cliente":     cli_nome,
-        "cli_cnpj":    cli_cnpj,
-        "uf_dest":     uf_dest,
-        "mun_dest":    mun_dest,
-        "regiao":      regiao,
-        "tipo_op":     tipo_op,
-        "v_frete":     round(v_frete, 2),
-        "v_merc":      round(v_merc,  2),
-        "peso":        round(peso, 3),
+        "chave":        chave,
+        "n_cte":        n_cte,
+        "serie":        serie_cte,
+        "cfop":         cfop,
+        "n_prot":       n_prot,
+        "status_desc":  status_desc[:60],
+        "nfs":          nfs_str,
+        "ano":          dt.year,
+        "mes":          dt.month,
+        "mes_nome":     MNOME[dt.month],
+        "dt_emissao":   dt.strftime("%Y-%m-%d"),
+        "empresa":      empresa,
+        "operacao":     operacao,
+        "rem_nome":     rem_nome[:60],
+        "rem_cnpj":     rem_cnpj,
+        "transp_nome":  transp_nome,
+        "transp_cnpj":  transp_cnpj,
+        "cliente":      cli_nome,
+        "cli_cnpj":     cli_cnpj,
+        "uf_dest":      uf_dest,
+        "mun_dest":     mun_dest,
+        "regiao":       regiao,
+        "tipo_op":      tipo_op,
+        "v_frete":      round(v_frete, 2),
+        "v_merc":       round(v_merc,  2),
+        "peso":         round(peso, 3),
     }
 
 
@@ -588,7 +622,11 @@ def publicar_raw(ctes: list) -> bool:
     """Publica dados brutos para exportacao Excel no dashboard."""
     EMP = {"GENOMMA":"G","INOVALAB":"I","OUTROS":"O"}
     OP  = {"OUTBOUND":"OUT","INBOUND":"IN","REVERSA":"REV"}
-    raw = [{"k":c["chave"],"d":c["dt_emissao"],
+    raw = [{"k":c["chave"],
+             "nct":c.get("n_cte",""),"ser":c.get("serie",""),
+             "cf":c.get("cfop",""),"np":c.get("n_prot",""),
+             "st":c.get("status_desc",""),"nfs":c.get("nfs",""),
+             "d":c["dt_emissao"],
              "e":EMP.get(c["empresa"],"O"),"o":OP.get(c.get("operacao","OUTBOUND"),"OUT"),
              "rn":c.get("rem_nome","")[:50],"rc":c.get("rem_cnpj",""),
              "tn":c.get("transp_nome","")[:50],"tc":c.get("transp_cnpj",""),

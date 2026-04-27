@@ -554,18 +554,21 @@ async function exportarExcel(){
       PR:'Sul',RS:'Sul',SC:'Sul'};
 
     const wsData = [
-      ['Chave CTe','Data Emissão','Ano','Mês','Empresa','Operação',
+      ['Número CTe','Série','CFOP','Chave CTe','Protocolo','Status CTe','Notas Fiscais',
+       'Data Emissão','Ano','Mês','Empresa','Operação',
        'Remetente','CNPJ Remetente',
        'Transportadora','CNPJ Transportadora',
        'Cliente / Destinatário','CNPJ Cliente',
        'UF Destino','Município Destino','Região',
-       'Tipo Op.','Frete R$','Mercadoria R$','% CTS','Peso Kg']
+       'Tipo Op. (CIF/FOB)','Frete R$','Mercadoria R$','% CTS','Peso Kg']
     ];
 
     rows.forEach(r=>{
       const pct = r.vm>0 ? Math.round(r.vf/r.vm*10000)/100 : null;
       wsData.push([
-        r.k, r.d, r.ano, MNOM[r.mes]||r.mes,
+        r.nct||'', r.ser||'', r.cf||'', r.k,
+        r.np||'', r.st||'', r.nfs||'',
+        r.d, r.ano, MNOM[r.mes]||r.mes,
         EMP[r.e]||r.e, OP[r.o]||r.o,
         r.rn, r.rc,
         r.tn, r.tc,
@@ -581,11 +584,12 @@ async function exportarExcel(){
 
     // Column widths
     ws['!cols'] = [
-      {wch:46},{wch:12},{wch:6},{wch:6},{wch:10},{wch:10},
+      {wch:10},{wch:6},{wch:7},{wch:46},{wch:16},{wch:35},{wch:30},
+      {wch:12},{wch:6},{wch:6},{wch:10},{wch:10},
       {wch:45},{wch:16},{wch:45},{wch:16},
       {wch:45},{wch:16},
       {wch:5},{wch:22},{wch:12},
-      {wch:6},{wch:14},{wch:14},{wch:8},{wch:10}
+      {wch:10},{wch:14},{wch:14},{wch:8},{wch:10}
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, 'CTes');
