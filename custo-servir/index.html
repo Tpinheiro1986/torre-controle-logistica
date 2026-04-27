@@ -6,6 +6,7 @@
 <title>Custo de Servir — Torre de Controle</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;--text:#1a1a18;--text2:#6b6b67;--text3:#a0a09a;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.18);--r:8px;--rl:14px;--green:#1D9E75;--green-lt:#E1F5EE;--green-dk:#0F6E56;--blue:#185FA5;--blue-lt:#E6F1FB;--red:#A32D2D;--amber:#854F0B;--coral:#D85A30;--coral-lt:#FAECE7;}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);}}
@@ -101,6 +102,15 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <button class="opbtn" id="op-rev" onclick="setOp('reversa',this)">
       <span class="opdot" style="background:#D85A30"></span>Reversa<span class="opcount occ-rev" id="cnt-rev">—</span>
     </button>
+    <div style="margin-left:auto;padding-right:4px">
+      <button onclick="exportarExcel()" id="btn-export"
+        style="font-size:11px;padding:5px 14px;border-radius:14px;border:0.5px solid var(--border2);
+               background:var(--green);color:#fff;cursor:pointer;font-weight:500;display:flex;
+               align-items:center;gap:5px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar Excel
+      </button>
+    </div>
   </div>
   <div class="tabs">
     <div class="tab on" onclick="goTab('dash',this)">Dashboard</div>
@@ -108,7 +118,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="tab" onclick="goTab('regiao',this)">Regiões / UF</div>
     <div class="tab" id="tab-cli" onclick="goTab('cliente',this)">Clientes</div>
     <div class="tab" id="tab-rem" onclick="goTab('remetente',this)" style="display:none">Remetentes</div>
-    <div class="tab" onclick="goTab('quarter',this)">Quarter</div>
+    <div class="tab" onclick="goTab('quarter',this)">Por Quarter</div>
   </div>
   <div class="wrap">
     <div id="cs-empty" class="empty"><p style="font-weight:600;margin-bottom:6px">Aguardando dados</p><p style="font-size:11px">Execute <strong>ATUALIZAR.bat</strong> para processar os XMLs.</p></div>
@@ -179,7 +189,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
       <div class="sec" id="sec-cliente">
         <div class="card"><div class="slbl"><span class="sn">1</span>Clientes — %CTS maior para menor</div>
           <div class="tw"><table class="dt"><thead><tr>
-            <th>#</th><th>Cliente</th><th>Empresa</th><th>Região</th><th>UF</th><th>Cidade</th>
+            <th>#</th><th>Cliente</th><th>Empresa</th><th>Região</th><th>UF</th>
             <th class="r">CTes</th><th class="r" style="color:var(--red)">Frete</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th><th style="min-width:70px">Nível</th>
@@ -290,8 +300,8 @@ function initDash(){
   const fa=document.getElementById('f-anos');fa.innerHTML='';anos.forEach(a=>{fa.appendChild(mkb(String(a),'ano',String(a)));});
   const allQ=[...new Set([...(D.outbound?.quarters||[]),...(D.inbound?.quarters||[]),...(D.reversa?.quarters||[])].map(q=>q.q))].sort();
   const fq=document.getElementById('f-qtrs');fq.innerHTML='';allQ.forEach(q=>{fq.appendChild(mkb(q,'qtr',q));});
-  const mU=[...new Map(allM.map(m=>[m.ano+'-'+String(m.mes).padStart(2,'0'),m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
-  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',m.ano+'-'+String(m.mes).padStart(2,'0')));});
+  const mU=[...new Map(allM.map(m=>[m.ano+'-'+m.mes,m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
+  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',String(m.mes)));});
   renderAll();
 }
 function mkb(label,g,v){const b=document.createElement('button');b.className='fb';b.textContent=label;b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;}
@@ -300,11 +310,6 @@ function setOp(op,btn){
   curOp=op;
   document.querySelectorAll('.opbtn').forEach(b=>{b.className='opbtn';});
   btn.className='opbtn '+OP_CLS[op];
-  // Reseta mês e quarter ao trocar operação
-  F.mes='all';F.qtr='all';
-  document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
-  const aq=document.querySelector('.fb[data-g="qtr"][data-v="all"]');if(aq)aq.classList.add('on');
-  const am=document.querySelector('.fb[data-g="mes"][data-v="all"]');if(am)am.classList.add('on');
   document.getElementById('tab-cli').style.display=op==='outbound'?'block':'none';
   document.getElementById('tab-rem').style.display=op!=='outbound'?'block':'none';
   document.getElementById('transp-title').textContent='%CTS por transportadora — '+OP_LBL[op];
@@ -327,232 +332,84 @@ function fil(btn){
   const g=btn.dataset.g,v=btn.dataset.v;
   document.querySelectorAll('.fb[data-g="'+g+'"]').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');F[g]=v;
-  if(g==='ano'){
-    F.qtr='all';F.mes='all';
-    document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
-    const aq=document.querySelector('.fb[data-g="qtr"][data-v="all"]');if(aq)aq.classList.add('on');
-    const am=document.querySelector('.fb[data-g="mes"][data-v="all"]');if(am)am.classList.add('on');
-  }
-  if(g==='qtr'&&v!=='all'){
-    F.mes='all';
-    document.querySelectorAll('.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
-    const am=document.querySelector('.fb[data-g="mes"][data-v="all"]');if(am)am.classList.add('on');
-  }
-  if(g==='mes'&&v!=='all'){
-    F.qtr='all';
-    document.querySelectorAll('.fb[data-g="qtr"]').forEach(b=>b.classList.remove('on'));
-    const aq=document.querySelector('.fb[data-g="qtr"][data-v="all"]');if(aq)aq.classList.add('on');
-  }
+  if(g==='ano'){F.qtr='all';F.mes='all';document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));document.querySelector('.fb[data-g="qtr"][data-v="all"]').classList.add('on');document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');}
+  if(g==='qtr'&&v!=='all'){F.mes='all';document.querySelectorAll('.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');}
   renderAll();
 }
 
-// ─────────────────────────────────────────────────────────────
-// FILTROS — solução definitiva
-// O JSON salva apenas totais e breakdown por ANO em cada entidade.
-// Filtros de mês e quarter só existem nos `meses` globais da operação.
-// Estratégia: sempre filtrar primeiro os meses globais; para entidades
-// (transportadora/região/UF/cliente/remetente) usar breakdown por ano
-// quando só o ano está ativo, e mostrar totais quando for "Todos".
-// Filtro de mês/quarter se aplica apenas em Dashboard e Quarter —
-// para as demais abas mostra o melhor dado disponível (ano ou total).
-// ─────────────────────────────────────────────────────────────
-
-// Retorna true se um mês bate com os filtros ano/qtr/mes
-function _mesOk(ano, mes){
-  if(F.ano!=='all' && String(ano)!==F.ano) return false;
-  if(F.mes!=='all'){
-    const mesKey=ano+'-'+String(mes).padStart(2,'0');
-    if(F.mes!==mesKey) return false;
-  }
-  if(F.qtr!=='all'){
-    const q='Q'+Math.ceil(mes/3)+'/'+String(ano).slice(2);
-    if(q!==F.qtr) return false;
-  }
-  return true;
-}
-
-// Meses filtrados da operação atual (fonte única de verdade)
 function fMs(){
   const d=getD();if(!d)return[];
-  return (d.meses||[]).filter(m=>_mesOk(m.ano,m.mes))
-    .map(m=>({...m,mes_nome:m.mes_nome||m.nome||('M'+m.mes)}));
+  return (d.meses||[]).filter(m=>
+    (F.ano==='all'||String(m.ano)===F.ano)&&
+    (F.mes==='all'||String(m.mes)===F.mes)&&
+    (F.qtr==='all'||'Q'+Math.ceil(m.mes/3)+'/'+String(m.ano).slice(2)===F.qtr)
+  ).map(m=>({...m,mes_nome:m.mes_nome||m.nome||('M'+m.mes)}));
 }
-
-// Totais sempre calculados dos meses filtrados
 function getTot(){
   const ms=fMs();let f=0,m=0,n=0,gf=0,gm=0,inf=0,inm=0;
-  ms.forEach(x=>{
-    if(F.emp==='GENOMMA'){f+=x.genomma_frete||0;m+=x.genomma_merc||0;}
-    else if(F.emp==='INOVALAB'){f+=x.inovalab_frete||0;m+=x.inovalab_merc||0;}
-    else{f+=x.frete||0;m+=x.v_merc||0;}
-    n+=x.ctes||0;
-    gf+=x.genomma_frete||0;gm+=x.genomma_merc||0;
-    inf+=x.inovalab_frete||0;inm+=x.inovalab_merc||0;
-  });
-  return{f,m,n,
-    pct:m>0?+(f/m*100).toFixed(2):null,
-    gf,gm,gPct:gm>0?+(gf/gm*100).toFixed(2):null,
-    inf,inm,iPct:inm>0?+(inf/inm*100).toFixed(2):null};
+  ms.forEach(x=>{if(F.emp==='GENOMMA'){f+=x.genomma_frete;m+=x.genomma_merc;}else if(F.emp==='INOVALAB'){f+=x.inovalab_frete;m+=x.inovalab_merc;}else{f+=x.frete;m+=x.v_merc;}n+=x.ctes;gf+=x.genomma_frete;gm+=x.genomma_merc;inf+=x.inovalab_frete;inm+=x.inovalab_merc;});
+  return{f,m,n,pct:m>0?+(f/m*100).toFixed(2):null,gf,gm,gPct:gm>0?+(gf/gm*100).toFixed(2):null,inf,inm,iPct:inm>0?+(inf/inm*100).toFixed(2):null};
 }
-
-// Helper: aplica filtro de empresa num objeto com campos genomma_*/inovalab_*
-function _empApply(obj){
-  let frete=obj.frete||0, merc=obj.v_merc||0, pct=obj.pct_cts;
-  if(F.emp==='GENOMMA'){
-    frete=obj.genomma_frete||0; merc=obj.genomma_merc||0; pct=obj.pct_genomma;
-  } else if(F.emp==='INOVALAB'){
-    frete=obj.inovalab_frete||0; merc=obj.inovalab_merc||0; pct=obj.pct_inovalab;
-  }
-  return frete>0?{...obj,frete,v_merc:merc,pct_cts:pct}:null;
-}
-
-// Helper: pega o melhor dado disponível de uma entidade dado o filtro ativo
-// Prioridade: ano específico > total geral
-// Filtro de mês/quarter: não é possível filtrar entidades sem meses_detalhe,
-// então exibe o escopo mais próximo disponível (ano se ano filtrado, total caso contrário)
-function _resolveEntidade(obj){
-  // Filtro de mês específico — usa meses breakdown
-  if(F.mes!=='all' && obj.meses){
-    const d=obj.meses[F.mes];
-    if(!d||d.frete===0) return null;
-    const merged={...obj,...d,
-      frete:d.frete||0,v_merc:d.v_merc||0,ctes:d.ctes||0,
-      genomma_frete:d.genomma_frete||0,genomma_merc:d.genomma_merc||0,
-      inovalab_frete:d.inovalab_frete||0,inovalab_merc:d.inovalab_merc||0,
-      pct_cts:d.pct_cts,pct_genomma:d.pct_genomma,pct_inovalab:d.pct_inovalab
-    };
-    return _empApply(merged);
-  }
-  // Filtro de quarter — soma os meses do quarter
-  if(F.qtr!=='all' && obj.meses){
-    let f=0,m=0,n=0,gf=0,gm=0,inf=0,inm=0;
-    Object.values(obj.meses).forEach(d=>{
-      const q='Q'+Math.ceil(d.mes/3)+'/'+String(d.ano).slice(2);
-      if(q!==F.qtr) return;
-      if(F.ano!=='all'&&String(d.ano)!==F.ano) return;
-      f+=d.frete||0;m+=d.v_merc||0;n+=d.ctes||0;
-      gf+=d.genomma_frete||0;gm+=d.genomma_merc||0;
-      inf+=d.inovalab_frete||0;inm+=d.inovalab_merc||0;
-    });
-    if(f===0&&gf===0&&inf===0) return null;
-    const merged={...obj,frete:f,v_merc:m,ctes:n,
-      genomma_frete:gf,genomma_merc:gm,inovalab_frete:inf,inovalab_merc:inm,
-      pct_cts:m>0?+(f/m*100).toFixed(2):null,
-      pct_genomma:gm>0?+(gf/gm*100).toFixed(2):null,
-      pct_inovalab:inm>0?+(inf/inm*100).toFixed(2):null
-    };
-    return _empApply(merged);
-  }
-  // Filtro de ano — usa anos breakdown
-  if(F.ano!=='all'){
-    const a=obj.anos&&obj.anos[F.ano];
-    if(!a) return null;
-    const merged={...obj,...a,
-      frete:a.frete||0,v_merc:a.v_merc||0,ctes:a.ctes||0,
-      genomma_frete:a.genomma_frete||0,genomma_merc:a.genomma_merc||0,
-      inovalab_frete:a.inovalab_frete||0,inovalab_merc:a.inovalab_merc||0,
-      pct_cts:a.pct_cts,pct_genomma:a.pct_genomma,pct_inovalab:a.pct_inovalab
-    };
-    return _empApply(merged);
-  }
-  // Sem filtro temporal — usa totais
-  return _empApply(obj);
-}
-
 function getRegs(){
   const d=getD();if(!d)return[];
-  return (d.regioes||[])
-    .filter(r=>F.reg==='all'||r.regiao===F.reg)
-    .map(r=>_resolveEntidade(r))
-    .filter(Boolean).sort((a,b)=>b.frete-a.frete);
+  return (d.regioes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg).map(r=>{
+    if(F.ano==='all'){
+      let frete=r.frete,merc=r.v_merc,pct=r.pct_cts;
+      if(F.emp==='GENOMMA'){frete=r.genomma_frete||0;merc=r.genomma_merc||0;pct=r.pct_genomma;}
+      else if(F.emp==='INOVALAB'){frete=r.inovalab_frete||0;merc=r.inovalab_merc||0;pct=r.pct_inovalab;}
+      return frete>0?{...r,frete,v_merc:merc,pct_cts:pct}:null;
+    }
+    const a=r.anos&&r.anos[F.ano];if(!a)return null;
+    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
+    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
+    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
+    return frete>0?{...r,frete,v_merc:merc,pct_cts:pct}:null;
+  }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
-
 function getTrs(){
   const d=getD();if(!d)return[];
-  return (d.transportadoras||[])
-    .map(t=>_resolveEntidade(t))
-    .filter(Boolean).sort((a,b)=>b.frete-a.frete);
+  return (d.transportadoras||[]).map(t=>{
+    if(F.ano==='all'){
+      let frete=t.frete,merc=t.v_merc,pct=t.pct_cts;
+      if(F.emp==='GENOMMA'){frete=t.genomma_frete||0;merc=0;pct=t.pct_genomma;}
+      else if(F.emp==='INOVALAB'){frete=t.inovalab_frete||0;merc=0;pct=t.pct_inovalab;}
+      return frete>0?{...t,frete,v_merc:merc,pct_cts:pct}:null;
+    }
+    const a=t.anos&&t.anos[F.ano];if(!a)return null;
+    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
+    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=0;pct=a.pct_genomma;}
+    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=0;pct=a.pct_inovalab;}
+    return frete>0?{...t,frete,v_merc:merc,pct_cts:pct}:null;
+  }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
-
 function getClis(){
   const d=getD();if(!d)return[];
-  return (d.clientes||[])
-    .filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg))
-    .map(c=>{
-      if(F.mes!=='all'){
-        const mx=c.meses&&c.meses[F.mes]; if(!mx||!mx.frete) return null;
-        return {...c,frete:mx.frete,v_merc:mx.v_merc,ctes:mx.ctes,pct_cts:mx.pct_cts};
-      }
-      if(F.qtr!=='all'&&c.meses){
-        let f=0,m=0,n=0;
-        Object.values(c.meses).forEach(mx=>{
-          const q='Q'+Math.ceil(mx.mes/3)+'/'+String(mx.ano).slice(2);
-          if(q!==F.qtr) return;
-          if(F.ano!=='all'&&String(mx.ano)!==F.ano) return;
-          f+=mx.frete||0;m+=mx.v_merc||0;n+=mx.ctes||0;
-        });
-        if(f===0) return null;
-        return {...c,frete:f,v_merc:m,ctes:n,pct_cts:m>0?+(f/m*100).toFixed(2):null};
-      }
-      if(F.ano!=='all'){
-        const a=c.anos&&c.anos[F.ano]; if(!a||!a.frete) return null;
-        return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
-      }
-      return c.frete>0?c:null;
-    })
-    .filter(Boolean).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
+  let clis=d.clientes||[];
+  // filter by empresa and regiao
+  clis=clis.filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg));
+  // filter/aggregate by ano
+  if(F.ano!=='all'){
+    clis=clis.map(c=>{
+      const a=c.anos&&c.anos[F.ano];
+      if(!a||a.frete===0) return null;
+      return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
+    }).filter(Boolean);
+  }
+  return clis.filter(c=>c.frete>0).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
 }
-
 function getRems(){
   const d=getD();if(!d)return[];
-  return (d.remetentes||[])
-    .map(r=>{
-      if(F.mes!=='all'){
-        const mx=r.meses&&r.meses[F.mes]; if(!mx||!mx.frete) return null;
-        return {...r,frete:mx.frete,v_merc:mx.v_merc,ctes:mx.ctes,pct_cts:mx.pct_cts};
-      }
-      if(F.qtr!=='all'&&r.meses){
-        let f=0,m=0,n=0;
-        Object.values(r.meses).forEach(mx=>{
-          const q='Q'+Math.ceil(mx.mes/3)+'/'+String(mx.ano).slice(2);
-          if(q!==F.qtr) return;
-          if(F.ano!=='all'&&String(mx.ano)!==F.ano) return;
-          f+=mx.frete||0;m+=mx.v_merc||0;n+=mx.ctes||0;
-        });
-        if(f===0) return null;
-        return {...r,frete:f,v_merc:m,ctes:n,pct_cts:m>0?+(f/m*100).toFixed(2):null};
-      }
-      if(F.ano!=='all'){
-        const a=r.anos&&r.anos[F.ano]; if(!a||!a.frete) return null;
-        return {...r,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
-      }
-      return r.frete>0?r:null;
-    })
-    .filter(Boolean).sort((a,b)=>b.frete-a.frete);
+  return (d.remetentes||[]).map(r=>{
+    if(F.ano==='all') return r.frete>0?r:null;
+    const a=r.anos&&r.anos[F.ano];if(!a)return null;
+    return a.frete>0?{...r,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts}:null;
+  }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
-
 function getQs(){
   const d=getD();if(!d)return[];
-  // Quarters: recalcula sempre dos meses filtrados para garantir consistência
-  const ms=fMs(); const qMap={};
-  ms.forEach(m=>{
-    const q='Q'+Math.ceil(m.mes/3)+'/'+String(m.ano).slice(2);
-    if(!qMap[q]) qMap[q]={q,ano:m.ano,ctes:0,frete:0,v_merc:0,
-      genomma_frete:0,genomma_merc:0,inovalab_frete:0,inovalab_merc:0};
-    const x=qMap[q];
-    x.ctes+=m.ctes||0; x.frete+=m.frete||0; x.v_merc+=m.v_merc||0;
-    x.genomma_frete+=m.genomma_frete||0; x.genomma_merc+=m.genomma_merc||0;
-    x.inovalab_frete+=m.inovalab_frete||0; x.inovalab_merc+=m.inovalab_merc||0;
-  });
-  let qs=Object.values(qMap)
-    .map(q=>({...q,
-      pct_cts:q.v_merc>0?+(q.frete/q.v_merc*100).toFixed(2):null,
-      pct_genomma:q.genomma_merc>0?+(q.genomma_frete/q.genomma_merc*100).toFixed(2):null,
-      pct_inovalab:q.inovalab_merc>0?+(q.inovalab_frete/q.inovalab_merc*100).toFixed(2):null
-    }))
-    .sort((a,b)=>a.q.localeCompare(b.q));
-  if(F.emp==='GENOMMA') return qs.map(q=>({...q,frete:q.genomma_frete,v_merc:q.genomma_merc,pct_cts:q.pct_genomma}));
-  if(F.emp==='INOVALAB') return qs.map(q=>({...q,frete:q.inovalab_frete,v_merc:q.inovalab_merc,pct_cts:q.pct_inovalab}));
+  let qs=(d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano);
+  if(F.emp==='GENOMMA')  return qs.map(q=>({...q,frete:q.genomma_frete||0,v_merc:q.genomma_merc||0,pct_cts:q.pct_genomma}));
+  if(F.emp==='INOVALAB') return qs.map(q=>({...q,frete:q.inovalab_frete||0,v_merc:q.inovalab_merc||0,pct_cts:q.pct_inovalab}));
   return qs;
 }
 
@@ -601,16 +458,26 @@ function rReg(){
   let el=ch('cr1');if(el)CH.cr1=new Chart(el,{type:'bar',data:{labels:bP.map(r=>r.regiao.replace('Centro-Oeste','C-O')),datasets:[{data:bP.map(r=>r.pct_cts),backgroundColor:bP.map(r=>RC[r.regiao]||'#888'),borderWidth:0,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[pf(c.raw),'Frete: '+fM(bP[c.dataIndex].frete)]}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false},border:{display:false}},y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},min:0}}}});
   el=ch('cr2');if(el)CH.cr2=new Chart(el,{type:'doughnut',data:{labels:regs.map(r=>r.regiao),datasets:[{data:regs.map(r=>r.frete),backgroundColor:regs.map(r=>RC[r.regiao]||'#888'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
   const d=getD();
-  const ufs=(d?.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg)
-    .map(u=>_resolveEntidade(u))
-    .filter(Boolean).sort((a,b)=>b.frete-a.frete).slice(0,12);
+  const ufs=(d?.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg).map(u=>{
+    if(F.ano==='all'){
+      let frete=u.frete,merc=u.v_merc,pct=u.pct_cts;
+      if(F.emp==='GENOMMA'){frete=u.genomma_frete||0;merc=u.genomma_merc||0;pct=u.pct_genomma;}
+      else if(F.emp==='INOVALAB'){frete=u.inovalab_frete||0;merc=u.inovalab_merc||0;pct=u.pct_inovalab;}
+      return frete>0?{...u,frete,v_merc:merc,pct_cts:pct}:null;
+    }
+    const a=u.anos&&u.anos[F.ano];if(!a)return null;
+    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
+    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
+    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
+    return frete>0?{...u,frete,v_merc:merc,pct_cts:pct}:null;
+  }).filter(Boolean).sort((a,b)=>b.frete-a.frete).slice(0,12);
   const wrap=document.getElementById('uf-wrap');wrap.style.height=Math.max(240,ufs.length*40+80)+'px';
   el=ch('cr3');if(el)CH.cr3=new Chart(el,{type:'bar',data:{labels:ufs.map(u=>u.uf),datasets:[{data:ufs.map(u=>u.frete),backgroundColor:ufs.map(u=>RC[u.regiao]||OP_COR[curOp]),borderWidth:0,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[fK(c.raw),'%CTS: '+pf(ufs[c.dataIndex].pct_cts)]}}},scales:{y:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)}}}}});
   document.getElementById('tb-reg').innerHTML=regs.map(r=>'<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+(RC[r.regiao]||'#888')+'"></span><strong>'+r.regiao+'</strong></span></td><td class="r">'+r.ctes+'</td><td class="r" style="color:var(--red)">'+fM(r.frete)+'</td><td class="r" style="color:#185FA5">'+(r.v_merc>0?fM(r.v_merc):'—')+'</td><td class="r" style="color:'+cP(r.pct_cts)+';font-weight:600">'+pf(r.pct_cts)+'</td><td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(r.frete/totalF*100)+'%;background:'+(RC[r.regiao]||'#888')+';border-radius:3px"></div></div></td></tr>').join('');
 }
 function rCli(){
   const clis=getClis();const maxF=clis[0]?.frete||1;
-  document.getElementById('tb-cli').innerHTML=clis.map((c,i)=>'<tr><td style="color:var(--text2);font-size:10px">'+(i+1)+'</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+c.nome+'</td><td><span class="chip '+(c.empresa==='GENOMMA'?'chip-g':'chip-i')+'">'+c.empresa+'</span></td><td style="font-size:10px;color:var(--text2)">'+(c.regiao||'—')+'</td><td style="font-size:10px;color:var(--text2)">'+(c.uf||'—')+'</td><td style="font-size:10px;color:var(--text2)">'+(c.cidade||'—')+'</td><td class="r">'+c.ctes+'</td><td class="r" style="color:var(--red)">'+fK(c.frete)+'</td><td class="r" style="color:#185FA5">'+(c.v_merc>0?fK(c.v_merc):'—')+'</td><td class="r" style="color:'+cP(c.pct_cts)+';font-weight:600">'+pf(c.pct_cts)+'</td><td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(c.frete/maxF*100)+'%;background:'+cP(c.pct_cts)+';border-radius:3px"></div></div></td></tr>').join('');
+  document.getElementById('tb-cli').innerHTML=clis.map((c,i)=>'<tr><td style="color:var(--text2);font-size:10px">'+(i+1)+'</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+c.nome+'</td><td><span class="chip '+(c.empresa==='GENOMMA'?'chip-g':'chip-i')+'">'+c.empresa+'</span></td><td style="font-size:10px;color:var(--text2)">'+(c.regiao||'—')+'</td><td style="font-size:10px;color:var(--text2)">'+(c.uf||'—')+'</td><td class="r">'+c.ctes+'</td><td class="r" style="color:var(--red)">'+fK(c.frete)+'</td><td class="r" style="color:#185FA5">'+(c.v_merc>0?fK(c.v_merc):'—')+'</td><td class="r" style="color:'+cP(c.pct_cts)+';font-weight:600">'+pf(c.pct_cts)+'</td><td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(c.frete/maxF*100)+'%;background:'+cP(c.pct_cts)+';border-radius:3px"></div></div></td></tr>').join('');
 }
 function rRem(){
   const rems=getRems();const maxF=rems[0]?.frete||1;
@@ -623,6 +490,148 @@ function rQ(){
   const tF=qs.reduce((s,q)=>s+q.frete,0),tM=qs.reduce((s,q)=>s+q.v_merc,0),tG=qs.reduce((s,q)=>s+q.genomma_frete,0),tI=qs.reduce((s,q)=>s+q.inovalab_frete,0);
   document.getElementById('tb-qtr').innerHTML=qs.map(q=>'<tr><td><strong>'+q.q+'</strong></td><td class="r">'+q.ctes+'</td><td class="r" style="color:var(--red)">'+fM(q.frete)+'</td><td class="r" style="color:#185FA5">'+(q.v_merc>0?fM(q.v_merc):'—')+'</td><td class="r" style="color:'+cP(q.pct_cts)+';font-weight:600">'+pf(q.pct_cts)+'</td><td class="r" style="color:#185FA5">'+fM(q.genomma_frete)+'</td><td class="r" style="color:var(--green)">'+fM(q.inovalab_frete)+'</td></tr>').join('')+'<tr class="tr-tot"><td>Total</td><td class="r">'+qs.reduce((s,q)=>s+q.ctes,0)+'</td><td class="r" style="color:var(--red)">'+fM(tF)+'</td><td class="r" style="color:#185FA5">'+(tM>0?fM(tM):'—')+'</td><td class="r">'+(tM>0?pf(+(tF/tM*100).toFixed(2)):'—')+'</td><td class="r" style="color:#185FA5">'+fM(tG)+'</td><td class="r" style="color:var(--green)">'+fM(tI)+'</td></tr>';
 }
+
+// ── EXPORTAR EXCEL ───────────────────────────────────────────
+let rawData = null;
+
+async function exportarExcel(){
+  const btn = document.getElementById('btn-export');
+  const origText = btn.innerHTML;
+  btn.innerHTML = '⏳ Carregando...';
+  btn.disabled = true;
+
+  try {
+    // Download raw data if not cached
+    if(!rawData){
+      const {data,error} = await sb.storage.from('dashboards').download('custo-servir/ctes_raw.json');
+      if(error||!data){ alert('Erro ao baixar dados: '+error?.message); btn.innerHTML=origText; btn.disabled=false; return; }
+      rawData = JSON.parse(await data.text());
+    }
+
+    // Map compact keys to full names
+    const EMP  = {G:'Genomma',I:'Inovalab',O:'Outros'};
+    const OP   = {OUT:'Outbound',IN:'Inbound',REV:'Reversa'};
+    const MNOM = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    // Apply current filters
+    let rows = rawData.filter(r => {
+      // operacao (current tab)
+      const opMap = {outbound:'OUT',inbound:'IN',reversa:'REV'};
+      if(r.o !== opMap[curOp]) return false;
+      // empresa
+      const empMap = {GENOMMA:'G',INOVALAB:'I'};
+      if(F.emp!=='all' && r.e !== empMap[F.emp]) return false;
+      // ano
+      if(F.ano!=='all' && String(r.ano)!==F.ano) return false;
+      // mes
+      if(F.mes!=='all' && String(r.mes)!==F.mes) return false;
+      // quarter
+      if(F.qtr!=='all'){
+        const q='Q'+Math.ceil(r.mes/3)+'/'+String(r.ano).slice(2);
+        if(q!==F.qtr) return false;
+      }
+      // regiao
+      if(F.reg!=='all'){
+        const REGIOES={AC:'Norte',AM:'Norte',AP:'Norte',PA:'Norte',RO:'Norte',RR:'Norte',TO:'Norte',
+          AL:'Nordeste',BA:'Nordeste',CE:'Nordeste',MA:'Nordeste',PB:'Nordeste',PE:'Nordeste',
+          PI:'Nordeste',RN:'Nordeste',SE:'Nordeste',DF:'Centro-Oeste',GO:'Centro-Oeste',
+          MS:'Centro-Oeste',MT:'Centro-Oeste',ES:'Sudeste',MG:'Sudeste',RJ:'Sudeste',SP:'Sudeste',
+          PR:'Sul',RS:'Sul',SC:'Sul'};
+        if(REGIOES[r.uf]!==F.reg) return false;
+      }
+      // tipo op CIF/FOB
+      if(F.tipo!=='all' && r.tp!==F.tipo) return false;
+      return true;
+    });
+
+    if(!rows.length){ alert('Nenhum CTe encontrado com os filtros atuais.'); btn.innerHTML=origText; btn.disabled=false; return; }
+
+    // Build Excel rows
+    const REGIOES={AC:'Norte',AM:'Norte',AP:'Norte',PA:'Norte',RO:'Norte',RR:'Norte',TO:'Norte',
+      AL:'Nordeste',BA:'Nordeste',CE:'Nordeste',MA:'Nordeste',PB:'Nordeste',PE:'Nordeste',
+      PI:'Nordeste',RN:'Nordeste',SE:'Nordeste',DF:'Centro-Oeste',GO:'Centro-Oeste',
+      MS:'Centro-Oeste',MT:'Centro-Oeste',ES:'Sudeste',MG:'Sudeste',RJ:'Sudeste',SP:'Sudeste',
+      PR:'Sul',RS:'Sul',SC:'Sul'};
+
+    const wsData = [
+      ['Chave CTe','Data Emissão','Ano','Mês','Empresa','Operação',
+       'Remetente','CNPJ Remetente',
+       'Transportadora','CNPJ Transportadora',
+       'Cliente / Destinatário','CNPJ Cliente',
+       'UF Destino','Município Destino','Região',
+       'Tipo Op.','Frete R$','Mercadoria R$','% CTS','Peso Kg']
+    ];
+
+    rows.forEach(r=>{
+      const pct = r.vm>0 ? Math.round(r.vf/r.vm*10000)/100 : null;
+      wsData.push([
+        r.k, r.d, r.ano, MNOM[r.mes]||r.mes,
+        EMP[r.e]||r.e, OP[r.o]||r.o,
+        r.rn, r.rc,
+        r.tn, r.tc,
+        r.cn, r.cc,
+        r.uf, r.mu, REGIOES[r.uf]||'',
+        r.tp, r.vf, r.vm, pct, r.kg
+      ]);
+    });
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Column widths
+    ws['!cols'] = [
+      {wch:46},{wch:12},{wch:6},{wch:6},{wch:10},{wch:10},
+      {wch:45},{wch:16},{wch:45},{wch:16},
+      {wch:45},{wch:16},
+      {wch:5},{wch:22},{wch:12},
+      {wch:6},{wch:14},{wch:14},{wch:8},{wch:10}
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'CTes');
+
+    // Summary sheet
+    const tot_frete = rows.reduce((s,r)=>s+r.vf,0);
+    const tot_merc  = rows.reduce((s,r)=>s+r.vm,0);
+    const pct_geral = tot_merc>0 ? Math.round(tot_frete/tot_merc*10000)/100 : null;
+    const sumData = [
+      ['Resumo da Exportação'],[''],
+      ['Operação:', OP[{outbound:'OUT',inbound:'IN',reversa:'REV'}[curOp]]||curOp],
+      ['Empresa:', F.emp==='all'?'Todas':F.emp],
+      ['Ano:', F.ano==='all'?'Todos':F.ano],
+      ['Quarter:', F.qtr==='all'?'Todos':F.qtr],
+      ['Mês:', F.mes==='all'?'Todos':F.mes],
+      ['Tipo Op.:', F.tipo==='all'?'Todos':F.tipo],
+      ['Região:', F.reg==='all'?'Todas':F.reg],
+      [''],
+      ['Total CTes:', rows.length],
+      ['Frete Total R$:', tot_frete],
+      ['Mercadoria Total R$:', tot_merc],
+      ['% CTS Geral:', pct_geral],
+      [''],
+      ['Gerado em:', new Date().toLocaleString('pt-BR')],
+    ];
+    const wsSum = XLSX.utils.aoa_to_sheet(sumData);
+    wsSum['!cols'] = [{wch:22},{wch:30}];
+    XLSX.utils.book_append_sheet(wb, wsSum, 'Resumo');
+
+    // Download
+    const op_label = {outbound:'Outbound',inbound:'Inbound',reversa:'Reversa'}[curOp];
+    const ano_label = F.ano==='all'?'Todos':F.ano;
+    const filename = `CTes_${op_label}_${ano_label}_${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb, filename);
+
+    btn.innerHTML = '✓ Exportado!';
+    setTimeout(()=>{btn.innerHTML=origText;btn.disabled=false;},2000);
+
+  } catch(err) {
+    console.error(err);
+    alert('Erro ao gerar Excel: '+err.message);
+    btn.innerHTML = origText;
+    btn.disabled = false;
+  }
+}
+
 window.addEventListener('load',checkSession);
 </script>
 </body>
