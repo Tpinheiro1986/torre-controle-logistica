@@ -824,14 +824,26 @@ async function processOTD(file){
     return parseDate(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
   }
 
-  // Helper: get cliente (destinatário)
+  // Helper: get cliente (destinatário) — tenta múltiplas colunas possíveis
   function getCliente(r){
-    return String(col(r,'Destinatário','Destinatario','Cliente','Razão Social Destino','Razao Social Destino','Nome Destinatário','Nome Destinatario')||'').substring(0,60)||'—';
+    const v=col(r,
+      'Destinatário','Destinatario',
+      'Cliente','Nome Cliente','Nome do Cliente',
+      'Razão Social Destino','Razao Social Destino',
+      'Nome Destinatário','Nome Destinatario',
+      'Dest','Destinatario Nome','RazaoSocialDest',
+      'Razao Social','Razão Social'
+    );
+    const s=String(v||'').trim();
+    if(s&&s!=='null') return s.substring(0,60);
+    // fallback: número da NF se disponível
+    const nf=col(r,'Número NF','Numero NF','NF','Chave NF','Nota Fiscal');
+    return nf?'NF '+String(nf).substring(0,20):'Cliente não identificado';
   }
 
   // Helper: get cidade destino
   function getCidade(r){
-    return String(col(r,'Cidade Destino','Cidade','Municipio Destino','Município Destino','Municipio')||'');
+    return String(col(r,'Cidade Destino','Cidade Dest','Cidade','Municipio Destino','Município Destino','Municipio','Município')||'');
   }
 
   // Helper: get dias atraso (entrega - previsao)
@@ -853,6 +865,8 @@ async function processOTD(file){
 
   // Aggregate by month — VENDAS
   const meses={};
+  // Para hub/trs total, usar todos os registros (igual ao prevQ)
+  let totalHubAll=0,totalTrsAll=0,totalHubValAll=0,totalTrsValAll=0;
   vendas.forEach(r=>{
     const tipo=classificar(getStatus(r));
     const de=getDataEmissao(r);
@@ -874,6 +888,14 @@ async function processOTD(file){
     else if(tipo==='off_time'){m.off++;m.off_val+=val;}
     else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
     else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
+  });
+
+  // Hub/trs de TODOS os registros (para consistência com prevQ que usa processed)
+  processed.forEach(r=>{
+    const tipo=classificar(getStatus(r));
+    const val=getValor(r);
+    if(tipo==='hub'){totalHubAll++;totalHubValAll+=val;}
+    else if(tipo==='transito'){totalTrsAll++;totalTrsValAll+=val;}
   });
 
   // Bonificacoes por mes
@@ -1069,21 +1091,26 @@ async function processOTD(file){
   });
 
   // Off Time por cliente — lista detalhada
+  // Usa processed (todos) para capturar off_time independente de natureza
   const clienteOffMap={};
-  vendas.forEach(r=>{
-    const tipo=classificar(getStatus(r));
-    if(tipo!=='off_time') return;
+  const allOffRows=processed.filter(r=>classificar(getStatus(r))==='off_time');
+  log('Off Time rows encontradas: '+allOffRows.length,'info');
+  if(allOffRows.length>0){
+    // Debug: mostrar colunas disponíveis na primeira linha off_time
+    const sampleKeys=Object.keys(allOffRows[0]).slice(0,15).join(', ');
+    log('Colunas disponíveis: '+sampleKeys,'info');
+  }
+  allOffRows.forEach(r=>{
     const cliente=getCliente(r);
     const uf=getUF(r);
     const reg=REGIOES_MAP[uf]||'Outros';
     const cidade=getCidade(r);
     const val=getValor(r);
     const de=getDataEmissao(r);
-    const dent=getDataEntrega(r);
     const diasAtr=getDiasAtraso(r);
     const mes=de?de.getMonth()+1:0;
     const transp=getTransp(r);
-    const key=cliente+'|'+uf;
+    const key=cliente+'|'+uf+'|'+(cidade||'');
     if(!clienteOffMap[key]) clienteOffMap[key]={
       cliente,cidade,uf,regiao:reg,
       qtd:0,valor:0,dias_sum:0,dias_n:0,
@@ -1097,11 +1124,15 @@ async function processOTD(file){
   const clientesOff=Object.values(clienteOffMap)
     .map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null}))
     .sort((a,b)=>b.qtd-a.qtd);
+  log('Clientes off_time agregados: '+clientesOff.length,'info');
 
   // Build payload
   const payload = {
     meses, bonif_mes, otd:transpList, regioes, dias_mes,
     prevQ:prevQLista, empresa_total, clientesOff,
+    totalHubAll, totalTrsAll,
+    totalHubValAll:Math.round(totalHubValAll*100)/100,
+    totalTrsValAll:Math.round(totalTrsValAll*100)/100,
     atualizado: new Date().toLocaleString('pt-BR'),
     base_nome: file.name,
     total_nfs: vendas.length,
@@ -1135,6 +1166,7 @@ function renderTransp(){
     if(t.prazo_medio == null && t.dias_n > 0) {
       t.prazo_medio = Math.round(t.dias_sum / t.dias_n * 10) / 10;
     }
+    // Se dias_n não existe mas prazo_medio existe, ok — manter
     if(t.otd == null && t.fin > 0) {
       t.otd = Math.round(t.on / t.fin * 1000) / 10;
     }
@@ -1151,6 +1183,14 @@ function renderTransp(){
 
   // Only show transportadoras with at least 1 finalized delivery
   const fin = list.filter(t => t.fin > 0);
+
+  // Para ranking prazo médio, incluir transportadoras mesmo sem dias_n (pode ter prazo_medio direto)
+  // Garante que fin com prazo_medio não nulo aparece no ranking
+  fin.forEach(t => {
+    if(t.prazo_medio == null && t.fin > 0 && t.dias_sum > 0) {
+      t.prazo_medio = Math.round(t.dias_sum / Math.max(t.dias_n||1, 1) * 10) / 10;
+    }
+  });
 
   document.getElementById('transp-empty').style.display = fin.length ? 'none' : 'block';
   document.getElementById('transp-content').style.display = fin.length ? 'block' : 'none';
@@ -1352,6 +1392,22 @@ function renderOffTime(){
     regMap2[c.regiao].valor+=c.valor;
     if(c.dias_medio!=null){regMap2[c.regiao].dias_sum+=c.dias_medio*c.qtd;regMap2[c.regiao].dias_n+=c.qtd;}
   });
+
+  // Fallback: se clientesOff vazio, usar dados de regioes off_time via transpList
+  if(Object.keys(regMap2).length===0){
+    const transpList=d.otd||[];
+    transpList.forEach(t=>{
+      (t.ufs||[]).forEach(u=>{
+        const reg=u.reg||(window.REGIOES_MAP||{})[u.uf]||'Outros';
+        if((u.off||0)>0){
+          if(!regMap2[reg]) regMap2[reg]={reg,qtd:0,valor:0,dias_sum:0,dias_n:0};
+          regMap2[reg].qtd+=(u.off||0);
+          regMap2[reg].valor+=(u.off_val||0);
+        }
+      });
+    });
+  }
+
   const totalOffReg=Object.values(regMap2).reduce((s,r)=>s+r.qtd,0)||1;
   let rReg='';
   Object.values(regMap2).sort((a,b)=>b.qtd-a.qtd).forEach(r=>{
@@ -1536,6 +1592,13 @@ function renderOTDChart(d){
   let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,on_val=0,off_val=0,hub_val=0,trs_val=0;
   ms.forEach(m=>{const md=d.meses[m];if(!md)return;fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;});
   const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val,nfin=hub+trs,nfin_val=hub_val+trs_val;
+  // Para bloco 3 KPIs usar valores ALL (incluindo bonificações) para ser igual ao prevQ
+  const hubAll=d.totalHubAll!=null?d.totalHubAll:hub;
+  const trsAll=d.totalTrsAll!=null?d.totalTrsAll:trs;
+  const hubValAll=d.totalHubValAll!=null?d.totalHubValAll:hub_val;
+  const trsValAll=d.totalTrsValAll!=null?d.totalTrsValAll:trs_val;
+  const nfinAll=hubAll+trsAll;
+  const nfinValAll=hubValAll+trsValAll;
 
   document.getElementById('o-fat').textContent=fmtM(fat);document.getElementById('o-fat-s').textContent=qtd.toLocaleString('pt-BR')+' NFs';
   document.getElementById('o-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o-on-s').textContent=fmtM(on_val);
@@ -1548,9 +1611,9 @@ function renderOTDChart(d){
   document.getElementById('o2-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=off;
   document.getElementById('o2-val').textContent=fmtM(fin_val);document.getElementById('o2-otd').textContent=otd+'%';
   document.getElementById('o2-bar').style.width=fmtP(fin,qtd);document.getElementById('o2-pct').textContent=fmtP(fin,qtd);
-  document.getElementById('o3-hub').textContent=hub;document.getElementById('o3-hub-val').textContent=fmtM(hub_val);
-  document.getElementById('o3-trs').textContent=trs;document.getElementById('o3-trs-val').textContent=fmtM(trs_val);
-  document.getElementById('o3-total').textContent=nfin;document.getElementById('o3-total-val').textContent=fmtM(nfin_val);
+  document.getElementById('o3-hub').textContent=hubAll;document.getElementById('o3-hub-val').textContent=fmtM(hubValAll);
+  document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
+  document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
   // ---- BLOCO 1: Genomma vs Inovalab + Bonificações ----
   const et=d.empresa_total||{};
