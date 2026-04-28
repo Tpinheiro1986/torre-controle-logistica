@@ -200,10 +200,6 @@ table.dt tr:hover td{background:var(--bg2)}
     <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
-<<<<<<< HEAD
-=======
-    <div class="tab" id="tab-upload" style="display:none;margin-left:auto;color:#185FA5;font-weight:500" onclick="switchTab('upload',this)">⬆ Upload</div>
->>>>>>> 9c86551d9812b5a0fbc59d5ac6f5544ee6bede9a
   </div>
 
   <div class="container">
@@ -561,11 +557,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-<<<<<<< HEAD
   otd:'sec-otd', transp:'sec-transp', offtime:'sec-offtime'
-=======
-  otd:'sec-otd', transp:'sec-transp', offtime:'sec-offtime', upload:'sec-upload'
->>>>>>> 9c86551d9812b5a0fbc59d5ac6f5544ee6bede9a
 };
 
 function switchTab(id, btn){
@@ -590,40 +582,6 @@ Object.entries(TABS).forEach(([k,v])=>{
 // ============================================================
 // REGIONS MAP
 // ============================================================
-<<<<<<< HEAD
-=======
-const files = {otd:null, custo:null, estoque:null};
-
-function dragOver(e,id){e.preventDefault();document.getElementById('box-'+id.replace('box-','')).classList.add('drag');}
-function dragLeave(id){document.getElementById(id).classList.remove('drag');}
-
-function dropFile(e,type){
-  e.preventDefault();
-  const id='box-'+type;
-  document.getElementById(id).classList.remove('drag');
-  const file=e.dataTransfer.files[0];
-  if(file) registerFile(file,type);
-}
-
-function fileSelected(input,type){
-  if(input.files[0]) registerFile(input.files[0],type);
-}
-
-function registerFile(file,type){
-  files[type]=file;
-  const box=document.getElementById('box-'+type);
-  box.classList.add('done');
-  box.classList.remove('drag');
-  document.getElementById('status-'+type).textContent='✓ '+file.name;
-  document.getElementById('status-'+type).style.color='#3B6D11';
-  // Enable process button if at least one file
-  document.getElementById('btn-process').disabled = false;
-}
-
-// ============================================================
-// PROCESS FILES
-// ============================================================
->>>>>>> 9c86551d9812b5a0fbc59d5ac6f5544ee6bede9a
 const REGIOES_MAP = window.REGIOES_MAP = {
   'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
   'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
@@ -1637,7 +1595,6 @@ function renderOTDChart(d){
       +'<td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td>'
       +'<td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';
   });
-<<<<<<< HEAD
   r3+='<tr class="tr-total"><td>Total Pendente</td>'
     +'<td class="r" style="color:#854F0B">'+hubAll+'</td>'
     +'<td class="r" style="color:#854F0B">'+fmtM(hubValAll)+'</td>'
@@ -1646,9 +1603,6 @@ function renderOTDChart(d){
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+nfinAll+'</td>'
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(nfinValAll)+'</td>'
     +'<td class="r">'+fmtP(nfinAll,qtd)+'</td></tr>';
-=======
-  r3+='<tr class="tr-total"><td>Total Pendente</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r" style="font-weight:700;color:#A32D2D">'+nfin+'</td><td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
->>>>>>> 9c86551d9812b5a0fbc59d5ac6f5544ee6bede9a
   document.getElementById('o3-tbody').innerHTML=r3;
 
   // ---- BLOCO 3b: Previsão por quarter ----
