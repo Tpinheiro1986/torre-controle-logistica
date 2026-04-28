@@ -217,14 +217,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
             <div class="upload-box-sub">notas_sintetico.xlsx</div>
             <div class="upload-box-status" id="st-otd">Aguardando arquivo...</div>
           </div>
-          <!-- CUSTO DE SERVIR -->
-          <div class="upload-box" id="box-cs" ondragover="ev(event,'cs',1)" ondragleave="ev(event,'cs',0)" ondrop="drop(event,'cs')">
-            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'cs')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-            <div class="upload-box-title">Custo de Servir</div>
-            <div class="upload-box-sub">CTE_EMITIDO.xlsx</div>
-            <div class="upload-box-status" id="st-cs">Aguardando arquivo...</div>
-          </div>
           <!-- ESTOQUE -->
           <div class="upload-box" id="box-est" ondragover="ev(event,'est',1)" ondragleave="ev(event,'est',0)" ondrop="drop(event,'est')">
             <input type="file" accept=".xlsx,.csv" onchange="pick(this,'est')">
@@ -447,11 +439,57 @@ async function processarTodos(){
         else if(tipo==='off_time'){m.off++;m.off_val+=val;if(empTot[emp])empTot[emp].off++;}
         else if(tipo==='hub'){m.hub++;m.hub_val+=val;if(empTot[emp])empTot[emp].hub++;}
         else if(tipo==='transito'){m.trs++;m.trs_val+=val;if(empTot[emp])empTot[emp].trs++;}
-        if(transp){if(!transpMap[transp])transpMap[transp]={n:transp,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0};if(tipo==='on_time'){transpMap[transp].fin++;transpMap[transp].on++;}else if(tipo==='off_time'){transpMap[transp].fin++;transpMap[transp].off++;}else if(tipo==='hub'){transpMap[transp].hub++;transpMap[transp].nao_val+=val;}else if(tipo==='transito'){transpMap[transp].trs++;transpMap[transp].nao_val+=val;}}
+        if(transp){
+          if(!transpMap[transp])transpMap[transp]={n:transp,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0,dias_sum:0,dias_n:0};
+          if(tipo==='on_time'){transpMap[transp].fin++;transpMap[transp].on++;}
+          else if(tipo==='off_time'){transpMap[transp].fin++;transpMap[transp].off++;}
+          else if(tipo==='hub'){transpMap[transp].hub++;transpMap[transp].nao_val+=val;}
+          else if(tipo==='transito'){transpMap[transp].trs++;transpMap[transp].nao_val+=val;}
+          // prazo_medio
+          if(tipo==='on_time'||tipo==='off_time'){
+            const dent=pd(col(r,'Data Entrega','Data Entregue','Data_Entrega'));
+            if(de&&dent){const dd=Math.round((dent-de)/(1000*60*60*24));if(dd>=0&&dd<=60){transpMap[transp].dias_sum+=dd;transpMap[transp].dias_n++;}}
+          }
+        }
         if(tipo==='transito'){if(!regMap[reg])regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};regMap[reg].atr_qtd++;regMap[reg].atr_val+=val;regMap[reg].dias_sum+=dias;if(!regMap[reg].ufs[uf])regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};regMap[reg].ufs[uf].n++;regMap[reg].ufs[uf].val+=val;regMap[reg].ufs[uf].d_sum+=dias;}
         if(tipo==='on_time'||tipo==='off_time'){const dent=pd(col(r,'Data Entrega','Data Entregue','Data_Entrega'));if(de&&dent){const dd=Math.round((dent-de)/(1000*60*60*24));if(dd>=0&&dd<=60){if(!diasRegMap[reg])diasRegMap[reg]={};if(!diasRegMap[reg][mes])diasRegMap[reg][mes]={sum:0,n:0};diasRegMap[reg][mes].sum+=dd;diasRegMap[reg][mes].n++;}}}
       });
       bonifs.forEach(r=>{const de=pd(col(r,'Data Emissão','Data Emissao'));if(!de)return;const mes=de.getMonth()+1;const val=parseFloat(String(col(r,'Valor Total')||0).replace(',','.'))||0;if(!bonif_mes[mes])bonif_mes[mes]={fat:0,qtd:0};bonif_mes[mes].fat+=val;bonif_mes[mes].qtd++;});
+
+      // Hub/trs ALL rows (para KPI bloco 3 bater com prevQ)
+      let hubAll=0,trsAll=0,hubValAll=0,trsValAll=0;
+      rows.forEach(r=>{
+        const tipo=classificar(col(r,'Status da Entrega','Status_da_Entrega'));
+        const val=parseFloat(String(col(r,'Valor Total','Valor Nota','ValorTotal')||0).replace(',','.'))||0;
+        if(tipo==='hub'){hubAll++;hubValAll+=val;}
+        else if(tipo==='transito'){trsAll++;trsValAll+=val;}
+      });
+
+      // Clientes Off Time
+      const clienteOffMap={};
+      const COLUNAS_CLIENTE=['Destinatário','Destinatario','Cliente','Nome Cliente','Razão Social Destino','Razao Social Destino','Nome Destinatário','Nome Destinatario','Dest','RazaoSocialDest'];
+      rows.filter(r=>classificar(col(r,'Status da Entrega','Status_da_Entrega'))==='off_time').forEach(r=>{
+        let cli='';for(const cn of COLUNAS_CLIENTE){const v=col(r,cn);if(v&&String(v).trim()&&String(v)!=='null'){cli=String(v).trim().substring(0,60);break;}}
+        if(!cli){const nf=col(r,'Número NF','Numero NF','NF','Nota Fiscal');cli=nf?'NF '+String(nf).substring(0,15):'—';}
+        const uf=String(col(r,'UF Destino','UF Dest','UF_Destino')||'');
+        const reg=REGIOES_MAP[uf]||'Outros';
+        const cidade=String(col(r,'Cidade Destino','Cidade Dest','Cidade','Municipio Destino','Municipio')||'');
+        const val=parseFloat(String(col(r,'Valor Total','Valor Nota','ValorTotal')||0).replace(',','.'))||0;
+        const de=pd(col(r,'Data Emissão','Data Emissao','Data_Emissao'));
+        const dent=pd(col(r,'Data Entrega','Data Entregue','Data_Entrega'));
+        const prev=pd(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
+        const diasAtr=(dent&&prev)?Math.max(0,Math.round((dent-prev)/(1000*60*60*24))):null;
+        const mes=de?de.getMonth()+1:0;
+        const transp=String(col(r,'Transportador')||'').substring(0,32);
+        const key=cli+'|'+uf+'|'+cidade;
+        if(!clienteOffMap[key])clienteOffMap[key]={cliente:cli,cidade,uf,regiao:reg,qtd:0,valor:0,dias_sum:0,dias_n:0,transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):''};
+        const c=clienteOffMap[key];c.qtd++;c.valor+=val;
+        if(diasAtr!=null){c.dias_sum+=diasAtr;c.dias_n++;}
+      });
+      const clientesOff=Object.values(clienteOffMap)
+        .map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null}))
+        .sort((a,b)=>b.qtd-a.qtd);
+
       const Q_ENDS={Q1:new Date('2026-03-31'),Q2:new Date('2026-06-30'),Q3:new Date('2026-09-30'),Q4:new Date('2026-12-31')};
       const prevQ={};
       rows.filter(r=>classificar(col(r,'Status da Entrega','Status_da_Entrega')).match(/hub|transito/)).forEach(r=>{
@@ -472,7 +510,26 @@ async function processarTodos(){
         const drm=diasRegMap[reg]||{};let eS=0,eN=0;Object.values(drm).forEach(v=>{eS+=v.sum;eN+=v.n;});
         return{r:reg,atr_qtd:rm.atr_qtd,atr_val:Math.round(rm.atr_val*100)/100,dias_atr:rm.atr_qtd>0?Math.round(rm.dias_sum/rm.atr_qtd*10)/10:0,media_ent:eN>0?Math.round(eS/eN*10)/10:0,ufs};
       });
-      const payload={meses,bonif_mes,otd:Object.values(transpMap).map(t=>({...t,otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,nao_val:Math.round(t.nao_val*100)/100})).sort((a,b)=>b.fin-a.fin),regioes,dias_mes,prevQ:Object.values(prevQ).sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q)),empresa_total:empTot,atualizado:new Date().toLocaleString('pt-BR'),base_nome:files.otd.name,total_nfs:vendas.length,total_bonif:bonifs.length};
+      const payload={
+        meses,bonif_mes,
+        otd:Object.values(transpMap).map(t=>({
+          ...t,
+          otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,
+          nao_val:Math.round(t.nao_val*100)/100,
+          prazo_medio:t.dias_n>0?Math.round(t.dias_sum/t.dias_n*10)/10:null
+        })).sort((a,b)=>b.fin-a.fin),
+        regioes,dias_mes,
+        prevQ:Object.values(prevQ).sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q)),
+        empresa_total:empTot,
+        totalHubAll:hubAll,totalTrsAll:trsAll,
+        totalHubValAll:Math.round(hubValAll*100)/100,
+        totalTrsValAll:Math.round(trsValAll*100)/100,
+        clientesOff,
+        atualizado:new Date().toLocaleString('pt-BR'),
+        base_nome:files.otd.name,
+        total_nfs:vendas.length,
+        total_bonif:bonifs.length
+      };
       await saveStorage('otd/dados.json',payload);
       addHist('OTD',files.otd.name,vendas.length);
       log('OTD concluído: '+vendas.length+' NFs','ok');

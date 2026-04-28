@@ -1,27 +1,27 @@
 {
   "outbound": {
     "totais": {
-      "frete": 13587959.76,
-      "v_merc": 476797195.23,
-      "ctes": 5696,
-      "pct_cts": 2.85,
-      "genomma_frete": 12714461.02,
-      "inovalab_frete": 856096.02,
-      "pct_genomma": 2.74,
-      "pct_inovalab": 6.5
+      "frete": 14078594.96,
+      "v_merc": 486271724.62,
+      "ctes": 5931,
+      "pct_cts": 2.9,
+      "genomma_frete": 12937562.69,
+      "inovalab_frete": 1123629.55,
+      "pct_genomma": 2.75,
+      "pct_inovalab": 7.44
     },
     "empresas": {
       "GENOMMA": {
-        "frete": 12714461.02,
-        "v_merc": 463407525.42,
-        "ctes": 5530,
-        "pct_cts": 2.74
+        "frete": 12937562.69,
+        "v_merc": 470953982.05,
+        "ctes": 5711,
+        "pct_cts": 2.75
       },
       "INOVALAB": {
-        "frete": 856096.02,
-        "v_merc": 13179976.64,
-        "ctes": 162,
-        "pct_cts": 6.5
+        "frete": 1123629.55,
+        "v_merc": 15108049.4,
+        "ctes": 216,
+        "pct_cts": 7.44
       },
       "OUTROS": {
         "frete": 17402.72,
@@ -32,12 +32,12 @@
     },
     "tipos": {
       "CIF": {
-        "frete": 13587959.76,
-        "v_merc": 476797195.23,
-        "ctes": 5696,
-        "pct_cts": 2.85,
-        "pct_genomma": 2.74,
-        "pct_inovalab": 6.5
+        "frete": 14078594.96,
+        "v_merc": 486271724.62,
+        "ctes": 5931,
+        "pct_cts": 2.9,
+        "pct_genomma": 2.75,
+        "pct_inovalab": 7.44
       },
       "FOB": {
         "frete": 0,
@@ -294,16 +294,16 @@
         "ano": 2026,
         "mes": 4,
         "nome": "Abr",
-        "frete": 84162.19,
-        "v_merc": 4593266.14,
-        "ctes": 65,
-        "pct_cts": 1.83,
-        "genomma_frete": 53051.6,
-        "genomma_merc": 4053405.93,
-        "inovalab_frete": 31110.59,
-        "inovalab_merc": 539860.21,
-        "pct_genomma": 1.31,
-        "pct_inovalab": 5.76
+        "frete": 574797.39,
+        "v_merc": 14067795.53,
+        "ctes": 300,
+        "pct_cts": 4.09,
+        "genomma_frete": 276153.27,
+        "genomma_merc": 11599862.56,
+        "inovalab_frete": 298644.12,
+        "inovalab_merc": 2467932.97,
+        "pct_genomma": 2.38,
+        "pct_inovalab": 12.1
       }
     ],
     "quarters": [
@@ -380,30 +380,30 @@
       {
         "q": "Q2/26",
         "ano": 2026,
-        "frete": 84162.19,
-        "v_merc": 4593266.14,
-        "ctes": 65,
-        "pct_cts": 1.83,
-        "genomma_frete": 53051.6,
-        "genomma_merc": 4053405.93,
-        "inovalab_frete": 31110.59,
-        "inovalab_merc": 539860.21,
-        "pct_genomma": 1.31,
-        "pct_inovalab": 5.76
+        "frete": 574797.39,
+        "v_merc": 14067795.53,
+        "ctes": 300,
+        "pct_cts": 4.09,
+        "genomma_frete": 276153.27,
+        "genomma_merc": 11599862.56,
+        "inovalab_frete": 298644.12,
+        "inovalab_merc": 2467932.97,
+        "pct_genomma": 2.38,
+        "pct_inovalab": 12.1
       }
     ],
     "transportadoras": [
       {
         "nome": "ATIVA DISTR E LOGISTICA LTDA",
         "cnpj": "01125797000701",
-        "frete": 4323757.73,
-        "v_merc": 161885693.82,
-        "ctes": 3036,
-        "pct_cts": 2.67,
+        "frete": 4490661.2,
+        "v_merc": 167236108.43,
+        "ctes": 3166,
+        "pct_cts": 2.69,
         "pct_genomma": 2.61,
-        "pct_inovalab": 11.75,
-        "genomma_frete": 4193231.55,
-        "inovalab_frete": 130526.18,
+        "pct_inovalab": 11.63,
+        "genomma_frete": 4318662.86,
+        "inovalab_frete": 171998.34,
         "anos": {
           "2025": {
             "frete": 3574030.55,
@@ -416,28 +416,28 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 749727.18,
-            "v_merc": 28073418.92,
-            "ctes": 591,
-            "pct_cts": 2.67,
-            "genomma_frete": 619201.0,
-            "inovalab_frete": 130526.18,
-            "pct_genomma": 2.3,
-            "pct_inovalab": 11.75
+            "frete": 916630.65,
+            "v_merc": 33423833.53,
+            "ctes": 721,
+            "pct_cts": 2.74,
+            "genomma_frete": 744632.31,
+            "inovalab_frete": 171998.34,
+            "pct_genomma": 2.33,
+            "pct_inovalab": 11.63
           }
         }
       },
       {
         "nome": "FL BRASIL HOLDING LOGISTICA E TRANSPORTE LTDA",
         "cnpj": "18233211007576",
-        "frete": 3225033.25,
-        "v_merc": 62794016.88,
-        "ctes": 1577,
-        "pct_cts": 5.14,
-        "pct_genomma": 4.96,
-        "pct_inovalab": 25.26,
-        "genomma_frete": 3084684.15,
-        "inovalab_frete": 140349.1,
+        "frete": 3422681.5,
+        "v_merc": 65475256.83,
+        "ctes": 1662,
+        "pct_cts": 5.23,
+        "pct_genomma": 4.91,
+        "pct_inovalab": 24.03,
+        "genomma_frete": 3161105.99,
+        "inovalab_frete": 261575.51,
         "anos": {
           "2025": {
             "frete": 2691252.28,
@@ -450,28 +450,28 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 533780.97,
-            "v_merc": 9196588.81,
-            "ctes": 258,
-            "pct_cts": 5.8,
-            "genomma_frete": 393431.87,
-            "inovalab_frete": 140349.1,
-            "pct_genomma": 4.55,
-            "pct_inovalab": 25.26
+            "frete": 731429.22,
+            "v_merc": 11877828.76,
+            "ctes": 343,
+            "pct_cts": 6.16,
+            "genomma_frete": 469853.71,
+            "inovalab_frete": 261575.51,
+            "pct_genomma": 4.35,
+            "pct_inovalab": 24.03
           }
         }
       },
       {
         "nome": "LD CARGO - SOLUCOES LOGISTICAS LTDA",
         "cnpj": "36321523000187",
-        "frete": 1990512.98,
-        "v_merc": 88389871.21,
-        "ctes": 215,
-        "pct_cts": 2.25,
+        "frete": 2060490.44,
+        "v_merc": 89082374.29,
+        "ctes": 219,
+        "pct_cts": 2.31,
         "pct_genomma": 2.1,
-        "pct_inovalab": 5.96,
+        "pct_inovalab": 6.64,
         "genomma_frete": 1782124.25,
-        "inovalab_frete": 208388.73,
+        "inovalab_frete": 278366.19,
         "anos": {
           "2025": {
             "frete": 1432948.45,
@@ -484,14 +484,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 557564.53,
-            "v_merc": 22170916.14,
-            "ctes": 63,
-            "pct_cts": 2.51,
+            "frete": 627541.99,
+            "v_merc": 22863419.22,
+            "ctes": 67,
+            "pct_cts": 2.74,
             "genomma_frete": 349175.8,
-            "inovalab_frete": 208388.73,
+            "inovalab_frete": 278366.19,
             "pct_genomma": 1.87,
-            "pct_inovalab": 5.96
+            "pct_inovalab": 6.64
           }
         }
       },
@@ -566,14 +566,14 @@
       {
         "nome": "ALA URB TRANSPORTES E LOGISTICA LTDA",
         "cnpj": "20051163000100",
-        "frete": 447184.57,
-        "v_merc": 22312156.5,
-        "ctes": 117,
+        "frete": 459764.72,
+        "v_merc": 22958625.0,
+        "ctes": 121,
         "pct_cts": 2.0,
-        "pct_genomma": 1.82,
-        "pct_inovalab": 3.27,
-        "genomma_frete": 368363.1,
-        "inovalab_frete": 68687.77,
+        "pct_genomma": 1.81,
+        "pct_inovalab": 3.26,
+        "genomma_frete": 370754.48,
+        "inovalab_frete": 78876.54,
         "anos": {
           "2025": {
             "frete": 325173.5,
@@ -586,14 +586,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 122011.07,
-            "v_merc": 5811907.63,
-            "ctes": 39,
-            "pct_cts": 2.1,
-            "genomma_frete": 53323.3,
-            "inovalab_frete": 68687.77,
-            "pct_genomma": 1.44,
-            "pct_inovalab": 3.27
+            "frete": 134591.22,
+            "v_merc": 6458376.13,
+            "ctes": 43,
+            "pct_cts": 2.08,
+            "genomma_frete": 55714.68,
+            "inovalab_frete": 78876.54,
+            "pct_genomma": 1.38,
+            "pct_inovalab": 3.26
           }
         }
       },
@@ -782,15 +782,39 @@
         }
       },
       {
+        "nome": "DEL LOGISTIC TRANSPORTES LTDA",
+        "cnpj": "04281818000180",
+        "frete": 40901.65,
+        "v_merc": 86353.25,
+        "ctes": 3,
+        "pct_cts": 47.37,
+        "pct_genomma": 22.95,
+        "pct_inovalab": 158.01,
+        "genomma_frete": 16232.92,
+        "inovalab_frete": 24668.73,
+        "anos": {
+          "2026": {
+            "frete": 40901.65,
+            "v_merc": 86353.25,
+            "ctes": 3,
+            "pct_cts": 47.37,
+            "genomma_frete": 16232.92,
+            "inovalab_frete": 24668.73,
+            "pct_genomma": 22.95,
+            "pct_inovalab": 158.01
+          }
+        }
+      },
+      {
         "nome": "MKT LOG LOGISTICA INTEGRADA LTDA",
         "cnpj": "15769911000155",
-        "frete": 31031.79,
-        "v_merc": 259746.0,
-        "ctes": 134,
-        "pct_cts": 11.95,
-        "pct_genomma": 11.67,
+        "frete": 33656.01,
+        "v_merc": 277296.0,
+        "ctes": 143,
+        "pct_cts": 12.14,
+        "pct_genomma": 11.88,
         "pct_inovalab": null,
-        "genomma_frete": 30277.77,
+        "genomma_frete": 32901.99,
         "inovalab_frete": 0,
         "anos": {
           "2025": {
@@ -804,13 +828,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 8221.89,
-            "v_merc": 62400.0,
-            "ctes": 32,
-            "pct_cts": 13.18,
-            "genomma_frete": 8221.89,
+            "frete": 10846.11,
+            "v_merc": 79950.0,
+            "ctes": 41,
+            "pct_cts": 13.57,
+            "genomma_frete": 10846.11,
             "inovalab_frete": 0,
-            "pct_genomma": 13.18,
+            "pct_genomma": 13.57,
             "pct_inovalab": null
           }
         }
@@ -1285,16 +1309,16 @@
     "regioes": [
       {
         "regiao": "Sudeste",
-        "frete": 5598098.68,
-        "v_merc": 288912818.46,
-        "ctes": 2632,
-        "pct_cts": 1.94,
-        "genomma_frete": 5278902.44,
-        "genomma_merc": 280514941.68,
-        "inovalab_frete": 312681.24,
-        "inovalab_merc": 8201966.06,
-        "pct_genomma": 1.88,
-        "pct_inovalab": 3.81,
+        "frete": 5712612.89,
+        "v_merc": 292971796.17,
+        "ctes": 2719,
+        "pct_cts": 1.95,
+        "genomma_frete": 5361419.7,
+        "genomma_merc": 284042667.37,
+        "inovalab_frete": 344678.19,
+        "inovalab_merc": 8733218.08,
+        "pct_genomma": 1.89,
+        "pct_inovalab": 3.95,
         "anos": {
           "2025": {
             "frete": 4492641.67,
@@ -1307,29 +1331,29 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 1105457.01,
-            "v_merc": 54404783.4,
-            "ctes": 512,
-            "pct_cts": 2.03,
-            "genomma_frete": 792775.77,
-            "inovalab_frete": 312681.24,
-            "pct_genomma": 1.72,
-            "pct_inovalab": 3.81
+            "frete": 1219971.22,
+            "v_merc": 58463761.11,
+            "ctes": 599,
+            "pct_cts": 2.09,
+            "genomma_frete": 875293.03,
+            "inovalab_frete": 344678.19,
+            "pct_genomma": 1.76,
+            "pct_inovalab": 3.95
           }
         }
       },
       {
         "regiao": "Nordeste",
-        "frete": 3425628.02,
-        "v_merc": 69386193.93,
-        "ctes": 1310,
-        "pct_cts": 4.94,
-        "genomma_frete": 3154831.37,
-        "genomma_merc": 67365336.41,
-        "inovalab_frete": 270042.63,
-        "inovalab_merc": 2020461.52,
-        "pct_genomma": 4.68,
-        "pct_inovalab": 13.37,
+        "frete": 3620495.46,
+        "v_merc": 71914096.37,
+        "ctes": 1382,
+        "pct_cts": 5.03,
+        "genomma_frete": 3208398.96,
+        "genomma_merc": 68987098.91,
+        "inovalab_frete": 411342.48,
+        "inovalab_merc": 2926601.46,
+        "pct_genomma": 4.65,
+        "pct_inovalab": 14.06,
         "anos": {
           "2025": {
             "frete": 2742761.5,
@@ -1342,29 +1366,29 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 682866.52,
-            "v_merc": 11581849.91,
-            "ctes": 220,
-            "pct_cts": 5.9,
-            "genomma_frete": 412823.89,
-            "inovalab_frete": 270042.63,
-            "pct_genomma": 4.32,
-            "pct_inovalab": 13.37
+            "frete": 877733.96,
+            "v_merc": 14109752.35,
+            "ctes": 292,
+            "pct_cts": 6.22,
+            "genomma_frete": 466391.48,
+            "inovalab_frete": 411342.48,
+            "pct_genomma": 4.17,
+            "pct_inovalab": 14.06
           }
         }
       },
       {
         "regiao": "Centro-Oeste",
-        "frete": 1904444.32,
-        "v_merc": 55367657.72,
-        "ctes": 779,
-        "pct_cts": 3.44,
-        "genomma_frete": 1813668.52,
-        "genomma_merc": 54171215.98,
-        "inovalab_frete": 90775.8,
-        "inovalab_merc": 1196441.74,
+        "frete": 1941860.35,
+        "v_merc": 56292474.25,
+        "ctes": 804,
+        "pct_cts": 3.45,
+        "genomma_frete": 1835745.51,
+        "genomma_merc": 54862115.44,
+        "inovalab_frete": 106114.84,
+        "inovalab_merc": 1430358.81,
         "pct_genomma": 3.35,
-        "pct_inovalab": 7.59,
+        "pct_inovalab": 7.42,
         "anos": {
           "2025": {
             "frete": 1620112.95,
@@ -1377,29 +1401,29 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 284331.37,
-            "v_merc": 7911369.66,
-            "ctes": 138,
-            "pct_cts": 3.59,
-            "genomma_frete": 193555.57,
-            "inovalab_frete": 90775.8,
-            "pct_genomma": 2.88,
-            "pct_inovalab": 7.59
+            "frete": 321747.4,
+            "v_merc": 8836186.19,
+            "ctes": 163,
+            "pct_cts": 3.64,
+            "genomma_frete": 215632.56,
+            "inovalab_frete": 106114.84,
+            "pct_genomma": 2.91,
+            "pct_inovalab": 7.42
           }
         }
       },
       {
         "regiao": "Sul",
-        "frete": 1395733.03,
-        "v_merc": 47186800.25,
-        "ctes": 707,
+        "frete": 1438233.6,
+        "v_merc": 48512643.11,
+        "ctes": 741,
         "pct_cts": 2.96,
-        "genomma_frete": 1288143.13,
-        "genomma_merc": 45837914.8,
-        "inovalab_frete": 97456.2,
-        "inovalab_merc": 1335499.0,
-        "pct_genomma": 2.81,
-        "pct_inovalab": 7.3,
+        "genomma_frete": 1318293.24,
+        "genomma_merc": 47066611.32,
+        "inovalab_frete": 109806.66,
+        "inovalab_merc": 1432645.34,
+        "pct_genomma": 2.8,
+        "pct_inovalab": 7.66,
         "anos": {
           "2025": {
             "frete": 1068255.97,
@@ -1412,29 +1436,29 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 327477.06,
-            "v_merc": 9552531.65,
-            "ctes": 159,
-            "pct_cts": 3.43,
-            "genomma_frete": 230020.86,
-            "inovalab_frete": 97456.2,
-            "pct_genomma": 2.8,
-            "pct_inovalab": 7.3
+            "frete": 369977.63,
+            "v_merc": 10878374.51,
+            "ctes": 193,
+            "pct_cts": 3.4,
+            "genomma_frete": 260170.97,
+            "inovalab_frete": 109806.66,
+            "pct_genomma": 2.75,
+            "pct_inovalab": 7.66
           }
         }
       },
       {
         "regiao": "Norte",
-        "frete": 1264055.71,
-        "v_merc": 15943724.87,
-        "ctes": 268,
-        "pct_cts": 7.93,
-        "genomma_frete": 1178915.56,
-        "genomma_merc": 15518116.55,
-        "inovalab_frete": 85140.15,
-        "inovalab_merc": 425608.32,
-        "pct_genomma": 7.6,
-        "pct_inovalab": 20.0,
+        "frete": 1365392.66,
+        "v_merc": 16580714.72,
+        "ctes": 285,
+        "pct_cts": 8.23,
+        "genomma_frete": 1213705.28,
+        "genomma_merc": 15995489.01,
+        "inovalab_frete": 151687.38,
+        "inovalab_merc": 585225.71,
+        "pct_genomma": 7.59,
+        "pct_inovalab": 25.92,
         "anos": {
           "2025": {
             "frete": 1050140.28,
@@ -1447,31 +1471,67 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 213915.43,
-            "v_merc": 2740923.96,
-            "ctes": 50,
-            "pct_cts": 7.8,
-            "genomma_frete": 128775.28,
-            "inovalab_frete": 85140.15,
-            "pct_genomma": 5.56,
-            "pct_inovalab": 20.0
+            "frete": 315252.38,
+            "v_merc": 3377913.81,
+            "ctes": 67,
+            "pct_cts": 9.33,
+            "genomma_frete": 163565.0,
+            "inovalab_frete": 151687.38,
+            "pct_genomma": 5.86,
+            "pct_inovalab": 25.92
           }
         }
       }
     ],
     "ufs": [
       {
+        "uf": "SP",
+        "regiao": "Sudeste",
+        "frete": 2106645.14,
+        "v_merc": 126950955.67,
+        "ctes": 1113,
+        "pct_cts": 1.66,
+        "genomma_frete": 1939378.58,
+        "genomma_merc": 121053303.36,
+        "inovalab_frete": 160751.56,
+        "inovalab_merc": 5701741.59,
+        "pct_genomma": 1.6,
+        "pct_inovalab": 2.82,
+        "anos": {
+          "2025": {
+            "frete": 1599216.23,
+            "v_merc": 97950642.41,
+            "ctes": 856,
+            "pct_cts": 1.63,
+            "genomma_frete": 1592701.23,
+            "inovalab_frete": 0,
+            "pct_genomma": 1.63,
+            "pct_inovalab": null
+          },
+          "2026": {
+            "frete": 507428.91,
+            "v_merc": 29000313.26,
+            "ctes": 257,
+            "pct_cts": 1.75,
+            "genomma_frete": 346677.35,
+            "inovalab_frete": 160751.56,
+            "pct_genomma": 1.49,
+            "pct_inovalab": 2.82
+          }
+        }
+      },
+      {
         "uf": "ES",
         "regiao": "Sudeste",
-        "frete": 2075824.17,
-        "v_merc": 105444239.7,
-        "ctes": 561,
+        "frete": 2085180.33,
+        "v_merc": 105804599.39,
+        "ctes": 574,
         "pct_cts": 1.97,
-        "genomma_frete": 1987462.36,
-        "genomma_merc": 103837366.82,
+        "genomma_frete": 1996818.52,
+        "genomma_merc": 104197726.51,
         "inovalab_frete": 88361.81,
         "inovalab_merc": 1606872.88,
-        "pct_genomma": 1.91,
+        "pct_genomma": 1.92,
         "pct_inovalab": 5.5,
         "anos": {
           "2025": {
@@ -1485,66 +1545,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 389293.75,
-            "v_merc": 17763192.77,
-            "ctes": 113,
-            "pct_cts": 2.19,
-            "genomma_frete": 300931.94,
+            "frete": 398649.91,
+            "v_merc": 18123552.46,
+            "ctes": 126,
+            "pct_cts": 2.2,
+            "genomma_frete": 310288.1,
             "inovalab_frete": 88361.81,
-            "pct_genomma": 1.86,
+            "pct_genomma": 1.88,
             "pct_inovalab": 5.5
-          }
-        }
-      },
-      {
-        "uf": "SP",
-        "regiao": "Sudeste",
-        "frete": 2049482.53,
-        "v_merc": 124533417.35,
-        "ctes": 1077,
-        "pct_cts": 1.65,
-        "genomma_frete": 1897114.91,
-        "genomma_merc": 119005859.62,
-        "inovalab_frete": 145852.62,
-        "inovalab_merc": 5331647.01,
-        "pct_genomma": 1.59,
-        "pct_inovalab": 2.74,
-        "anos": {
-          "2025": {
-            "frete": 1599216.23,
-            "v_merc": 97950642.41,
-            "ctes": 856,
-            "pct_cts": 1.63,
-            "genomma_frete": 1592701.23,
-            "inovalab_frete": 0,
-            "pct_genomma": 1.63,
-            "pct_inovalab": null
-          },
-          "2026": {
-            "frete": 450266.3,
-            "v_merc": 26582774.94,
-            "ctes": 221,
-            "pct_cts": 1.69,
-            "genomma_frete": 304413.68,
-            "inovalab_frete": 145852.62,
-            "pct_genomma": 1.43,
-            "pct_inovalab": 2.74
           }
         }
       },
       {
         "uf": "GO",
         "regiao": "Centro-Oeste",
-        "frete": 1518002.15,
-        "v_merc": 44742565.6,
-        "ctes": 522,
-        "pct_cts": 3.39,
-        "genomma_frete": 1449892.73,
-        "genomma_merc": 43774270.62,
-        "inovalab_frete": 68109.42,
-        "inovalab_merc": 968294.98,
+        "frete": 1548826.2,
+        "v_merc": 45519478.13,
+        "ctes": 540,
+        "pct_cts": 3.4,
+        "genomma_frete": 1465377.74,
+        "genomma_merc": 44317266.08,
+        "inovalab_frete": 83448.46,
+        "inovalab_merc": 1202212.05,
         "pct_genomma": 3.31,
-        "pct_inovalab": 7.03,
+        "pct_inovalab": 6.94,
         "anos": {
           "2025": {
             "frete": 1309014.02,
@@ -1557,30 +1581,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 208988.13,
-            "v_merc": 6329945.65,
-            "ctes": 87,
-            "pct_cts": 3.3,
-            "genomma_frete": 140878.71,
-            "inovalab_frete": 68109.42,
-            "pct_genomma": 2.63,
-            "pct_inovalab": 7.03
+            "frete": 239812.18,
+            "v_merc": 7106858.18,
+            "ctes": 105,
+            "pct_cts": 3.37,
+            "genomma_frete": 156363.72,
+            "inovalab_frete": 83448.46,
+            "pct_genomma": 2.65,
+            "pct_inovalab": 6.94
           }
         }
       },
       {
         "uf": "CE",
         "regiao": "Nordeste",
-        "frete": 1114532.56,
-        "v_merc": 22150424.12,
-        "ctes": 287,
-        "pct_cts": 5.03,
-        "genomma_frete": 1013089.01,
-        "genomma_merc": 21227658.51,
-        "inovalab_frete": 101443.55,
-        "inovalab_merc": 922765.61,
-        "pct_genomma": 4.77,
-        "pct_inovalab": 10.99,
+        "frete": 1191778.92,
+        "v_merc": 23163157.13,
+        "ctes": 305,
+        "pct_cts": 5.15,
+        "genomma_frete": 1027162.56,
+        "genomma_merc": 21732384.95,
+        "inovalab_frete": 164616.36,
+        "inovalab_merc": 1430772.18,
+        "pct_genomma": 4.73,
+        "pct_inovalab": 11.51,
         "anos": {
           "2025": {
             "frete": 853599.01,
@@ -1593,30 +1617,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 260933.55,
-            "v_merc": 4387535.29,
-            "ctes": 57,
-            "pct_cts": 5.95,
-            "genomma_frete": 159490.0,
-            "inovalab_frete": 101443.55,
-            "pct_genomma": 4.6,
-            "pct_inovalab": 10.99
+            "frete": 338179.91,
+            "v_merc": 5400268.3,
+            "ctes": 75,
+            "pct_cts": 6.26,
+            "genomma_frete": 173563.55,
+            "inovalab_frete": 164616.36,
+            "pct_genomma": 4.37,
+            "pct_inovalab": 11.51
           }
         }
       },
       {
         "uf": "PA",
         "regiao": "Norte",
-        "frete": 954612.05,
-        "v_merc": 11922779.93,
-        "ctes": 182,
-        "pct_cts": 8.01,
-        "genomma_frete": 873962.35,
-        "genomma_merc": 11510184.76,
-        "inovalab_frete": 80649.7,
-        "inovalab_merc": 412595.17,
-        "pct_genomma": 7.59,
-        "pct_inovalab": 19.55,
+        "frete": 1011062.25,
+        "v_merc": 12350902.33,
+        "ctes": 193,
+        "pct_cts": 8.19,
+        "genomma_frete": 894744.04,
+        "genomma_merc": 11813529.74,
+        "inovalab_frete": 116318.21,
+        "inovalab_merc": 537372.59,
+        "pct_genomma": 7.57,
+        "pct_inovalab": 21.65,
         "anos": {
           "2025": {
             "frete": 770685.3,
@@ -1629,66 +1653,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 183926.75,
-            "v_merc": 2230180.6,
-            "ctes": 37,
-            "pct_cts": 8.25,
-            "genomma_frete": 103277.05,
-            "inovalab_frete": 80649.7,
-            "pct_genomma": 5.68,
-            "pct_inovalab": 19.55
-          }
-        }
-      },
-      {
-        "uf": "RS",
-        "regiao": "Sul",
-        "frete": 782499.68,
-        "v_merc": 28670414.21,
-        "ctes": 316,
-        "pct_cts": 2.73,
-        "genomma_frete": 730010.55,
-        "genomma_merc": 28247271.72,
-        "inovalab_frete": 42355.43,
-        "inovalab_merc": 409756.04,
-        "pct_genomma": 2.58,
-        "pct_inovalab": 10.34,
-        "anos": {
-          "2025": {
-            "frete": 608035.43,
-            "v_merc": 22464216.08,
-            "ctes": 243,
-            "pct_cts": 2.71,
-            "genomma_frete": 597901.73,
-            "inovalab_frete": 0,
-            "pct_genomma": 2.66,
-            "pct_inovalab": null
-          },
-          "2026": {
-            "frete": 174464.25,
-            "v_merc": 6206198.13,
-            "ctes": 73,
-            "pct_cts": 2.81,
-            "genomma_frete": 132108.82,
-            "inovalab_frete": 42355.43,
-            "pct_genomma": 2.28,
-            "pct_inovalab": 10.34
+            "frete": 240376.95,
+            "v_merc": 2658303.0,
+            "ctes": 48,
+            "pct_cts": 9.04,
+            "genomma_frete": 124058.74,
+            "inovalab_frete": 116318.21,
+            "pct_genomma": 5.85,
+            "pct_inovalab": 21.65
           }
         }
       },
       {
         "uf": "PE",
         "regiao": "Nordeste",
-        "frete": 782248.64,
-        "v_merc": 14533449.18,
-        "ctes": 309,
-        "pct_cts": 5.38,
-        "genomma_frete": 732721.45,
-        "genomma_merc": 14128283.01,
-        "inovalab_frete": 49527.19,
-        "inovalab_merc": 405166.17,
-        "pct_genomma": 5.19,
-        "pct_inovalab": 12.22,
+        "frete": 828881.23,
+        "v_merc": 15011255.99,
+        "ctes": 321,
+        "pct_cts": 5.52,
+        "genomma_frete": 747980.37,
+        "genomma_merc": 14467024.87,
+        "inovalab_frete": 80900.86,
+        "inovalab_merc": 544231.12,
+        "pct_genomma": 5.17,
+        "pct_inovalab": 14.87,
         "anos": {
           "2025": {
             "frete": 650854.93,
@@ -1701,30 +1689,66 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 131393.71,
-            "v_merc": 2132874.92,
-            "ctes": 53,
-            "pct_cts": 6.16,
-            "genomma_frete": 81866.52,
-            "inovalab_frete": 49527.19,
-            "pct_genomma": 4.74,
-            "pct_inovalab": 12.22
+            "frete": 178026.3,
+            "v_merc": 2610681.73,
+            "ctes": 65,
+            "pct_cts": 6.82,
+            "genomma_frete": 97125.44,
+            "inovalab_frete": 80900.86,
+            "pct_genomma": 4.7,
+            "pct_inovalab": 14.87
+          }
+        }
+      },
+      {
+        "uf": "RS",
+        "regiao": "Sul",
+        "frete": 806264.49,
+        "v_merc": 29520076.62,
+        "ctes": 335,
+        "pct_cts": 2.73,
+        "genomma_frete": 749938.87,
+        "genomma_merc": 29066649.53,
+        "inovalab_frete": 46191.92,
+        "inovalab_merc": 440040.64,
+        "pct_genomma": 2.58,
+        "pct_inovalab": 10.5,
+        "anos": {
+          "2025": {
+            "frete": 608035.43,
+            "v_merc": 22464216.08,
+            "ctes": 243,
+            "pct_cts": 2.71,
+            "genomma_frete": 597901.73,
+            "inovalab_frete": 0,
+            "pct_genomma": 2.66,
+            "pct_inovalab": null
+          },
+          "2026": {
+            "frete": 198229.06,
+            "v_merc": 7055860.54,
+            "ctes": 92,
+            "pct_cts": 2.81,
+            "genomma_frete": 152037.14,
+            "inovalab_frete": 46191.92,
+            "pct_genomma": 2.3,
+            "pct_inovalab": 10.5
           }
         }
       },
       {
         "uf": "BA",
         "regiao": "Nordeste",
-        "frete": 771355.07,
-        "v_merc": 16709503.58,
-        "ctes": 293,
-        "pct_cts": 4.62,
-        "genomma_frete": 717930.93,
-        "genomma_merc": 16328301.88,
-        "inovalab_frete": 53424.14,
-        "inovalab_merc": 381201.7,
-        "pct_genomma": 4.4,
-        "pct_inovalab": 14.01,
+        "frete": 802042.68,
+        "v_merc": 17081164.86,
+        "ctes": 307,
+        "pct_cts": 4.7,
+        "genomma_frete": 724943.0,
+        "genomma_merc": 16567103.11,
+        "inovalab_frete": 77099.68,
+        "inovalab_merc": 514061.75,
+        "pct_genomma": 4.38,
+        "pct_inovalab": 15.0,
         "anos": {
           "2025": {
             "frete": 634010.24,
@@ -1737,30 +1761,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 137344.83,
-            "v_merc": 2185903.36,
-            "ctes": 49,
-            "pct_cts": 6.28,
-            "genomma_frete": 83920.69,
-            "inovalab_frete": 53424.14,
-            "pct_genomma": 4.65,
-            "pct_inovalab": 14.01
+            "frete": 168032.44,
+            "v_merc": 2557564.64,
+            "ctes": 63,
+            "pct_cts": 6.57,
+            "genomma_frete": 90932.76,
+            "inovalab_frete": 77099.68,
+            "pct_genomma": 4.45,
+            "pct_inovalab": 15.0
           }
         }
       },
       {
         "uf": "RJ",
         "regiao": "Sudeste",
-        "frete": 750608.69,
-        "v_merc": 29892043.56,
-        "ctes": 431,
-        "pct_cts": 2.51,
-        "genomma_frete": 699384.32,
-        "genomma_merc": 29090260.77,
-        "inovalab_frete": 51224.37,
-        "inovalab_merc": 801782.79,
-        "pct_genomma": 2.4,
-        "pct_inovalab": 6.39,
+        "frete": 768264.01,
+        "v_merc": 30273109.95,
+        "ctes": 449,
+        "pct_cts": 2.54,
+        "genomma_frete": 709572.34,
+        "genomma_merc": 29388751.08,
+        "inovalab_frete": 58691.67,
+        "inovalab_merc": 884358.87,
+        "pct_genomma": 2.41,
+        "pct_inovalab": 6.64,
         "anos": {
           "2025": {
             "frete": 629708.68,
@@ -1773,30 +1797,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 120900.01,
-            "v_merc": 3892978.53,
-            "ctes": 74,
-            "pct_cts": 3.11,
-            "genomma_frete": 69675.64,
-            "inovalab_frete": 51224.37,
-            "pct_genomma": 2.25,
-            "pct_inovalab": 6.39
+            "frete": 138555.33,
+            "v_merc": 4274044.92,
+            "ctes": 92,
+            "pct_cts": 3.24,
+            "genomma_frete": 79863.66,
+            "inovalab_frete": 58691.67,
+            "pct_genomma": 2.36,
+            "pct_inovalab": 6.64
           }
         }
       },
       {
         "uf": "MG",
         "regiao": "Sudeste",
-        "frete": 722183.29,
-        "v_merc": 29043117.85,
-        "ctes": 563,
-        "pct_cts": 2.49,
-        "genomma_frete": 694940.85,
-        "genomma_merc": 28581454.47,
-        "inovalab_frete": 27242.44,
-        "inovalab_merc": 461663.38,
+        "frete": 752523.41,
+        "v_merc": 29943131.16,
+        "ctes": 583,
+        "pct_cts": 2.51,
+        "genomma_frete": 715650.26,
+        "genomma_merc": 29402886.42,
+        "inovalab_frete": 36873.15,
+        "inovalab_merc": 540244.74,
         "pct_genomma": 2.43,
-        "pct_inovalab": 5.9,
+        "pct_inovalab": 6.83,
         "anos": {
           "2025": {
             "frete": 577186.34,
@@ -1809,30 +1833,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 144996.95,
-            "v_merc": 6165837.16,
-            "ctes": 104,
-            "pct_cts": 2.35,
-            "genomma_frete": 117754.51,
-            "inovalab_frete": 27242.44,
-            "pct_genomma": 2.06,
-            "pct_inovalab": 5.9
+            "frete": 175337.07,
+            "v_merc": 7065850.47,
+            "ctes": 124,
+            "pct_cts": 2.48,
+            "genomma_frete": 138463.92,
+            "inovalab_frete": 36873.15,
+            "pct_genomma": 2.12,
+            "pct_inovalab": 6.83
           }
         }
       },
       {
         "uf": "PR",
         "regiao": "Sul",
-        "frete": 422027.69,
-        "v_merc": 12860718.12,
-        "ctes": 269,
-        "pct_cts": 3.28,
-        "genomma_frete": 366926.92,
-        "genomma_merc": 11934975.16,
-        "inovalab_frete": 55100.77,
-        "inovalab_merc": 925742.96,
-        "pct_genomma": 3.07,
-        "pct_inovalab": 5.95,
+        "frete": 440093.93,
+        "v_merc": 13319253.71,
+        "ctes": 283,
+        "pct_cts": 3.3,
+        "genomma_frete": 376479.19,
+        "genomma_merc": 12326649.01,
+        "inovalab_frete": 63614.74,
+        "inovalab_merc": 992604.7,
+        "pct_genomma": 3.05,
+        "pct_inovalab": 6.41,
         "anos": {
           "2025": {
             "frete": 295126.17,
@@ -1845,26 +1869,98 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 126901.52,
-            "v_merc": 2716917.02,
-            "ctes": 66,
-            "pct_cts": 4.67,
-            "genomma_frete": 71800.75,
-            "inovalab_frete": 55100.77,
-            "pct_genomma": 4.01,
-            "pct_inovalab": 5.95
+            "frete": 144967.76,
+            "v_merc": 3175452.61,
+            "ctes": 80,
+            "pct_cts": 4.57,
+            "genomma_frete": 81353.02,
+            "inovalab_frete": 63614.74,
+            "pct_genomma": 3.73,
+            "pct_inovalab": 6.41
+          }
+        }
+      },
+      {
+        "uf": "AM",
+        "regiao": "Norte",
+        "frete": 319430.87,
+        "v_merc": 3674606.74,
+        "ctes": 64,
+        "pct_cts": 8.69,
+        "genomma_frete": 284061.7,
+        "genomma_merc": 3626753.62,
+        "inovalab_frete": 35369.17,
+        "inovalab_merc": 47853.12,
+        "pct_genomma": 7.83,
+        "pct_inovalab": 73.91,
+        "anos": {
+          "2025": {
+            "frete": 246496.79,
+            "v_merc": 3040297.72,
+            "ctes": 50,
+            "pct_cts": 8.11,
+            "genomma_frete": 246496.79,
+            "inovalab_frete": 0,
+            "pct_genomma": 8.11,
+            "pct_inovalab": null
+          },
+          "2026": {
+            "frete": 72934.08,
+            "v_merc": 634309.02,
+            "ctes": 14,
+            "pct_cts": 11.5,
+            "genomma_frete": 37564.91,
+            "inovalab_frete": 35369.17,
+            "pct_genomma": 6.41,
+            "pct_inovalab": 73.91
+          }
+        }
+      },
+      {
+        "uf": "MA",
+        "regiao": "Nordeste",
+        "frete": 295607.25,
+        "v_merc": 5720962.08,
+        "ctes": 146,
+        "pct_cts": 5.17,
+        "genomma_frete": 239258.5,
+        "genomma_merc": 5458833.6,
+        "inovalab_frete": 55594.73,
+        "inovalab_merc": 261732.48,
+        "pct_genomma": 4.38,
+        "pct_inovalab": 21.24,
+        "anos": {
+          "2025": {
+            "frete": 200879.83,
+            "v_merc": 4359825.67,
+            "ctes": 111,
+            "pct_cts": 4.61,
+            "genomma_frete": 200125.81,
+            "inovalab_frete": 0,
+            "pct_genomma": 4.59,
+            "pct_inovalab": null
+          },
+          "2026": {
+            "frete": 94727.42,
+            "v_merc": 1361136.41,
+            "ctes": 35,
+            "pct_cts": 6.96,
+            "genomma_frete": 39132.69,
+            "inovalab_frete": 55594.73,
+            "pct_genomma": 3.56,
+            "pct_inovalab": 21.24
           }
         }
       },
       {
         "uf": "MT",
         "regiao": "Centro-Oeste",
-        "frete": 285986.93,
-        "v_merc": 7237235.47,
-        "ctes": 148,
+        "frete": 290550.51,
+        "v_merc": 7359209.67,
+        "ctes": 151,
         "pct_cts": 3.95,
-        "genomma_frete": 263320.55,
-        "genomma_merc": 7009088.71,
+        "genomma_frete": 267884.13,
+        "genomma_merc": 7131062.91,
         "inovalab_frete": 22666.38,
         "inovalab_merc": 228146.76,
         "pct_genomma": 3.76,
@@ -1881,102 +1977,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 63902.16,
-            "v_merc": 1218352.66,
-            "ctes": 29,
-            "pct_cts": 5.24,
-            "genomma_frete": 41235.78,
+            "frete": 68465.74,
+            "v_merc": 1340326.86,
+            "ctes": 32,
+            "pct_cts": 5.11,
+            "genomma_frete": 45799.36,
             "inovalab_frete": 22666.38,
-            "pct_genomma": 4.16,
+            "pct_genomma": 4.12,
             "pct_inovalab": 9.93
-          }
-        }
-      },
-      {
-        "uf": "AM",
-        "regiao": "Norte",
-        "frete": 274544.12,
-        "v_merc": 3465739.29,
-        "ctes": 58,
-        "pct_cts": 7.92,
-        "genomma_frete": 270053.67,
-        "genomma_merc": 3452726.14,
-        "inovalab_frete": 4490.45,
-        "inovalab_merc": 13013.15,
-        "pct_genomma": 7.82,
-        "pct_inovalab": 34.51,
-        "anos": {
-          "2025": {
-            "frete": 246496.79,
-            "v_merc": 3040297.72,
-            "ctes": 50,
-            "pct_cts": 8.11,
-            "genomma_frete": 246496.79,
-            "inovalab_frete": 0,
-            "pct_genomma": 8.11,
-            "pct_inovalab": null
-          },
-          "2026": {
-            "frete": 28047.33,
-            "v_merc": 425441.57,
-            "ctes": 8,
-            "pct_cts": 6.59,
-            "genomma_frete": 23556.88,
-            "inovalab_frete": 4490.45,
-            "pct_genomma": 5.71,
-            "pct_inovalab": 34.51
-          }
-        }
-      },
-      {
-        "uf": "MA",
-        "regiao": "Nordeste",
-        "frete": 273330.3,
-        "v_merc": 5506022.01,
-        "ctes": 135,
-        "pct_cts": 4.96,
-        "genomma_frete": 236431.94,
-        "genomma_merc": 5355436.66,
-        "inovalab_frete": 36144.34,
-        "inovalab_merc": 150189.35,
-        "pct_genomma": 4.41,
-        "pct_inovalab": 24.07,
-        "anos": {
-          "2025": {
-            "frete": 200879.83,
-            "v_merc": 4359825.67,
-            "ctes": 111,
-            "pct_cts": 4.61,
-            "genomma_frete": 200125.81,
-            "inovalab_frete": 0,
-            "pct_genomma": 4.59,
-            "pct_inovalab": null
-          },
-          "2026": {
-            "frete": 72450.47,
-            "v_merc": 1146196.34,
-            "ctes": 24,
-            "pct_cts": 6.32,
-            "genomma_frete": 36306.13,
-            "inovalab_frete": 36144.34,
-            "pct_genomma": 3.65,
-            "pct_inovalab": 24.07
           }
         }
       },
       {
         "uf": "PB",
         "regiao": "Nordeste",
-        "frete": 212138.91,
-        "v_merc": 3844275.6,
-        "ctes": 88,
-        "pct_cts": 5.52,
-        "genomma_frete": 204401.53,
-        "genomma_merc": 3804902.13,
-        "inovalab_frete": 7737.38,
-        "inovalab_merc": 39373.47,
-        "pct_genomma": 5.37,
-        "pct_inovalab": 19.65,
+        "frete": 224036.17,
+        "v_merc": 4193196.37,
+        "ctes": 96,
+        "pct_cts": 5.34,
+        "genomma_frete": 214064.45,
+        "genomma_merc": 4146290.19,
+        "inovalab_frete": 9971.72,
+        "inovalab_merc": 46906.18,
+        "pct_genomma": 5.16,
+        "pct_inovalab": 21.26,
         "anos": {
           "2025": {
             "frete": 176883.75,
@@ -1989,26 +2013,26 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 35255.16,
-            "v_merc": 654484.25,
-            "ctes": 10,
-            "pct_cts": 5.39,
-            "genomma_frete": 27517.78,
-            "inovalab_frete": 7737.38,
-            "pct_genomma": 4.47,
-            "pct_inovalab": 19.65
+            "frete": 47152.42,
+            "v_merc": 1003405.02,
+            "ctes": 18,
+            "pct_cts": 4.7,
+            "genomma_frete": 37180.7,
+            "inovalab_frete": 9971.72,
+            "pct_genomma": 3.89,
+            "pct_inovalab": 21.26
           }
         }
       },
       {
         "uf": "SC",
         "regiao": "Sul",
-        "frete": 191205.66,
-        "v_merc": 5655667.92,
-        "ctes": 122,
+        "frete": 191875.18,
+        "v_merc": 5673312.78,
+        "ctes": 123,
         "pct_cts": 3.38,
-        "genomma_frete": 191205.66,
-        "genomma_merc": 5655667.92,
+        "genomma_frete": 191875.18,
+        "genomma_merc": 5673312.78,
         "inovalab_frete": 0,
         "inovalab_merc": 0,
         "pct_genomma": 3.38,
@@ -2025,13 +2049,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 26111.29,
-            "v_merc": 629416.5,
-            "ctes": 20,
-            "pct_cts": 4.15,
-            "genomma_frete": 26111.29,
+            "frete": 26780.81,
+            "v_merc": 647061.36,
+            "ctes": 21,
+            "pct_cts": 4.14,
+            "genomma_frete": 26780.81,
             "inovalab_frete": 0,
-            "pct_genomma": 4.15,
+            "pct_genomma": 4.14,
             "pct_inovalab": null
           }
         }
@@ -2039,16 +2063,16 @@
       {
         "uf": "PI",
         "regiao": "Nordeste",
-        "frete": 136666.87,
-        "v_merc": 2866238.32,
-        "ctes": 69,
-        "pct_cts": 4.77,
-        "genomma_frete": 126528.76,
-        "genomma_merc": 2809667.89,
-        "inovalab_frete": 10138.11,
-        "inovalab_merc": 56570.43,
-        "pct_genomma": 4.5,
-        "pct_inovalab": 17.92,
+        "frete": 141300.03,
+        "v_merc": 2945041.81,
+        "ctes": 74,
+        "pct_cts": 4.8,
+        "genomma_frete": 130319.1,
+        "genomma_merc": 2883259.96,
+        "inovalab_frete": 10980.93,
+        "inovalab_merc": 61781.85,
+        "pct_genomma": 4.52,
+        "pct_inovalab": 17.77,
         "anos": {
           "2025": {
             "frete": 115658.89,
@@ -2061,29 +2085,29 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 21007.98,
-            "v_merc": 573092.78,
-            "ctes": 10,
-            "pct_cts": 3.67,
-            "genomma_frete": 10869.87,
-            "inovalab_frete": 10138.11,
-            "pct_genomma": 2.1,
-            "pct_inovalab": 17.92
+            "frete": 25641.14,
+            "v_merc": 651896.27,
+            "ctes": 15,
+            "pct_cts": 3.93,
+            "genomma_frete": 14660.21,
+            "inovalab_frete": 10980.93,
+            "pct_genomma": 2.48,
+            "pct_inovalab": 17.77
           }
         }
       },
       {
         "uf": "DF",
         "regiao": "Centro-Oeste",
-        "frete": 95966.67,
-        "v_merc": 3169714.87,
-        "ctes": 96,
-        "pct_cts": 3.03,
-        "genomma_frete": 95966.67,
-        "genomma_merc": 3169714.87,
+        "frete": 97995.07,
+        "v_merc": 3195644.67,
+        "ctes": 100,
+        "pct_cts": 3.07,
+        "genomma_frete": 97995.07,
+        "genomma_merc": 3195644.67,
         "inovalab_frete": 0,
         "inovalab_merc": 0,
-        "pct_genomma": 3.03,
+        "pct_genomma": 3.07,
         "pct_inovalab": null,
         "anos": {
           "2025": {
@@ -2097,13 +2121,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 10706.02,
-            "v_merc": 357221.35,
-            "ctes": 19,
-            "pct_cts": 3.0,
-            "genomma_frete": 10706.02,
+            "frete": 12734.42,
+            "v_merc": 383151.15,
+            "ctes": 23,
+            "pct_cts": 3.32,
+            "genomma_frete": 12734.42,
             "inovalab_frete": 0,
-            "pct_genomma": 3.0,
+            "pct_genomma": 3.32,
             "pct_inovalab": null
           }
         }
@@ -2111,16 +2135,16 @@
       {
         "uf": "RN",
         "regiao": "Nordeste",
-        "frete": 72863.05,
-        "v_merc": 1856952.03,
-        "ctes": 62,
-        "pct_cts": 3.92,
-        "genomma_frete": 68396.02,
-        "genomma_merc": 1832292.44,
-        "inovalab_frete": 4467.03,
-        "inovalab_merc": 24659.59,
+        "frete": 73671.46,
+        "v_merc": 1871112.98,
+        "ctes": 64,
+        "pct_cts": 3.94,
+        "genomma_frete": 68850.59,
+        "genomma_merc": 1845038.96,
+        "inovalab_frete": 4820.87,
+        "inovalab_merc": 26074.02,
         "pct_genomma": 3.73,
-        "pct_inovalab": 18.11,
+        "pct_inovalab": 18.49,
         "anos": {
           "2025": {
             "frete": 62415.09,
@@ -2133,30 +2157,30 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 10447.96,
-            "v_merc": 268994.41,
-            "ctes": 7,
-            "pct_cts": 3.88,
-            "genomma_frete": 5980.93,
-            "inovalab_frete": 4467.03,
-            "pct_genomma": 2.45,
-            "pct_inovalab": 18.11
+            "frete": 11256.37,
+            "v_merc": 283155.36,
+            "ctes": 9,
+            "pct_cts": 3.98,
+            "genomma_frete": 6435.5,
+            "inovalab_frete": 4820.87,
+            "pct_genomma": 2.5,
+            "pct_inovalab": 18.49
           }
         }
       },
       {
         "uf": "AL",
         "regiao": "Nordeste",
-        "frete": 62492.62,
-        "v_merc": 1919329.09,
-        "ctes": 67,
-        "pct_cts": 3.26,
-        "genomma_frete": 55331.73,
-        "genomma_merc": 1878793.89,
-        "inovalab_frete": 7160.89,
-        "inovalab_merc": 40535.2,
-        "pct_genomma": 2.95,
-        "pct_inovalab": 17.67,
+        "frete": 63177.72,
+        "v_merc": 1928205.15,
+        "ctes": 69,
+        "pct_cts": 3.28,
+        "genomma_frete": 55820.39,
+        "genomma_merc": 1887163.27,
+        "inovalab_frete": 7357.33,
+        "inovalab_merc": 41041.88,
+        "pct_genomma": 2.96,
+        "pct_inovalab": 17.93,
         "anos": {
           "2025": {
             "frete": 48459.76,
@@ -2169,14 +2193,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 14032.86,
-            "v_merc": 232768.56,
-            "ctes": 10,
-            "pct_cts": 6.03,
-            "genomma_frete": 6871.97,
-            "inovalab_frete": 7160.89,
-            "pct_genomma": 3.57,
-            "pct_inovalab": 17.67
+            "frete": 14717.96,
+            "v_merc": 241644.62,
+            "ctes": 12,
+            "pct_cts": 6.09,
+            "genomma_frete": 7360.63,
+            "inovalab_frete": 7357.33,
+            "pct_genomma": 3.67,
+            "pct_inovalab": 17.93
           }
         }
       },
@@ -2322,10 +2346,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "SP",
-        "frete": 449034.58,
-        "v_merc": 32800358.56,
-        "ctes": 158,
-        "pct_cts": 1.37,
+        "frete": 459105.2,
+        "v_merc": 33255928.0,
+        "ctes": 163,
+        "pct_cts": 1.38,
         "anos": {
           "2025": {
             "frete": 345769.53,
@@ -2334,10 +2358,10 @@
             "pct_cts": 1.39
           },
           "2026": {
-            "frete": 103265.05,
-            "v_merc": 7876257.75,
-            "ctes": 35,
-            "pct_cts": 1.31
+            "frete": 113335.67,
+            "v_merc": 8331827.19,
+            "ctes": 40,
+            "pct_cts": 1.36
           }
         }
       },
@@ -2347,10 +2371,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "SP",
-        "frete": 357010.33,
-        "v_merc": 27211537.87,
-        "ctes": 124,
-        "pct_cts": 1.31,
+        "frete": 363618.22,
+        "v_merc": 27417470.65,
+        "ctes": 127,
+        "pct_cts": 1.33,
         "anos": {
           "2025": {
             "frete": 291890.48,
@@ -2359,10 +2383,10 @@
             "pct_cts": 1.26
           },
           "2026": {
-            "frete": 65119.85,
-            "v_merc": 3957793.19,
-            "ctes": 30,
-            "pct_cts": 1.65
+            "frete": 71727.74,
+            "v_merc": 4163725.97,
+            "ctes": 33,
+            "pct_cts": 1.72
           }
         }
       },
@@ -2397,10 +2421,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "SP",
-        "frete": 317299.09,
-        "v_merc": 18748980.13,
-        "ctes": 156,
-        "pct_cts": 1.69,
+        "frete": 326102.99,
+        "v_merc": 19106278.22,
+        "ctes": 162,
+        "pct_cts": 1.71,
         "anos": {
           "2025": {
             "frete": 236250.32,
@@ -2409,10 +2433,10 @@
             "pct_cts": 1.63
           },
           "2026": {
-            "frete": 81048.77,
-            "v_merc": 4284211.73,
-            "ctes": 40,
-            "pct_cts": 1.89
+            "frete": 89852.67,
+            "v_merc": 4641509.82,
+            "ctes": 46,
+            "pct_cts": 1.94
           }
         }
       },
@@ -2422,9 +2446,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "ES",
-        "frete": 351695.13,
-        "v_merc": 15872709.96,
-        "ctes": 67,
+        "frete": 352129.83,
+        "v_merc": 15880892.5,
+        "ctes": 68,
         "pct_cts": 2.22,
         "anos": {
           "2025": {
@@ -2434,10 +2458,10 @@
             "pct_cts": 2.28
           },
           "2026": {
-            "frete": 71181.84,
-            "v_merc": 3553850.53,
-            "ctes": 15,
-            "pct_cts": 2.0
+            "frete": 71616.54,
+            "v_merc": 3562033.07,
+            "ctes": 16,
+            "pct_cts": 2.01
           }
         }
       },
@@ -2466,10 +2490,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "SP",
-        "frete": 266317.18,
-        "v_merc": 11387612.29,
-        "ctes": 137,
-        "pct_cts": 2.34,
+        "frete": 274142.1,
+        "v_merc": 11745559.86,
+        "ctes": 142,
+        "pct_cts": 2.33,
         "anos": {
           "2025": {
             "frete": 218977.57,
@@ -2478,10 +2502,10 @@
             "pct_cts": 2.26
           },
           "2026": {
-            "frete": 47339.61,
-            "v_merc": 1696473.0,
-            "ctes": 27,
-            "pct_cts": 2.79
+            "frete": 55164.53,
+            "v_merc": 2054420.57,
+            "ctes": 32,
+            "pct_cts": 2.69
           }
         }
       },
@@ -2511,6 +2535,31 @@
         }
       },
       {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865046305",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 419670.53,
+        "v_merc": 10440155.13,
+        "ctes": 142,
+        "pct_cts": 4.02,
+        "anos": {
+          "2025": {
+            "frete": 326064.37,
+            "v_merc": 8135614.02,
+            "ctes": 105,
+            "pct_cts": 4.01
+          },
+          "2026": {
+            "frete": 93606.16,
+            "v_merc": 2304541.11,
+            "ctes": 37,
+            "pct_cts": 4.06
+          }
+        }
+      },
+      {
         "nome": "RAIA DROGASIL S/A",
         "cnpj": "61585865342460",
         "empresa": "GENOMMA",
@@ -2530,27 +2579,27 @@
         }
       },
       {
-        "nome": "RAIA DROGASIL SA",
-        "cnpj": "61585865046305",
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S.A",
+        "cnpj": "06626253012400",
         "empresa": "GENOMMA",
-        "regiao": "Centro-Oeste",
-        "uf": "GO",
-        "frete": 410257.68,
-        "v_merc": 10128692.17,
-        "ctes": 135,
-        "pct_cts": 4.05,
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 479050.35,
+        "v_merc": 10162635.79,
+        "ctes": 78,
+        "pct_cts": 4.71,
         "anos": {
           "2025": {
-            "frete": 326064.37,
-            "v_merc": 8135614.02,
-            "ctes": 105,
-            "pct_cts": 4.01
+            "frete": 316462.65,
+            "v_merc": 7430229.06,
+            "ctes": 58,
+            "pct_cts": 4.26
           },
           "2026": {
-            "frete": 84193.31,
-            "v_merc": 1993078.15,
-            "ctes": 30,
-            "pct_cts": 4.22
+            "frete": 162587.7,
+            "v_merc": 2732406.73,
+            "ctes": 20,
+            "pct_cts": 5.95
           }
         }
       },
@@ -2560,10 +2609,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "RJ",
-        "frete": 205481.6,
-        "v_merc": 9715493.31,
-        "ctes": 96,
-        "pct_cts": 2.11,
+        "frete": 212434.71,
+        "v_merc": 9791768.3,
+        "ctes": 99,
+        "pct_cts": 2.17,
         "anos": {
           "2025": {
             "frete": 177128.4,
@@ -2572,35 +2621,10 @@
             "pct_cts": 2.1
           },
           "2026": {
-            "frete": 28353.2,
-            "v_merc": 1286067.27,
-            "ctes": 20,
-            "pct_cts": 2.2
-          }
-        }
-      },
-      {
-        "nome": "EMPREENDIMENTOS PAGUE MENOS S.A",
-        "cnpj": "06626253012400",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "CE",
-        "frete": 438878.1,
-        "v_merc": 9535043.83,
-        "ctes": 73,
-        "pct_cts": 4.6,
-        "anos": {
-          "2025": {
-            "frete": 316462.65,
-            "v_merc": 7430229.06,
-            "ctes": 58,
-            "pct_cts": 4.26
-          },
-          "2026": {
-            "frete": 122415.45,
-            "v_merc": 2104814.77,
-            "ctes": 15,
-            "pct_cts": 5.82
+            "frete": 35306.31,
+            "v_merc": 1362342.26,
+            "ctes": 23,
+            "pct_cts": 2.59
           }
         }
       },
@@ -2610,9 +2634,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "ES",
-        "frete": 190351.9,
-        "v_merc": 8975035.56,
-        "ctes": 58,
+        "frete": 193221.33,
+        "v_merc": 9109379.21,
+        "ctes": 60,
         "pct_cts": 2.12,
         "anos": {
           "2025": {
@@ -2622,10 +2646,10 @@
             "pct_cts": 2.23
           },
           "2026": {
-            "frete": 25811.6,
-            "v_merc": 1582697.41,
-            "ctes": 9,
-            "pct_cts": 1.63
+            "frete": 28681.03,
+            "v_merc": 1717041.06,
+            "ctes": 11,
+            "pct_cts": 1.67
           }
         }
       },
@@ -2635,10 +2659,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "RJ",
-        "frete": 130599.91,
-        "v_merc": 8737466.92,
-        "ctes": 40,
-        "pct_cts": 1.49,
+        "frete": 133077.07,
+        "v_merc": 8852448.9,
+        "ctes": 43,
+        "pct_cts": 1.5,
         "anos": {
           "2025": {
             "frete": 62557.3,
@@ -2647,10 +2671,10 @@
             "pct_cts": 1.31
           },
           "2026": {
-            "frete": 68042.61,
-            "v_merc": 3965833.7,
-            "ctes": 17,
-            "pct_cts": 1.72
+            "frete": 70519.77,
+            "v_merc": 4080815.68,
+            "ctes": 20,
+            "pct_cts": 1.73
           }
         }
       },
@@ -2679,9 +2703,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sul",
         "uf": "PR",
-        "frete": 148102.06,
-        "v_merc": 6525600.11,
-        "ctes": 89,
+        "frete": 155344.26,
+        "v_merc": 6835053.34,
+        "ctes": 95,
         "pct_cts": 2.27,
         "anos": {
           "2025": {
@@ -2691,60 +2715,10 @@
             "pct_cts": 2.15
           },
           "2026": {
-            "frete": 41228.32,
-            "v_merc": 1559801.45,
-            "ctes": 25,
-            "pct_cts": 2.64
-          }
-        }
-      },
-      {
-        "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
-        "cnpj": "06626253057935",
-        "empresa": "GENOMMA",
-        "regiao": "Centro-Oeste",
-        "uf": "GO",
-        "frete": 209971.32,
-        "v_merc": 6514870.5,
-        "ctes": 73,
-        "pct_cts": 3.22,
-        "anos": {
-          "2025": {
-            "frete": 168370.93,
-            "v_merc": 5512778.41,
-            "ctes": 58,
-            "pct_cts": 3.05
-          },
-          "2026": {
-            "frete": 41600.39,
-            "v_merc": 1002092.09,
-            "ctes": 15,
-            "pct_cts": 4.15
-          }
-        }
-      },
-      {
-        "nome": "DROGARIA SAO PAULO S A",
-        "cnpj": "61412110095350",
-        "empresa": "GENOMMA",
-        "regiao": "Centro-Oeste",
-        "uf": "GO",
-        "frete": 199197.24,
-        "v_merc": 6279375.69,
-        "ctes": 106,
-        "pct_cts": 3.17,
-        "anos": {
-          "2025": {
-            "frete": 139323.97,
-            "v_merc": 3100597.69,
-            "ctes": 84,
-            "pct_cts": 4.49
-          },
-          "2026": {
-            "frete": 59873.27,
-            "v_merc": 3178778.0,
-            "ctes": 22,
-            "pct_cts": 1.88
+            "frete": 48470.52,
+            "v_merc": 1869254.68,
+            "ctes": 31,
+            "pct_cts": 2.59
           }
         }
       },
@@ -2754,10 +2728,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 130657.15,
-        "v_merc": 6276540.89,
-        "ctes": 66,
-        "pct_cts": 2.08,
+        "frete": 144758.79,
+        "v_merc": 6815387.95,
+        "ctes": 72,
+        "pct_cts": 2.12,
         "anos": {
           "2025": {
             "frete": 85829.12,
@@ -2766,10 +2740,60 @@
             "pct_cts": 2.0
           },
           "2026": {
-            "frete": 44828.03,
-            "v_merc": 1977535.6,
-            "ctes": 27,
-            "pct_cts": 2.27
+            "frete": 58929.67,
+            "v_merc": 2516382.66,
+            "ctes": 33,
+            "pct_cts": 2.34
+          }
+        }
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+        "cnpj": "06626253057935",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 221967.47,
+        "v_merc": 6808830.25,
+        "ctes": 78,
+        "pct_cts": 3.26,
+        "anos": {
+          "2025": {
+            "frete": 168370.93,
+            "v_merc": 5512778.41,
+            "ctes": 58,
+            "pct_cts": 3.05
+          },
+          "2026": {
+            "frete": 53596.54,
+            "v_merc": 1296051.84,
+            "ctes": 20,
+            "pct_cts": 4.14
+          }
+        }
+      },
+      {
+        "nome": "DROGARIA SAO PAULO S A",
+        "cnpj": "61412110095350",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "GO",
+        "frete": 207776.85,
+        "v_merc": 6443613.92,
+        "ctes": 110,
+        "pct_cts": 3.22,
+        "anos": {
+          "2025": {
+            "frete": 139323.97,
+            "v_merc": 3100597.69,
+            "ctes": 84,
+            "pct_cts": 4.49
+          },
+          "2026": {
+            "frete": 68452.88,
+            "v_merc": 3343016.23,
+            "ctes": 26,
+            "pct_cts": 2.05
           }
         }
       },
@@ -2779,9 +2803,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sul",
         "uf": "RS",
-        "frete": 142428.24,
-        "v_merc": 5986727.83,
-        "ctes": 31,
+        "frete": 147486.55,
+        "v_merc": 6186795.38,
+        "ctes": 35,
         "pct_cts": 2.38,
         "anos": {
           "2025": {
@@ -2791,10 +2815,35 @@
             "pct_cts": 2.15
           },
           "2026": {
-            "frete": 59670.05,
-            "v_merc": 2131347.65,
-            "ctes": 12,
-            "pct_cts": 2.8
+            "frete": 64728.36,
+            "v_merc": 2331415.2,
+            "ctes": 16,
+            "pct_cts": 2.78
+          }
+        }
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611032290",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 147218.03,
+        "v_merc": 6092817.67,
+        "ctes": 76,
+        "pct_cts": 2.42,
+        "anos": {
+          "2025": {
+            "frete": 105321.96,
+            "v_merc": 4544250.61,
+            "ctes": 51,
+            "pct_cts": 2.32
+          },
+          "2026": {
+            "frete": 41896.07,
+            "v_merc": 1548567.06,
+            "ctes": 25,
+            "pct_cts": 2.71
           }
         }
       },
@@ -2804,9 +2853,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sul",
         "uf": "RS",
-        "frete": 134249.11,
-        "v_merc": 5864416.61,
-        "ctes": 29,
+        "frete": 137453.48,
+        "v_merc": 6005155.0,
+        "ctes": 32,
         "pct_cts": 2.29,
         "anos": {
           "2025": {
@@ -2816,10 +2865,35 @@
             "pct_cts": 2.21
           },
           "2026": {
-            "frete": 41066.24,
-            "v_merc": 1648458.87,
-            "ctes": 11,
-            "pct_cts": 2.49
+            "frete": 44270.61,
+            "v_merc": 1789197.26,
+            "ctes": 14,
+            "pct_cts": 2.47
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865065954",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 147707.98,
+        "v_merc": 5970819.65,
+        "ctes": 104,
+        "pct_cts": 2.47,
+        "anos": {
+          "2025": {
+            "frete": 90102.34,
+            "v_merc": 4295087.32,
+            "ctes": 73,
+            "pct_cts": 2.1
+          },
+          "2026": {
+            "frete": 57605.64,
+            "v_merc": 1675732.33,
+            "ctes": 31,
+            "pct_cts": 3.44
           }
         }
       },
@@ -2849,56 +2923,6 @@
         }
       },
       {
-        "nome": "RAIA DROGASIL S/A",
-        "cnpj": "61585865065954",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "RJ",
-        "frete": 141595.77,
-        "v_merc": 5784729.04,
-        "ctes": 97,
-        "pct_cts": 2.45,
-        "anos": {
-          "2025": {
-            "frete": 90102.34,
-            "v_merc": 4295087.32,
-            "ctes": 73,
-            "pct_cts": 2.1
-          },
-          "2026": {
-            "frete": 51493.43,
-            "v_merc": 1489641.72,
-            "ctes": 24,
-            "pct_cts": 3.46
-          }
-        }
-      },
-      {
-        "nome": "DIMED S/A - DISTR DE MEDIC",
-        "cnpj": "92665611032290",
-        "empresa": "GENOMMA",
-        "regiao": "Sul",
-        "uf": "RS",
-        "frete": 137090.26,
-        "v_merc": 5722666.8,
-        "ctes": 70,
-        "pct_cts": 2.4,
-        "anos": {
-          "2025": {
-            "frete": 105321.96,
-            "v_merc": 4544250.61,
-            "ctes": 51,
-            "pct_cts": 2.32
-          },
-          "2026": {
-            "frete": 31768.3,
-            "v_merc": 1178416.19,
-            "ctes": 19,
-            "pct_cts": 2.7
-          }
-        }
-      },
-      {
         "nome": "SC DISTRIBUICAO LTDA",
         "cnpj": "01206820003465",
         "empresa": "GENOMMA",
@@ -2920,6 +2944,31 @@
             "v_merc": 40024.12,
             "ctes": 1,
             "pct_cts": 1.49
+          }
+        }
+      },
+      {
+        "nome": "VENANCIO PROD FARMACE LTDA",
+        "cnpj": "00285753002568",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 164931.95,
+        "v_merc": 5386915.03,
+        "ctes": 94,
+        "pct_cts": 3.06,
+        "anos": {
+          "2025": {
+            "frete": 133117.79,
+            "v_merc": 4539285.02,
+            "ctes": 74,
+            "pct_cts": 2.93
+          },
+          "2026": {
+            "frete": 31814.16,
+            "v_merc": 847630.01,
+            "ctes": 20,
+            "pct_cts": 3.75
           }
         }
       },
@@ -2949,39 +2998,14 @@
         }
       },
       {
-        "nome": "VENANCIO PROD FARMACE LTDA",
-        "cnpj": "00285753002568",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "RJ",
-        "frete": 161342.51,
-        "v_merc": 5283654.15,
-        "ctes": 89,
-        "pct_cts": 3.05,
-        "anos": {
-          "2025": {
-            "frete": 133117.79,
-            "v_merc": 4539285.02,
-            "ctes": 74,
-            "pct_cts": 2.93
-          },
-          "2026": {
-            "frete": 28224.72,
-            "v_merc": 744369.13,
-            "ctes": 15,
-            "pct_cts": 3.79
-          }
-        }
-      },
-      {
         "nome": "MINALBA ALIMENTOS E BEBIDAS LTDA",
         "cnpj": "54505052000300",
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "SP",
-        "frete": 143316.91,
-        "v_merc": 4754410.24,
-        "ctes": 30,
+        "frete": 148470.16,
+        "v_merc": 4934998.89,
+        "ctes": 31,
         "pct_cts": 3.01,
         "anos": {
           "2025": {
@@ -2991,10 +3015,10 @@
             "pct_cts": 3.0
           },
           "2026": {
-            "frete": 38607.97,
-            "v_merc": 1260005.44,
-            "ctes": 7,
-            "pct_cts": 3.06
+            "frete": 43761.22,
+            "v_merc": 1440594.09,
+            "ctes": 8,
+            "pct_cts": 3.04
           }
         }
       },
@@ -3029,10 +3053,10 @@
         "empresa": "GENOMMA",
         "regiao": "Norte",
         "uf": "PA",
-        "frete": 296682.46,
-        "v_merc": 4132002.92,
-        "ctes": 28,
-        "pct_cts": 7.18,
+        "frete": 301759.19,
+        "v_merc": 4221616.45,
+        "ctes": 30,
+        "pct_cts": 7.15,
         "anos": {
           "2025": {
             "frete": 243253.12,
@@ -3041,35 +3065,35 @@
             "pct_cts": 7.78
           },
           "2026": {
-            "frete": 53429.34,
-            "v_merc": 1004239.73,
-            "ctes": 8,
-            "pct_cts": 5.32
+            "frete": 58506.07,
+            "v_merc": 1093853.26,
+            "ctes": 10,
+            "pct_cts": 5.35
           }
         }
       },
       {
-        "nome": "RAIA DROGASIL SA",
-        "cnpj": "61585865163298",
+        "nome": "ARCOZ DISTRIBUIDORA LTDA",
+        "cnpj": "37639126000110",
         "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "BA",
-        "frete": 178240.25,
-        "v_merc": 4068872.06,
-        "ctes": 72,
-        "pct_cts": 4.38,
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 61711.12,
+        "v_merc": 4159793.23,
+        "ctes": 45,
+        "pct_cts": 1.48,
         "anos": {
           "2025": {
-            "frete": 136470.29,
-            "v_merc": 3265392.35,
-            "ctes": 55,
-            "pct_cts": 4.18
+            "frete": 45990.14,
+            "v_merc": 3122713.44,
+            "ctes": 34,
+            "pct_cts": 1.47
           },
           "2026": {
-            "frete": 41769.96,
-            "v_merc": 803479.71,
-            "ctes": 17,
-            "pct_cts": 5.2
+            "frete": 15720.98,
+            "v_merc": 1037079.79,
+            "ctes": 11,
+            "pct_cts": 1.52
           }
         }
       },
@@ -3079,10 +3103,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "CE",
-        "frete": 251435.31,
-        "v_merc": 4053739.93,
-        "ctes": 76,
-        "pct_cts": 6.2,
+        "frete": 256157.79,
+        "v_merc": 4138827.88,
+        "ctes": 80,
+        "pct_cts": 6.19,
         "anos": {
           "2025": {
             "frete": 193286.28,
@@ -3091,10 +3115,35 @@
             "pct_cts": 6.14
           },
           "2026": {
-            "frete": 58149.03,
-            "v_merc": 904437.99,
-            "ctes": 19,
-            "pct_cts": 6.43
+            "frete": 62871.51,
+            "v_merc": 989525.94,
+            "ctes": 23,
+            "pct_cts": 6.35
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865163298",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 181033.29,
+        "v_merc": 4122024.51,
+        "ctes": 76,
+        "pct_cts": 4.39,
+        "anos": {
+          "2025": {
+            "frete": 136470.29,
+            "v_merc": 3265392.35,
+            "ctes": 55,
+            "pct_cts": 4.18
+          },
+          "2026": {
+            "frete": 44563.0,
+            "v_merc": 856632.16,
+            "ctes": 21,
+            "pct_cts": 5.2
           }
         }
       },
@@ -3114,31 +3163,6 @@
             "v_merc": 3952128.26,
             "ctes": 8,
             "pct_cts": 1.04
-          }
-        }
-      },
-      {
-        "nome": "ARCOZ DISTRIBUIDORA LTDA",
-        "cnpj": "37639126000110",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "SP",
-        "frete": 57006.32,
-        "v_merc": 3740906.09,
-        "ctes": 42,
-        "pct_cts": 1.52,
-        "anos": {
-          "2025": {
-            "frete": 45990.14,
-            "v_merc": 3122713.44,
-            "ctes": 34,
-            "pct_cts": 1.47
-          },
-          "2026": {
-            "frete": 11016.18,
-            "v_merc": 618192.65,
-            "ctes": 8,
-            "pct_cts": 1.78
           }
         }
       },
@@ -3173,10 +3197,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PE",
-        "frete": 174835.62,
-        "v_merc": 3607264.85,
-        "ctes": 38,
-        "pct_cts": 4.85,
+        "frete": 179618.62,
+        "v_merc": 3718626.81,
+        "ctes": 39,
+        "pct_cts": 4.83,
         "anos": {
           "2025": {
             "frete": 161906.51,
@@ -3185,10 +3209,10 @@
             "pct_cts": 4.96
           },
           "2026": {
-            "frete": 12929.11,
-            "v_merc": 344935.95,
-            "ctes": 8,
-            "pct_cts": 3.75
+            "frete": 17712.11,
+            "v_merc": 456297.91,
+            "ctes": 9,
+            "pct_cts": 3.88
           }
         }
       },
@@ -3198,10 +3222,10 @@
         "empresa": "GENOMMA",
         "regiao": "Centro-Oeste",
         "uf": "MT",
-        "frete": 153045.6,
-        "v_merc": 3492284.62,
-        "ctes": 55,
-        "pct_cts": 4.38,
+        "frete": 157609.18,
+        "v_merc": 3614258.82,
+        "ctes": 58,
+        "pct_cts": 4.36,
         "anos": {
           "2025": {
             "frete": 99340.06,
@@ -3210,10 +3234,10 @@
             "pct_cts": 3.84
           },
           "2026": {
-            "frete": 53705.54,
-            "v_merc": 902111.69,
-            "ctes": 18,
-            "pct_cts": 5.95
+            "frete": 58269.12,
+            "v_merc": 1024085.89,
+            "ctes": 21,
+            "pct_cts": 5.69
           }
         }
       },
@@ -3223,10 +3247,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "SP",
-        "frete": 66805.29,
-        "v_merc": 3446408.79,
-        "ctes": 52,
-        "pct_cts": 1.94,
+        "frete": 72362.39,
+        "v_merc": 3570684.38,
+        "ctes": 56,
+        "pct_cts": 2.03,
         "anos": {
           "2025": {
             "frete": 51475.6,
@@ -3235,10 +3259,85 @@
             "pct_cts": 1.9
           },
           "2026": {
-            "frete": 15329.69,
-            "v_merc": 736074.98,
-            "ctes": 10,
-            "pct_cts": 2.08
+            "frete": 20886.79,
+            "v_merc": 860350.57,
+            "ctes": 14,
+            "pct_cts": 2.43
+          }
+        }
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253063315",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 249413.18,
+        "v_merc": 3547488.79,
+        "ctes": 58,
+        "pct_cts": 7.03,
+        "anos": {
+          "2025": {
+            "frete": 179814.39,
+            "v_merc": 2825929.79,
+            "ctes": 44,
+            "pct_cts": 6.36
+          },
+          "2026": {
+            "frete": 69598.79,
+            "v_merc": 721559.0,
+            "ctes": 14,
+            "pct_cts": 9.65
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865242244",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 115893.38,
+        "v_merc": 3519571.9,
+        "ctes": 90,
+        "pct_cts": 3.29,
+        "anos": {
+          "2025": {
+            "frete": 79132.8,
+            "v_merc": 2448751.97,
+            "ctes": 62,
+            "pct_cts": 3.23
+          },
+          "2026": {
+            "frete": 36760.58,
+            "v_merc": 1070819.93,
+            "ctes": 28,
+            "pct_cts": 3.43
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865040960",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 84975.0,
+        "v_merc": 3484784.02,
+        "ctes": 98,
+        "pct_cts": 2.44,
+        "anos": {
+          "2025": {
+            "frete": 61426.63,
+            "v_merc": 2550061.46,
+            "ctes": 70,
+            "pct_cts": 2.41
+          },
+          "2026": {
+            "frete": 23548.37,
+            "v_merc": 934722.56,
+            "ctes": 28,
+            "pct_cts": 2.52
           }
         }
       },
@@ -3262,115 +3361,15 @@
         }
       },
       {
-        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
-        "cnpj": "06626253063315",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PE",
-        "frete": 221815.47,
-        "v_merc": 3402567.33,
-        "ctes": 54,
-        "pct_cts": 6.52,
-        "anos": {
-          "2025": {
-            "frete": 179814.39,
-            "v_merc": 2825929.79,
-            "ctes": 44,
-            "pct_cts": 6.36
-          },
-          "2026": {
-            "frete": 42001.08,
-            "v_merc": 576637.54,
-            "ctes": 10,
-            "pct_cts": 7.28
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL S/A",
-        "cnpj": "61585865242244",
-        "empresa": "GENOMMA",
-        "regiao": "Sul",
-        "uf": "RS",
-        "frete": 111136.68,
-        "v_merc": 3397544.21,
-        "ctes": 85,
-        "pct_cts": 3.27,
-        "anos": {
-          "2025": {
-            "frete": 79132.8,
-            "v_merc": 2448751.97,
-            "ctes": 62,
-            "pct_cts": 3.23
-          },
-          "2026": {
-            "frete": 32003.88,
-            "v_merc": 948792.24,
-            "ctes": 23,
-            "pct_cts": 3.37
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL S/A",
-        "cnpj": "61585865040960",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "MG",
-        "frete": 79905.14,
-        "v_merc": 3286701.36,
-        "ctes": 92,
-        "pct_cts": 2.43,
-        "anos": {
-          "2025": {
-            "frete": 61426.63,
-            "v_merc": 2550061.46,
-            "ctes": 70,
-            "pct_cts": 2.41
-          },
-          "2026": {
-            "frete": 18478.51,
-            "v_merc": 736639.9,
-            "ctes": 22,
-            "pct_cts": 2.51
-          }
-        }
-      },
-      {
-        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
-        "cnpj": "15436940000952",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "MG",
-        "frete": 63328.13,
-        "v_merc": 3156494.09,
-        "ctes": 30,
-        "pct_cts": 2.01,
-        "anos": {
-          "2025": {
-            "frete": 46222.85,
-            "v_merc": 2351752.38,
-            "ctes": 23,
-            "pct_cts": 1.97
-          },
-          "2026": {
-            "frete": 17105.28,
-            "v_merc": 804741.71,
-            "ctes": 7,
-            "pct_cts": 2.13
-          }
-        }
-      },
-      {
         "nome": "RAIA DROGASIL SA",
         "cnpj": "61585865134000",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PE",
-        "frete": 210712.72,
-        "v_merc": 3147766.3,
-        "ctes": 78,
-        "pct_cts": 6.69,
+        "frete": 217754.99,
+        "v_merc": 3290055.77,
+        "ctes": 82,
+        "pct_cts": 6.62,
         "anos": {
           "2025": {
             "frete": 153062.31,
@@ -3379,10 +3378,10 @@
             "pct_cts": 6.56
           },
           "2026": {
-            "frete": 57650.41,
-            "v_merc": 814557.69,
-            "ctes": 20,
-            "pct_cts": 7.08
+            "frete": 64692.68,
+            "v_merc": 956847.16,
+            "ctes": 24,
+            "pct_cts": 6.76
           }
         }
       },
@@ -3392,10 +3391,10 @@
         "empresa": "GENOMMA",
         "regiao": "Norte",
         "uf": "PA",
-        "frete": 267267.15,
-        "v_merc": 3038504.69,
-        "ctes": 57,
-        "pct_cts": 8.8,
+        "frete": 303505.23,
+        "v_merc": 3225830.0,
+        "ctes": 62,
+        "pct_cts": 9.41,
         "anos": {
           "2025": {
             "frete": 212779.13,
@@ -3404,10 +3403,35 @@
             "pct_cts": 8.52
           },
           "2026": {
-            "frete": 54488.02,
-            "v_merc": 541963.89,
-            "ctes": 7,
-            "pct_cts": 10.05
+            "frete": 90726.1,
+            "v_merc": 729289.2,
+            "ctes": 12,
+            "pct_cts": 12.44
+          }
+        }
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940000952",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 65206.26,
+        "v_merc": 3213737.31,
+        "ctes": 31,
+        "pct_cts": 2.03,
+        "anos": {
+          "2025": {
+            "frete": 46222.85,
+            "v_merc": 2351752.38,
+            "ctes": 23,
+            "pct_cts": 1.97
+          },
+          "2026": {
+            "frete": 18983.41,
+            "v_merc": 861984.93,
+            "ctes": 8,
+            "pct_cts": 2.2
           }
         }
       },
@@ -3417,10 +3441,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "BA",
-        "frete": 166712.83,
-        "v_merc": 2951076.81,
-        "ctes": 58,
-        "pct_cts": 5.65,
+        "frete": 185521.36,
+        "v_merc": 3151529.79,
+        "ctes": 62,
+        "pct_cts": 5.89,
         "anos": {
           "2025": {
             "frete": 129823.54,
@@ -3429,10 +3453,10 @@
             "pct_cts": 5.44
           },
           "2026": {
-            "frete": 36889.29,
-            "v_merc": 566742.13,
-            "ctes": 11,
-            "pct_cts": 6.51
+            "frete": 55697.82,
+            "v_merc": 767195.11,
+            "ctes": 15,
+            "pct_cts": 7.26
           }
         }
       },
@@ -3442,10 +3466,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "MA",
-        "frete": 142581.24,
-        "v_merc": 2805713.63,
-        "ctes": 61,
-        "pct_cts": 5.08,
+        "frete": 162713.3,
+        "v_merc": 3001730.7,
+        "ctes": 66,
+        "pct_cts": 5.42,
         "anos": {
           "2025": {
             "frete": 102402.8,
@@ -3454,10 +3478,10 @@
             "pct_cts": 4.38
           },
           "2026": {
-            "frete": 40178.44,
-            "v_merc": 467398.37,
-            "ctes": 12,
-            "pct_cts": 8.6
+            "frete": 60310.5,
+            "v_merc": 663415.44,
+            "ctes": 17,
+            "pct_cts": 9.09
           }
         }
       },
@@ -3467,10 +3491,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 72158.35,
-        "v_merc": 2790664.78,
-        "ctes": 67,
-        "pct_cts": 2.59,
+        "frete": 73686.96,
+        "v_merc": 2802699.68,
+        "ctes": 68,
+        "pct_cts": 2.63,
         "anos": {
           "2025": {
             "frete": 55449.81,
@@ -3479,10 +3503,10 @@
             "pct_cts": 2.47
           },
           "2026": {
-            "frete": 16708.54,
-            "v_merc": 542289.55,
-            "ctes": 15,
-            "pct_cts": 3.08
+            "frete": 18237.15,
+            "v_merc": 554324.45,
+            "ctes": 16,
+            "pct_cts": 3.29
           }
         }
       },
@@ -3492,16 +3516,47 @@
         "empresa": "GENOMMA",
         "regiao": "Norte",
         "uf": "PA",
-        "frete": 189116.4,
-        "v_merc": 2714601.27,
-        "ctes": 31,
-        "pct_cts": 6.97,
+        "frete": 197507.88,
+        "v_merc": 2750940.52,
+        "ctes": 32,
+        "pct_cts": 7.18,
         "anos": {
           "2025": {
             "frete": 189116.4,
             "v_merc": 2714601.27,
             "ctes": 31,
             "pct_cts": 6.97
+          },
+          "2026": {
+            "frete": 8391.48,
+            "v_merc": 36339.25,
+            "ctes": 1,
+            "pct_cts": 23.09
+          }
+        }
+      },
+      {
+        "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E C",
+        "cnpj": "04899316025293",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 194126.06,
+        "v_merc": 2603837.72,
+        "ctes": 58,
+        "pct_cts": 7.46,
+        "anos": {
+          "2025": {
+            "frete": 129856.99,
+            "v_merc": 1953423.2,
+            "ctes": 42,
+            "pct_cts": 6.65
+          },
+          "2026": {
+            "frete": 64269.07,
+            "v_merc": 650414.52,
+            "ctes": 16,
+            "pct_cts": 9.88
           }
         }
       },
@@ -3571,31 +3626,6 @@
             "v_merc": 2560524.95,
             "ctes": 34,
             "pct_cts": 4.51
-          }
-        }
-      },
-      {
-        "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E C",
-        "cnpj": "04899316025293",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "CE",
-        "frete": 170821.42,
-        "v_merc": 2438931.87,
-        "ctes": 53,
-        "pct_cts": 7.0,
-        "anos": {
-          "2025": {
-            "frete": 129856.99,
-            "v_merc": 1953423.2,
-            "ctes": 42,
-            "pct_cts": 6.65
-          },
-          "2026": {
-            "frete": 40964.43,
-            "v_merc": 485508.67,
-            "ctes": 11,
-            "pct_cts": 8.44
           }
         }
       },
@@ -3676,6 +3706,31 @@
         }
       },
       {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940001410",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 62657.62,
+        "v_merc": 2264050.65,
+        "ctes": 30,
+        "pct_cts": 2.77,
+        "anos": {
+          "2025": {
+            "frete": 55813.29,
+            "v_merc": 2073137.9,
+            "ctes": 22,
+            "pct_cts": 2.69
+          },
+          "2026": {
+            "frete": 6844.33,
+            "v_merc": 190912.75,
+            "ctes": 8,
+            "pct_cts": 3.59
+          }
+        }
+      },
+      {
         "nome": "DISTR DE MEDIC STA CRUZ LTDA",
         "cnpj": "61940292001290",
         "empresa": "GENOMMA",
@@ -3695,27 +3750,27 @@
         }
       },
       {
-        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
-        "cnpj": "15436940001410",
+        "nome": "DROG SAO PAULO SA",
+        "cnpj": "61412110062002",
         "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "RJ",
-        "frete": 62141.02,
-        "v_merc": 2252510.74,
-        "ctes": 29,
-        "pct_cts": 2.76,
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 134346.86,
+        "v_merc": 2120111.43,
+        "ctes": 62,
+        "pct_cts": 6.34,
         "anos": {
           "2025": {
-            "frete": 55813.29,
-            "v_merc": 2073137.9,
-            "ctes": 22,
-            "pct_cts": 2.69
+            "frete": 97941.28,
+            "v_merc": 1699306.04,
+            "ctes": 45,
+            "pct_cts": 5.76
           },
           "2026": {
-            "frete": 6327.73,
-            "v_merc": 179372.84,
-            "ctes": 7,
-            "pct_cts": 3.53
+            "frete": 36405.58,
+            "v_merc": 420805.39,
+            "ctes": 17,
+            "pct_cts": 8.65
           }
         }
       },
@@ -3741,31 +3796,6 @@
             "v_merc": 37636.2,
             "ctes": 4,
             "pct_cts": 6.1
-          }
-        }
-      },
-      {
-        "nome": "DROG SAO PAULO SA",
-        "cnpj": "61412110062002",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "BA",
-        "frete": 126934.31,
-        "v_merc": 2083385.81,
-        "ctes": 57,
-        "pct_cts": 6.09,
-        "anos": {
-          "2025": {
-            "frete": 97941.28,
-            "v_merc": 1699306.04,
-            "ctes": 45,
-            "pct_cts": 5.76
-          },
-          "2026": {
-            "frete": 28993.03,
-            "v_merc": 384079.77,
-            "ctes": 12,
-            "pct_cts": 7.55
           }
         }
       },
@@ -3808,6 +3838,31 @@
         }
       },
       {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001026",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "BA",
+        "frete": 106909.56,
+        "v_merc": 2036287.04,
+        "ctes": 27,
+        "pct_cts": 5.25,
+        "anos": {
+          "2025": {
+            "frete": 79230.78,
+            "v_merc": 1564486.61,
+            "ctes": 20,
+            "pct_cts": 5.06
+          },
+          "2026": {
+            "frete": 27678.78,
+            "v_merc": 471800.43,
+            "ctes": 7,
+            "pct_cts": 5.87
+          }
+        }
+      },
+      {
         "nome": "ARCOZ DISTRIBUIDORA LTDA",
         "cnpj": "37639126000200",
         "empresa": "GENOMMA",
@@ -3833,40 +3888,15 @@
         }
       },
       {
-        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
-        "cnpj": "07224991001026",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "BA",
-        "frete": 105236.07,
-        "v_merc": 1954956.81,
-        "ctes": 26,
-        "pct_cts": 5.38,
-        "anos": {
-          "2025": {
-            "frete": 79230.78,
-            "v_merc": 1564486.61,
-            "ctes": 20,
-            "pct_cts": 5.06
-          },
-          "2026": {
-            "frete": 26005.29,
-            "v_merc": 390470.2,
-            "ctes": 6,
-            "pct_cts": 6.66
-          }
-        }
-      },
-      {
         "nome": "NAZARIA DISTR DE PROD FARM LTDA",
         "cnpj": "07224991000135",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "CE",
-        "frete": 78117.76,
-        "v_merc": 1892894.17,
-        "ctes": 24,
-        "pct_cts": 4.13,
+        "frete": 83396.59,
+        "v_merc": 1922988.18,
+        "ctes": 26,
+        "pct_cts": 4.34,
         "anos": {
           "2025": {
             "frete": 50727.52,
@@ -3875,10 +3905,35 @@
             "pct_cts": 3.98
           },
           "2026": {
-            "frete": 27390.24,
-            "v_merc": 617821.38,
-            "ctes": 5,
-            "pct_cts": 4.43
+            "frete": 32669.07,
+            "v_merc": 647915.39,
+            "ctes": 7,
+            "pct_cts": 5.04
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288406",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 201664.31,
+        "v_merc": 1893986.79,
+        "ctes": 55,
+        "pct_cts": 10.65,
+        "anos": {
+          "2025": {
+            "frete": 121345.53,
+            "v_merc": 1172264.91,
+            "ctes": 35,
+            "pct_cts": 10.35
+          },
+          "2026": {
+            "frete": 80318.78,
+            "v_merc": 721721.88,
+            "ctes": 20,
+            "pct_cts": 11.13
           }
         }
       },
@@ -3888,10 +3943,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PB",
-        "frete": 94837.86,
-        "v_merc": 1867470.41,
-        "ctes": 25,
-        "pct_cts": 5.08,
+        "frete": 96181.95,
+        "v_merc": 1881629.53,
+        "ctes": 27,
+        "pct_cts": 5.11,
         "anos": {
           "2025": {
             "frete": 74537.14,
@@ -3900,10 +3955,10 @@
             "pct_cts": 5.02
           },
           "2026": {
-            "frete": 20300.72,
-            "v_merc": 381521.61,
-            "ctes": 5,
-            "pct_cts": 5.32
+            "frete": 21644.81,
+            "v_merc": 395680.73,
+            "ctes": 7,
+            "pct_cts": 5.47
           }
         }
       },
@@ -3913,10 +3968,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sul",
         "uf": "SC",
-        "frete": 66380.94,
-        "v_merc": 1856909.49,
-        "ctes": 37,
-        "pct_cts": 3.57,
+        "frete": 67050.46,
+        "v_merc": 1874554.35,
+        "ctes": 38,
+        "pct_cts": 3.58,
         "anos": {
           "2025": {
             "frete": 56814.79,
@@ -3925,10 +3980,10 @@
             "pct_cts": 3.5
           },
           "2026": {
-            "frete": 9566.15,
-            "v_merc": 235427.7,
-            "ctes": 7,
-            "pct_cts": 4.06
+            "frete": 10235.67,
+            "v_merc": 253072.56,
+            "ctes": 8,
+            "pct_cts": 4.04
           }
         }
       },
@@ -3958,40 +4013,15 @@
         }
       },
       {
-        "nome": "RAIA DROGASIL SA",
-        "cnpj": "61585865288406",
-        "empresa": "GENOMMA",
-        "regiao": "Norte",
-        "uf": "PA",
-        "frete": 195689.24,
-        "v_merc": 1801911.13,
-        "ctes": 53,
-        "pct_cts": 10.86,
-        "anos": {
-          "2025": {
-            "frete": 121345.53,
-            "v_merc": 1172264.91,
-            "ctes": 35,
-            "pct_cts": 10.35
-          },
-          "2026": {
-            "frete": 74343.71,
-            "v_merc": 629646.22,
-            "ctes": 18,
-            "pct_cts": 11.81
-          }
-        }
-      },
-      {
         "nome": "DIMED S/A - DISTR DE MEDIC",
         "cnpj": "92665611051162",
         "empresa": "GENOMMA",
         "regiao": "Sul",
         "uf": "PR",
-        "frete": 63724.98,
-        "v_merc": 1702801.63,
-        "ctes": 58,
-        "pct_cts": 3.74,
+        "frete": 68133.64,
+        "v_merc": 1798791.1,
+        "ctes": 63,
+        "pct_cts": 3.79,
         "anos": {
           "2025": {
             "frete": 43108.29,
@@ -4000,9 +4030,9 @@
             "pct_cts": 3.43
           },
           "2026": {
-            "frete": 20616.69,
-            "v_merc": 446785.46,
-            "ctes": 16,
+            "frete": 25025.35,
+            "v_merc": 542774.93,
+            "ctes": 21,
             "pct_cts": 4.61
           }
         }
@@ -4013,10 +4043,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 52802.55,
-        "v_merc": 1634351.34,
-        "ctes": 59,
-        "pct_cts": 3.23,
+        "frete": 59016.55,
+        "v_merc": 1690154.28,
+        "ctes": 62,
+        "pct_cts": 3.49,
         "anos": {
           "2025": {
             "frete": 41089.59,
@@ -4025,10 +4055,10 @@
             "pct_cts": 3.29
           },
           "2026": {
-            "frete": 11712.96,
-            "v_merc": 384262.0,
-            "ctes": 13,
-            "pct_cts": 3.05
+            "frete": 17926.96,
+            "v_merc": 440064.94,
+            "ctes": 16,
+            "pct_cts": 4.07
           }
         }
       },
@@ -4038,10 +4068,10 @@
         "empresa": "GENOMMA",
         "regiao": "Norte",
         "uf": "AM",
-        "frete": 92395.82,
-        "v_merc": 1550801.8,
-        "ctes": 15,
-        "pct_cts": 5.96,
+        "frete": 101983.86,
+        "v_merc": 1652442.84,
+        "ctes": 17,
+        "pct_cts": 6.17,
         "anos": {
           "2025": {
             "frete": 73143.25,
@@ -4050,10 +4080,10 @@
             "pct_cts": 5.76
           },
           "2026": {
-            "frete": 19252.57,
-            "v_merc": 280341.44,
-            "ctes": 4,
-            "pct_cts": 6.87
+            "frete": 28840.61,
+            "v_merc": 381982.48,
+            "ctes": 6,
+            "pct_cts": 7.55
           }
         }
       },
@@ -4177,6 +4207,31 @@
         }
       },
       {
+        "nome": "DISTR VALE DAS ACACIAS LTDA",
+        "cnpj": "13311080000148",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 98849.12,
+        "v_merc": 1224557.85,
+        "ctes": 33,
+        "pct_cts": 8.07,
+        "anos": {
+          "2025": {
+            "frete": 59423.11,
+            "v_merc": 798707.41,
+            "ctes": 18,
+            "pct_cts": 7.44
+          },
+          "2026": {
+            "frete": 39426.01,
+            "v_merc": 425850.44,
+            "ctes": 15,
+            "pct_cts": 9.26
+          }
+        }
+      },
+      {
         "nome": "PANPHARMA DIST MEDIC LTDA",
         "cnpj": "01206820002493",
         "empresa": "GENOMMA",
@@ -4201,10 +4256,10 @@
         "empresa": "GENOMMA",
         "regiao": "Centro-Oeste",
         "uf": "GO",
-        "frete": 33950.17,
-        "v_merc": 1205335.88,
-        "ctes": 28,
-        "pct_cts": 2.82,
+        "frete": 34785.61,
+        "v_merc": 1212587.47,
+        "ctes": 30,
+        "pct_cts": 2.87,
         "anos": {
           "2025": {
             "frete": 29675.75,
@@ -4213,35 +4268,10 @@
             "pct_cts": 2.87
           },
           "2026": {
-            "frete": 4274.42,
-            "v_merc": 170525.3,
-            "ctes": 3,
-            "pct_cts": 2.51
-          }
-        }
-      },
-      {
-        "nome": "DISTR VALE DAS ACACIAS LTDA",
-        "cnpj": "13311080000148",
-        "empresa": "GENOMMA",
-        "regiao": "Sul",
-        "uf": "PR",
-        "frete": 98001.92,
-        "v_merc": 1203417.3,
-        "ctes": 31,
-        "pct_cts": 8.14,
-        "anos": {
-          "2025": {
-            "frete": 59423.11,
-            "v_merc": 798707.41,
-            "ctes": 18,
-            "pct_cts": 7.44
-          },
-          "2026": {
-            "frete": 38578.81,
-            "v_merc": 404709.89,
-            "ctes": 13,
-            "pct_cts": 9.53
+            "frete": 5109.86,
+            "v_merc": 177776.89,
+            "ctes": 5,
+            "pct_cts": 2.87
           }
         }
       },
@@ -4270,10 +4300,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "MA",
-        "frete": 45982.72,
-        "v_merc": 1153296.07,
-        "ctes": 21,
-        "pct_cts": 3.99,
+        "frete": 46875.07,
+        "v_merc": 1161089.76,
+        "ctes": 23,
+        "pct_cts": 4.04,
         "anos": {
           "2025": {
             "frete": 33927.11,
@@ -4282,10 +4312,10 @@
             "pct_cts": 4.09
           },
           "2026": {
-            "frete": 12055.61,
-            "v_merc": 323963.38,
-            "ctes": 4,
-            "pct_cts": 3.72
+            "frete": 12947.96,
+            "v_merc": 331757.07,
+            "ctes": 6,
+            "pct_cts": 3.9
           }
         }
       },
@@ -4309,6 +4339,31 @@
         }
       },
       {
+        "nome": "NAZARIA DISTRIB PROD FARMACEUTICO LTDA",
+        "cnpj": "07224991002189",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 68431.66,
+        "v_merc": 1112599.09,
+        "ctes": 23,
+        "pct_cts": 6.15,
+        "anos": {
+          "2025": {
+            "frete": 61361.92,
+            "v_merc": 893266.52,
+            "ctes": 19,
+            "pct_cts": 6.87
+          },
+          "2026": {
+            "frete": 7069.74,
+            "v_merc": 219332.57,
+            "ctes": 4,
+            "pct_cts": 3.22
+          }
+        }
+      },
+      {
         "nome": "DISTR DE MEDIC STA CRUZ LTDA",
         "cnpj": "61940292001702",
         "empresa": "GENOMMA",
@@ -4328,31 +4383,6 @@
         }
       },
       {
-        "nome": "NAZARIA DISTRIB PROD FARMACEUTICO LTDA",
-        "cnpj": "07224991002189",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PI",
-        "frete": 67149.43,
-        "v_merc": 1093783.34,
-        "ctes": 22,
-        "pct_cts": 6.14,
-        "anos": {
-          "2025": {
-            "frete": 61361.92,
-            "v_merc": 893266.52,
-            "ctes": 19,
-            "pct_cts": 6.87
-          },
-          "2026": {
-            "frete": 5787.51,
-            "v_merc": 200516.82,
-            "ctes": 3,
-            "pct_cts": 2.89
-          }
-        }
-      },
-      {
         "nome": "DIST MEDIC SANTA CRUZ LTDA",
         "cnpj": "61940292005600",
         "empresa": "GENOMMA",
@@ -4368,6 +4398,56 @@
             "v_merc": 1086937.04,
             "ctes": 28,
             "pct_cts": 3.12
+          }
+        }
+      },
+      {
+        "nome": "DIST DE MEDICAMENTOS SANTA CRUZ LTDA",
+        "cnpj": "61940292006682",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "AM",
+        "frete": 165795.03,
+        "v_merc": 1074400.72,
+        "ctes": 28,
+        "pct_cts": 15.43,
+        "anos": {
+          "2025": {
+            "frete": 133284.86,
+            "v_merc": 1024386.72,
+            "ctes": 26,
+            "pct_cts": 13.01
+          },
+          "2026": {
+            "frete": 32510.17,
+            "v_merc": 50014.0,
+            "ctes": 2,
+            "pct_cts": 65.0
+          }
+        }
+      },
+      {
+        "nome": "DIMED S/A - DISTR DE MEDIC",
+        "cnpj": "92665611026133",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 29426.11,
+        "v_merc": 1060547.83,
+        "ctes": 46,
+        "pct_cts": 2.77,
+        "anos": {
+          "2025": {
+            "frete": 20749.06,
+            "v_merc": 742589.93,
+            "ctes": 33,
+            "pct_cts": 2.79
+          },
+          "2026": {
+            "frete": 8677.05,
+            "v_merc": 317957.9,
+            "ctes": 13,
+            "pct_cts": 2.73
           }
         }
       },
@@ -4397,6 +4477,31 @@
         }
       },
       {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865337202",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 60715.7,
+        "v_merc": 1039867.17,
+        "ctes": 36,
+        "pct_cts": 5.84,
+        "anos": {
+          "2025": {
+            "frete": 27789.28,
+            "v_merc": 525959.14,
+            "ctes": 17,
+            "pct_cts": 5.28
+          },
+          "2026": {
+            "frete": 32926.42,
+            "v_merc": 513908.03,
+            "ctes": 19,
+            "pct_cts": 6.41
+          }
+        }
+      },
+      {
         "nome": "PROFARMA DISTRIBUIDORA DE PRODUTOS",
         "cnpj": "45453214002014",
         "empresa": "GENOMMA",
@@ -4422,46 +4527,27 @@
         }
       },
       {
-        "nome": "DIST DE MEDICAMENTOS SANTA CRUZ LTDA",
-        "cnpj": "61940292006682",
+        "nome": "J SLEIMAN S.A. COM DE PROD DE HIG E ALIM",
+        "cnpj": "07216054000219",
         "empresa": "GENOMMA",
-        "regiao": "Norte",
-        "uf": "AM",
-        "frete": 133284.86,
-        "v_merc": 1024386.72,
-        "ctes": 26,
-        "pct_cts": 13.01,
+        "regiao": "Nordeste",
+        "uf": "CE",
+        "frete": 37491.16,
+        "v_merc": 1005248.1,
+        "ctes": 13,
+        "pct_cts": 3.73,
         "anos": {
           "2025": {
-            "frete": 133284.86,
-            "v_merc": 1024386.72,
-            "ctes": 26,
-            "pct_cts": 13.01
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL S/A",
-        "cnpj": "61585865337202",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "ES",
-        "frete": 59338.2,
-        "v_merc": 1017730.21,
-        "ctes": 33,
-        "pct_cts": 5.83,
-        "anos": {
-          "2025": {
-            "frete": 27789.28,
-            "v_merc": 525959.14,
-            "ctes": 17,
-            "pct_cts": 5.28
+            "frete": 28396.51,
+            "v_merc": 753459.71,
+            "ctes": 10,
+            "pct_cts": 3.77
           },
           "2026": {
-            "frete": 31548.92,
-            "v_merc": 491771.07,
-            "ctes": 16,
-            "pct_cts": 6.42
+            "frete": 9094.65,
+            "v_merc": 251788.39,
+            "ctes": 3,
+            "pct_cts": 3.61
           }
         }
       },
@@ -4471,10 +4557,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "RN",
-        "frete": 36631.1,
-        "v_merc": 987304.48,
-        "ctes": 26,
-        "pct_cts": 3.71,
+        "frete": 37439.51,
+        "v_merc": 1001465.43,
+        "ctes": 28,
+        "pct_cts": 3.74,
         "anos": {
           "2025": {
             "frete": 27107.94,
@@ -4483,35 +4569,10 @@
             "pct_cts": 3.63
           },
           "2026": {
-            "frete": 9523.16,
-            "v_merc": 240931.19,
-            "ctes": 5,
-            "pct_cts": 3.95
-          }
-        }
-      },
-      {
-        "nome": "DIMED S/A - DISTR DE MEDIC",
-        "cnpj": "92665611026133",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "ES",
-        "frete": 27442.18,
-        "v_merc": 985863.39,
-        "ctes": 43,
-        "pct_cts": 2.78,
-        "anos": {
-          "2025": {
-            "frete": 20749.06,
-            "v_merc": 742589.93,
-            "ctes": 33,
-            "pct_cts": 2.79
-          },
-          "2026": {
-            "frete": 6693.12,
-            "v_merc": 243273.46,
-            "ctes": 10,
-            "pct_cts": 2.75
+            "frete": 10331.57,
+            "v_merc": 255092.14,
+            "ctes": 7,
+            "pct_cts": 4.05
           }
         }
       },
@@ -4541,6 +4602,56 @@
         }
       },
       {
+        "nome": "DIST CENTRO OESTE DE MEDICAMENTOS LTDA",
+        "cnpj": "66438011000328",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 48680.11,
+        "v_merc": 970337.33,
+        "ctes": 24,
+        "pct_cts": 5.02,
+        "anos": {
+          "2025": {
+            "frete": 39350.39,
+            "v_merc": 800513.09,
+            "ctes": 15,
+            "pct_cts": 4.92
+          },
+          "2026": {
+            "frete": 9329.72,
+            "v_merc": 169824.24,
+            "ctes": 9,
+            "pct_cts": 5.49
+          }
+        }
+      },
+      {
+        "nome": "SB COMERCIO LTDA",
+        "cnpj": "04429478000192",
+        "empresa": "GENOMMA",
+        "regiao": "Norte",
+        "uf": "AM",
+        "frete": 51651.98,
+        "v_merc": 947763.18,
+        "ctes": 19,
+        "pct_cts": 5.45,
+        "anos": {
+          "2025": {
+            "frete": 40068.68,
+            "v_merc": 745450.64,
+            "ctes": 13,
+            "pct_cts": 5.38
+          },
+          "2026": {
+            "frete": 11583.3,
+            "v_merc": 202312.54,
+            "ctes": 6,
+            "pct_cts": 5.73
+          }
+        }
+      },
+      {
         "nome": "DISTR DE MED SANTA CRUZ LTDA",
         "cnpj": "61940292006410",
         "empresa": "GENOMMA",
@@ -4556,31 +4667,6 @@
             "v_merc": 942056.58,
             "ctes": 32,
             "pct_cts": 4.41
-          }
-        }
-      },
-      {
-        "nome": "DIST CENTRO OESTE DE MEDICAMENTOS LTDA",
-        "cnpj": "66438011000328",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "MG",
-        "frete": 47359.74,
-        "v_merc": 941275.72,
-        "ctes": 22,
-        "pct_cts": 5.03,
-        "anos": {
-          "2025": {
-            "frete": 39350.39,
-            "v_merc": 800513.09,
-            "ctes": 15,
-            "pct_cts": 4.92
-          },
-          "2026": {
-            "frete": 8009.35,
-            "v_merc": 140762.63,
-            "ctes": 7,
-            "pct_cts": 5.69
           }
         }
       },
@@ -4629,65 +4715,15 @@
         }
       },
       {
-        "nome": "J SLEIMAN S.A. COM DE PROD DE HIG E ALIM",
-        "cnpj": "07216054000219",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "CE",
-        "frete": 34371.79,
-        "v_merc": 912126.77,
-        "ctes": 12,
-        "pct_cts": 3.77,
-        "anos": {
-          "2025": {
-            "frete": 28396.51,
-            "v_merc": 753459.71,
-            "ctes": 10,
-            "pct_cts": 3.77
-          },
-          "2026": {
-            "frete": 5975.28,
-            "v_merc": 158667.06,
-            "ctes": 2,
-            "pct_cts": 3.77
-          }
-        }
-      },
-      {
-        "nome": "SB COMERCIO LTDA",
-        "cnpj": "04429478000192",
-        "empresa": "GENOMMA",
-        "regiao": "Norte",
-        "uf": "AM",
-        "frete": 48863.44,
-        "v_merc": 890550.77,
-        "ctes": 17,
-        "pct_cts": 5.49,
-        "anos": {
-          "2025": {
-            "frete": 40068.68,
-            "v_merc": 745450.64,
-            "ctes": 13,
-            "pct_cts": 5.38
-          },
-          "2026": {
-            "frete": 8794.76,
-            "v_merc": 145100.13,
-            "ctes": 4,
-            "pct_cts": 6.06
-          }
-        }
-      },
-      {
         "nome": "NAZARIA DIST DE PRODS FARMA LTDA",
         "cnpj": "07224991001530",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PI",
-        "frete": 36078.54,
-        "v_merc": 844750.42,
-        "ctes": 19,
-        "pct_cts": 4.27,
+        "frete": 37274.65,
+        "v_merc": 855714.59,
+        "ctes": 21,
+        "pct_cts": 4.36,
         "anos": {
           "2025": {
             "frete": 23016.28,
@@ -4696,10 +4732,10 @@
             "pct_cts": 4.4
           },
           "2026": {
-            "frete": 13062.26,
-            "v_merc": 321194.5,
-            "ctes": 5,
-            "pct_cts": 4.07
+            "frete": 14258.37,
+            "v_merc": 332158.67,
+            "ctes": 7,
+            "pct_cts": 4.29
           }
         }
       },
@@ -4738,6 +4774,31 @@
             "v_merc": 797317.83,
             "ctes": 17,
             "pct_cts": 6.87
+          }
+        }
+      },
+      {
+        "nome": "TAUSTE SUPERMERCADOS LTDA",
+        "cnpj": "65897910001306",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 17352.85,
+        "v_merc": 795978.12,
+        "ctes": 18,
+        "pct_cts": 2.18,
+        "anos": {
+          "2025": {
+            "frete": 10684.21,
+            "v_merc": 465678.63,
+            "ctes": 10,
+            "pct_cts": 2.29
+          },
+          "2026": {
+            "frete": 6668.64,
+            "v_merc": 330299.49,
+            "ctes": 8,
+            "pct_cts": 2.02
           }
         }
       },
@@ -4824,6 +4885,56 @@
         }
       },
       {
+        "nome": "PHARMA LOG PROD FARMACE LTDA",
+        "cnpj": "13485130000103",
+        "empresa": "GENOMMA",
+        "regiao": "Sul",
+        "uf": "PR",
+        "frete": 54017.43,
+        "v_merc": 724742.33,
+        "ctes": 26,
+        "pct_cts": 7.45,
+        "anos": {
+          "2025": {
+            "frete": 29494.11,
+            "v_merc": 538247.29,
+            "ctes": 17,
+            "pct_cts": 5.48
+          },
+          "2026": {
+            "frete": 24523.32,
+            "v_merc": 186495.04,
+            "ctes": 9,
+            "pct_cts": 13.15
+          }
+        }
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001883",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 57255.09,
+        "v_merc": 709901.12,
+        "ctes": 24,
+        "pct_cts": 8.07,
+        "anos": {
+          "2025": {
+            "frete": 38042.96,
+            "v_merc": 480001.74,
+            "ctes": 16,
+            "pct_cts": 7.93
+          },
+          "2026": {
+            "frete": 19212.13,
+            "v_merc": 229899.38,
+            "ctes": 8,
+            "pct_cts": 8.36
+          }
+        }
+      },
+      {
         "nome": "EPOCA COM E DISTR DE PROD ALIM EIND LTDA",
         "cnpj": "08450457000100",
         "empresa": "GENOMMA",
@@ -4887,56 +4998,6 @@
         }
       },
       {
-        "nome": "TAUSTE SUPERMERCADOS LTDA",
-        "cnpj": "65897910001306",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "SP",
-        "frete": 14521.75,
-        "v_merc": 687909.51,
-        "ctes": 15,
-        "pct_cts": 2.11,
-        "anos": {
-          "2025": {
-            "frete": 10684.21,
-            "v_merc": 465678.63,
-            "ctes": 10,
-            "pct_cts": 2.29
-          },
-          "2026": {
-            "frete": 3837.54,
-            "v_merc": 222230.88,
-            "ctes": 5,
-            "pct_cts": 1.73
-          }
-        }
-      },
-      {
-        "nome": "PHARMA LOG PROD FARMACE LTDA",
-        "cnpj": "13485130000103",
-        "empresa": "GENOMMA",
-        "regiao": "Sul",
-        "uf": "PR",
-        "frete": 48221.74,
-        "v_merc": 683849.07,
-        "ctes": 24,
-        "pct_cts": 7.05,
-        "anos": {
-          "2025": {
-            "frete": 29494.11,
-            "v_merc": 538247.29,
-            "ctes": 17,
-            "pct_cts": 5.48
-          },
-          "2026": {
-            "frete": 18727.63,
-            "v_merc": 145601.78,
-            "ctes": 7,
-            "pct_cts": 12.86
-          }
-        }
-      },
-      {
         "nome": "GENOMMA LABORATORIES DO BR",
         "cnpj": "09080907000182",
         "empresa": "GENOMMA",
@@ -4962,27 +5023,27 @@
         }
       },
       {
-        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
-        "cnpj": "07224991001883",
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940001177",
         "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PE",
-        "frete": 50611.68,
-        "v_merc": 654458.59,
-        "ctes": 22,
-        "pct_cts": 7.73,
+        "regiao": "Sul",
+        "uf": "RS",
+        "frete": 19708.93,
+        "v_merc": 652291.14,
+        "ctes": 25,
+        "pct_cts": 3.02,
         "anos": {
           "2025": {
-            "frete": 38042.96,
-            "v_merc": 480001.74,
-            "ctes": 16,
-            "pct_cts": 7.93
+            "frete": 17099.1,
+            "v_merc": 577982.26,
+            "ctes": 20,
+            "pct_cts": 2.96
           },
           "2026": {
-            "frete": 12568.72,
-            "v_merc": 174456.85,
-            "ctes": 6,
-            "pct_cts": 7.2
+            "frete": 2609.83,
+            "v_merc": 74308.88,
+            "ctes": 5,
+            "pct_cts": 3.51
           }
         }
       },
@@ -5012,27 +5073,27 @@
         }
       },
       {
-        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
-        "cnpj": "15436940001177",
+        "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LT",
+        "cnpj": "22417427000122",
         "empresa": "GENOMMA",
-        "regiao": "Sul",
-        "uf": "RS",
-        "frete": 19091.27,
-        "v_merc": 635613.23,
-        "ctes": 24,
-        "pct_cts": 3.0,
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 25948.67,
+        "v_merc": 618567.67,
+        "ctes": 13,
+        "pct_cts": 4.19,
         "anos": {
           "2025": {
-            "frete": 17099.1,
-            "v_merc": 577982.26,
-            "ctes": 20,
-            "pct_cts": 2.96
+            "frete": 21635.64,
+            "v_merc": 518162.64,
+            "ctes": 9,
+            "pct_cts": 4.18
           },
           "2026": {
-            "frete": 1992.17,
-            "v_merc": 57630.97,
+            "frete": 4313.03,
+            "v_merc": 100405.03,
             "ctes": 4,
-            "pct_cts": 3.46
+            "pct_cts": 4.3
           }
         }
       },
@@ -5062,27 +5123,27 @@
         }
       },
       {
-        "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LT",
-        "cnpj": "22417427000122",
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991002006",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
-        "uf": "PI",
-        "frete": 23793.85,
-        "v_merc": 569544.1,
-        "ctes": 11,
-        "pct_cts": 4.18,
+        "uf": "MA",
+        "frete": 31861.93,
+        "v_merc": 572873.51,
+        "ctes": 19,
+        "pct_cts": 5.56,
         "anos": {
           "2025": {
-            "frete": 21635.64,
-            "v_merc": 518162.64,
-            "ctes": 9,
-            "pct_cts": 4.18
+            "frete": 26317.59,
+            "v_merc": 417527.8,
+            "ctes": 16,
+            "pct_cts": 6.3
           },
           "2026": {
-            "frete": 2158.21,
-            "v_merc": 51381.46,
-            "ctes": 2,
-            "pct_cts": 4.2
+            "frete": 5544.34,
+            "v_merc": 155345.71,
+            "ctes": 3,
+            "pct_cts": 3.57
           }
         }
       },
@@ -5107,39 +5168,14 @@
       },
       {
         "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
-        "cnpj": "07224991002006",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "MA",
-        "frete": 31529.47,
-        "v_merc": 567238.33,
-        "ctes": 18,
-        "pct_cts": 5.56,
-        "anos": {
-          "2025": {
-            "frete": 26317.59,
-            "v_merc": 417527.8,
-            "ctes": 16,
-            "pct_cts": 6.3
-          },
-          "2026": {
-            "frete": 5211.88,
-            "v_merc": 149710.53,
-            "ctes": 2,
-            "pct_cts": 3.48
-          }
-        }
-      },
-      {
-        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
         "cnpj": "07224991001700",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "MA",
-        "frete": 19295.93,
-        "v_merc": 558889.91,
-        "ctes": 18,
-        "pct_cts": 3.45,
+        "frete": 19912.01,
+        "v_merc": 562953.52,
+        "ctes": 20,
+        "pct_cts": 3.54,
         "anos": {
           "2025": {
             "frete": 9215.4,
@@ -5148,10 +5184,10 @@
             "pct_cts": 2.16
           },
           "2026": {
-            "frete": 10080.53,
-            "v_merc": 132053.73,
-            "ctes": 4,
-            "pct_cts": 7.63
+            "frete": 10696.61,
+            "v_merc": 136117.34,
+            "ctes": 6,
+            "pct_cts": 7.86
           }
         }
       },
@@ -5205,10 +5241,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "CE",
-        "frete": 20962.66,
-        "v_merc": 473770.76,
-        "ctes": 18,
-        "pct_cts": 4.42,
+        "frete": 21611.45,
+        "v_merc": 485702.67,
+        "ctes": 19,
+        "pct_cts": 4.45,
         "anos": {
           "2025": {
             "frete": 17503.97,
@@ -5217,10 +5253,10 @@
             "pct_cts": 4.42
           },
           "2026": {
-            "frete": 3458.69,
-            "v_merc": 78172.93,
-            "ctes": 4,
-            "pct_cts": 4.42
+            "frete": 4107.48,
+            "v_merc": 90104.84,
+            "ctes": 5,
+            "pct_cts": 4.56
           }
         }
       },
@@ -5240,6 +5276,31 @@
             "v_merc": 468287.65,
             "ctes": 2,
             "pct_cts": 8.39
+          }
+        }
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991001298",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 12134.29,
+        "v_merc": 457127.07,
+        "ctes": 20,
+        "pct_cts": 2.65,
+        "anos": {
+          "2025": {
+            "frete": 10111.42,
+            "v_merc": 372134.51,
+            "ctes": 16,
+            "pct_cts": 2.72
+          },
+          "2026": {
+            "frete": 2022.87,
+            "v_merc": 84992.56,
+            "ctes": 4,
+            "pct_cts": 2.38
           }
         }
       },
@@ -5288,31 +5349,6 @@
         }
       },
       {
-        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
-        "cnpj": "07224991001298",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PE",
-        "frete": 11568.09,
-        "v_merc": 433335.68,
-        "ctes": 19,
-        "pct_cts": 2.67,
-        "anos": {
-          "2025": {
-            "frete": 10111.42,
-            "v_merc": 372134.51,
-            "ctes": 16,
-            "pct_cts": 2.72
-          },
-          "2026": {
-            "frete": 1456.67,
-            "v_merc": 61201.17,
-            "ctes": 3,
-            "pct_cts": 2.38
-          }
-        }
-      },
-      {
         "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
         "cnpj": "00048785003279",
         "empresa": "GENOMMA",
@@ -5337,10 +5373,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "MA",
-        "frete": 33940.94,
-        "v_merc": 420884.07,
-        "ctes": 17,
-        "pct_cts": 8.06,
+        "frete": 34244.94,
+        "v_merc": 422314.59,
+        "ctes": 18,
+        "pct_cts": 8.11,
         "anos": {
           "2025": {
             "frete": 29016.93,
@@ -5349,10 +5385,10 @@
             "pct_cts": 8.34
           },
           "2026": {
-            "frete": 4924.01,
-            "v_merc": 73070.33,
-            "ctes": 2,
-            "pct_cts": 6.74
+            "frete": 5228.01,
+            "v_merc": 74500.85,
+            "ctes": 3,
+            "pct_cts": 7.02
           }
         }
       },
@@ -5432,6 +5468,25 @@
         }
       },
       {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865374159",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 6535.03,
+        "v_merc": 387003.91,
+        "ctes": 7,
+        "pct_cts": 1.69,
+        "anos": {
+          "2026": {
+            "frete": 6535.03,
+            "v_merc": 387003.91,
+            "ctes": 7,
+            "pct_cts": 1.69
+          }
+        }
+      },
+      {
         "nome": "PANPHARMA DISTRIB DE MEDIC LTDA",
         "cnpj": "01206820003031",
         "empresa": "GENOMMA",
@@ -5447,25 +5502,6 @@
             "v_merc": 369541.68,
             "ctes": 15,
             "pct_cts": 1.62
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL S/A",
-        "cnpj": "61585865374159",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "SP",
-        "frete": 5706.46,
-        "v_merc": 362325.33,
-        "ctes": 5,
-        "pct_cts": 1.57,
-        "anos": {
-          "2026": {
-            "frete": 5706.46,
-            "v_merc": 362325.33,
-            "ctes": 5,
-            "pct_cts": 1.57
           }
         }
       },
@@ -5571,6 +5607,31 @@
         }
       },
       {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940003463",
+        "empresa": "GENOMMA",
+        "regiao": "Centro-Oeste",
+        "uf": "DF",
+        "frete": 7148.43,
+        "v_merc": 348808.97,
+        "ctes": 8,
+        "pct_cts": 2.05,
+        "anos": {
+          "2025": {
+            "frete": 2644.56,
+            "v_merc": 134949.02,
+            "ctes": 2,
+            "pct_cts": 1.96
+          },
+          "2026": {
+            "frete": 4503.87,
+            "v_merc": 213859.95,
+            "ctes": 6,
+            "pct_cts": 2.11
+          }
+        }
+      },
+      {
         "nome": "PROFARMA DIST DE PROD FARM SA",
         "cnpj": "45453214002529",
         "empresa": "GENOMMA",
@@ -5640,31 +5701,6 @@
         }
       },
       {
-        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
-        "cnpj": "15436940003463",
-        "empresa": "GENOMMA",
-        "regiao": "Centro-Oeste",
-        "uf": "DF",
-        "frete": 6459.86,
-        "v_merc": 328729.17,
-        "ctes": 7,
-        "pct_cts": 1.97,
-        "anos": {
-          "2025": {
-            "frete": 2644.56,
-            "v_merc": 134949.02,
-            "ctes": 2,
-            "pct_cts": 1.96
-          },
-          "2026": {
-            "frete": 3815.3,
-            "v_merc": 193780.15,
-            "ctes": 5,
-            "pct_cts": 1.97
-          }
-        }
-      },
-      {
         "nome": "SC DISTRIBUICAO LTDA",
         "cnpj": "01206820003546",
         "empresa": "GENOMMA",
@@ -5684,6 +5720,25 @@
         }
       },
       {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253149031",
+        "empresa": "INOVALAB",
+        "regiao": "Nordeste",
+        "uf": "PB",
+        "frete": 10011.15,
+        "v_merc": 315465.35,
+        "ctes": 4,
+        "pct_cts": 3.17,
+        "anos": {
+          "2026": {
+            "frete": 10011.15,
+            "v_merc": 315465.35,
+            "ctes": 4,
+            "pct_cts": 3.17
+          }
+        }
+      },
+      {
         "nome": "MAPPEL INDUSTRIA DE EMBALAGENS S.A.",
         "cnpj": "01233103000326",
         "empresa": "GENOMMA",
@@ -5699,6 +5754,31 @@
             "v_merc": 300426.0,
             "ctes": 3,
             "pct_cts": 2.1
+          }
+        }
+      },
+      {
+        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
+        "cnpj": "07224991002340",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "AL",
+        "frete": 10745.49,
+        "v_merc": 297115.42,
+        "ctes": 12,
+        "pct_cts": 3.62,
+        "anos": {
+          "2025": {
+            "frete": 6670.8,
+            "v_merc": 191165.6,
+            "ctes": 8,
+            "pct_cts": 3.49
+          },
+          "2026": {
+            "frete": 4074.69,
+            "v_merc": 105949.82,
+            "ctes": 4,
+            "pct_cts": 3.85
           }
         }
       },
@@ -5747,27 +5827,27 @@
         }
       },
       {
-        "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
-        "cnpj": "07224991002340",
+        "nome": "SB COMERCIO LTDA",
+        "cnpj": "04429478017915",
         "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "AL",
-        "frete": 10256.83,
-        "v_merc": 288746.04,
-        "ctes": 11,
-        "pct_cts": 3.55,
+        "regiao": "Norte",
+        "uf": "PA",
+        "frete": 6625.64,
+        "v_merc": 258528.57,
+        "ctes": 14,
+        "pct_cts": 2.56,
         "anos": {
           "2025": {
-            "frete": 6670.8,
-            "v_merc": 191165.6,
-            "ctes": 8,
-            "pct_cts": 3.49
+            "frete": 4191.12,
+            "v_merc": 181429.16,
+            "ctes": 9,
+            "pct_cts": 2.31
           },
           "2026": {
-            "frete": 3586.03,
-            "v_merc": 97580.44,
-            "ctes": 3,
-            "pct_cts": 3.67
+            "frete": 2434.52,
+            "v_merc": 77099.41,
+            "ctes": 5,
+            "pct_cts": 3.16
           }
         }
       },
@@ -5821,10 +5901,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "AL",
-        "frete": 14775.53,
-        "v_merc": 241113.6,
-        "ctes": 13,
-        "pct_cts": 6.13,
+        "frete": 14971.97,
+        "v_merc": 241620.28,
+        "ctes": 14,
+        "pct_cts": 6.2,
         "anos": {
           "2025": {
             "frete": 4761.2,
@@ -5833,10 +5913,10 @@
             "pct_cts": 3.76
           },
           "2026": {
-            "frete": 10014.33,
-            "v_merc": 114492.1,
-            "ctes": 6,
-            "pct_cts": 8.75
+            "frete": 10210.77,
+            "v_merc": 114998.78,
+            "ctes": 7,
+            "pct_cts": 8.88
           }
         }
       },
@@ -5860,46 +5940,21 @@
         }
       },
       {
-        "nome": "SB COMERCIO LTDA",
-        "cnpj": "04429478017915",
-        "empresa": "GENOMMA",
-        "regiao": "Norte",
-        "uf": "PA",
-        "frete": 5856.8,
-        "v_merc": 235759.92,
-        "ctes": 13,
-        "pct_cts": 2.48,
-        "anos": {
-          "2025": {
-            "frete": 4191.12,
-            "v_merc": 181429.16,
-            "ctes": 9,
-            "pct_cts": 2.31
-          },
-          "2026": {
-            "frete": 1665.68,
-            "v_merc": 54330.76,
-            "ctes": 4,
-            "pct_cts": 3.07
-          }
-        }
-      },
-      {
         "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
         "cnpj": "06626253149384",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PB",
-        "frete": 13595.21,
-        "v_merc": 212284.0,
-        "ctes": 2,
-        "pct_cts": 6.4,
+        "frete": 13871.1,
+        "v_merc": 229630.3,
+        "ctes": 3,
+        "pct_cts": 6.04,
         "anos": {
           "2026": {
-            "frete": 13595.21,
-            "v_merc": 212284.0,
-            "ctes": 2,
-            "pct_cts": 6.4
+            "frete": 13871.1,
+            "v_merc": 229630.3,
+            "ctes": 3,
+            "pct_cts": 6.04
           }
         }
       },
@@ -5938,6 +5993,25 @@
             "v_merc": 180252.07,
             "ctes": 3,
             "pct_cts": 1.18
+          }
+        }
+      },
+      {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940001258",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 4246.16,
+        "v_merc": 178441.87,
+        "ctes": 1,
+        "pct_cts": 2.38,
+        "anos": {
+          "2026": {
+            "frete": 4246.16,
+            "v_merc": 178441.87,
+            "ctes": 1,
+            "pct_cts": 2.38
           }
         }
       },
@@ -6118,6 +6192,31 @@
         }
       },
       {
+        "nome": "SOGAMAX DISTR DE PROD FARMA LTDA",
+        "cnpj": "00857492000217",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "ES",
+        "frete": 2382.79,
+        "v_merc": 111130.04,
+        "ctes": 10,
+        "pct_cts": 2.14,
+        "anos": {
+          "2025": {
+            "frete": 1750.01,
+            "v_merc": 84697.63,
+            "ctes": 7,
+            "pct_cts": 2.07
+          },
+          "2026": {
+            "frete": 632.78,
+            "v_merc": 26432.41,
+            "ctes": 3,
+            "pct_cts": 2.39
+          }
+        }
+      },
+      {
         "nome": "SENDAS DISTR S/A",
         "cnpj": "06057223054000",
         "empresa": "GENOMMA",
@@ -6139,31 +6238,6 @@
             "v_merc": 11539.01,
             "ctes": 1,
             "pct_cts": 2.09
-          }
-        }
-      },
-      {
-        "nome": "SOGAMAX DISTR DE PROD FARMA LTDA",
-        "cnpj": "00857492000217",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "ES",
-        "frete": 2169.35,
-        "v_merc": 105099.92,
-        "ctes": 9,
-        "pct_cts": 2.06,
-        "anos": {
-          "2025": {
-            "frete": 1750.01,
-            "v_merc": 84697.63,
-            "ctes": 7,
-            "pct_cts": 2.07
-          },
-          "2026": {
-            "frete": 419.34,
-            "v_merc": 20402.29,
-            "ctes": 2,
-            "pct_cts": 2.06
           }
         }
       },
@@ -6851,59 +6925,15 @@
             "pct_cts": 7.1
           }
         }
-      },
-      {
-        "nome": "SENDAS DISTR S/A",
-        "cnpj": "06057223044110",
-        "empresa": "GENOMMA",
-        "regiao": "Centro-Oeste",
-        "uf": "GO",
-        "frete": 1317.83,
-        "v_merc": 28243.13,
-        "ctes": 5,
-        "pct_cts": 4.67,
-        "anos": {
-          "2025": {
-            "frete": 1024.81,
-            "v_merc": 21131.12,
-            "ctes": 4,
-            "pct_cts": 4.85
-          },
-          "2026": {
-            "frete": 293.02,
-            "v_merc": 7112.01,
-            "ctes": 1,
-            "pct_cts": 4.12
-          }
-        }
-      },
-      {
-        "nome": "PANPHARMA DIST MEDIC LTDA",
-        "cnpj": "01206820001764",
-        "empresa": "GENOMMA",
-        "regiao": "Centro-Oeste",
-        "uf": "MS",
-        "frete": 1120.46,
-        "v_merc": 28139.71,
-        "ctes": 5,
-        "pct_cts": 3.98,
-        "anos": {
-          "2025": {
-            "frete": 1120.46,
-            "v_merc": 28139.71,
-            "ctes": 5,
-            "pct_cts": 3.98
-          }
-        }
       }
     ],
     "remetentes": [
       {
         "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
         "cnpj": "09080907000506",
-        "frete": 12681610.34,
-        "v_merc": 463144298.52,
-        "ctes": 5395,
+        "frete": 12902087.79,
+        "v_merc": 470673205.15,
+        "ctes": 5567,
         "pct_cts": 2.74,
         "anos": {
           "2025": {
@@ -6913,36 +6943,36 @@
             "pct_cts": 2.8
           },
           "2026": {
-            "frete": 1748613.3,
-            "v_merc": 72949081.94,
-            "ctes": 884,
-            "pct_cts": 2.4
+            "frete": 1969090.75,
+            "v_merc": 80477988.57,
+            "ctes": 1056,
+            "pct_cts": 2.45
           }
         }
       },
       {
         "nome": "INOVALAB DO BRASIL LTDA.",
         "cnpj": "60698771000126",
-        "frete": 856096.02,
-        "v_merc": 13179976.64,
-        "ctes": 162,
-        "pct_cts": 6.5,
+        "frete": 1123629.55,
+        "v_merc": 15108049.4,
+        "ctes": 216,
+        "pct_cts": 7.44,
         "anos": {
           "2026": {
-            "frete": 856096.02,
-            "v_merc": 13179976.64,
-            "ctes": 162,
-            "pct_cts": 6.5
+            "frete": 1123629.55,
+            "v_merc": 15108049.4,
+            "ctes": 216,
+            "pct_cts": 7.44
           }
         }
       },
       {
         "nome": "GENOMMA LABORATORIES DO BRASIL LTDA.",
         "cnpj": "09080907000182",
-        "frete": 32850.68,
-        "v_merc": 263226.9,
-        "ctes": 135,
-        "pct_cts": 12.48,
+        "frete": 35474.9,
+        "v_merc": 280776.9,
+        "ctes": 144,
+        "pct_cts": 12.63,
         "anos": {
           "2025": {
             "frete": 23512.61,
@@ -6951,9 +6981,9 @@
             "pct_cts": 11.71
           },
           "2026": {
-            "frete": 9338.07,
-            "v_merc": 62400.0,
-            "ctes": 33,
+            "frete": 11962.29,
+            "v_merc": 79950.0,
+            "ctes": 42,
             "pct_cts": 14.96
           }
         }
@@ -7010,27 +7040,27 @@
   },
   "inbound": {
     "totais": {
-      "frete": 1826487.2,
-      "v_merc": 99713568.27,
-      "ctes": 533,
-      "pct_cts": 1.83,
-      "genomma_frete": 1657186.84,
-      "inovalab_frete": 169300.36,
+      "frete": 1894452.96,
+      "v_merc": 101841011.32,
+      "ctes": 549,
+      "pct_cts": 1.86,
+      "genomma_frete": 1697652.6,
+      "inovalab_frete": 196800.36,
       "pct_genomma": 1.7,
-      "pct_inovalab": 8.7
+      "pct_inovalab": 8.81
     },
     "empresas": {
       "GENOMMA": {
-        "frete": 1657186.84,
-        "v_merc": 97766665.04,
-        "ctes": 468,
+        "frete": 1697652.6,
+        "v_merc": 99606741.65,
+        "ctes": 473,
         "pct_cts": 1.7
       },
       "INOVALAB": {
-        "frete": 169300.36,
-        "v_merc": 1946903.23,
-        "ctes": 65,
-        "pct_cts": 8.7
+        "frete": 196800.36,
+        "v_merc": 2234269.67,
+        "ctes": 76,
+        "pct_cts": 8.81
       },
       "OUTROS": {
         "frete": 0,
@@ -7041,12 +7071,12 @@
     },
     "tipos": {
       "CIF": {
-        "frete": 1826487.2,
-        "v_merc": 99713568.27,
-        "ctes": 533,
-        "pct_cts": 1.83,
+        "frete": 1894452.96,
+        "v_merc": 101841011.32,
+        "ctes": 549,
+        "pct_cts": 1.86,
         "pct_genomma": 1.7,
-        "pct_inovalab": 8.7
+        "pct_inovalab": 8.81
       },
       "FOB": {
         "frete": 0,
@@ -7303,16 +7333,16 @@
         "ano": 2026,
         "mes": 4,
         "nome": "Abr",
-        "frete": 43274.87,
-        "v_merc": 1298681.39,
-        "ctes": 16,
-        "pct_cts": 3.33,
-        "genomma_frete": 8274.87,
-        "genomma_merc": 912630.11,
-        "inovalab_frete": 35000.0,
-        "inovalab_merc": 386051.28,
-        "pct_genomma": 0.91,
-        "pct_inovalab": 9.07
+        "frete": 111240.63,
+        "v_merc": 3426124.44,
+        "ctes": 32,
+        "pct_cts": 3.25,
+        "genomma_frete": 48740.63,
+        "genomma_merc": 2752706.72,
+        "inovalab_frete": 62500.0,
+        "inovalab_merc": 673417.72,
+        "pct_genomma": 1.77,
+        "pct_inovalab": 9.28
       }
     ],
     "quarters": [
@@ -7389,29 +7419,29 @@
       {
         "q": "Q2/26",
         "ano": 2026,
-        "frete": 43274.87,
-        "v_merc": 1298681.39,
-        "ctes": 16,
-        "pct_cts": 3.33,
-        "genomma_frete": 8274.87,
-        "genomma_merc": 912630.11,
-        "inovalab_frete": 35000.0,
-        "inovalab_merc": 386051.28,
-        "pct_genomma": 0.91,
-        "pct_inovalab": 9.07
+        "frete": 111240.63,
+        "v_merc": 3426124.44,
+        "ctes": 32,
+        "pct_cts": 3.25,
+        "genomma_frete": 48740.63,
+        "genomma_merc": 2752706.72,
+        "inovalab_frete": 62500.0,
+        "inovalab_merc": 673417.72,
+        "pct_genomma": 1.77,
+        "pct_inovalab": 9.28
       }
     ],
     "transportadoras": [
       {
         "nome": "TRANSCUNHA LTDA",
         "cnpj": "00850928000246",
-        "frete": 865945.69,
-        "v_merc": 64297749.39,
-        "ctes": 171,
-        "pct_cts": 1.35,
-        "pct_genomma": 1.34,
+        "frete": 901958.98,
+        "v_merc": 65720332.91,
+        "ctes": 175,
+        "pct_cts": 1.37,
+        "pct_genomma": 1.37,
         "pct_inovalab": 4.25,
-        "genomma_frete": 861995.69,
+        "genomma_frete": 898008.98,
         "inovalab_frete": 3950.0,
         "anos": {
           "2025": {
@@ -7425,13 +7455,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 167307.91,
-            "v_merc": 14856537.37,
-            "ctes": 33,
-            "pct_cts": 1.13,
-            "genomma_frete": 163357.91,
+            "frete": 203321.2,
+            "v_merc": 16279120.89,
+            "ctes": 37,
+            "pct_cts": 1.25,
+            "genomma_frete": 199371.2,
             "inovalab_frete": 3950.0,
-            "pct_genomma": 1.11,
+            "pct_genomma": 1.23,
             "pct_inovalab": 4.25
           }
         }
@@ -7439,14 +7469,14 @@
       {
         "nome": "AGT TRANSPORTES E LOGISTICA LTDA",
         "cnpj": "08375009000199",
-        "frete": 837500.0,
-        "v_merc": 28553955.1,
-        "ctes": 335,
-        "pct_cts": 2.93,
+        "frete": 865000.0,
+        "v_merc": 28841321.54,
+        "ctes": 346,
+        "pct_cts": 3.0,
         "pct_genomma": 2.54,
-        "pct_inovalab": 9.2,
+        "pct_inovalab": 9.25,
         "genomma_frete": 682500.0,
-        "inovalab_frete": 155000.0,
+        "inovalab_frete": 182500.0,
         "anos": {
           "2025": {
             "frete": 622500.0,
@@ -7459,27 +7489,27 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 215000.0,
-            "v_merc": 4058178.35,
-            "ctes": 86,
-            "pct_cts": 5.3,
+            "frete": 242500.0,
+            "v_merc": 4345544.79,
+            "ctes": 97,
+            "pct_cts": 5.58,
             "genomma_frete": 60000.0,
-            "inovalab_frete": 155000.0,
+            "inovalab_frete": 182500.0,
             "pct_genomma": 2.53,
-            "pct_inovalab": 9.2
+            "pct_inovalab": 9.25
           }
         }
       },
       {
         "nome": "LD CARGO - SOLUCOES LOGISTICAS LTDA",
         "cnpj": "36321523000187",
-        "frete": 36826.67,
-        "v_merc": 2775565.26,
-        "ctes": 7,
-        "pct_cts": 1.33,
-        "pct_genomma": 1.33,
+        "frete": 41279.14,
+        "v_merc": 3193058.35,
+        "ctes": 8,
+        "pct_cts": 1.29,
+        "pct_genomma": 1.29,
         "pct_inovalab": null,
-        "genomma_frete": 36826.67,
+        "genomma_frete": 41279.14,
         "inovalab_frete": 0,
         "anos": {
           "2025": {
@@ -7493,13 +7523,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 16702.8,
-            "v_merc": 934270.74,
-            "ctes": 3,
-            "pct_cts": 1.79,
-            "genomma_frete": 16702.8,
+            "frete": 21155.27,
+            "v_merc": 1351763.83,
+            "ctes": 4,
+            "pct_cts": 1.57,
+            "genomma_frete": 21155.27,
             "inovalab_frete": 0,
-            "pct_genomma": 1.79,
+            "pct_genomma": 1.57,
             "pct_inovalab": null
           }
         }
@@ -7658,16 +7688,16 @@
     "regioes": [
       {
         "regiao": "Sudeste",
-        "frete": 1826487.2,
-        "v_merc": 99713568.27,
-        "ctes": 533,
-        "pct_cts": 1.83,
-        "genomma_frete": 1657186.84,
-        "genomma_merc": 97766665.04,
-        "inovalab_frete": 169300.36,
-        "inovalab_merc": 1946903.23,
+        "frete": 1894452.96,
+        "v_merc": 101841011.32,
+        "ctes": 549,
+        "pct_cts": 1.86,
+        "genomma_frete": 1697652.6,
+        "genomma_merc": 99606741.65,
+        "inovalab_frete": 196800.36,
+        "inovalab_merc": 2234269.67,
         "pct_genomma": 1.7,
-        "pct_inovalab": 8.7,
+        "pct_inovalab": 8.81,
         "anos": {
           "2025": {
             "frete": 1395640.22,
@@ -7680,14 +7710,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 430846.98,
-            "v_merc": 21529274.95,
-            "ctes": 130,
-            "pct_cts": 2.0,
-            "genomma_frete": 261546.62,
-            "inovalab_frete": 169300.36,
-            "pct_genomma": 1.34,
-            "pct_inovalab": 8.7
+            "frete": 498812.74,
+            "v_merc": 23656718.0,
+            "ctes": 146,
+            "pct_cts": 2.11,
+            "genomma_frete": 302012.38,
+            "inovalab_frete": 196800.36,
+            "pct_genomma": 1.41,
+            "pct_inovalab": 8.81
           }
         }
       }
@@ -7696,16 +7726,16 @@
       {
         "uf": "MG",
         "regiao": "Sudeste",
-        "frete": 1825428.88,
-        "v_merc": 99674824.37,
-        "ctes": 532,
-        "pct_cts": 1.83,
-        "genomma_frete": 1656128.52,
-        "genomma_merc": 97727921.14,
-        "inovalab_frete": 169300.36,
-        "inovalab_merc": 1946903.23,
-        "pct_genomma": 1.69,
-        "pct_inovalab": 8.7,
+        "frete": 1893394.64,
+        "v_merc": 101802267.42,
+        "ctes": 548,
+        "pct_cts": 1.86,
+        "genomma_frete": 1696594.28,
+        "genomma_merc": 99567997.75,
+        "inovalab_frete": 196800.36,
+        "inovalab_merc": 2234269.67,
+        "pct_genomma": 1.7,
+        "pct_inovalab": 8.81,
         "anos": {
           "2025": {
             "frete": 1394581.9,
@@ -7718,14 +7748,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 430846.98,
-            "v_merc": 21529274.95,
-            "ctes": 130,
-            "pct_cts": 2.0,
-            "genomma_frete": 261546.62,
-            "inovalab_frete": 169300.36,
-            "pct_genomma": 1.34,
-            "pct_inovalab": 8.7
+            "frete": 498812.74,
+            "v_merc": 23656718.0,
+            "ctes": 146,
+            "pct_cts": 2.11,
+            "genomma_frete": 302012.38,
+            "inovalab_frete": 196800.36,
+            "pct_genomma": 1.41,
+            "pct_inovalab": 8.81
           }
         }
       },
@@ -7763,10 +7793,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 1656128.52,
-        "v_merc": 97727921.14,
-        "ctes": 467,
-        "pct_cts": 1.69,
+        "frete": 1696594.28,
+        "v_merc": 99567997.75,
+        "ctes": 472,
+        "pct_cts": 1.7,
         "anos": {
           "2025": {
             "frete": 1394581.9,
@@ -7775,10 +7805,10 @@
             "pct_cts": 1.78
           },
           "2026": {
-            "frete": 261546.62,
-            "v_merc": 19582371.72,
-            "ctes": 65,
-            "pct_cts": 1.34
+            "frete": 302012.38,
+            "v_merc": 21422448.33,
+            "ctes": 70,
+            "pct_cts": 1.41
           }
         }
       },
@@ -7788,16 +7818,16 @@
         "empresa": "INOVALAB",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 169300.36,
-        "v_merc": 1946903.23,
-        "ctes": 65,
-        "pct_cts": 8.7,
+        "frete": 196800.36,
+        "v_merc": 2234269.67,
+        "ctes": 76,
+        "pct_cts": 8.81,
         "anos": {
           "2026": {
-            "frete": 169300.36,
-            "v_merc": 1946903.23,
-            "ctes": 65,
-            "pct_cts": 8.7
+            "frete": 196800.36,
+            "v_merc": 2234269.67,
+            "ctes": 76,
+            "pct_cts": 8.81
           }
         }
       },
@@ -7825,10 +7855,10 @@
       {
         "nome": "GRECO E GUERREIRO SP ENVASE LTDA",
         "cnpj": "22104606000100",
-        "frete": 870269.76,
-        "v_merc": 29218976.94,
-        "ctes": 342,
-        "pct_cts": 2.98,
+        "frete": 897769.76,
+        "v_merc": 29506343.38,
+        "ctes": 353,
+        "pct_cts": 3.04,
         "anos": {
           "2025": {
             "frete": 640969.4,
@@ -7837,20 +7867,20 @@
             "pct_cts": 2.57
           },
           "2026": {
-            "frete": 229300.36,
-            "v_merc": 4320008.04,
-            "ctes": 89,
-            "pct_cts": 5.31
+            "frete": 256800.36,
+            "v_merc": 4607374.48,
+            "ctes": 100,
+            "pct_cts": 5.57
           }
         }
       },
       {
         "nome": "TBC PERFUMES E COSMETICOS LTDA",
         "cnpj": "04660567000145",
-        "frete": 186512.1,
-        "v_merc": 14393287.9,
-        "ctes": 46,
-        "pct_cts": 1.3,
+        "frete": 195386.3,
+        "v_merc": 15319196.72,
+        "ctes": 48,
+        "pct_cts": 1.28,
         "anos": {
           "2025": {
             "frete": 131040.06,
@@ -7859,10 +7889,32 @@
             "pct_cts": 1.56
           },
           "2026": {
-            "frete": 55472.04,
-            "v_merc": 6019183.25,
-            "ctes": 13,
-            "pct_cts": 0.92
+            "frete": 64346.24,
+            "v_merc": 6945092.07,
+            "ctes": 15,
+            "pct_cts": 0.93
+          }
+        }
+      },
+      {
+        "nome": "AIRELA INDUSTRIA FARMACEUTICA LTDA",
+        "cnpj": "01858973000129",
+        "frete": 152706.1,
+        "v_merc": 2206478.0,
+        "ctes": 14,
+        "pct_cts": 6.92,
+        "anos": {
+          "2025": {
+            "frete": 108000.0,
+            "v_merc": 1452156.0,
+            "ctes": 10,
+            "pct_cts": 7.44
+          },
+          "2026": {
+            "frete": 44706.1,
+            "v_merc": 754322.0,
+            "ctes": 4,
+            "pct_cts": 5.93
           }
         }
       },
@@ -7885,28 +7937,6 @@
             "v_merc": 3170523.8,
             "ctes": 5,
             "pct_cts": 0.73
-          }
-        }
-      },
-      {
-        "nome": "AIRELA INDUSTRIA FARMACEUTICA LTDA",
-        "cnpj": "01858973000129",
-        "frete": 129700.0,
-        "v_merc": 1649132.0,
-        "ctes": 12,
-        "pct_cts": 7.86,
-        "anos": {
-          "2025": {
-            "frete": 108000.0,
-            "v_merc": 1452156.0,
-            "ctes": 10,
-            "pct_cts": 7.44
-          },
-          "2026": {
-            "frete": 21700.0,
-            "v_merc": 196976.0,
-            "ctes": 2,
-            "pct_cts": 11.02
           }
         }
       },
@@ -7935,10 +7965,10 @@
       {
         "nome": "UNITHER INDUSTRIA FARMACEUTICA LTDA.",
         "cnpj": "04656253000179",
-        "frete": 99891.93,
-        "v_merc": 3397311.01,
-        "ctes": 14,
-        "pct_cts": 2.94,
+        "frete": 108477.39,
+        "v_merc": 3754132.8,
+        "ctes": 15,
+        "pct_cts": 2.89,
         "anos": {
           "2025": {
             "frete": 71366.47,
@@ -7947,10 +7977,10 @@
             "pct_cts": 3.0
           },
           "2026": {
-            "frete": 28525.46,
-            "v_merc": 1020291.15,
-            "ctes": 4,
-            "pct_cts": 2.8
+            "frete": 37110.92,
+            "v_merc": 1377112.94,
+            "ctes": 5,
+            "pct_cts": 2.69
           }
         }
       },
@@ -8240,27 +8270,27 @@
   },
   "reversa": {
     "totais": {
-      "frete": 93634.31,
-      "v_merc": 2977200.02,
-      "ctes": 739,
-      "pct_cts": 3.15,
-      "genomma_frete": 93618.54,
-      "inovalab_frete": 15.77,
+      "frete": 94365.56,
+      "v_merc": 3003552.47,
+      "ctes": 756,
+      "pct_cts": 3.14,
+      "genomma_frete": 94339.79,
+      "inovalab_frete": 25.77,
       "pct_genomma": 3.14,
-      "pct_inovalab": 31.6
+      "pct_inovalab": 18.71
     },
     "empresas": {
       "GENOMMA": {
-        "frete": 93618.54,
-        "v_merc": 2977150.11,
-        "ctes": 737,
+        "frete": 94339.79,
+        "v_merc": 3003414.76,
+        "ctes": 753,
         "pct_cts": 3.14
       },
       "INOVALAB": {
-        "frete": 15.77,
-        "v_merc": 49.91,
-        "ctes": 2,
-        "pct_cts": 31.6
+        "frete": 25.77,
+        "v_merc": 137.71,
+        "ctes": 3,
+        "pct_cts": 18.71
       },
       "OUTROS": {
         "frete": 0,
@@ -8271,19 +8301,19 @@
     },
     "tipos": {
       "CIF": {
-        "frete": 48688.39,
-        "v_merc": 1952873.52,
-        "ctes": 271,
+        "frete": 48771.83,
+        "v_merc": 1955396.17,
+        "ctes": 276,
         "pct_cts": 2.49,
         "pct_genomma": 2.49,
-        "pct_inovalab": 2.35
+        "pct_inovalab": 8.44
       },
       "FOB": {
-        "frete": 44945.92,
-        "v_merc": 1024326.5,
-        "ctes": 468,
-        "pct_cts": 4.39,
-        "pct_genomma": 4.39,
+        "frete": 45593.73,
+        "v_merc": 1048156.3,
+        "ctes": 480,
+        "pct_cts": 4.35,
+        "pct_genomma": 4.35,
         "pct_inovalab": 199.06
       }
     },
@@ -8533,16 +8563,16 @@
         "ano": 2026,
         "mes": 4,
         "nome": "Abr",
-        "frete": 185.27,
-        "v_merc": 784.16,
-        "ctes": 4,
-        "pct_cts": 23.63,
-        "genomma_frete": 185.27,
-        "genomma_merc": 784.16,
-        "inovalab_frete": 0,
-        "inovalab_merc": 0,
-        "pct_genomma": 23.63,
-        "pct_inovalab": null
+        "frete": 916.52,
+        "v_merc": 27136.61,
+        "ctes": 21,
+        "pct_cts": 3.38,
+        "genomma_frete": 906.52,
+        "genomma_merc": 27048.81,
+        "inovalab_frete": 10.0,
+        "inovalab_merc": 87.8,
+        "pct_genomma": 3.35,
+        "pct_inovalab": 11.39
       }
     ],
     "quarters": [
@@ -8619,29 +8649,29 @@
       {
         "q": "Q2/26",
         "ano": 2026,
-        "frete": 185.27,
-        "v_merc": 784.16,
-        "ctes": 4,
-        "pct_cts": 23.63,
-        "genomma_frete": 185.27,
-        "genomma_merc": 784.16,
-        "inovalab_frete": 0,
-        "inovalab_merc": 0,
-        "pct_genomma": 23.63,
-        "pct_inovalab": null
+        "frete": 916.52,
+        "v_merc": 27136.61,
+        "ctes": 21,
+        "pct_cts": 3.38,
+        "genomma_frete": 906.52,
+        "genomma_merc": 27048.81,
+        "inovalab_frete": 10.0,
+        "inovalab_merc": 87.8,
+        "pct_genomma": 3.35,
+        "pct_inovalab": 11.39
       }
     ],
     "transportadoras": [
       {
         "nome": "FL BRASIL HOLDING LOGISTICA E TRANSPORTE LTDA",
         "cnpj": "18233211004046",
-        "frete": 45255.17,
-        "v_merc": 1032234.73,
-        "ctes": 469,
-        "pct_cts": 4.38,
-        "pct_genomma": 4.38,
+        "frete": 45902.98,
+        "v_merc": 1056064.53,
+        "ctes": 481,
+        "pct_cts": 4.35,
+        "pct_genomma": 4.35,
         "pct_inovalab": 199.06,
-        "genomma_frete": 45240.4,
+        "genomma_frete": 45888.21,
         "inovalab_frete": 14.77,
         "anos": {
           "2025": {
@@ -8655,13 +8685,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 2754.56,
-            "v_merc": 91833.4,
-            "ctes": 47,
-            "pct_cts": 3.0,
-            "genomma_frete": 2739.79,
+            "frete": 3402.37,
+            "v_merc": 115663.2,
+            "ctes": 59,
+            "pct_cts": 2.94,
+            "genomma_frete": 3387.6,
             "inovalab_frete": 14.77,
-            "pct_genomma": 2.98,
+            "pct_genomma": 2.93,
             "pct_inovalab": 199.06
           }
         }
@@ -8727,13 +8757,13 @@
       {
         "nome": "ATIVA DISTR E LOGISTICA LTDA",
         "cnpj": "01125797002402",
-        "frete": 9263.01,
-        "v_merc": 302927.44,
-        "ctes": 178,
-        "pct_cts": 3.06,
-        "pct_genomma": 3.06,
+        "frete": 9315.09,
+        "v_merc": 303520.15,
+        "ctes": 180,
+        "pct_cts": 3.07,
+        "pct_genomma": 3.07,
         "pct_inovalab": null,
-        "genomma_frete": 9263.01,
+        "genomma_frete": 9315.09,
         "inovalab_frete": 0,
         "anos": {
           "2025": {
@@ -8747,13 +8777,13 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 1486.46,
-            "v_merc": 57138.14,
-            "ctes": 31,
-            "pct_cts": 2.6,
-            "genomma_frete": 1486.46,
+            "frete": 1538.54,
+            "v_merc": 57730.85,
+            "ctes": 33,
+            "pct_cts": 2.67,
+            "genomma_frete": 1538.54,
             "inovalab_frete": 0,
-            "pct_genomma": 2.6,
+            "pct_genomma": 2.67,
             "pct_inovalab": null
           }
         }
@@ -8761,14 +8791,14 @@
       {
         "nome": "EXPRESSO MINAS FRIOS LTDA",
         "cnpj": "05151226000107",
-        "frete": 8446.01,
-        "v_merc": 975508.5,
-        "ctes": 6,
+        "frete": 8466.01,
+        "v_merc": 976147.02,
+        "ctes": 8,
         "pct_cts": 0.87,
         "pct_genomma": 0.87,
-        "pct_inovalab": null,
-        "genomma_frete": 8446.01,
-        "inovalab_frete": 0,
+        "pct_inovalab": 11.39,
+        "genomma_frete": 8456.01,
+        "inovalab_frete": 10.0,
         "anos": {
           "2025": {
             "frete": 8446.01,
@@ -8779,6 +8809,16 @@
             "inovalab_frete": 0,
             "pct_genomma": 0.87,
             "pct_inovalab": null
+          },
+          "2026": {
+            "frete": 20.0,
+            "v_merc": 638.52,
+            "ctes": 2,
+            "pct_cts": 3.13,
+            "genomma_frete": 10.0,
+            "inovalab_frete": 10.0,
+            "pct_genomma": 1.82,
+            "pct_inovalab": 11.39
           }
         }
       },
@@ -8923,6 +8963,30 @@
         }
       },
       {
+        "nome": "EXPRESSO MINSA FRIOS LTDA",
+        "cnpj": "05151226000700",
+        "frete": 11.36,
+        "v_merc": 1291.42,
+        "ctes": 1,
+        "pct_cts": 0.88,
+        "pct_genomma": 0.88,
+        "pct_inovalab": null,
+        "genomma_frete": 11.36,
+        "inovalab_frete": 0,
+        "anos": {
+          "2026": {
+            "frete": 11.36,
+            "v_merc": 1291.42,
+            "ctes": 1,
+            "pct_cts": 0.88,
+            "genomma_frete": 11.36,
+            "inovalab_frete": 0,
+            "pct_genomma": 0.88,
+            "pct_inovalab": null
+          }
+        }
+      },
+      {
         "nome": "COOPERATIVA DOS TRANSPORTADORES DO VALE - COOTRAVALE",
         "cnpj": "00680933000339",
         "frete": 0.12,
@@ -8950,16 +9014,16 @@
     "regioes": [
       {
         "regiao": "Sudeste",
-        "frete": 93621.96,
-        "v_merc": 2939805.26,
-        "ctes": 738,
+        "frete": 94353.21,
+        "v_merc": 2966157.71,
+        "ctes": 755,
         "pct_cts": 3.18,
-        "genomma_frete": 93606.19,
-        "genomma_merc": 2939755.35,
-        "inovalab_frete": 15.77,
-        "inovalab_merc": 49.91,
+        "genomma_frete": 94327.44,
+        "genomma_merc": 2966020.0,
+        "inovalab_frete": 25.77,
+        "inovalab_merc": 137.71,
         "pct_genomma": 3.18,
-        "pct_inovalab": 31.6,
+        "pct_inovalab": 18.71,
         "anos": {
           "2025": {
             "frete": 80167.99,
@@ -8972,14 +9036,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 13453.97,
-            "v_merc": 269690.47,
-            "ctes": 95,
-            "pct_cts": 4.99,
-            "genomma_frete": 13438.2,
-            "inovalab_frete": 15.77,
-            "pct_genomma": 4.98,
-            "pct_inovalab": 31.6
+            "frete": 14185.22,
+            "v_merc": 296042.92,
+            "ctes": 112,
+            "pct_cts": 4.79,
+            "genomma_frete": 14159.45,
+            "inovalab_frete": 25.77,
+            "pct_genomma": 4.79,
+            "pct_inovalab": 18.71
           }
         }
       },
@@ -9013,16 +9077,16 @@
       {
         "uf": "MG",
         "regiao": "Sudeste",
-        "frete": 92658.25,
-        "v_merc": 2928421.28,
-        "ctes": 734,
+        "frete": 93389.5,
+        "v_merc": 2954773.73,
+        "ctes": 751,
         "pct_cts": 3.16,
-        "genomma_frete": 92642.48,
-        "genomma_merc": 2928371.37,
-        "inovalab_frete": 15.77,
-        "inovalab_merc": 49.91,
+        "genomma_frete": 93363.73,
+        "genomma_merc": 2954636.02,
+        "inovalab_frete": 25.77,
+        "inovalab_merc": 137.71,
         "pct_genomma": 3.16,
-        "pct_inovalab": 31.6,
+        "pct_inovalab": 18.71,
         "anos": {
           "2025": {
             "frete": 79204.28,
@@ -9035,14 +9099,14 @@
             "pct_inovalab": null
           },
           "2026": {
-            "frete": 13453.97,
-            "v_merc": 269690.47,
-            "ctes": 95,
-            "pct_cts": 4.99,
-            "genomma_frete": 13438.2,
-            "inovalab_frete": 15.77,
-            "pct_genomma": 4.98,
-            "pct_inovalab": 31.6
+            "frete": 14185.22,
+            "v_merc": 296042.92,
+            "ctes": 112,
+            "pct_cts": 4.79,
+            "genomma_frete": 14159.45,
+            "inovalab_frete": 25.77,
+            "pct_genomma": 4.79,
+            "pct_inovalab": 18.71
           }
         }
       },
@@ -9106,9 +9170,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 92345.58,
-        "v_merc": 2957857.9,
-        "ctes": 732,
+        "frete": 93066.83,
+        "v_merc": 2984122.55,
+        "ctes": 748,
         "pct_cts": 3.12,
         "anos": {
           "2025": {
@@ -9118,10 +9182,10 @@
             "pct_cts": 2.94
           },
           "2026": {
-            "frete": 13128.95,
-            "v_merc": 261732.33,
-            "ctes": 92,
-            "pct_cts": 5.02
+            "frete": 13850.2,
+            "v_merc": 287996.98,
+            "ctes": 108,
+            "pct_cts": 4.81
           }
         }
       },
@@ -9156,16 +9220,16 @@
         "empresa": "INOVALAB",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 15.77,
-        "v_merc": 49.91,
-        "ctes": 2,
-        "pct_cts": 31.6,
+        "frete": 25.77,
+        "v_merc": 137.71,
+        "ctes": 3,
+        "pct_cts": 18.71,
         "anos": {
           "2026": {
-            "frete": 15.77,
-            "v_merc": 49.91,
-            "ctes": 2,
-            "pct_cts": 31.6
+            "frete": 25.77,
+            "v_merc": 137.71,
+            "ctes": 3,
+            "pct_cts": 18.71
           }
         }
       }
@@ -9406,10 +9470,10 @@
       {
         "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
         "cnpj": "06626253063315",
-        "frete": 1825.36,
-        "v_merc": 24104.06,
-        "ctes": 12,
-        "pct_cts": 7.57,
+        "frete": 1836.72,
+        "v_merc": 25395.48,
+        "ctes": 13,
+        "pct_cts": 7.23,
         "anos": {
           "2025": {
             "frete": 1801.11,
@@ -9418,10 +9482,10 @@
             "pct_cts": 7.77
           },
           "2026": {
-            "frete": 24.25,
-            "v_merc": 922.12,
-            "ctes": 1,
-            "pct_cts": 2.63
+            "frete": 35.61,
+            "v_merc": 2213.54,
+            "ctes": 2,
+            "pct_cts": 1.61
           }
         }
       },
@@ -9460,10 +9524,10 @@
       {
         "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E COSMET",
         "cnpj": "04899316034284",
-        "frete": 1418.2,
-        "v_merc": 22706.89,
-        "ctes": 16,
-        "pct_cts": 6.25,
+        "frete": 1444.9,
+        "v_merc": 23012.8,
+        "ctes": 17,
+        "pct_cts": 6.28,
         "anos": {
           "2025": {
             "frete": 1391.76,
@@ -9472,10 +9536,32 @@
             "pct_cts": 6.14
           },
           "2026": {
-            "frete": 26.44,
-            "v_merc": 25.95,
-            "ctes": 1,
-            "pct_cts": 101.89
+            "frete": 53.14,
+            "v_merc": 331.86,
+            "ctes": 2,
+            "pct_cts": 16.01
+          }
+        }
+      },
+      {
+        "nome": "PROFARMA DISTR DE PROD FARMACE SA",
+        "cnpj": "45453214004220",
+        "frete": 1440.28,
+        "v_merc": 70558.77,
+        "ctes": 4,
+        "pct_cts": 2.04,
+        "anos": {
+          "2025": {
+            "frete": 753.34,
+            "v_merc": 37188.41,
+            "ctes": 2,
+            "pct_cts": 2.03
+          },
+          "2026": {
+            "frete": 686.94,
+            "v_merc": 33370.36,
+            "ctes": 2,
+            "pct_cts": 2.06
           }
         }
       },
@@ -9492,28 +9578,6 @@
             "v_merc": 14019.04,
             "ctes": 4,
             "pct_cts": 8.95
-          }
-        }
-      },
-      {
-        "nome": "PROFARMA DISTR DE PROD FARMACE SA",
-        "cnpj": "45453214004220",
-        "frete": 1195.56,
-        "v_merc": 59644.4,
-        "ctes": 3,
-        "pct_cts": 2.0,
-        "anos": {
-          "2025": {
-            "frete": 753.34,
-            "v_merc": 37188.41,
-            "ctes": 2,
-            "pct_cts": 2.03
-          },
-          "2026": {
-            "frete": 442.22,
-            "v_merc": 22455.99,
-            "ctes": 1,
-            "pct_cts": 1.97
           }
         }
       },
@@ -9698,6 +9762,28 @@
         }
       },
       {
+        "nome": "RAIA DROGASIL S/A",
+        "cnpj": "61585865065954",
+        "frete": 791.0,
+        "v_merc": 94146.9,
+        "ctes": 4,
+        "pct_cts": 0.84,
+        "anos": {
+          "2025": {
+            "frete": 700.27,
+            "v_merc": 90423.06,
+            "ctes": 1,
+            "pct_cts": 0.77
+          },
+          "2026": {
+            "frete": 90.73,
+            "v_merc": 3723.84,
+            "ctes": 3,
+            "pct_cts": 2.44
+          }
+        }
+      },
+      {
         "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
         "cnpj": "06626253087508",
         "frete": 774.47,
@@ -9716,28 +9802,6 @@
             "v_merc": 38164.37,
             "ctes": 3,
             "pct_cts": 1.35
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL S/A",
-        "cnpj": "61585865065954",
-        "frete": 764.39,
-        "v_merc": 93976.39,
-        "ctes": 3,
-        "pct_cts": 0.81,
-        "anos": {
-          "2025": {
-            "frete": 700.27,
-            "v_merc": 90423.06,
-            "ctes": 1,
-            "pct_cts": 0.77
-          },
-          "2026": {
-            "frete": 64.12,
-            "v_merc": 3553.33,
-            "ctes": 2,
-            "pct_cts": 1.8
           }
         }
       },
@@ -9868,10 +9932,10 @@
       {
         "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
         "cnpj": "07224991000801",
-        "frete": 545.21,
-        "v_merc": 11876.82,
-        "ctes": 10,
-        "pct_cts": 4.59,
+        "frete": 563.06,
+        "v_merc": 12151.59,
+        "ctes": 11,
+        "pct_cts": 4.63,
         "anos": {
           "2025": {
             "frete": 527.4,
@@ -9880,10 +9944,32 @@
             "pct_cts": 4.51
           },
           "2026": {
-            "frete": 17.81,
-            "v_merc": 191.32,
-            "ctes": 1,
-            "pct_cts": 9.31
+            "frete": 35.66,
+            "v_merc": 466.09,
+            "ctes": 2,
+            "pct_cts": 7.65
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288660",
+        "frete": 557.91,
+        "v_merc": 8113.93,
+        "ctes": 21,
+        "pct_cts": 6.88,
+        "anos": {
+          "2025": {
+            "frete": 332.4,
+            "v_merc": 4972.12,
+            "ctes": 14,
+            "pct_cts": 6.69
+          },
+          "2026": {
+            "frete": 225.51,
+            "v_merc": 3141.81,
+            "ctes": 7,
+            "pct_cts": 7.18
           }
         }
       },
@@ -9912,10 +9998,10 @@
       {
         "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
         "cnpj": "06626253119809",
-        "frete": 521.26,
-        "v_merc": 34839.72,
-        "ctes": 6,
-        "pct_cts": 1.5,
+        "frete": 531.26,
+        "v_merc": 34927.52,
+        "ctes": 7,
+        "pct_cts": 1.52,
         "anos": {
           "2025": {
             "frete": 230.41,
@@ -9924,10 +10010,54 @@
             "pct_cts": 8.39
           },
           "2026": {
-            "frete": 290.85,
-            "v_merc": 32093.07,
-            "ctes": 2,
-            "pct_cts": 0.91
+            "frete": 300.85,
+            "v_merc": 32180.87,
+            "ctes": 3,
+            "pct_cts": 0.93
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865288406",
+        "frete": 512.24,
+        "v_merc": 11091.63,
+        "ctes": 19,
+        "pct_cts": 4.62,
+        "anos": {
+          "2025": {
+            "frete": 404.73,
+            "v_merc": 9118.31,
+            "ctes": 15,
+            "pct_cts": 4.44
+          },
+          "2026": {
+            "frete": 107.51,
+            "v_merc": 1973.32,
+            "ctes": 4,
+            "pct_cts": 5.45
+          }
+        }
+      },
+      {
+        "nome": "RAIA DROGASIL SA",
+        "cnpj": "61585865212841",
+        "frete": 491.96,
+        "v_merc": 14760.43,
+        "ctes": 20,
+        "pct_cts": 3.33,
+        "anos": {
+          "2025": {
+            "frete": 421.5,
+            "v_merc": 12597.3,
+            "ctes": 16,
+            "pct_cts": 3.35
+          },
+          "2026": {
+            "frete": 70.46,
+            "v_merc": 2163.13,
+            "ctes": 4,
+            "pct_cts": 3.26
           }
         }
       },
@@ -9944,72 +10074,6 @@
             "v_merc": 12969.71,
             "ctes": 2,
             "pct_cts": 3.78
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL SA",
-        "cnpj": "61585865288406",
-        "frete": 485.51,
-        "v_merc": 10755.87,
-        "ctes": 18,
-        "pct_cts": 4.51,
-        "anos": {
-          "2025": {
-            "frete": 404.73,
-            "v_merc": 9118.31,
-            "ctes": 15,
-            "pct_cts": 4.44
-          },
-          "2026": {
-            "frete": 80.78,
-            "v_merc": 1637.56,
-            "ctes": 3,
-            "pct_cts": 4.93
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL SA",
-        "cnpj": "61585865288660",
-        "frete": 481.55,
-        "v_merc": 5987.9,
-        "ctes": 16,
-        "pct_cts": 8.04,
-        "anos": {
-          "2025": {
-            "frete": 332.4,
-            "v_merc": 4972.12,
-            "ctes": 14,
-            "pct_cts": 6.69
-          },
-          "2026": {
-            "frete": 149.15,
-            "v_merc": 1015.78,
-            "ctes": 2,
-            "pct_cts": 14.68
-          }
-        }
-      },
-      {
-        "nome": "RAIA DROGASIL SA",
-        "cnpj": "61585865212841",
-        "frete": 474.63,
-        "v_merc": 14695.28,
-        "ctes": 19,
-        "pct_cts": 3.23,
-        "anos": {
-          "2025": {
-            "frete": 421.5,
-            "v_merc": 12597.3,
-            "ctes": 16,
-            "pct_cts": 3.35
-          },
-          "2026": {
-            "frete": 53.13,
-            "v_merc": 2097.98,
-            "ctes": 3,
-            "pct_cts": 2.53
           }
         }
       },
@@ -10184,16 +10248,22 @@
       {
         "nome": "PROFARMA DIST PROD FCEUTICO SA",
         "cnpj": "45453214003843",
-        "frete": 280.68,
-        "v_merc": 3356.32,
-        "ctes": 3,
-        "pct_cts": 8.36,
+        "frete": 304.9,
+        "v_merc": 3372.67,
+        "ctes": 4,
+        "pct_cts": 9.04,
         "anos": {
           "2025": {
             "frete": 280.68,
             "v_merc": 3356.32,
             "ctes": 3,
             "pct_cts": 8.36
+          },
+          "2026": {
+            "frete": 24.22,
+            "v_merc": 16.35,
+            "ctes": 1,
+            "pct_cts": 148.13
           }
         }
       },
@@ -10210,6 +10280,28 @@
             "v_merc": 1412.99,
             "ctes": 4,
             "pct_cts": 19.44
+          }
+        }
+      },
+      {
+        "nome": "DROG ARAUJO S/A",
+        "cnpj": "17256512002917",
+        "frete": 269.42,
+        "v_merc": 1865.02,
+        "ctes": 6,
+        "pct_cts": 14.45,
+        "anos": {
+          "2025": {
+            "frete": 19.55,
+            "v_merc": 42.7,
+            "ctes": 1,
+            "pct_cts": 45.78
+          },
+          "2026": {
+            "frete": 249.87,
+            "v_merc": 1822.32,
+            "ctes": 5,
+            "pct_cts": 13.71
           }
         }
       },
@@ -10268,28 +10360,6 @@
         }
       },
       {
-        "nome": "DROG ARAUJO S/A",
-        "cnpj": "17256512002917",
-        "frete": 233.95,
-        "v_merc": 892.1,
-        "ctes": 4,
-        "pct_cts": 26.22,
-        "anos": {
-          "2025": {
-            "frete": 19.55,
-            "v_merc": 42.7,
-            "ctes": 1,
-            "pct_cts": 45.78
-          },
-          "2026": {
-            "frete": 214.4,
-            "v_merc": 849.4,
-            "ctes": 3,
-            "pct_cts": 25.24
-          }
-        }
-      },
-      {
         "nome": "RAIA DROGASIL S/A",
         "cnpj": "61585865065440",
         "frete": 223.92,
@@ -10340,6 +10410,22 @@
             "v_merc": 716.32,
             "ctes": 2,
             "pct_cts": 4.89
+          }
+        }
+      },
+      {
+        "nome": "EMPREENDIMENTOS PAGUE MENOS SA",
+        "cnpj": "06626253149384",
+        "frete": 213.9,
+        "v_merc": 9791.46,
+        "ctes": 1,
+        "pct_cts": 2.18,
+        "anos": {
+          "2026": {
+            "frete": 213.9,
+            "v_merc": 9791.46,
+            "ctes": 1,
+            "pct_cts": 2.18
           }
         }
       },
@@ -11000,41 +11086,25 @@
             "pct_cts": 11.62
           }
         }
-      },
-      {
-        "nome": "COMERCIAL VITA NORTE LTDA",
-        "cnpj": "70089974000179",
-        "frete": 23.73,
-        "v_merc": 145.02,
-        "ctes": 1,
-        "pct_cts": 16.36,
-        "anos": {
-          "2025": {
-            "frete": 23.73,
-            "v_merc": 145.02,
-            "ctes": 1,
-            "pct_cts": 16.36
-          }
-        }
       }
     ]
   },
   "resumo": {
-    "outbound_ctes": 5696,
-    "inbound_ctes": 533,
-    "reversa_ctes": 739,
-    "total_ctes": 6968,
-    "outbound_frete": 13587959.76,
-    "inbound_frete": 1826487.2,
-    "reversa_frete": 93634.31,
-    "total_frete": 15508081.27
+    "outbound_ctes": 5931,
+    "inbound_ctes": 549,
+    "reversa_ctes": 756,
+    "total_ctes": 7236,
+    "outbound_frete": 14078594.96,
+    "inbound_frete": 1894452.96,
+    "reversa_frete": 94365.56,
+    "total_frete": 16067413.48
   },
-  "atualizado": "09/04/2026 15:29",
+  "atualizado": "28/04/2026 12:39",
   "pasta_origem": "Y:\\ERP-12\\TOTVSCOLAB20-PRD\\RECEIVED",
   "anos_filtro": [
     2025,
     2026
   ],
-  "novos_nesta_execucao": 2,
+  "novos_nesta_execucao": 29,
   "cancelamentos": 0
 }

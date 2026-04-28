@@ -199,72 +199,17 @@ table.dt tr:hover td{background:var(--bg2)}
   <div class="tabs" id="tabs-bar">
     <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
-    <div class="tab" id="tab-upload" style="display:none;margin-left:auto;color:#185FA5;font-weight:500" onclick="switchTab('upload',this)">⬆ Upload</div>
+    <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
   </div>
 
   <div class="container">
-
-    <!-- UPLOAD SECTION (admin only) -->
-    <div class="upload-section" id="sec-upload">
-      <div class="upload-card">
-        <div class="upload-title">Upload de bases de dados</div>
-        <div class="upload-sub">Faça upload dos arquivos Excel para atualizar os indicadores automaticamente. Os KPIs são recalculados na hora.</div>
-        <div class="upload-grid">
-
-          <div class="upload-box" id="box-otd" ondragover="dragOver(event,'box-otd')" ondragleave="dragLeave('box-otd')" ondrop="dropFile(event,'otd')">
-            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'otd')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div class="upload-box-title">OTD — Entregas</div>
-            <div class="upload-box-sub">grid-atividade-entrega.xlsx</div>
-            <div class="upload-box-status" id="status-otd" style="color:var(--text3)">Aguardando arquivo...</div>
-          </div>
-
-          <div class="upload-box" id="box-custo" ondragover="dragOver(event,'box-custo')" ondragleave="dragLeave('box-custo')" ondrop="dropFile(event,'custo')">
-            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'custo')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-            <div class="upload-box-title">Custo de Servir</div>
-            <div class="upload-box-sub">base-custo-servir.xlsx</div>
-            <div class="upload-box-status" id="status-custo" style="color:var(--text3)">Aguardando arquivo...</div>
-          </div>
-
-          <div class="upload-box" id="box-estoque" ondragover="dragOver(event,'box-estoque')" ondragleave="dragLeave('box-estoque')" ondrop="dropFile(event,'estoque')">
-            <input type="file" accept=".xlsx,.csv" onchange="fileSelected(this,'estoque')">
-            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
-            <div class="upload-box-title">Estoque</div>
-            <div class="upload-box-sub">base-estoque.xlsx</div>
-            <div class="upload-box-status" id="status-estoque" style="color:var(--text3)">Aguardando arquivo...</div>
-          </div>
-
-        </div>
-
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <button class="btn-process" id="btn-process" onclick="processarTodos()" disabled>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Processar e atualizar indicadores
-          </button>
-          <span style="font-size:11px;color:var(--text2)" id="process-status"></span>
-        </div>
-
-        <div class="process-log" id="process-log"></div>
-      </div>
-
-      <!-- Histórico de uploads -->
-      <div class="upload-card">
-        <div class="upload-title">Histórico de atualizações</div>
-        <div class="upload-sub" style="margin-bottom:14px">Últimas bases processadas</div>
-        <div class="tw"><table class="hist-table">
-          <thead><tr><th>Data/Hora</th><th>Indicador</th><th>Arquivo</th><th>NFs</th><th>Status</th></tr></thead>
-          <tbody id="hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Nenhum upload realizado ainda</td></tr></tbody>
-        </table></div>
-      </div>
-    </div>
 
     <!-- OTD DASHBOARD -->
     <div class="dash-section on" id="sec-otd">
       <div id="otd-empty" class="empty-state">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         <p>Nenhuma base carregada ainda.</p>
-        <p style="font-size:11px">Faça upload do arquivo na aba <strong>⬆ Upload</strong> para visualizar os indicadores.</p>
+        <p style="font-size:11px">Faça upload do arquivo pela <strong>Torre de Controle</strong> (página inicial) para visualizar os indicadores.</p>
       </div>
       <div id="otd-content" style="display:none">
         <div class="update-bar"><span class="update-dot"></span><span id="otd-update-text">—</span></div>
@@ -278,7 +223,7 @@ table.dt tr:hover td{background:var(--bg2)}
           <span id="otd-m-btns"></span>
         </div>
         <div class="krow">
-          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
+          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento Bruto</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
           <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
           <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
           <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
@@ -331,7 +276,7 @@ table.dt tr:hover td{background:var(--bg2)}
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD — Ag. Expedição</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
@@ -369,7 +314,7 @@ table.dt tr:hover td{background:var(--bg2)}
               <th class="r" style="color:#A32D2D">Off Time</th>
               <th class="r">OTD%</th>
               <th class="r">Prazo Médio</th>
-              <th class="r" style="color:#854F0B">CD</th>
+              <th class="r" style="color:#854F0B">CD — Ag. Expedição</th>
               <th class="r" style="color:#185FA5">Trânsito</th>
               <th style="min-width:80px">OTD Perf.</th>
             </tr></thead>
@@ -422,11 +367,96 @@ table.dt tr:hover td{background:var(--bg2)}
             <div id="transp-ranking-otd"></div>
           </div>
           <div class="card">
-            <div class="slabel"><span class="slabel-num">5</span>Ranking Prazo Médio — Menor para maior</div>
+            <div class="slabel"><span class="slabel-num">5</span>Ranking Prazo Médio — Menor para Maior (Melhor → Pior)</div>
             <div id="transp-ranking-prazo"></div>
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- OFF TIME CLIENTES -->
+    <div class="dash-section" id="sec-offtime" style="display:none">
+      <div id="offtime-empty" class="empty-state">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+      </div>
+      <div id="offtime-content" style="display:none">
+        <!-- KPIs -->
+        <div class="krow" id="offtime-kpis" style="margin-bottom:12px"></div>
+
+        <!-- Filtros -->
+        <div class="fbar" id="offtime-fbar" style="margin-bottom:10px">
+          <span class="fl">Região</span>
+          <button class="fbtn on" onclick="offTimeFilter('regiao','todas',this)">Todas</button>
+          <span id="offtime-reg-btns"></span>
+          <div class="fdiv"></div>
+          <span class="fl">Mês</span>
+          <button class="fbtn on" id="offtime-m-all" onclick="offTimeFilter('mes','todos',this)">Todos</button>
+          <span id="offtime-mes-btns"></span>
+        </div>
+
+        <!-- Resumo por mês -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">1</span>Resumo por Mês</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Mês</th>
+              <th class="r" style="color:#A32D2D">Off Time</th>
+              <th class="r" style="color:#3B6D11">On Time</th>
+              <th class="r">Total Fin.</th>
+              <th class="r">OTD%</th>
+              <th class="r">Valor Off Time</th>
+            </tr></thead>
+            <tbody id="offtime-mes-tbody"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Resumo por região -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">2</span>Off Time por Região</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Região</th>
+              <th class="r" style="color:#A32D2D">Off Time</th>
+              <th class="r">% do Off Time</th>
+              <th class="r">Dias Médios Atraso</th>
+              <th class="r">Valor Off Time</th>
+            </tr></thead>
+            <tbody id="offtime-regiao-tbody"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Lista detalhada por cliente -->
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">3</span>Lista de Clientes com Off Time</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Clientes com entregas Off Time — ordenado por maior quantidade de atrasos.
+            <span id="offtime-count" style="font-weight:600;color:#A32D2D;margin-left:6px"></span>
+          </p>
+          <!-- Busca -->
+          <div style="margin-bottom:10px">
+            <input id="offtime-search" type="text" placeholder="Buscar cliente, cidade ou UF..." 
+              class="form-input" style="max-width:340px;padding:6px 12px;font-size:12px"
+              oninput="offTimeSearch()">
+          </div>
+          <div class="tw"><table class="dt" id="offtime-clientes-table">
+            <thead><tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>Cidade</th>
+              <th>UF</th>
+              <th>Região</th>
+              <th>Transportadora</th>
+              <th>Mês</th>
+              <th class="r" style="color:#A32D2D">Qtd Atrasos</th>
+              <th class="r">Dias Médios Atraso</th>
+              <th class="r">Valor Off Time</th>
+            </tr></thead>
+            <tbody id="offtime-clientes-tbody"></tbody>
+          </table></div>
+          <div id="offtime-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2)"></div>
+        </div>
       </div>
     </div>
 
@@ -506,10 +536,9 @@ function showApp(user){
   document.getElementById('user-av').textContent = user.email.slice(0,2).toUpperCase();
   document.getElementById('user-em').textContent  = user.email;
 
-  // Show upload tab only for admin
+  // Show admin badge only for admin (upload agora é na Torre de Controle)
   const isAdmin = user.email === ADMIN_EMAIL;
   if(isAdmin){
-    document.getElementById('tab-upload').style.display='block';
     document.getElementById('admin-badge').style.display='inline-block';
   }
 
@@ -528,7 +557,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', transp:'sec-transp', upload:'sec-upload'
+  otd:'sec-otd', transp:'sec-transp', offtime:'sec-offtime'
 };
 
 function switchTab(id, btn){
@@ -541,6 +570,7 @@ function switchTab(id, btn){
   const sec = document.getElementById(TABS[id]);
   if(sec){sec.classList.add('on');sec.style.display='block';}
   if(id==='transp'){ renderTransp(); }
+  if(id==='offtime'){ renderOffTime(); }
 }
 
 // init visibility
@@ -550,40 +580,9 @@ Object.entries(TABS).forEach(([k,v])=>{
 });
 
 // ============================================================
-// FILE UPLOAD
+// REGIONS MAP
 // ============================================================
-const files = {otd:null, custo:null, estoque:null};
-
-function dragOver(e,id){e.preventDefault();document.getElementById('box-'+id.replace('box-','')).classList.add('drag');}
-function dragLeave(id){document.getElementById(id).classList.remove('drag');}
-
-function dropFile(e,type){
-  e.preventDefault();
-  const id='box-'+type;
-  document.getElementById(id).classList.remove('drag');
-  const file=e.dataTransfer.files[0];
-  if(file) registerFile(file,type);
-}
-
-function fileSelected(input,type){
-  if(input.files[0]) registerFile(input.files[0],type);
-}
-
-function registerFile(file,type){
-  files[type]=file;
-  const box=document.getElementById('box-'+type);
-  box.classList.add('done');
-  box.classList.remove('drag');
-  document.getElementById('status-'+type).textContent='✓ '+file.name;
-  document.getElementById('status-'+type).style.color='#3B6D11';
-  // Enable process button if at least one file
-  document.getElementById('btn-process').disabled = false;
-}
-
-// ============================================================
-// PROCESS FILES
-// ============================================================
-const REGIOES_MAP = {
+const REGIOES_MAP = window.REGIOES_MAP = {
   'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
   'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
   'PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste',
@@ -593,35 +592,8 @@ const REGIOES_MAP = {
 };
 
 function log(msg,type=''){
-  const box=document.getElementById('process-log');
-  box.style.display='block';
-  const line=document.createElement('div');
-  line.className='log-line '+(type||'');
-  line.textContent='['+ new Date().toLocaleTimeString('pt-BR')+'] '+msg;
-  box.appendChild(line);
-  box.scrollTop=box.scrollHeight;
-}
-
-async function processarTodos(){
-  const btn=document.getElementById('btn-process');
-  btn.disabled=true;
-  document.getElementById('process-log').innerHTML='';
-  document.getElementById('process-status').textContent='';
-
-  if(files.otd){
-    log('Processando OTD...','info');
-    try{
-      await processOTD(files.otd);
-      log('OTD processado com sucesso!','ok');
-      updateHistorico('OTD',files.otd.name);
-    }catch(e){
-      log('Erro no OTD: '+e.message,'err');
-    }
-  }
-
-  log('Concluído!','ok');
-  document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
-  btn.disabled=false;
+  // log only to console (upload removido desta tela)
+  console.log('['+type+'] '+msg);
 }
 
 function readExcel(file){
@@ -737,6 +709,37 @@ async function processOTD(file){
     return parseDate(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
   }
 
+  // Helper: get cliente (destinatário) — tenta múltiplas colunas possíveis
+  function getCliente(r){
+    const v=col(r,
+      'Destinatário','Destinatario',
+      'Cliente','Nome Cliente','Nome do Cliente',
+      'Razão Social Destino','Razao Social Destino',
+      'Nome Destinatário','Nome Destinatario',
+      'Dest','Destinatario Nome','RazaoSocialDest',
+      'Razao Social','Razão Social'
+    );
+    const s=String(v||'').trim();
+    if(s&&s!=='null') return s.substring(0,60);
+    // fallback: número da NF se disponível
+    const nf=col(r,'Número NF','Numero NF','NF','Chave NF','Nota Fiscal');
+    return nf?'NF '+String(nf).substring(0,20):'Cliente não identificado';
+  }
+
+  // Helper: get cidade destino
+  function getCidade(r){
+    return String(col(r,'Cidade Destino','Cidade Dest','Cidade','Municipio Destino','Município Destino','Municipio','Município')||'');
+  }
+
+  // Helper: get dias atraso (entrega - previsao)
+  function getDiasAtraso(r){
+    const dent=getDataEntrega(r);
+    const prev=getPrevisao(r);
+    if(!dent||!prev) return null;
+    const diff=Math.round((dent-prev)/(1000*60*60*24));
+    return diff>0?diff:null;
+  }
+
   // Separate vendas and bonificacoes using helper
   const vendas=processed.filter(r=>VENDAS_NAT.includes(getNatureza(r)));
   const bonifs=processed.filter(r=>!VENDAS_NAT.includes(getNatureza(r)));
@@ -747,6 +750,8 @@ async function processOTD(file){
 
   // Aggregate by month — VENDAS
   const meses={};
+  // Para hub/trs total, usar todos os registros (igual ao prevQ)
+  let totalHubAll=0,totalTrsAll=0,totalHubValAll=0,totalTrsValAll=0;
   vendas.forEach(r=>{
     const tipo=classificar(getStatus(r));
     const de=getDataEmissao(r);
@@ -768,6 +773,14 @@ async function processOTD(file){
     else if(tipo==='off_time'){m.off++;m.off_val+=val;}
     else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
     else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
+  });
+
+  // Hub/trs de TODOS os registros (para consistência com prevQ que usa processed)
+  processed.forEach(r=>{
+    const tipo=classificar(getStatus(r));
+    const val=getValor(r);
+    if(tipo==='hub'){totalHubAll++;totalHubValAll+=val;}
+    else if(tipo==='transito'){totalTrsAll++;totalTrsValAll+=val;}
   });
 
   // Bonificacoes por mes
@@ -962,10 +975,49 @@ async function processOTD(file){
     empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;
   });
 
+  // Off Time por cliente — lista detalhada
+  // Usa processed (todos) para capturar off_time independente de natureza
+  const clienteOffMap={};
+  const allOffRows=processed.filter(r=>classificar(getStatus(r))==='off_time');
+  log('Off Time rows encontradas: '+allOffRows.length,'info');
+  if(allOffRows.length>0){
+    // Debug: mostrar colunas disponíveis na primeira linha off_time
+    const sampleKeys=Object.keys(allOffRows[0]).slice(0,15).join(', ');
+    log('Colunas disponíveis: '+sampleKeys,'info');
+  }
+  allOffRows.forEach(r=>{
+    const cliente=getCliente(r);
+    const uf=getUF(r);
+    const reg=REGIOES_MAP[uf]||'Outros';
+    const cidade=getCidade(r);
+    const val=getValor(r);
+    const de=getDataEmissao(r);
+    const diasAtr=getDiasAtraso(r);
+    const mes=de?de.getMonth()+1:0;
+    const transp=getTransp(r);
+    const key=cliente+'|'+uf+'|'+(cidade||'');
+    if(!clienteOffMap[key]) clienteOffMap[key]={
+      cliente,cidade,uf,regiao:reg,
+      qtd:0,valor:0,dias_sum:0,dias_n:0,
+      transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):''
+    };
+    const c=clienteOffMap[key];
+    c.qtd++;
+    c.valor+=val;
+    if(diasAtr!=null){c.dias_sum+=diasAtr;c.dias_n++;}
+  });
+  const clientesOff=Object.values(clienteOffMap)
+    .map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null}))
+    .sort((a,b)=>b.qtd-a.qtd);
+  log('Clientes off_time agregados: '+clientesOff.length,'info');
+
   // Build payload
   const payload = {
     meses, bonif_mes, otd:transpList, regioes, dias_mes,
-    prevQ:prevQLista, empresa_total,
+    prevQ:prevQLista, empresa_total, clientesOff,
+    totalHubAll, totalTrsAll,
+    totalHubValAll:Math.round(totalHubValAll*100)/100,
+    totalTrsValAll:Math.round(totalTrsValAll*100)/100,
     atualizado: new Date().toLocaleString('pt-BR'),
     base_nome: file.name,
     total_nfs: vendas.length,
@@ -983,6 +1035,7 @@ async function processOTD(file){
   renderOTD(payload);
   // pre-load transp data so it's ready when tab is clicked
   if(typeof renderTransp==='function') renderTransp();
+  if(typeof renderOffTime==='function') renderOffTime();
 }
 
 // ============================================================
@@ -998,6 +1051,7 @@ function renderTransp(){
     if(t.prazo_medio == null && t.dias_n > 0) {
       t.prazo_medio = Math.round(t.dias_sum / t.dias_n * 10) / 10;
     }
+    // Se dias_n não existe mas prazo_medio existe, ok — manter
     if(t.otd == null && t.fin > 0) {
       t.otd = Math.round(t.on / t.fin * 1000) / 10;
     }
@@ -1014,6 +1068,14 @@ function renderTransp(){
 
   // Only show transportadoras with at least 1 finalized delivery
   const fin = list.filter(t => t.fin > 0);
+
+  // Para ranking prazo médio, incluir transportadoras mesmo sem dias_n (pode ter prazo_medio direto)
+  // Garante que fin com prazo_medio não nulo aparece no ranking
+  fin.forEach(t => {
+    if(t.prazo_medio == null && t.fin > 0 && t.dias_sum > 0) {
+      t.prazo_medio = Math.round(t.dias_sum / Math.max(t.dias_n||1, 1) * 10) / 10;
+    }
+  });
 
   document.getElementById('transp-empty').style.display = fin.length ? 'none' : 'block';
   document.getElementById('transp-content').style.display = fin.length ? 'block' : 'none';
@@ -1032,7 +1094,7 @@ function renderTransp(){
   const kpis = [
     {l:'Entregas Finalizadas', v:totFin.toLocaleString('pt-BR'), s:'on time + off time'},
     {l:'OTD Geral',            v:otdGeral!=null?otdGeral.toFixed(1)+'%':'—', s:totOn+' no prazo'},
-    {l:'Prazo Médio Geral',    v:prazoGeral!=null?prazoGeral.toFixed(1)+' dias':'—', s:'emissão → entrega'},
+    {l:'Prazo Médio Geral ↑',    v:prazoGeral!=null?prazoGeral.toFixed(1)+' dias':'—', s:'emissão → entrega (menor = melhor)'},
     {l:'Melhor OTD',           v:melhor?melhor.otd.toFixed(1)+'%':'—', s:melhor?melhor.n.substring(0,22):'—'},
     {l:'Pior OTD',             v:pior?pior.otd.toFixed(1)+'%':'—', s:pior?pior.n.substring(0,22):'—'},
   ];
@@ -1132,8 +1194,205 @@ function showTranspDetalhe(nome){
 }
 
 // ============================================================
-// LOAD OTD FROM STORAGE
+// RENDER OFF TIME CLIENTES
 // ============================================================
+let offTimeData_clientes=[];
+let offTimeFilter_state={regiao:'todas',mes:'todos'};
+let offTimePage=1;
+const OFFTIME_PER_PAGE=50;
+
+function renderOffTime(){
+  if(!otdData){
+    document.getElementById('offtime-empty').style.display='block';
+    document.getElementById('offtime-content').style.display='none';
+    return;
+  }
+  const d=otdData;
+  const ms=getOTDMeses();
+  offTimeData_clientes=d.clientesOff||[];
+
+  // Se não há dados de clientesOff (base antiga sem esse campo), mostra aviso
+  const totalOff=ms.reduce((s,m)=>s+(d.meses[m]?.off||0),0);
+  const totalOn=ms.reduce((s,m)=>s+(d.meses[m]?.on||0),0);
+  const totalFin=totalOff+totalOn;
+
+  if(!totalFin){
+    document.getElementById('offtime-empty').style.display='block';
+    document.getElementById('offtime-content').style.display='none';
+    return;
+  }
+  document.getElementById('offtime-empty').style.display='none';
+  document.getElementById('offtime-content').style.display='block';
+
+  // KPIs
+  const totalOffVal=ms.reduce((s,m)=>s+(d.meses[m]?.off_val||0),0);
+  const otdPct=totalFin?((totalOn/totalFin)*100).toFixed(1):'—';
+  const diasMedClientes=offTimeData_clientes.filter(c=>c.dias_medio!=null);
+  const diasMed=diasMedClientes.length?(diasMedClientes.reduce((s,c)=>s+(c.dias_medio*c.qtd),0)/diasMedClientes.reduce((s,c)=>s+c.qtd,0)).toFixed(1):null;
+
+  document.getElementById('offtime-kpis').innerHTML=
+    '<div class="kpi kpi-red"><div class="kpi-lbl">Total Off Time</div><div class="kpi-val">'+totalOff.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas em atraso</div></div>'
+   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Total On Time</div><div class="kpi-val">'+totalOn.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas no prazo</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#185FA5">'+otdPct+'%</div><div class="kpi-sub">'+totalFin+' finalizadas</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">impacto financeiro</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D;font-size:20px">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>';
+
+  // Filtros de região
+  const regioes=[...new Set(offTimeData_clientes.map(c=>c.regiao))].sort();
+  const regBtns=document.getElementById('offtime-reg-btns'); regBtns.innerHTML='';
+  regioes.forEach(r=>{
+    const b=document.createElement('button');b.className='fbtn';b.textContent=r;
+    b.onclick=function(){offTimeFilter('regiao',r,this);};regBtns.appendChild(b);
+  });
+
+  // Filtros de mês a partir dos meses disponíveis
+  const mesesDisp=[...new Set(offTimeData_clientes.map(c=>c.mes_nome).filter(Boolean))];
+  const mesBtns=document.getElementById('offtime-mes-btns'); mesBtns.innerHTML='';
+  mesesDisp.forEach(m=>{
+    const b=document.createElement('button');b.className='fbtn';b.textContent=m;
+    b.onclick=function(){offTimeFilter('mes',m,this);};mesBtns.appendChild(b);
+  });
+
+  // Tabela por mês
+  let rMes='';
+  ms.forEach(m=>{
+    const md=d.meses[m]; if(!md)return;
+    const fin=md.on+md.off; if(!fin)return;
+    const otd=fin?((md.on/fin)*100).toFixed(1)+'%':'—';
+    rMes+='<tr><td>'+md.nome+'</td>'
+      +'<td class="r" style="color:#A32D2D;font-weight:600">'+md.off+'</td>'
+      +'<td class="r" style="color:#3B6D11">'+md.on+'</td>'
+      +'<td class="r">'+fin+'</td>'
+      +'<td class="r" style="color:'+(parseFloat(otd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+otd+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(md.off_val)+'</td></tr>';
+  });
+  if(!rMes) rMes='<tr><td colspan="6" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
+  document.getElementById('offtime-mes-tbody').innerHTML=rMes;
+
+  // Tabela por região
+  const regMap2={};
+  offTimeData_clientes.forEach(c=>{
+    if(!regMap2[c.regiao]) regMap2[c.regiao]={reg:c.regiao,qtd:0,valor:0,dias_sum:0,dias_n:0};
+    regMap2[c.regiao].qtd+=c.qtd;
+    regMap2[c.regiao].valor+=c.valor;
+    if(c.dias_medio!=null){regMap2[c.regiao].dias_sum+=c.dias_medio*c.qtd;regMap2[c.regiao].dias_n+=c.qtd;}
+  });
+
+  // Fallback: se clientesOff vazio, usar dados de regioes off_time via transpList
+  if(Object.keys(regMap2).length===0){
+    const transpList=d.otd||[];
+    transpList.forEach(t=>{
+      (t.ufs||[]).forEach(u=>{
+        const reg=u.reg||(window.REGIOES_MAP||{})[u.uf]||'Outros';
+        if((u.off||0)>0){
+          if(!regMap2[reg]) regMap2[reg]={reg,qtd:0,valor:0,dias_sum:0,dias_n:0};
+          regMap2[reg].qtd+=(u.off||0);
+          regMap2[reg].valor+=(u.off_val||0);
+        }
+      });
+    });
+  }
+
+  const totalOffReg=Object.values(regMap2).reduce((s,r)=>s+r.qtd,0)||1;
+  let rReg='';
+  Object.values(regMap2).sort((a,b)=>b.qtd-a.qtd).forEach(r=>{
+    const cor=REG_CORES[r.reg]||'#888';
+    const diasMedReg=r.dias_n>0?(r.dias_sum/r.dias_n).toFixed(1):null;
+    rReg+='<tr>'
+      +'<td style="font-weight:600;border-left:3px solid '+cor+'">'+r.reg+'</td>'
+      +'<td class="r" style="color:#A32D2D;font-weight:600">'+r.qtd+'</td>'
+      +'<td class="r">'+((r.qtd/totalOffReg)*100).toFixed(1)+'%</td>'
+      +'<td class="r">'+(diasMedReg!=null?diasMedReg+'d':'—')+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(r.valor)+'</td></tr>';
+  });
+  if(!rReg) rReg='<tr><td colspan="5" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
+  document.getElementById('offtime-regiao-tbody').innerHTML=rReg;
+
+  // Renderizar lista de clientes
+  offTimePage=1;
+  renderOffTimeClientes();
+}
+
+function offTimeFilter(tipo,val,btn){
+  if(tipo==='regiao'){
+    offTimeFilter_state.regiao=val;
+    document.querySelectorAll('#offtime-reg-btns .fbtn').forEach(b=>b.classList.remove('on'));
+    if(val==='todas') document.querySelector('#offtime-fbar .fbtn').classList.add('on');
+    else btn.classList.add('on');
+  } else {
+    offTimeFilter_state.mes=val;
+    document.querySelectorAll('#offtime-mes-btns .fbtn').forEach(b=>b.classList.remove('on'));
+    if(val==='todos') document.getElementById('offtime-m-all').classList.add('on');
+    else btn.classList.add('on');
+  }
+  offTimePage=1;
+  renderOffTimeClientes();
+}
+
+function offTimeSearch(){
+  offTimePage=1;
+  renderOffTimeClientes();
+}
+
+function getOffTimeFiltered(){
+  const search=(document.getElementById('offtime-search')?.value||'').toLowerCase();
+  return offTimeData_clientes.filter(c=>{
+    if(offTimeFilter_state.regiao!=='todas'&&c.regiao!==offTimeFilter_state.regiao) return false;
+    if(offTimeFilter_state.mes!=='todos'&&c.mes_nome!==offTimeFilter_state.mes) return false;
+    if(search&&!(c.cliente.toLowerCase().includes(search)||c.cidade.toLowerCase().includes(search)||c.uf.toLowerCase().includes(search))) return false;
+    return true;
+  });
+}
+
+function renderOffTimeClientes(){
+  const filtered=getOffTimeFiltered();
+  const total=filtered.length;
+  const pages=Math.ceil(total/OFFTIME_PER_PAGE)||1;
+  if(offTimePage>pages) offTimePage=pages;
+  const slice=filtered.slice((offTimePage-1)*OFFTIME_PER_PAGE, offTimePage*OFFTIME_PER_PAGE);
+
+  document.getElementById('offtime-count').textContent=total+' cliente(s) com atraso';
+
+  let rows='';
+  if(!slice.length){
+    rows='<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+  } else {
+    const start=(offTimePage-1)*OFFTIME_PER_PAGE;
+    slice.forEach((c,i)=>{
+      const cor=REG_CORES[c.regiao]||'#888';
+      rows+='<tr>'
+        +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
+        +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
+        +'<td style="color:var(--text2)">'+c.cidade+'</td>'
+        +'<td style="font-weight:600">'+c.uf+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+c.regiao+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.transp+'</td>'
+        +'<td style="color:var(--text2)">'+c.mes_nome+'</td>'
+        +'<td class="r" style="color:#A32D2D;font-weight:700">'+c.qtd+'</td>'
+        +'<td class="r" style="color:'+(c.dias_medio!=null?(c.dias_medio<=3?'#854F0B':'#A32D2D'):'var(--text2)')+'">'+(c.dias_medio!=null?c.dias_medio+'d':'—')+'</td>'
+        +'<td class="r" style="color:#A32D2D">'+fmtM(c.valor)+'</td>'
+        +'</tr>';
+    });
+  }
+  document.getElementById('offtime-clientes-tbody').innerHTML=rows;
+
+  // Paginação
+  let pag='<span>'+total+' registros</span><span style="margin:0 8px">|</span>';
+  if(pages>1){
+    pag+='<button class="btn-sm" onclick="offTimePaginar(-1)" '+(offTimePage<=1?'disabled':'')+'>← Ant</button>';
+    pag+='<span style="margin:0 6px">Pág '+offTimePage+' de '+pages+'</span>';
+    pag+='<button class="btn-sm" onclick="offTimePaginar(1)" '+(offTimePage>=pages?'disabled':'')+'>Próx →</button>';
+  }
+  document.getElementById('offtime-paginacao').innerHTML=pag;
+}
+
+function offTimePaginar(dir){
+  offTimePage+=dir;
+  renderOffTimeClientes();
+  document.getElementById('offtime-clientes-table')?.scrollIntoView({behavior:'smooth'});
+}
+
+
 async function loadOTDFromStorage(){
   try{
     const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
@@ -1142,6 +1401,7 @@ async function loadOTDFromStorage(){
     const payload=JSON.parse(text);
     renderOTD(payload);
     if(typeof renderTransp==='function') renderTransp();
+    if(typeof renderOffTime==='function') renderOffTime();
   }catch(e){
     // no data yet, show empty state
   }
@@ -1217,6 +1477,13 @@ function renderOTDChart(d){
   let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,on_val=0,off_val=0,hub_val=0,trs_val=0;
   ms.forEach(m=>{const md=d.meses[m];if(!md)return;fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;});
   const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val,nfin=hub+trs,nfin_val=hub_val+trs_val;
+  // Para bloco 3 KPIs usar valores ALL (incluindo bonificações) para ser igual ao prevQ
+  const hubAll=d.totalHubAll!=null?d.totalHubAll:hub;
+  const trsAll=d.totalTrsAll!=null?d.totalTrsAll:trs;
+  const hubValAll=d.totalHubValAll!=null?d.totalHubValAll:hub_val;
+  const trsValAll=d.totalTrsValAll!=null?d.totalTrsValAll:trs_val;
+  const nfinAll=hubAll+trsAll;
+  const nfinValAll=hubValAll+trsValAll;
 
   document.getElementById('o-fat').textContent=fmtM(fat);document.getElementById('o-fat-s').textContent=qtd.toLocaleString('pt-BR')+' NFs';
   document.getElementById('o-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o-on-s').textContent=fmtM(on_val);
@@ -1229,9 +1496,9 @@ function renderOTDChart(d){
   document.getElementById('o2-on').textContent=on.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=off;
   document.getElementById('o2-val').textContent=fmtM(fin_val);document.getElementById('o2-otd').textContent=otd+'%';
   document.getElementById('o2-bar').style.width=fmtP(fin,qtd);document.getElementById('o2-pct').textContent=fmtP(fin,qtd);
-  document.getElementById('o3-hub').textContent=hub;document.getElementById('o3-hub-val').textContent=fmtM(hub_val);
-  document.getElementById('o3-trs').textContent=trs;document.getElementById('o3-trs-val').textContent=fmtM(trs_val);
-  document.getElementById('o3-total').textContent=nfin;document.getElementById('o3-total-val').textContent=fmtM(nfin_val);
+  document.getElementById('o3-hub').textContent=hubAll;document.getElementById('o3-hub-val').textContent=fmtM(hubValAll);
+  document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
+  document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
   // ---- BLOCO 1: Genomma vs Inovalab + Bonificações ----
   const et=d.empresa_total||{};
@@ -1328,7 +1595,14 @@ function renderOTDChart(d){
       +'<td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td>'
       +'<td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';
   });
-  if(ms.length>1) r3+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r">'+nfin+'</td><td class="r">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
+  r3+='<tr class="tr-total"><td>Total Pendente</td>'
+    +'<td class="r" style="color:#854F0B">'+hubAll+'</td>'
+    +'<td class="r" style="color:#854F0B">'+fmtM(hubValAll)+'</td>'
+    +'<td class="r" style="color:#185FA5">'+trsAll+'</td>'
+    +'<td class="r" style="color:#185FA5">'+fmtM(trsValAll)+'</td>'
+    +'<td class="r" style="font-weight:700;color:#A32D2D">'+nfinAll+'</td>'
+    +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(nfinValAll)+'</td>'
+    +'<td class="r">'+fmtP(nfinAll,qtd)+'</td></tr>';
   document.getElementById('o3-tbody').innerHTML=r3;
 
   // ---- BLOCO 3b: Previsão por quarter ----
@@ -1345,8 +1619,12 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#A32D2D">'+fmtM(p.valor)+'</td>'
       +'</tr>';
   });
-  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+p.qtd,valor:a.valor+p.valor,hub:a.hub+p.hub,trs:a.transito+p.transito}),{qtd:0,valor:0,hub:0,trs:0});
-  rPrev+='<tr class="tr-total"><td>Total pendente</td><td class="r" style="color:#854F0B">'+totPrev.hub+'</td><td class="r" style="color:#185FA5">'+totPrev.trs+'</td><td class="r">'+totPrev.qtd+'</td><td class="r" style="color:#A32D2D">'+fmtM(totPrev.valor)+'</td></tr>';
+  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+(p.qtd||0),valor:a.valor+(p.valor||0),hub:a.hub+(p.hub||0),trs:a.trs+(p.transito||0)}),{qtd:0,valor:0,hub:0,trs:0});
+  rPrev+='<tr class="tr-total"><td>Total Pendente</td>'
+    +'<td class="r" style="color:#854F0B">'+(totPrev.hub||0)+'</td>'
+    +'<td class="r" style="color:#185FA5">'+(totPrev.trs||0)+'</td>'
+    +'<td class="r" style="font-weight:700;color:#A32D2D">'+(totPrev.qtd||0)+'</td>'
+    +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(totPrev.valor||0)+'</td></tr>';
   document.getElementById('o3-prev-tbody').innerHTML=rPrev;
 
   // ---- BLOCO 4: Transportadoras ----
@@ -1360,6 +1638,7 @@ function renderOTDChart(d){
       +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
       +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
       +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
+      +'<td class="r" style="color:#854F0B">'+(t.hub>0&&t.nao_hub_val>0?fmtM(t.nao_hub_val):(t.hub>0?'—':'—'))+'</td>'
       +'<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'
       +'<td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
       +'</tr>';
