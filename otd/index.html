@@ -188,7 +188,7 @@ table.dt tr:hover td{background:var(--bg2)}
       <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
     </div>
     <div class="nav-right">
-      <a class="nav-back" href="../index.html">← Início</a>
+      <a class="nav-back" href="/torre-controle-logistica/">← Início</a>
       <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
       <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
       <button class="btn-sm" onclick="doLogout()">Sair</button>
@@ -470,7 +470,7 @@ table.dt tr:hover td{background:var(--bg2)}
 // SUPABASE CONFIG
 // ============================================================
 const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50';
 const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br'; // Email do admin que faz upload
 
 const {createClient} = supabase;
@@ -582,6 +582,28 @@ Object.entries(TABS).forEach(([k,v])=>{
 // ============================================================
 // REGIONS MAP
 // ============================================================
+
+async function loadOTDFromStorage(){
+  try{
+    const { data, error } = await sb.storage
+      .from('dashboards')
+      .download('otd/dados.json');
+
+    if(error || !data){
+      console.warn('Sem dados OTD');
+      return;
+    }
+
+    const text = await data.text();
+    const json = JSON.parse(text);
+
+    window.otdData = json;
+    renderOTD(json);
+
+  }catch(e){
+    console.error('Erro ao carregar OTD:', e);
+  }
+}
 const REGIOES_MAP = window.REGIOES_MAP = {
   'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
   'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
