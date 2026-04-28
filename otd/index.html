@@ -199,7 +199,7 @@ table.dt tr:hover td{background:var(--bg2)}
   <div class="tabs" id="tabs-bar">
     <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
-    <div class="tab" onclick="switchTab('offtime',this)">Off Time por Clientes</div>
+    <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" id="tab-upload" style="display:none;margin-left:auto;color:#185FA5;font-weight:500" onclick="switchTab('upload',this)">⬆ Upload</div>
   </div>
 
@@ -431,30 +431,87 @@ table.dt tr:hover td{background:var(--bg2)}
       </div>
     </div>
 
-    <!-- OFF TIME POR CLIENTES -->
+    <!-- OFF TIME CLIENTES -->
     <div class="dash-section" id="sec-offtime" style="display:none">
       <div id="offtime-empty" class="empty-state">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         <p>Nenhuma base carregada ainda.</p>
       </div>
       <div id="offtime-content" style="display:none">
+        <!-- KPIs -->
         <div class="krow" id="offtime-kpis" style="margin-bottom:12px"></div>
-        <div class="card" style="margin-bottom:10px">
-          <div class="slabel"><span class="slabel-num">1</span>Resumo Total — Off Time</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Indicador</th><th class="r">Quantidade</th><th class="r">Valor</th><th class="r">% do Total</th></tr></thead><tbody id="offtime-resumo-tbody"></tbody></table></div>
+
+        <!-- Filtros -->
+        <div class="fbar" id="offtime-fbar" style="margin-bottom:10px">
+          <span class="fl">Região</span>
+          <button class="fbtn on" onclick="offTimeFilter('regiao','todas',this)">Todas</button>
+          <span id="offtime-reg-btns"></span>
+          <div class="fdiv"></div>
+          <span class="fl">Mês</span>
+          <button class="fbtn on" id="offtime-m-all" onclick="offTimeFilter('mes','todos',this)">Todos</button>
+          <span id="offtime-mes-btns"></span>
         </div>
+
+        <!-- Resumo por mês -->
         <div class="card" style="margin-bottom:10px">
-          <div class="slabel"><span class="slabel-num">2</span>Off Time por Mês</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r" style="color:#3B6D11">On Time</th><th class="r">Total Fin.</th><th class="r">OTD%</th><th class="r">Valor Off Time</th></tr></thead><tbody id="offtime-mes-tbody"></tbody></table></div>
+          <div class="slabel"><span class="slabel-num">1</span>Resumo por Mês</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Mês</th>
+              <th class="r" style="color:#A32D2D">Off Time</th>
+              <th class="r" style="color:#3B6D11">On Time</th>
+              <th class="r">Total Fin.</th>
+              <th class="r">OTD%</th>
+              <th class="r">Valor Off Time</th>
+            </tr></thead>
+            <tbody id="offtime-mes-tbody"></tbody>
+          </table></div>
         </div>
+
+        <!-- Resumo por região -->
         <div class="card" style="margin-bottom:10px">
-          <div class="slabel"><span class="slabel-num">3</span>Distribuição por Dias de Atraso</div>
-          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Diferença entre data de entrega efetiva e previsão de entrega — entregas Off Time.</p>
-          <div class="tw"><table class="dt"><thead><tr><th>Faixa de Atraso</th><th class="r">Qtd NFs</th><th class="r">Valor</th><th class="r">% do Off Time</th></tr></thead><tbody id="offtime-dias-tbody"></tbody></table></div>
+          <div class="slabel"><span class="slabel-num">2</span>Off Time por Região</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Região</th>
+              <th class="r" style="color:#A32D2D">Off Time</th>
+              <th class="r">% do Off Time</th>
+              <th class="r">Dias Médios Atraso</th>
+              <th class="r">Valor Off Time</th>
+            </tr></thead>
+            <tbody id="offtime-regiao-tbody"></tbody>
+          </table></div>
         </div>
+
+        <!-- Lista detalhada por cliente -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">4</span>Off Time por Região</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Região</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r" style="color:#3B6D11">On Time</th><th class="r">OTD%</th><th class="r">Dias Médios Atraso</th><th class="r">Valor Off Time</th></tr></thead><tbody id="offtime-regiao-tbody"></tbody></table></div>
+          <div class="slabel"><span class="slabel-num">3</span>Lista de Clientes com Off Time</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Clientes com entregas Off Time — ordenado por maior quantidade de atrasos.
+            <span id="offtime-count" style="font-weight:600;color:#A32D2D;margin-left:6px"></span>
+          </p>
+          <!-- Busca -->
+          <div style="margin-bottom:10px">
+            <input id="offtime-search" type="text" placeholder="Buscar cliente, cidade ou UF..." 
+              class="form-input" style="max-width:340px;padding:6px 12px;font-size:12px"
+              oninput="offTimeSearch()">
+          </div>
+          <div class="tw"><table class="dt" id="offtime-clientes-table">
+            <thead><tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>Cidade</th>
+              <th>UF</th>
+              <th>Região</th>
+              <th>Transportadora</th>
+              <th>Mês</th>
+              <th class="r" style="color:#A32D2D">Qtd Atrasos</th>
+              <th class="r">Dias Médios Atraso</th>
+              <th class="r">Valor Off Time</th>
+            </tr></thead>
+            <tbody id="offtime-clientes-tbody"></tbody>
+          </table></div>
+          <div id="offtime-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2)"></div>
         </div>
       </div>
     </div>
@@ -767,6 +824,25 @@ async function processOTD(file){
     return parseDate(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
   }
 
+  // Helper: get cliente (destinatário)
+  function getCliente(r){
+    return String(col(r,'Destinatário','Destinatario','Cliente','Razão Social Destino','Razao Social Destino','Nome Destinatário','Nome Destinatario')||'').substring(0,60)||'—';
+  }
+
+  // Helper: get cidade destino
+  function getCidade(r){
+    return String(col(r,'Cidade Destino','Cidade','Municipio Destino','Município Destino','Municipio')||'');
+  }
+
+  // Helper: get dias atraso (entrega - previsao)
+  function getDiasAtraso(r){
+    const dent=getDataEntrega(r);
+    const prev=getPrevisao(r);
+    if(!dent||!prev) return null;
+    const diff=Math.round((dent-prev)/(1000*60*60*24));
+    return diff>0?diff:null;
+  }
+
   // Separate vendas and bonificacoes using helper
   const vendas=processed.filter(r=>VENDAS_NAT.includes(getNatureza(r)));
   const bonifs=processed.filter(r=>!VENDAS_NAT.includes(getNatureza(r)));
@@ -992,10 +1068,40 @@ async function processOTD(file){
     empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;
   });
 
+  // Off Time por cliente — lista detalhada
+  const clienteOffMap={};
+  vendas.forEach(r=>{
+    const tipo=classificar(getStatus(r));
+    if(tipo!=='off_time') return;
+    const cliente=getCliente(r);
+    const uf=getUF(r);
+    const reg=REGIOES_MAP[uf]||'Outros';
+    const cidade=getCidade(r);
+    const val=getValor(r);
+    const de=getDataEmissao(r);
+    const dent=getDataEntrega(r);
+    const diasAtr=getDiasAtraso(r);
+    const mes=de?de.getMonth()+1:0;
+    const transp=getTransp(r);
+    const key=cliente+'|'+uf;
+    if(!clienteOffMap[key]) clienteOffMap[key]={
+      cliente,cidade,uf,regiao:reg,
+      qtd:0,valor:0,dias_sum:0,dias_n:0,
+      transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):''
+    };
+    const c=clienteOffMap[key];
+    c.qtd++;
+    c.valor+=val;
+    if(diasAtr!=null){c.dias_sum+=diasAtr;c.dias_n++;}
+  });
+  const clientesOff=Object.values(clienteOffMap)
+    .map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null}))
+    .sort((a,b)=>b.qtd-a.qtd);
+
   // Build payload
   const payload = {
     meses, bonif_mes, otd:transpList, regioes, dias_mes,
-    prevQ:prevQLista, empresa_total,
+    prevQ:prevQLista, empresa_total, clientesOff,
     atualizado: new Date().toLocaleString('pt-BR'),
     base_nome: file.name,
     total_nfs: vendas.length,
@@ -1163,20 +1269,27 @@ function showTranspDetalhe(nome){
 }
 
 // ============================================================
-// RENDER OFF TIME POR CLIENTES
+// RENDER OFF TIME CLIENTES
 // ============================================================
+let offTimeData_clientes=[];
+let offTimeFilter_state={regiao:'todas',mes:'todos'};
+let offTimePage=1;
+const OFFTIME_PER_PAGE=50;
+
 function renderOffTime(){
-  if(!otdData){ 
+  if(!otdData){
     document.getElementById('offtime-empty').style.display='block';
     document.getElementById('offtime-content').style.display='none';
     return;
   }
   const d=otdData;
   const ms=getOTDMeses();
+  offTimeData_clientes=d.clientesOff||[];
 
-  // Aggregate off time data
-  let totalOff=0,totalOn=0,totalFin=0,totalOffVal=0;
-  ms.forEach(m=>{const md=d.meses[m];if(!md)return;totalOff+=md.off;totalOn+=md.on;totalOffVal+=md.off_val;totalFin+=md.on+md.off;});
+  // Se não há dados de clientesOff (base antiga sem esse campo), mostra aviso
+  const totalOff=ms.reduce((s,m)=>s+(d.meses[m]?.off||0),0);
+  const totalOn=ms.reduce((s,m)=>s+(d.meses[m]?.on||0),0);
+  const totalFin=totalOff+totalOn;
 
   if(!totalFin){
     document.getElementById('offtime-empty').style.display='block';
@@ -1187,92 +1300,155 @@ function renderOffTime(){
   document.getElementById('offtime-content').style.display='block';
 
   // KPIs
+  const totalOffVal=ms.reduce((s,m)=>s+(d.meses[m]?.off_val||0),0);
   const otdPct=totalFin?((totalOn/totalFin)*100).toFixed(1):'—';
+  const diasMedClientes=offTimeData_clientes.filter(c=>c.dias_medio!=null);
+  const diasMed=diasMedClientes.length?(diasMedClientes.reduce((s,c)=>s+(c.dias_medio*c.qtd),0)/diasMedClientes.reduce((s,c)=>s+c.qtd,0)).toFixed(1):null;
+
   document.getElementById('offtime-kpis').innerHTML=
     '<div class="kpi kpi-red"><div class="kpi-lbl">Total Off Time</div><div class="kpi-val">'+totalOff.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas em atraso</div></div>'
    +'<div class="kpi kpi-grn"><div class="kpi-lbl">Total On Time</div><div class="kpi-val">'+totalOn.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas no prazo</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#185FA5">'+otdPct+'%</div><div class="kpi-sub">'+totalFin+' finalizadas</div></div>'
-   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">em atraso</div></div>';
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">impacto financeiro</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D;font-size:20px">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>';
 
-  // Resumo total
-  const totalFat=ms.reduce((s,m)=>s+(d.meses[m]?.fat||0),0);
-  document.getElementById('offtime-resumo-tbody').innerHTML=
-    '<tr><td style="font-weight:600">On Time</td><td class="r" style="color:#3B6D11">'+totalOn.toLocaleString('pt-BR')+'</td><td class="r" style="color:#3B6D11">'+fmtM(ms.reduce((s,m)=>s+(d.meses[m]?.on_val||0),0))+'</td><td class="r">'+fmtP(totalOn,totalFin)+'</td></tr>'
-   +'<tr><td style="font-weight:600">Off Time</td><td class="r" style="color:#A32D2D">'+totalOff.toLocaleString('pt-BR')+'</td><td class="r" style="color:#A32D2D">'+fmtM(totalOffVal)+'</td><td class="r">'+fmtP(totalOff,totalFin)+'</td></tr>'
-   +'<tr class="tr-total"><td>Total Finalizadas</td><td class="r">'+totalFin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(totalFat)+'</td><td class="r">100%</td></tr>';
+  // Filtros de região
+  const regioes=[...new Set(offTimeData_clientes.map(c=>c.regiao))].sort();
+  const regBtns=document.getElementById('offtime-reg-btns'); regBtns.innerHTML='';
+  regioes.forEach(r=>{
+    const b=document.createElement('button');b.className='fbtn';b.textContent=r;
+    b.onclick=function(){offTimeFilter('regiao',r,this);};regBtns.appendChild(b);
+  });
 
-  // Por mês
+  // Filtros de mês a partir dos meses disponíveis
+  const mesesDisp=[...new Set(offTimeData_clientes.map(c=>c.mes_nome).filter(Boolean))];
+  const mesBtns=document.getElementById('offtime-mes-btns'); mesBtns.innerHTML='';
+  mesesDisp.forEach(m=>{
+    const b=document.createElement('button');b.className='fbtn';b.textContent=m;
+    b.onclick=function(){offTimeFilter('mes',m,this);};mesBtns.appendChild(b);
+  });
+
+  // Tabela por mês
   let rMes='';
   ms.forEach(m=>{
     const md=d.meses[m]; if(!md)return;
     const fin=md.on+md.off; if(!fin)return;
     const otd=fin?((md.on/fin)*100).toFixed(1)+'%':'—';
     rMes+='<tr><td>'+md.nome+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+md.off+'</td>'
+      +'<td class="r" style="color:#A32D2D;font-weight:600">'+md.off+'</td>'
       +'<td class="r" style="color:#3B6D11">'+md.on+'</td>'
       +'<td class="r">'+fin+'</td>'
       +'<td class="r" style="color:'+(parseFloat(otd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+otd+'</td>'
       +'<td class="r" style="color:#A32D2D">'+fmtM(md.off_val)+'</td></tr>';
   });
+  if(!rMes) rMes='<tr><td colspan="6" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
   document.getElementById('offtime-mes-tbody').innerHTML=rMes;
 
-  // Dias de atraso - usar dados do transpMap via otd list
-  const faixas=[
-    {l:'1 dia',min:1,max:1},{l:'2-3 dias',min:2,max:3},{l:'4-7 dias',min:4,max:7},
-    {l:'8-15 dias',min:8,max:15},{l:'16-30 dias',min:16,max:30},{l:'+30 dias',min:31,max:999}
-  ];
-  // Reconstruir distribuição de atraso a partir dos dados de transportadoras
-  const diasOff={};
-  faixas.forEach(f=>diasOff[f.l]={qtd:0,val:0});
-  // Aproximação: usar off_time por transportadora com prazo medio
-  const transpList=d.otd||[];
-  let totalOffAll=0;
-  transpList.forEach(t=>{
-    if(t.off>0&&t.prazo_medio!=null){
-      const d_atr=Math.max(0,Math.round(t.prazo_medio-3)); // estimate atraso vs sla aprox 3d
-      const faixa=faixas.find(f=>d_atr>=f.min&&d_atr<=f.max)||faixas[faixas.length-1];
-      diasOff[faixa.l].qtd+=t.off;
-      diasOff[faixa.l].val+=t.nao_val||0;
-      totalOffAll+=t.off;
-    }
+  // Tabela por região
+  const regMap2={};
+  offTimeData_clientes.forEach(c=>{
+    if(!regMap2[c.regiao]) regMap2[c.regiao]={reg:c.regiao,qtd:0,valor:0,dias_sum:0,dias_n:0};
+    regMap2[c.regiao].qtd+=c.qtd;
+    regMap2[c.regiao].valor+=c.valor;
+    if(c.dias_medio!=null){regMap2[c.regiao].dias_sum+=c.dias_medio*c.qtd;regMap2[c.regiao].dias_n+=c.qtd;}
   });
-  if(!totalOffAll) totalOffAll=totalOff||1;
-  let rDias='';
-  faixas.forEach(f=>{
-    const d2=diasOff[f.l];
-    if(d2.qtd>0)
-      rDias+='<tr><td style="font-weight:500">'+f.l+'</td>'
-        +'<td class="r">'+d2.qtd.toLocaleString('pt-BR')+'</td>'
-        +'<td class="r" style="color:#A32D2D">'+fmtM(d2.val)+'</td>'
-        +'<td class="r">'+((d2.qtd/totalOffAll)*100).toFixed(1)+'%</td></tr>';
-  });
-  document.getElementById('offtime-dias-tbody').innerHTML=rDias||'<tr><td colspan="4" style="color:var(--text3);text-align:center;padding:14px">Dados insuficientes para calcular faixas de atraso</td></tr>';
-
-  // Por região
-  const regioes=d.regioes||[];
+  const totalOffReg=Object.values(regMap2).reduce((s,r)=>s+r.qtd,0)||1;
   let rReg='';
-  regioes.forEach(r=>{
-    // On time + off time por regiao - from otd list aggregate
-    let rOn=0,rOff=0,rVal=0,diasSum=0,diasN=0;
-    transpList.forEach(t=>{
-      (t.ufs||[]).forEach(u=>{
-        if((window.REGIOES_MAP||{})[u.uf]===r.r||u.reg===r.r){
-          rOn+=u.on||0; rOff+=u.off||0;
-          if(u.prazo_medio!=null&&u.fin>0){diasSum+=u.prazo_medio*u.fin;diasN+=u.fin;}
-        }
-      });
-    });
-    const rFin=rOn+rOff; if(!rFin&&r.atr_qtd===0)return;
-    const rOtd=rFin?((rOn/rFin)*100).toFixed(1)+'%':'—';
-    const diasMed=diasN?((diasSum/diasN)-3).toFixed(1):r.dias_atr.toFixed(1);
-    rReg+='<tr><td style="font-weight:500;border-left:3px solid '+(REG_CORES[r.r]||'#888')+'">'+r.r+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+rOff+'</td>'
-      +'<td class="r" style="color:#3B6D11">'+rOn+'</td>'
-      +'<td class="r" style="color:'+(parseFloat(rOtd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+rOtd+'</td>'
-      +'<td class="r">'+diasMed+'d</td>'
-      +'<td class="r" style="color:#A32D2D">'+fmtM(r.atr_val)+'</td></tr>';
+  Object.values(regMap2).sort((a,b)=>b.qtd-a.qtd).forEach(r=>{
+    const cor=REG_CORES[r.reg]||'#888';
+    const diasMedReg=r.dias_n>0?(r.dias_sum/r.dias_n).toFixed(1):null;
+    rReg+='<tr>'
+      +'<td style="font-weight:600;border-left:3px solid '+cor+'">'+r.reg+'</td>'
+      +'<td class="r" style="color:#A32D2D;font-weight:600">'+r.qtd+'</td>'
+      +'<td class="r">'+((r.qtd/totalOffReg)*100).toFixed(1)+'%</td>'
+      +'<td class="r">'+(diasMedReg!=null?diasMedReg+'d':'—')+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(r.valor)+'</td></tr>';
   });
+  if(!rReg) rReg='<tr><td colspan="5" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
   document.getElementById('offtime-regiao-tbody').innerHTML=rReg;
+
+  // Renderizar lista de clientes
+  offTimePage=1;
+  renderOffTimeClientes();
+}
+
+function offTimeFilter(tipo,val,btn){
+  if(tipo==='regiao'){
+    offTimeFilter_state.regiao=val;
+    document.querySelectorAll('#offtime-reg-btns .fbtn').forEach(b=>b.classList.remove('on'));
+    if(val==='todas') document.querySelector('#offtime-fbar .fbtn').classList.add('on');
+    else btn.classList.add('on');
+  } else {
+    offTimeFilter_state.mes=val;
+    document.querySelectorAll('#offtime-mes-btns .fbtn').forEach(b=>b.classList.remove('on'));
+    if(val==='todos') document.getElementById('offtime-m-all').classList.add('on');
+    else btn.classList.add('on');
+  }
+  offTimePage=1;
+  renderOffTimeClientes();
+}
+
+function offTimeSearch(){
+  offTimePage=1;
+  renderOffTimeClientes();
+}
+
+function getOffTimeFiltered(){
+  const search=(document.getElementById('offtime-search')?.value||'').toLowerCase();
+  return offTimeData_clientes.filter(c=>{
+    if(offTimeFilter_state.regiao!=='todas'&&c.regiao!==offTimeFilter_state.regiao) return false;
+    if(offTimeFilter_state.mes!=='todos'&&c.mes_nome!==offTimeFilter_state.mes) return false;
+    if(search&&!(c.cliente.toLowerCase().includes(search)||c.cidade.toLowerCase().includes(search)||c.uf.toLowerCase().includes(search))) return false;
+    return true;
+  });
+}
+
+function renderOffTimeClientes(){
+  const filtered=getOffTimeFiltered();
+  const total=filtered.length;
+  const pages=Math.ceil(total/OFFTIME_PER_PAGE)||1;
+  if(offTimePage>pages) offTimePage=pages;
+  const slice=filtered.slice((offTimePage-1)*OFFTIME_PER_PAGE, offTimePage*OFFTIME_PER_PAGE);
+
+  document.getElementById('offtime-count').textContent=total+' cliente(s) com atraso';
+
+  let rows='';
+  if(!slice.length){
+    rows='<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+  } else {
+    const start=(offTimePage-1)*OFFTIME_PER_PAGE;
+    slice.forEach((c,i)=>{
+      const cor=REG_CORES[c.regiao]||'#888';
+      rows+='<tr>'
+        +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
+        +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
+        +'<td style="color:var(--text2)">'+c.cidade+'</td>'
+        +'<td style="font-weight:600">'+c.uf+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+c.regiao+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.transp+'</td>'
+        +'<td style="color:var(--text2)">'+c.mes_nome+'</td>'
+        +'<td class="r" style="color:#A32D2D;font-weight:700">'+c.qtd+'</td>'
+        +'<td class="r" style="color:'+(c.dias_medio!=null?(c.dias_medio<=3?'#854F0B':'#A32D2D'):'var(--text2)')+'">'+(c.dias_medio!=null?c.dias_medio+'d':'—')+'</td>'
+        +'<td class="r" style="color:#A32D2D">'+fmtM(c.valor)+'</td>'
+        +'</tr>';
+    });
+  }
+  document.getElementById('offtime-clientes-tbody').innerHTML=rows;
+
+  // Paginação
+  let pag='<span>'+total+' registros</span><span style="margin:0 8px">|</span>';
+  if(pages>1){
+    pag+='<button class="btn-sm" onclick="offTimePaginar(-1)" '+(offTimePage<=1?'disabled':'')+'>← Ant</button>';
+    pag+='<span style="margin:0 6px">Pág '+offTimePage+' de '+pages+'</span>';
+    pag+='<button class="btn-sm" onclick="offTimePaginar(1)" '+(offTimePage>=pages?'disabled':'')+'>Próx →</button>';
+  }
+  document.getElementById('offtime-paginacao').innerHTML=pag;
+}
+
+function offTimePaginar(dir){
+  offTimePage+=dir;
+  renderOffTimeClientes();
+  document.getElementById('offtime-clientes-table')?.scrollIntoView({behavior:'smooth'});
 }
 
 
@@ -1488,8 +1664,12 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#A32D2D">'+fmtM(p.valor)+'</td>'
       +'</tr>';
   });
-  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+p.qtd,valor:a.valor+p.valor,hub:a.hub+p.hub,trs:a.transito+p.transito}),{qtd:0,valor:0,hub:0,trs:0});
-  rPrev+='<tr class="tr-total"><td>Total pendente</td><td class="r" style="color:#854F0B">'+totPrev.hub+'</td><td class="r" style="color:#185FA5">'+totPrev.trs+'</td><td class="r">'+totPrev.qtd+'</td><td class="r" style="color:#A32D2D">'+fmtM(totPrev.valor)+'</td></tr>';
+  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+(p.qtd||0),valor:a.valor+(p.valor||0),hub:a.hub+(p.hub||0),trs:a.trs+(p.transito||0)}),{qtd:0,valor:0,hub:0,trs:0});
+  rPrev+='<tr class="tr-total"><td>Total Pendente</td>'
+    +'<td class="r" style="color:#854F0B">'+(totPrev.hub||0)+'</td>'
+    +'<td class="r" style="color:#185FA5">'+(totPrev.trs||0)+'</td>'
+    +'<td class="r" style="font-weight:700;color:#A32D2D">'+(totPrev.qtd||0)+'</td>'
+    +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(totPrev.valor||0)+'</td></tr>';
   document.getElementById('o3-prev-tbody').innerHTML=rPrev;
 
   // ---- BLOCO 4: Transportadoras ----
