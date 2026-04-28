@@ -1522,16 +1522,20 @@ function renderOTDChart(d){
   document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
   // ---- BLOCO 1: Genomma vs Inovalab — calculado dos meses filtrados ----
-  // Usa meses filtrados para bater com o filtro de quarter/mês
   let gFat=0,gQtd=0,gOn=0,gOff=0,iFat=0,iQtd=0,iOn=0,iOff=0;
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)]; if(!md)return;
-    gFat+=md.fat_genomma||0; gQtd+=md.qtd_genomma||0;
+    gFat+=md.fat_genomma||0;
+    iFat+=md.fat_inovalab||0;
     gOn+=md.on_genomma||0;  gOff+=md.off_genomma||0;
-    iFat+=md.fat_inovalab||0; iQtd+=md.qtd_inovalab||0;
     iOn+=md.on_inovalab||0; iOff+=md.off_inovalab||0;
+    // qtd = todas as notas do mês por empresa (proporcional ao faturamento)
+    if(md.fat>0){
+      gQtd+=Math.round(md.qtd*(md.fat_genomma||0)/md.fat);
+      iQtd+=Math.round(md.qtd*(md.fat_inovalab||0)/md.fat);
+    }
   });
-  // fallback: se on/off por empresa não estiver no meses[], usar empresa_total só no acumulado
+  // fallback acumulado: usar empresa_total que tem qtd exata
   if(otdFilter_state.type==='all'){
     const et=d.empresa_total||{};
     gFat=et.GENOMMA?.fat||gFat; gQtd=et.GENOMMA?.qtd||gQtd;
