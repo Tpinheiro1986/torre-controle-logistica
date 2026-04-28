@@ -763,15 +763,20 @@ async function processOTD(file){
       fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,qtd_genomma:0,qtd_inovalab:0,
       on:0,off:0,hub:0,trs:0,
       on_val:0,off_val:0,hub_val:0,trs_val:0,
+      on_genomma:0,off_genomma:0,on_inovalab:0,off_inovalab:0,
       nome:NOME_MES[mes]||('M'+mes)
     };
     const m=meses[mes];
     m.fat+=val; m.qtd++;
     if(emp==='GENOMMA'){m.fat_genomma+=val;m.qtd_genomma++;}
     else{m.fat_inovalab+=val;m.qtd_inovalab++;}
-    if(tipo==='on_time'){m.on++;m.on_val+=val;}
-    else if(tipo==='off_time'){m.off++;m.off_val+=val;}
-    else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
+    if(tipo==='on_time'){
+      m.on++;m.on_val+=val;
+      if(emp==='GENOMMA')m.on_genomma++;else m.on_inovalab++;
+    } else if(tipo==='off_time'){
+      m.off++;m.off_val+=val;
+      if(emp==='GENOMMA')m.off_genomma++;else m.off_inovalab++;
+    } else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
     else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
   });
 
@@ -1516,15 +1521,27 @@ function renderOTDChart(d){
   document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
   document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
-  // ---- BLOCO 1: Genomma vs Inovalab + Bonificações ----
-  const et=d.empresa_total||{};
-  const gFat=et.GENOMMA?.fat||0, gQtd=et.GENOMMA?.qtd||0;
-  const iFat=et.INOVALAB?.fat||0, iQtd=et.INOVALAB?.qtd||0;
-  const gOn=et.GENOMMA?.on||0, gOff=et.GENOMMA?.off||0;
-  const iOn=et.INOVALAB?.on||0, iOff=et.INOVALAB?.off||0;
+  // ---- BLOCO 1: Genomma vs Inovalab — calculado dos meses filtrados ----
+  // Usa meses filtrados para bater com o filtro de quarter/mês
+  let gFat=0,gQtd=0,gOn=0,gOff=0,iFat=0,iQtd=0,iOn=0,iOff=0;
+  ms.forEach(m=>{
+    const md=d.meses[m]||d.meses[String(m)]; if(!md)return;
+    gFat+=md.fat_genomma||0; gQtd+=md.qtd_genomma||0;
+    gOn+=md.on_genomma||0;  gOff+=md.off_genomma||0;
+    iFat+=md.fat_inovalab||0; iQtd+=md.qtd_inovalab||0;
+    iOn+=md.on_inovalab||0; iOff+=md.off_inovalab||0;
+  });
+  // fallback: se on/off por empresa não estiver no meses[], usar empresa_total só no acumulado
+  if(otdFilter_state.type==='all'){
+    const et=d.empresa_total||{};
+    gFat=et.GENOMMA?.fat||gFat; gQtd=et.GENOMMA?.qtd||gQtd;
+    gOn=et.GENOMMA?.on||gOn;   gOff=et.GENOMMA?.off||gOff;
+    iFat=et.INOVALAB?.fat||iFat; iQtd=et.INOVALAB?.qtd||iQtd;
+    iOn=et.INOVALAB?.on||iOn;  iOff=et.INOVALAB?.off||iOff;
+  }
   const gFin=gOn+gOff, iFin=iOn+iOff;
-  const gOtd=gFin>0?((gOn/gFin)*100).toFixed(1):'—';
-  const iOtd=iFin>0?((iOn/iFin)*100).toFixed(1):'—';
+  const gOtd=gFin>0?((gOn/gFin)*100).toFixed(1):(gFat>0?'—':'—');
+  const iOtd=iFin>0?((iOn/iFin)*100).toFixed(1):(iFat>0?'—':'—');
 
   document.getElementById('emp-kpis').innerHTML=
     '<div style="background:#E6F1FB20;border:0.5px solid #185FA544;border-radius:var(--radius);padding:12px 16px">'
