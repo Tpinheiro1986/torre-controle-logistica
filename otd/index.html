@@ -470,7 +470,7 @@ table.dt tr:hover td{background:var(--bg2)}
 // SUPABASE CONFIG
 // ============================================================
 const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50';
 const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br'; // Email do admin que faz upload
 
 const {createClient} = supabase;
@@ -483,14 +483,19 @@ let currentUser = null;
 
 async function checkSession(){
   try{
-    if(window.location.hash&&window.location.hash.includes('access_token')){
-      await new Promise(r=>setTimeout(r,800));
-      window.history.replaceState(null,'',window.location.pathname);
+    const { data: { session } } = await sb.auth.getSession();
+
+    if(session){
+      console.log('Sessão ativa:', session.user.email);
+      showApp(session.user);
+    } else {
+      showLogin();
     }
-    const {data:{session},error}=await sb.auth.getSession();
-    if(error||!session){showLogin();return;}
-    showApp(session.user);
-  }catch(e){showLogin();}
+
+  }catch(e){
+    console.error('Erro sessão:', e);
+    showLogin();
+  }
 }
 
 async function doLogin(){
