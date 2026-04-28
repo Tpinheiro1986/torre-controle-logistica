@@ -199,6 +199,7 @@ table.dt tr:hover td{background:var(--bg2)}
   <div class="tabs" id="tabs-bar">
     <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
+    <div class="tab" onclick="switchTab('offtime',this)">Off Time por Clientes</div>
     <div class="tab" id="tab-upload" style="display:none;margin-left:auto;color:#185FA5;font-weight:500" onclick="switchTab('upload',this)">⬆ Upload</div>
   </div>
 
@@ -278,7 +279,7 @@ table.dt tr:hover td{background:var(--bg2)}
           <span id="otd-m-btns"></span>
         </div>
         <div class="krow">
-          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
+          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento Bruto</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
           <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
           <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
           <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
@@ -331,7 +332,7 @@ table.dt tr:hover td{background:var(--bg2)}
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD — Ag. Expedição</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
@@ -369,7 +370,7 @@ table.dt tr:hover td{background:var(--bg2)}
               <th class="r" style="color:#A32D2D">Off Time</th>
               <th class="r">OTD%</th>
               <th class="r">Prazo Médio</th>
-              <th class="r" style="color:#854F0B">CD</th>
+              <th class="r" style="color:#854F0B">CD — Ag. Expedição</th>
               <th class="r" style="color:#185FA5">Trânsito</th>
               <th style="min-width:80px">OTD Perf.</th>
             </tr></thead>
@@ -422,11 +423,39 @@ table.dt tr:hover td{background:var(--bg2)}
             <div id="transp-ranking-otd"></div>
           </div>
           <div class="card">
-            <div class="slabel"><span class="slabel-num">5</span>Ranking Prazo Médio — Menor para maior</div>
+            <div class="slabel"><span class="slabel-num">5</span>Ranking Prazo Médio — Menor para Maior (Melhor → Pior)</div>
             <div id="transp-ranking-prazo"></div>
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- OFF TIME POR CLIENTES -->
+    <div class="dash-section" id="sec-offtime" style="display:none">
+      <div id="offtime-empty" class="empty-state">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+      </div>
+      <div id="offtime-content" style="display:none">
+        <div class="krow" id="offtime-kpis" style="margin-bottom:12px"></div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">1</span>Resumo Total — Off Time</div>
+          <div class="tw"><table class="dt"><thead><tr><th>Indicador</th><th class="r">Quantidade</th><th class="r">Valor</th><th class="r">% do Total</th></tr></thead><tbody id="offtime-resumo-tbody"></tbody></table></div>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">2</span>Off Time por Mês</div>
+          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r" style="color:#3B6D11">On Time</th><th class="r">Total Fin.</th><th class="r">OTD%</th><th class="r">Valor Off Time</th></tr></thead><tbody id="offtime-mes-tbody"></tbody></table></div>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">3</span>Distribuição por Dias de Atraso</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Diferença entre data de entrega efetiva e previsão de entrega — entregas Off Time.</p>
+          <div class="tw"><table class="dt"><thead><tr><th>Faixa de Atraso</th><th class="r">Qtd NFs</th><th class="r">Valor</th><th class="r">% do Off Time</th></tr></thead><tbody id="offtime-dias-tbody"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">4</span>Off Time por Região</div>
+          <div class="tw"><table class="dt"><thead><tr><th>Região</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r" style="color:#3B6D11">On Time</th><th class="r">OTD%</th><th class="r">Dias Médios Atraso</th><th class="r">Valor Off Time</th></tr></thead><tbody id="offtime-regiao-tbody"></tbody></table></div>
+        </div>
       </div>
     </div>
 
@@ -528,7 +557,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', transp:'sec-transp', upload:'sec-upload'
+  otd:'sec-otd', transp:'sec-transp', offtime:'sec-offtime', upload:'sec-upload'
 };
 
 function switchTab(id, btn){
@@ -541,6 +570,7 @@ function switchTab(id, btn){
   const sec = document.getElementById(TABS[id]);
   if(sec){sec.classList.add('on');sec.style.display='block';}
   if(id==='transp'){ renderTransp(); }
+  if(id==='offtime'){ renderOffTime(); }
 }
 
 // init visibility
@@ -583,7 +613,7 @@ function registerFile(file,type){
 // ============================================================
 // PROCESS FILES
 // ============================================================
-const REGIOES_MAP = {
+const REGIOES_MAP = window.REGIOES_MAP = {
   'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
   'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
   'PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste',
@@ -983,6 +1013,7 @@ async function processOTD(file){
   renderOTD(payload);
   // pre-load transp data so it's ready when tab is clicked
   if(typeof renderTransp==='function') renderTransp();
+  if(typeof renderOffTime==='function') renderOffTime();
 }
 
 // ============================================================
@@ -1032,7 +1063,7 @@ function renderTransp(){
   const kpis = [
     {l:'Entregas Finalizadas', v:totFin.toLocaleString('pt-BR'), s:'on time + off time'},
     {l:'OTD Geral',            v:otdGeral!=null?otdGeral.toFixed(1)+'%':'—', s:totOn+' no prazo'},
-    {l:'Prazo Médio Geral',    v:prazoGeral!=null?prazoGeral.toFixed(1)+' dias':'—', s:'emissão → entrega'},
+    {l:'Prazo Médio Geral ↑',    v:prazoGeral!=null?prazoGeral.toFixed(1)+' dias':'—', s:'emissão → entrega (menor = melhor)'},
     {l:'Melhor OTD',           v:melhor?melhor.otd.toFixed(1)+'%':'—', s:melhor?melhor.n.substring(0,22):'—'},
     {l:'Pior OTD',             v:pior?pior.otd.toFixed(1)+'%':'—', s:pior?pior.n.substring(0,22):'—'},
   ];
@@ -1132,8 +1163,119 @@ function showTranspDetalhe(nome){
 }
 
 // ============================================================
-// LOAD OTD FROM STORAGE
+// RENDER OFF TIME POR CLIENTES
 // ============================================================
+function renderOffTime(){
+  if(!otdData){ 
+    document.getElementById('offtime-empty').style.display='block';
+    document.getElementById('offtime-content').style.display='none';
+    return;
+  }
+  const d=otdData;
+  const ms=getOTDMeses();
+
+  // Aggregate off time data
+  let totalOff=0,totalOn=0,totalFin=0,totalOffVal=0;
+  ms.forEach(m=>{const md=d.meses[m];if(!md)return;totalOff+=md.off;totalOn+=md.on;totalOffVal+=md.off_val;totalFin+=md.on+md.off;});
+
+  if(!totalFin){
+    document.getElementById('offtime-empty').style.display='block';
+    document.getElementById('offtime-content').style.display='none';
+    return;
+  }
+  document.getElementById('offtime-empty').style.display='none';
+  document.getElementById('offtime-content').style.display='block';
+
+  // KPIs
+  const otdPct=totalFin?((totalOn/totalFin)*100).toFixed(1):'—';
+  document.getElementById('offtime-kpis').innerHTML=
+    '<div class="kpi kpi-red"><div class="kpi-lbl">Total Off Time</div><div class="kpi-val">'+totalOff.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas em atraso</div></div>'
+   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Total On Time</div><div class="kpi-val">'+totalOn.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas no prazo</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#185FA5">'+otdPct+'%</div><div class="kpi-sub">'+totalFin+' finalizadas</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">em atraso</div></div>';
+
+  // Resumo total
+  const totalFat=ms.reduce((s,m)=>s+(d.meses[m]?.fat||0),0);
+  document.getElementById('offtime-resumo-tbody').innerHTML=
+    '<tr><td style="font-weight:600">On Time</td><td class="r" style="color:#3B6D11">'+totalOn.toLocaleString('pt-BR')+'</td><td class="r" style="color:#3B6D11">'+fmtM(ms.reduce((s,m)=>s+(d.meses[m]?.on_val||0),0))+'</td><td class="r">'+fmtP(totalOn,totalFin)+'</td></tr>'
+   +'<tr><td style="font-weight:600">Off Time</td><td class="r" style="color:#A32D2D">'+totalOff.toLocaleString('pt-BR')+'</td><td class="r" style="color:#A32D2D">'+fmtM(totalOffVal)+'</td><td class="r">'+fmtP(totalOff,totalFin)+'</td></tr>'
+   +'<tr class="tr-total"><td>Total Finalizadas</td><td class="r">'+totalFin.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(totalFat)+'</td><td class="r">100%</td></tr>';
+
+  // Por mês
+  let rMes='';
+  ms.forEach(m=>{
+    const md=d.meses[m]; if(!md)return;
+    const fin=md.on+md.off; if(!fin)return;
+    const otd=fin?((md.on/fin)*100).toFixed(1)+'%':'—';
+    rMes+='<tr><td>'+md.nome+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+md.off+'</td>'
+      +'<td class="r" style="color:#3B6D11">'+md.on+'</td>'
+      +'<td class="r">'+fin+'</td>'
+      +'<td class="r" style="color:'+(parseFloat(otd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+otd+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(md.off_val)+'</td></tr>';
+  });
+  document.getElementById('offtime-mes-tbody').innerHTML=rMes;
+
+  // Dias de atraso - usar dados do transpMap via otd list
+  const faixas=[
+    {l:'1 dia',min:1,max:1},{l:'2-3 dias',min:2,max:3},{l:'4-7 dias',min:4,max:7},
+    {l:'8-15 dias',min:8,max:15},{l:'16-30 dias',min:16,max:30},{l:'+30 dias',min:31,max:999}
+  ];
+  // Reconstruir distribuição de atraso a partir dos dados de transportadoras
+  const diasOff={};
+  faixas.forEach(f=>diasOff[f.l]={qtd:0,val:0});
+  // Aproximação: usar off_time por transportadora com prazo medio
+  const transpList=d.otd||[];
+  let totalOffAll=0;
+  transpList.forEach(t=>{
+    if(t.off>0&&t.prazo_medio!=null){
+      const d_atr=Math.max(0,Math.round(t.prazo_medio-3)); // estimate atraso vs sla aprox 3d
+      const faixa=faixas.find(f=>d_atr>=f.min&&d_atr<=f.max)||faixas[faixas.length-1];
+      diasOff[faixa.l].qtd+=t.off;
+      diasOff[faixa.l].val+=t.nao_val||0;
+      totalOffAll+=t.off;
+    }
+  });
+  if(!totalOffAll) totalOffAll=totalOff||1;
+  let rDias='';
+  faixas.forEach(f=>{
+    const d2=diasOff[f.l];
+    if(d2.qtd>0)
+      rDias+='<tr><td style="font-weight:500">'+f.l+'</td>'
+        +'<td class="r">'+d2.qtd.toLocaleString('pt-BR')+'</td>'
+        +'<td class="r" style="color:#A32D2D">'+fmtM(d2.val)+'</td>'
+        +'<td class="r">'+((d2.qtd/totalOffAll)*100).toFixed(1)+'%</td></tr>';
+  });
+  document.getElementById('offtime-dias-tbody').innerHTML=rDias||'<tr><td colspan="4" style="color:var(--text3);text-align:center;padding:14px">Dados insuficientes para calcular faixas de atraso</td></tr>';
+
+  // Por região
+  const regioes=d.regioes||[];
+  let rReg='';
+  regioes.forEach(r=>{
+    // On time + off time por regiao - from otd list aggregate
+    let rOn=0,rOff=0,rVal=0,diasSum=0,diasN=0;
+    transpList.forEach(t=>{
+      (t.ufs||[]).forEach(u=>{
+        if((window.REGIOES_MAP||{})[u.uf]===r.r||u.reg===r.r){
+          rOn+=u.on||0; rOff+=u.off||0;
+          if(u.prazo_medio!=null&&u.fin>0){diasSum+=u.prazo_medio*u.fin;diasN+=u.fin;}
+        }
+      });
+    });
+    const rFin=rOn+rOff; if(!rFin&&r.atr_qtd===0)return;
+    const rOtd=rFin?((rOn/rFin)*100).toFixed(1)+'%':'—';
+    const diasMed=diasN?((diasSum/diasN)-3).toFixed(1):r.dias_atr.toFixed(1);
+    rReg+='<tr><td style="font-weight:500;border-left:3px solid '+(REG_CORES[r.r]||'#888')+'">'+r.r+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+rOff+'</td>'
+      +'<td class="r" style="color:#3B6D11">'+rOn+'</td>'
+      +'<td class="r" style="color:'+(parseFloat(rOtd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+rOtd+'</td>'
+      +'<td class="r">'+diasMed+'d</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(r.atr_val)+'</td></tr>';
+  });
+  document.getElementById('offtime-regiao-tbody').innerHTML=rReg;
+}
+
+
 async function loadOTDFromStorage(){
   try{
     const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
@@ -1142,6 +1284,7 @@ async function loadOTDFromStorage(){
     const payload=JSON.parse(text);
     renderOTD(payload);
     if(typeof renderTransp==='function') renderTransp();
+    if(typeof renderOffTime==='function') renderOffTime();
   }catch(e){
     // no data yet, show empty state
   }
@@ -1328,7 +1471,7 @@ function renderOTDChart(d){
       +'<td class="r">'+(md.hub_val+md.trs_val>0?fmtM(md.hub_val+md.trs_val):'—')+'</td>'
       +'<td class="r" style="color:var(--text2)">'+(md.hub+md.trs>0?fmtP(md.hub+md.trs,md.qtd):'—')+'</td></tr>';
   });
-  if(ms.length>1) r3+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r">'+nfin+'</td><td class="r">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
+  r3+='<tr class="tr-total"><td>Total Pendente</td><td class="r" style="color:#854F0B">'+hub+'</td><td class="r" style="color:#854F0B">'+fmtM(hub_val)+'</td><td class="r" style="color:#185FA5">'+trs+'</td><td class="r" style="color:#185FA5">'+fmtM(trs_val)+'</td><td class="r" style="font-weight:700;color:#A32D2D">'+nfin+'</td><td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(nfin_val)+'</td><td class="r">'+fmtP(nfin,qtd)+'</td></tr>';
   document.getElementById('o3-tbody').innerHTML=r3;
 
   // ---- BLOCO 3b: Previsão por quarter ----
@@ -1360,6 +1503,7 @@ function renderOTDChart(d){
       +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
       +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
       +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
+      +'<td class="r" style="color:#854F0B">'+(t.hub>0&&t.nao_hub_val>0?fmtM(t.nao_hub_val):(t.hub>0?'—':'—'))+'</td>'
       +'<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'
       +'<td class="r" style="color:#854F0B">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
       +'</tr>';
