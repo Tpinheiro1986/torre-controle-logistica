@@ -1497,12 +1497,12 @@ function renderOTDChart(d){
     fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;
     on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;
   });
-  const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val,nfin=hub+trs,nfin_val=hub_val+trs_val;
-  // Para bloco 3 KPIs usar valores ALL (incluindo bonificações) para ser igual ao prevQ
-  const hubAll=d.totalHubAll!=null?d.totalHubAll:hub;
-  const trsAll=d.totalTrsAll!=null?d.totalTrsAll:trs;
-  const hubValAll=d.totalHubValAll!=null?d.totalHubValAll:hub_val;
-  const trsValAll=d.totalTrsValAll!=null?d.totalTrsValAll:trs_val;
+  const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val;
+  // Bloco 3: filtro mês usa hub/trs do mês; acumulado/quarter usa totalHubAll
+  const hubAll=otdFilter_state.type==='m'?hub:(d.totalHubAll!=null?d.totalHubAll:hub);
+  const trsAll=otdFilter_state.type==='m'?trs:(d.totalTrsAll!=null?d.totalTrsAll:trs);
+  const hubValAll=otdFilter_state.type==='m'?hub_val:(d.totalHubValAll!=null?d.totalHubValAll:hub_val);
+  const trsValAll=otdFilter_state.type==='m'?trs_val:(d.totalTrsValAll!=null?d.totalTrsValAll:trs_val);
   const nfinAll=hubAll+trsAll;
   const nfinValAll=hubValAll+trsValAll;
 
