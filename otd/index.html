@@ -1209,11 +1209,16 @@ function renderOffTime(){
   }
   const d=otdData;
   const ms=getOTDMeses();
-  offTimeData_clientes=d.clientesOff||[];
 
-  // Se não há dados de clientesOff (base antiga sem esse campo), mostra aviso
-  const totalOff=ms.reduce((s,m)=>s+(d.meses[m]?.off||0),0);
-  const totalOn=ms.reduce((s,m)=>s+(d.meses[m]?.on||0),0);
+  // Filtrar clientesOff pelo mês ativo se necessário
+  const allClientes=d.clientesOff||[];
+  const mesFiltro=otdFilter_state.type==='m'?NOME_MES[parseInt(otdFilter_state.val)]:null;
+  offTimeData_clientes=mesFiltro
+    ?allClientes.filter(c=>c.mes_nome===mesFiltro)
+    :allClientes;
+
+  const totalOff=ms.reduce((s,m)=>s+((d.meses[m]||d.meses[String(m)])?.off||0),0);
+  const totalOn=ms.reduce((s,m)=>s+((d.meses[m]||d.meses[String(m)])?.on||0),0);
   const totalFin=totalOff+totalOn;
 
   if(!totalFin){
@@ -1256,7 +1261,7 @@ function renderOffTime(){
   // Tabela por mês
   let rMes='';
   ms.forEach(m=>{
-    const md=d.meses[m]; if(!md)return;
+    const md=d.meses[m]||d.meses[String(m)]; if(!md)return;
     const fin=md.on+md.off; if(!fin)return;
     const otd=fin?((md.on/fin)*100).toFixed(1)+'%':'—';
     rMes+='<tr><td>'+md.nome+'</td>'
@@ -1429,6 +1434,7 @@ const fmtM=v=>'R$ '+(v/1e6).toFixed(1)+'M';
 const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
 const MES_PALETTE=['#378ADD','#185FA5','#0C447C','#042C53','#85B7EB'];
 const REG_CORES={'Sudeste':'#185FA5','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
+const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 function renderOTD(payload){
   otdData=payload;
@@ -1437,10 +1443,10 @@ function renderOTD(payload){
   document.getElementById('otd-update-text').innerHTML=
     'Base: <strong>'+payload.base_nome+'</strong> &nbsp;·&nbsp; Atualizado em: <strong>'+payload.atualizado+'</strong>';
 
-  // Build filter buttons
-  const MK=Object.keys(payload.meses).map(Number).sort();
+  // Build filter buttons - garantir MK como números
+  const MK=Object.keys(payload.meses).map(Number).sort((a,b)=>a-b);
   const QS=[...new Set(MK.map(m=>'Q'+Math.ceil(m/3)))].sort();
-  const MC={}; MK.forEach((m,i)=>MC[m]=MES_PALETTE[i]||'#185FA5');
+  const MC={}; MK.forEach((m,i)=>MC[m]=MES_PALETTE[i%MES_PALETTE.length]);
   payload._MK=MK; payload._MC=MC; payload._QS=QS;
 
   const qc=document.getElementById('otd-q-btns'); qc.innerHTML='';
@@ -1467,7 +1473,11 @@ function getOTDMeses(){
   const MK=otdData._MK||[];
   if(otdFilter_state.type==='all') return MK;
   if(otdFilter_state.type==='q') return MK.filter(m=>'Q'+Math.ceil(m/3)===otdFilter_state.val);
-  if(otdFilter_state.type==='m') return [parseInt(otdFilter_state.val)];
+  if(otdFilter_state.type==='m'){
+    const mv=parseInt(otdFilter_state.val);
+    // retorna o mês filtrado se existir nos dados
+    return MK.filter(m=>parseInt(m)===mv);
+  }
   return MK;
 }
 
@@ -1475,7 +1485,13 @@ function renderOTDChart(d){
   const ms=getOTDMeses();
   const MC=d._MC||{};
   let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,on_val=0,off_val=0,hub_val=0,trs_val=0;
-  ms.forEach(m=>{const md=d.meses[m];if(!md)return;fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;});
+  ms.forEach(m=>{
+    // tentar chave numérica e string
+    const md=d.meses[m]||d.meses[String(m)];
+    if(!md)return;
+    fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;
+    on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;
+  });
   const fin=on+off,otd=fin?((on/fin)*100).toFixed(1):'—',fin_val=on_val+off_val,nfin=hub+trs,nfin_val=hub_val+trs_val;
   // Para bloco 3 KPIs usar valores ALL (incluindo bonificações) para ser igual ao prevQ
   const hubAll=d.totalHubAll!=null?d.totalHubAll:hub;
@@ -1525,9 +1541,9 @@ function renderOTDChart(d){
     +'</div></div>';
 
   // Month bars
-  const maxF=Math.max(...ms.map(m=>d.meses[m]?.fat||0),1);
+  const maxF=Math.max(...ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat||0),1);
   document.getElementById('otd-mes-bars').innerHTML=ms.map(m=>{
-    const md=d.meses[m]; if(!md)return'';
+    const md=d.meses[m]||d.meses[String(m)]; if(!md)return'';
     const gBar=Math.round((md.fat_genomma||0)/maxF*100);
     const iBar=Math.round((md.fat_inovalab||0)/maxF*100);
     return'<div style="display:flex;align-items:center;gap:10px;padding:3px 0;font-size:11px">'
@@ -1545,10 +1561,10 @@ function renderOTDChart(d){
   // Fat chart
   if(fatChart) fatChart.destroy();
   fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',
-    data:{labels:ms.map(m=>d.meses[m]?.nome||m),datasets:[
-      {label:'CD + Trânsito',data:ms.map(m=>(d.meses[m]?.hub_val||0)+(d.meses[m]?.trs_val||0)),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
-      {label:'Inovalab',data:ms.map(m=>d.meses[m]?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
-      {label:'Genomma',data:ms.map(m=>d.meses[m]?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
+    data:{labels:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.nome||m),datasets:[
+      {label:'CD + Trânsito',data:ms.map(m=>((d.meses[m]||d.meses[String(m)])?.hub_val||0)+((d.meses[m]||d.meses[String(m)])?.trs_val||0)),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
+      {label:'Inovalab',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
+      {label:'Genomma',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{
@@ -1566,12 +1582,12 @@ function renderOTDChart(d){
   const totalBonifQtd=Object.values(bm).reduce((a,b)=>a+(b.qtd||0),0);
   let bonifHtml='<span style="font-weight:600;color:var(--text2)">Bonificações / Outros: </span>';
   bonifHtml+=fmtM(totalBonif)+' · '+totalBonifQtd+' NFs &nbsp;';
-  ms.forEach(m=>{if(bm[m]&&bm[m].fat>0) bonifHtml+='<span style="margin-left:8px;background:var(--bg2);padding:2px 8px;border-radius:4px">'+d.meses[m]?.nome+': '+fmtM(bm[m].fat)+'</span>';});
+  ms.forEach(m=>{const mn=parseInt(m);if(bm[mn]&&bm[mn].fat>0)bonifHtml+='<span style="margin-left:8px;background:var(--bg2);padding:2px 8px;border-radius:4px">'+(d.meses[m]||d.meses[String(m)])?.nome+': '+fmtM(bm[mn].fat)+'</span>';});
   document.getElementById('bonif-row').innerHTML=bonifHtml;
 
   // ---- BLOCO 2: Entregas finalizadas ----
   let r2='';
-  ms.forEach(m=>{const md=d.meses[m];if(!md)return;const f=md.on+md.off,o=f?((md.on/f)*100).toFixed(1)+'%':'—';
+  ms.forEach(m=>{const md=d.meses[m]||d.meses[String(m)];if(!md)return;const f=md.on+md.off,o=f?((md.on/f)*100).toFixed(1)+'%':'—';
     r2+='<tr><td>'+md.nome+'/'+new Date().getFullYear()+'</td>'
       +'<td class="r" style="color:#3B6D11">'+md.on.toLocaleString('pt-BR')+'</td>'
       +'<td class="r" style="color:'+(md.off>0?'#A32D2D':'var(--text2)')+'">'+md.off+'</td>'
@@ -1585,7 +1601,7 @@ function renderOTDChart(d){
 
   // ---- BLOCO 3: CD + Trânsito por mês ----
   let r3='';
-  ms.forEach(m=>{const md=d.meses[m];if(!md||(md.hub+md.trs===0&&ms.length>1))return;
+  ms.forEach(m=>{const md=d.meses[m]||d.meses[String(m)];if(!md||(md.hub+md.trs===0&&ms.length>1))return;
     r3+='<tr><td>'+md.nome+'</td>'
       +'<td class="r" style="color:#854F0B">'+(md.hub||'—')+'</td>'
       +'<td class="r" style="color:#854F0B">'+(md.hub_val>0?fmtM(md.hub_val):'—')+'</td>'
