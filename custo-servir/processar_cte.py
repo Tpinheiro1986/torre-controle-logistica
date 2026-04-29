@@ -275,6 +275,7 @@ def parse_cte(filepath: str):
     # xCaracAd e xCaracSer (caracteristicas adicionais)
     x_carac_ad  = _txt(root, "cte:xCaracAd")  or ""
     x_carac_ser = _txt(root, "cte:xCaracSer") or ""
+    x_obs       = _txt(root, "cte:xObs")      or ""
 
     # Protocolo e status descritivo
     prot = root.find(".//cte:infProt", NS)
@@ -305,6 +306,7 @@ def parse_cte(filepath: str):
         "status_desc":  status_desc[:60],
         "x_carac_ad":   x_carac_ad[:40],
         "x_carac_ser":  x_carac_ser[:40],
+        "x_obs":        x_obs[:100],
         "nfs":          nfs_str,
         "ano":          dt.year,
         "mes":          dt.month,
@@ -633,6 +635,7 @@ def publicar_raw(ctes: list) -> bool:
              "cf":c.get("cfop",""),"np":c.get("n_prot",""),
              "st":c.get("status_desc",""),
              "xca":c.get("x_carac_ad",""),"xcs":c.get("x_carac_ser",""),
+             "xob":c.get("x_obs",""),
              "nfs":c.get("nfs",""),
              "d":c["dt_emissao"],
              "e":EMP.get(c["empresa"],"O"),"o":OP.get(c.get("operacao","OUTBOUND"),"OUT"),

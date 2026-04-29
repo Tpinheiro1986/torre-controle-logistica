@@ -584,7 +584,7 @@ async function exportarExcel(){
       PR:'Sul',RS:'Sul',SC:'Sul'};
 
     const wsData = [
-      ['Número CTe','Série','CFOP','Chave CTe','Protocolo','Status CTe','Carac. Adicional','Carac. Serviço','Notas Fiscais',
+      ['Número CTe','Série','CFOP','Chave CTe','Protocolo','Status CTe','Carac. Adicional','Carac. Serviço','Observação (xObs)','Notas Fiscais',
        'Data Emissão','Ano','Mês','Empresa','Operação',
        'Remetente','CNPJ Remetente',
        'Transportadora','CNPJ Transportadora',
@@ -597,7 +597,7 @@ async function exportarExcel(){
       const pct = r.vm>0 ? Math.round(r.vf/r.vm*10000)/100 : null;
       wsData.push([
         r.nct||'', r.ser||'', r.cf||'', r.k,
-        r.np||'', r.st||'', r.xca||'', r.xcs||'', r.nfs||'',
+        r.np||'', r.st||'', r.xca||'', r.xcs||'', r.xob||'', r.nfs||'',
         r.d, r.ano, MNOM[r.mes]||r.mes,
         EMP[r.e]||r.e, OP[r.o]||r.o,
         r.rn, r.rc,
@@ -614,7 +614,7 @@ async function exportarExcel(){
 
     // Column widths
     ws['!cols'] = [
-      {wch:10},{wch:6},{wch:7},{wch:46},{wch:16},{wch:35},{wch:16},{wch:14},{wch:30},
+      {wch:10},{wch:6},{wch:7},{wch:46},{wch:16},{wch:35},{wch:16},{wch:14},{wch:50},{wch:30},
       {wch:12},{wch:6},{wch:6},{wch:10},{wch:10},
       {wch:45},{wch:16},{wch:45},{wch:16},
       {wch:45},{wch:16},
