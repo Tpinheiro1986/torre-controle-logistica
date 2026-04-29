@@ -240,6 +240,65 @@ const pf=v=>v!=null?v.toFixed(2)+'%':'—';
 const cP=v=>v==null?'var(--text2)':v>10?'#A32D2D':v>5?'#854F0B':'#3B6D11';
 function ch(id){if(CH[id])CH[id].destroy();return document.getElementById(id);}
 function getD(){return D?.[curOp]||null;}
+
+// Aplica filtros de ano+mes+quarter+empresa a uma entidade com .anos e .meses
+function _filtrar(v, defaultF, defaultM, defaultPct){
+  let frete=defaultF, merc=defaultM, pct=defaultPct;
+  const ctes = v.ctes||0;
+
+  // Filtro por mes especifico
+  if(F.mes!=='all'){
+    const anos_ativos = F.ano!=='all'?[F.ano]:Object.keys(v.anos||{});
+    let tf=0,tm=0,tn=0;
+    anos_ativos.forEach(a=>{
+      const mk=a+'-'+String(F.mes).padStart(2,'0');
+      const md=v.meses&&v.meses[mk];
+      if(!md) return;
+      if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
+      else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
+      else{tf+=md.frete||0;tm+=md.v_merc||0;}
+      tn+=md.ctes||0;
+    });
+    if(tf===0) return null;
+    return{frete:tf,v_merc:tm,ctes:tn,pct_cts:tm>0?Math.round(tf/tm*10000)/100:null};
+  }
+
+  // Filtro por quarter
+  if(F.qtr!=='all'){
+    const [qNum,qAno]=[parseInt(F.qtr[1]),parseInt('20'+F.qtr.slice(3))];
+    const meses_q=[(qNum-1)*3+1,(qNum-1)*3+2,qNum*3];
+    let tf=0,tm=0,tn=0;
+    meses_q.forEach(mes=>{
+      const mk=qAno+'-'+String(mes).padStart(2,'0');
+      const md=v.meses&&v.meses[mk];
+      if(!md) return;
+      if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
+      else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
+      else{tf+=md.frete||0;tm+=md.v_merc||0;}
+      tn+=md.ctes||0;
+    });
+    if(tf===0) return null;
+    return{frete:tf,v_merc:tm,ctes:tn,pct_cts:tm>0?Math.round(tf/tm*10000)/100:null};
+  }
+
+  // Filtro por ano apenas
+  if(F.ano!=='all'){
+    const a=v.anos&&v.anos[F.ano];
+    if(!a) return null;
+    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
+    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
+    else{frete=a.frete||0;merc=a.v_merc||0;pct=a.pct_cts;}
+    if(frete===0) return null;
+    return{frete,v_merc:merc,ctes:a.ctes||0,pct_cts:pct};
+  }
+
+  // Sem filtro de periodo - aplica apenas empresa
+  if(F.emp==='GENOMMA'){frete=v.genomma_frete||0;merc=v.genomma_merc||0;pct=v.pct_genomma;}
+  else if(F.emp==='INOVALAB'){frete=v.inovalab_frete||0;merc=v.inovalab_merc||0;pct=v.pct_inovalab;}
+  if(frete===0) return null;
+  return{frete,v_merc:merc,ctes,pct_cts:pct};
+}
+
 function _applyAno(v,defaultFrete,defaultMerc,defaultPct){
   if(F.ano==='all') return {frete:defaultFrete,v_merc:defaultMerc,pct_cts:defaultPct};
   const a=v.anos&&v.anos[F.ano];
@@ -353,56 +412,36 @@ function getTot(){
 function getRegs(){
   const d=getD();if(!d)return[];
   return (d.regioes||[]).filter(r=>F.reg==='all'||r.regiao===F.reg).map(r=>{
-    if(F.ano==='all'){
-      let frete=r.frete,merc=r.v_merc,pct=r.pct_cts;
-      if(F.emp==='GENOMMA'){frete=r.genomma_frete||0;merc=r.genomma_merc||0;pct=r.pct_genomma;}
-      else if(F.emp==='INOVALAB'){frete=r.inovalab_frete||0;merc=r.inovalab_merc||0;pct=r.pct_inovalab;}
-      return frete>0?{...r,frete,v_merc:merc,pct_cts:pct}:null;
-    }
-    const a=r.anos&&r.anos[F.ano];if(!a)return null;
-    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
-    return frete>0?{...r,frete,v_merc:merc,pct_cts:pct}:null;
+    const res=_filtrar(r,r.frete,r.v_merc,r.pct_cts);
+    return res?{...r,...res}:null;
   }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
 function getTrs(){
   const d=getD();if(!d)return[];
   return (d.transportadoras||[]).map(t=>{
-    if(F.ano==='all'){
-      let frete=t.frete,merc=t.v_merc,pct=t.pct_cts;
-      if(F.emp==='GENOMMA'){frete=t.genomma_frete||0;merc=0;pct=t.pct_genomma;}
-      else if(F.emp==='INOVALAB'){frete=t.inovalab_frete||0;merc=0;pct=t.pct_inovalab;}
-      return frete>0?{...t,frete,v_merc:merc,pct_cts:pct}:null;
-    }
-    const a=t.anos&&t.anos[F.ano];if(!a)return null;
-    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=0;pct=a.pct_inovalab;}
-    return frete>0?{...t,frete,v_merc:merc,pct_cts:pct}:null;
+    const r=_filtrar(t,t.frete,t.v_merc,t.pct_cts);
+    return r?{...t,...r}:null;
   }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
 function getClis(){
   const d=getD();if(!d)return[];
-  let clis=d.clientes||[];
-  // filter by empresa and regiao
-  clis=clis.filter(c=>(F.emp==='all'||c.empresa===F.emp)&&(F.reg==='all'||c.regiao===F.reg));
-  // filter/aggregate by ano
-  if(F.ano!=='all'){
-    clis=clis.map(c=>{
-      const a=c.anos&&c.anos[F.ano];
-      if(!a||a.frete===0) return null;
-      return {...c,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts};
-    }).filter(Boolean);
-  }
-  return clis.filter(c=>c.frete>0).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
+  // Note: empresa no cliente refere-se a Genomma/Inovalab como REMETENTE no outbound
+  // Filtro de empresa aqui eh pelo campo empresa do CTe
+  return (d.clientes||[])
+    .filter(c=>F.reg==='all'||c.regiao===F.reg)
+    .map(c=>{
+      // Para filtro de empresa: clientes nao tem breakdown genomma/inovalab
+      // Filtramos somente os que pertencem a empresa correta
+      if(F.emp!=='all'&&c.empresa!==F.emp) return null;
+      const res=_filtrar(c,c.frete,c.v_merc,c.pct_cts);
+      return res?{...c,...res}:null;
+    }).filter(Boolean).sort((a,b)=>(b.v_merc||0)-(a.v_merc||0));
 }
 function getRems(){
   const d=getD();if(!d)return[];
   return (d.remetentes||[]).map(r=>{
-    if(F.ano==='all') return r.frete>0?r:null;
-    const a=r.anos&&r.anos[F.ano];if(!a)return null;
-    return a.frete>0?{...r,frete:a.frete,v_merc:a.v_merc,ctes:a.ctes,pct_cts:a.pct_cts}:null;
+    const res=_filtrar(r,r.frete,r.v_merc,r.pct_cts);
+    return res?{...r,...res}:null;
   }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
 }
 function getQs(){
@@ -459,17 +498,8 @@ function rReg(){
   el=ch('cr2');if(el)CH.cr2=new Chart(el,{type:'doughnut',data:{labels:regs.map(r=>r.regiao),datasets:[{data:regs.map(r=>r.frete),backgroundColor:regs.map(r=>RC[r.regiao]||'#888'),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:true,position:'right',labels:{font:{size:10},boxWidth:10}},tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
   const d=getD();
   const ufs=(d?.ufs||[]).filter(u=>F.reg==='all'||u.regiao===F.reg).map(u=>{
-    if(F.ano==='all'){
-      let frete=u.frete,merc=u.v_merc,pct=u.pct_cts;
-      if(F.emp==='GENOMMA'){frete=u.genomma_frete||0;merc=u.genomma_merc||0;pct=u.pct_genomma;}
-      else if(F.emp==='INOVALAB'){frete=u.inovalab_frete||0;merc=u.inovalab_merc||0;pct=u.pct_inovalab;}
-      return frete>0?{...u,frete,v_merc:merc,pct_cts:pct}:null;
-    }
-    const a=u.anos&&u.anos[F.ano];if(!a)return null;
-    let frete=a.frete||0,merc=a.v_merc||0,pct=a.pct_cts;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
-    return frete>0?{...u,frete,v_merc:merc,pct_cts:pct}:null;
+    const res=_filtrar(u,u.frete,u.v_merc,u.pct_cts);
+    return res?{...u,...res}:null;
   }).filter(Boolean).sort((a,b)=>b.frete-a.frete).slice(0,12);
   const wrap=document.getElementById('uf-wrap');wrap.style.height=Math.max(240,ufs.length*40+80)+'px';
   el=ch('cr3');if(el)CH.cr3=new Chart(el,{type:'bar',data:{labels:ufs.map(u=>u.uf),datasets:[{data:ufs.map(u=>u.frete),backgroundColor:ufs.map(u=>RC[u.regiao]||OP_COR[curOp]),borderWidth:0,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>[fK(c.raw),'%CTS: '+pf(ufs[c.dataIndex].pct_cts)]}}},scales:{y:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)}}}}});
@@ -554,7 +584,7 @@ async function exportarExcel(){
       PR:'Sul',RS:'Sul',SC:'Sul'};
 
     const wsData = [
-      ['Número CTe','Série','CFOP','Chave CTe','Protocolo','Status CTe','Notas Fiscais',
+      ['Número CTe','Série','CFOP','Chave CTe','Protocolo','Status CTe','Carac. Adicional','Carac. Serviço','Notas Fiscais',
        'Data Emissão','Ano','Mês','Empresa','Operação',
        'Remetente','CNPJ Remetente',
        'Transportadora','CNPJ Transportadora',
@@ -567,7 +597,7 @@ async function exportarExcel(){
       const pct = r.vm>0 ? Math.round(r.vf/r.vm*10000)/100 : null;
       wsData.push([
         r.nct||'', r.ser||'', r.cf||'', r.k,
-        r.np||'', r.st||'', r.nfs||'',
+        r.np||'', r.st||'', r.xca||'', r.xcs||'', r.nfs||'',
         r.d, r.ano, MNOM[r.mes]||r.mes,
         EMP[r.e]||r.e, OP[r.o]||r.o,
         r.rn, r.rc,
@@ -584,7 +614,7 @@ async function exportarExcel(){
 
     // Column widths
     ws['!cols'] = [
-      {wch:10},{wch:6},{wch:7},{wch:46},{wch:16},{wch:35},{wch:30},
+      {wch:10},{wch:6},{wch:7},{wch:46},{wch:16},{wch:35},{wch:16},{wch:14},{wch:30},
       {wch:12},{wch:6},{wch:6},{wch:10},{wch:10},
       {wch:45},{wch:16},{wch:45},{wch:16},
       {wch:45},{wch:16},
