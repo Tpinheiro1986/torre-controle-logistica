@@ -419,12 +419,13 @@ function showApp(u){
 sb.auth.onAuthStateChange((ev,ses)=>{if(ev==='SIGNED_IN'&&ses&&!user)showApp(ses.user);else if(ev==='SIGNED_OUT')showLogin();});
 
 async function loadData(){
+  const PUBLIC_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/dados.json';
   for(let i=0;i<4;i++){
     try{
-      const {data,error}=await sb.storage.from('dashboards').download('custo-servir/dados.json');
-      if(error||!data){await new Promise(r=>setTimeout(r,600));continue;}
-      D=JSON.parse(await data.text());initDash();return;
-    }catch(e){await new Promise(r=>setTimeout(r,600));}
+      const r=await fetch(PUBLIC_URL+'?t='+Date.now());
+      if(!r.ok){await new Promise(x=>setTimeout(x,600));continue;}
+      D=JSON.parse(await r.text());initDash();return;
+    }catch(e){await new Promise(x=>setTimeout(x,600));}
   }
 }
 
@@ -615,9 +616,10 @@ async function exportarExcel(){
   try {
     // Download raw data if not cached
     if(!rawData){
-      const {data,error} = await sb.storage.from('dashboards').download('custo-servir/ctes_raw.json');
-      if(error||!data){ alert('Erro ao baixar dados: '+error?.message); btn.innerHTML=origText; btn.disabled=false; return; }
-      rawData = JSON.parse(await data.text());
+      const RAW_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/ctes_raw.json';
+      const rr=await fetch(RAW_URL+'?t='+Date.now());
+      if(!rr.ok){ alert('Erro ao baixar dados: '+rr.status); btn.innerHTML=origText; btn.disabled=false; return; }
+      rawData = JSON.parse(await rr.text());
     }
 
     // Map compact keys to full names
