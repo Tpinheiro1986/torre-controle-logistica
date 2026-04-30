@@ -120,7 +120,6 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="tab" id="tab-rem" onclick="goTab('remetente',this)" style="display:none">Remetentes</div>
     <div class="tab" onclick="goTab('quarter',this)">Por Quarter</div>
     <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
-    <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
   </div>
   <div class="wrap">
     <div id="cs-empty" class="empty"><p style="font-weight:600;margin-bottom:6px">Aguardando dados</p><p style="font-size:11px">Execute <strong>ATUALIZAR.bat</strong> para processar os XMLs.</p></div>
@@ -219,6 +218,87 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
             <th class="r" style="color:var(--amber)">%CTS</th>
             <th class="r">Genomma</th><th class="r">Inovalab</th>
           </tr></thead><tbody id="tb-qtr"></tbody></table></div></div>
+      </div>
+
+      <!-- ═══ FAT. TRANSPORTADORA ═══ -->
+      <div class="sec" id="sec-fatransp" style="display:none">
+
+        <!-- KPI row -->
+        <div class="krow k5" id="k-fat" style="margin-bottom:10px"></div>
+
+        <!-- Tabela principal -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">1</span>Faturamento acumulado por transportadora</div>
+          <div style="overflow-x:auto">
+          <table class="dt">
+            <thead><tr>
+              <th>Transportadora</th>
+              <th class="r">CTes</th>
+              <th class="r" style="color:var(--red)">Frete Total</th>
+              <th class="r" style="color:#185FA5">Genomma</th>
+              <th class="r" style="color:#1D9E75">Inovalab</th>
+              <th class="r" style="color:#185FA5">Outbound</th>
+              <th class="r" style="color:#1D9E75">Inbound</th>
+              <th class="r" style="color:#D85A30">Devolução</th>
+              <th class="r" style="color:#7F77DD">Reentrega</th>
+              <th class="r" style="color:#854F0B">Complementar</th>
+              <th class="r" style="color:var(--blue)">Mercadoria</th>
+              <th class="r">Peso (kg)</th>
+              <th class="r" style="color:var(--amber)">R$/kg</th>
+              <th class="r" style="color:var(--amber)">%CTS</th>
+              <th class="r">% do Total</th>
+            </tr></thead>
+            <tbody id="tb-fat-tr"></tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- Custo por kg por regiao -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">2</span>Custo por kg por região (R$/kg = frete ÷ peso)</div>
+          <div style="overflow-x:auto">
+          <table class="dt">
+            <thead><tr>
+              <th>Transportadora</th>
+              <th class="r">Sudeste</th>
+              <th class="r">Nordeste</th>
+              <th class="r">Centro-Oeste</th>
+              <th class="r">Sul</th>
+              <th class="r">Norte</th>
+              <th class="r">Geral</th>
+            </tr></thead>
+            <tbody id="tb-fat-rkg"></tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- Graficos -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+          <div class="card">
+            <div class="slbl"><span class="sn">3</span>% Frete por transportadora</div>
+            <div style="position:relative;height:280px"><canvas id="c-fat-pct"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">4</span>Faturamento por quarter</div>
+            <div style="overflow-x:auto">
+            <table class="dt">
+              <thead><tr>
+                <th>Quarter</th><th class="r">CTes</th>
+                <th class="r" style="color:var(--red)">Total</th>
+                <th class="r" style="color:#185FA5">Outbound</th>
+                <th class="r" style="color:#1D9E75">Inbound</th>
+                <th class="r" style="color:#D85A30">Devolução</th>
+              </tr></thead>
+              <tbody id="tb-fat-qtr"></tbody>
+            </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">5</span>Distribuição por operação</div>
+            <div style="position:relative;height:280px"><canvas id="c-fat-op"></canvas></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -670,33 +750,6 @@ async function exportarExcel(){
 
 
 // ── FAT. TRANSPORTADORA ──────────────────────────────────────────
-function rFatTransp(){
-  if(!D) return;
-
-  // Aggregate all 3 operations
-  const ops = ['outbound','inbound','reversa'];
-  const opLabels = {outbound:'Outbound',inbound:'Inbound',reversa:'Reversa'};
-  const trMap = {};
-
-  ops.forEach(op=>{
-    const d = D[op];
-    if(!d) return;
-    (d.transportadoras||[]).forEach(t=>{
-      if(!trMap[t.nome]) trMap[t.nome]={
-        nome:t.nome, cnpj:t.cnpj||'',
-        total_f:0, total_n:0, total_m:0,
-        out_f:0, out_n:0, in_f:0, in_n:0,
-        rev_f:0, rev_n:0, ree_f:0, ree_n:0, com_f:0, com_n:0
-      };
-      const tr = trMap[t.nome];
-
-      // Apply period filter using _filtrar
-      const res = _filtrar(t, t.frete, t.v_merc, t.pct_cts);
-      if(!res) return;
-      const f = res.frete, n = res.ctes||0, m = res.v_merc||0;
-
-      tr.total_f+=f; tr.total_n+=n; tr.total_m+=m;
-      if(op==='outbound'){tr.out_f+=f; tr.out_n+=n;}
       else if(op==='inbound'){tr.in_f+=f; tr.in_n+=n;}
       else if(op==='reversa'){tr.rev_f+=f; tr.rev_n+=n;}
     });
@@ -777,29 +830,6 @@ function rFatTransp(){
                       tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
 }
 
-function rFatTransp(){
-  if(!D) return;
-  const OPS=['outbound','inbound','reversa'];
-  const trMap={};
-
-  // Aggregate all operations into one transportadora map
-  OPS.forEach(op=>{
-    const d=D[op];if(!d)return;
-    (d.transportadoras||[]).forEach(t=>{
-      if(!trMap[t.nome]) trMap[t.nome]={
-        nome:t.nome,cnpj:t.cnpj||'',
-        tot_f:0,tot_n:0,tot_m:0,
-        out_f:0,out_n:0,in_f:0,in_n:0,
-        rev_f:0,rev_n:0,
-        ree_f:t.reentrega_frete||0,ree_n:t.reentrega_ctes||0,
-        com_f:t.complementar_frete||0,com_n:t.complementar_ctes||0,
-      };
-      const tr=trMap[t.nome];
-      const res=_filtrar(t,t.frete,t.v_merc,t.pct_cts);
-      if(!res) return;
-      const f=res.frete,n=res.ctes||0,m=res.v_merc||0;
-      tr.tot_f+=f;tr.tot_n+=n;tr.tot_m+=m;
-      if(op==='outbound'){tr.out_f+=f;tr.out_n+=n;}
       else if(op==='inbound'){tr.in_f+=f;tr.in_n+=n;}
       else{tr.rev_f+=f;tr.rev_n+=n;}
     });
@@ -884,6 +914,185 @@ function rFatTransp(){
     options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
       plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12}},
                tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+Math.round(c.raw/totF*100)+'%)'}}}}});
+}
+
+
+function rFatTransp(){
+  if(!D) return;
+  const OPS=['outbound','inbound','reversa'];
+  const REGS=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'];
+  const trMap={};
+
+  // ── Aggregate all operations ──────────────────────────────
+  OPS.forEach(op=>{
+    const d=D[op];if(!d)return;
+    (d.transportadoras||[]).forEach(t=>{
+      if(!trMap[t.nome]) trMap[t.nome]={
+        nome:t.nome,cnpj:t.cnpj||'',
+        tot_f:0,tot_m:0,tot_n:0,tot_kg:t.peso_total||0,
+        gen_f:0,ino_f:0,
+        out_f:0,out_n:0,in_f:0,in_n:0,rev_f:0,rev_n:0,
+        ree_f:t.reentrega_frete||0,ree_n:t.reentrega_ctes||0,
+        com_f:t.complementar_frete||0,com_n:t.complementar_ctes||0,
+        regs:t.regioes||{},
+      };
+      const tr=trMap[t.nome];
+      const res=_filtrar(t,t.frete,t.v_merc,t.pct_cts);
+      if(!res) return;
+      const f=res.frete,n=res.ctes||0,m=res.v_merc||0;
+      tr.tot_f+=f;tr.tot_m+=m;tr.tot_n+=n;
+      tr.gen_f+=_filtrar({...t,frete:t.genomma_frete||0,v_merc:0,pct_cts:null,anos:t.anos,meses:t.meses},
+        t.genomma_frete||0,0,null)?.frete||0;
+      tr.ino_f+=_filtrar({...t,frete:t.inovalab_frete||0,v_merc:0,pct_cts:null,anos:t.anos,meses:t.meses},
+        t.inovalab_frete||0,0,null)?.frete||0;
+      if(op==='outbound'){tr.out_f+=f;tr.out_n+=n;}
+      else if(op==='inbound'){tr.in_f+=f;tr.in_n+=n;}
+      else{tr.rev_f+=f;tr.rev_n+=n;}
+    });
+  });
+
+  // ── Aggregate peso from UFs ───────────────────────────────
+  // peso nao esta disponivel no JSON agregado - usar ctes como proxy
+  // peso real vem do ctes_raw se disponivel
+  OPS.forEach(op=>{
+    const d=D[op];if(!d)return;
+    // Note: peso nao esta nos dados agregados - mostramos "--"
+  });
+
+  const list=Object.values(trMap).filter(t=>t.tot_f>0).sort((a,b)=>b.tot_f-a.tot_f);
+  if(!list.length){
+    document.getElementById('tb-fat-tr').innerHTML=
+      '<tr><td colspan="15" style="text-align:center;color:var(--text2);padding:20px">Nenhum dado encontrado</td></tr>';
+    return;
+  }
+
+  const totF=list.reduce((s,t)=>s+t.tot_f,0)||1;
+  const totM=list.reduce((s,t)=>s+t.tot_m,0)||1;
+
+  // ── KPI row ───────────────────────────────────────────────
+  const totOut=list.reduce((s,t)=>s+t.out_f,0);
+  const totIn=list.reduce((s,t)=>s+t.in_f,0);
+  const totRev=list.reduce((s,t)=>s+t.rev_f,0);
+  const totRee=list.reduce((s,t)=>s+t.ree_f,0);
+  const totCom=list.reduce((s,t)=>s+t.com_f,0);
+  const pctCTS=totM>0?+(totF/totM*100).toFixed(2):null;
+  document.getElementById('k-fat').innerHTML=[
+    {l:'Frete Total',v:fM(totF),s:list.length+' transportadoras',co:'var(--red)'},
+    {l:'Mercadoria Total',v:fM(totM),s:'valor transportado',co:'#185FA5'},
+    {l:'%CTS Geral',v:pctCTS!=null?pctCTS+'%':'—',s:'frete/mercadoria',co:'var(--amber)'},
+    {l:'Outbound',v:fM(totOut),s:Math.round(totOut/totF*100)+'% do frete',co:'#185FA5'},
+    {l:'Inbound+Dev.',v:fM(totIn+totRev),s:(Math.round((totIn+totRev)/totF*100))+'% do frete',co:'#1D9E75'},
+  ].map(k=>`<div class="kpi"><div class="kl">${k.l}</div>
+    <div class="kv" style="color:${k.co}">${k.v}</div>
+    <div class="ks">${k.s}</div></div>`).join('');
+
+  // ── Tabela principal ──────────────────────────────────────
+  document.getElementById('tb-fat-tr').innerHTML=list.map(t=>{
+    const pct=t.tot_m>0?+(t.tot_f/t.tot_m*100).toFixed(2):null;
+    const pct_tot=+(t.tot_f/totF*100).toFixed(1);
+    const w=Math.round(t.tot_f/list[0].tot_f*100);
+    const bar=`<div style="height:5px;background:var(--bg2);border-radius:3px;margin-bottom:2px">
+      <div style="height:100%;width:${w}%;background:var(--red);border-radius:3px"></div></div>
+      <span style="font-size:9px;color:var(--text2)">${pct_tot}%</span>`;
+    return`<tr>
+      <td style="max-width:190px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${t.nome}">${t.nome}</td>
+      <td class="r">${t.tot_n.toLocaleString('pt-BR')}</td>
+      <td class="r" style="color:var(--red);font-weight:600">${fM(t.tot_f)}</td>
+      <td class="r" style="color:#185FA5">${t.gen_f>0?fM(t.gen_f):'—'}</td>
+      <td class="r" style="color:#1D9E75">${t.ino_f>0?fM(t.ino_f):'—'}</td>
+      <td class="r" style="color:#185FA5">${t.out_f>0?`${fM(t.out_f)}<br><span style="font-size:9px;color:var(--text3)">${t.out_n} CTes</span>`:'—'}</td>
+      <td class="r" style="color:#1D9E75">${t.in_f>0?`${fM(t.in_f)}<br><span style="font-size:9px;color:var(--text3)">${t.in_n} CTes</span>`:'—'}</td>
+      <td class="r" style="color:#D85A30">${t.rev_f>0?`${fM(t.rev_f)}<br><span style="font-size:9px;color:var(--text3)">${t.rev_n} CTes</span>`:'—'}</td>
+      <td class="r" style="color:#7F77DD">${t.ree_f>0?`${fM(t.ree_f)}<br><span style="font-size:9px;color:var(--text3)">${t.ree_n} CTes</span>`:'—'}</td>
+      <td class="r" style="color:#854F0B">${t.com_f>0?`${fM(t.com_f)}<br><span style="font-size:9px;color:var(--text3)">${t.com_n} CTes</span>`:'—'}</td>
+      <td class="r" style="color:#185FA5">${t.tot_m>0?fM(t.tot_m):'—'}</td>
+      <td class="r" style="color:var(--text2)">${t.tot_kg>0?t.tot_kg.toLocaleString('pt-BR',{maximumFractionDigits:0})+' kg':'—'}</td>
+      <td class="r" style="color:var(--amber)">${t.tot_kg>0&&t.tot_f>0?'R$'+(t.tot_f/t.tot_kg).toFixed(2):'—'}</td>
+      <td class="r" style="color:${cP(pct)};font-weight:600">${pct!=null?pct+'%':'—'}</td>
+      <td>${bar}</td>
+    </tr>`;
+  }).join('');
+
+  // ── Custo por kg por região ───────────────────────────────
+  // Aggregate regioes across all ops for each transportadora
+  // This requires per-transp per-regiao data which is not in current JSON
+  // Show message for now - will work after script adds this data
+  // Custo por kg por regiao
+  const REGS=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'];
+  document.getElementById('tb-fat-rkg').innerHTML=list.map(t=>{
+    const rkgCols=REGS.map(rg=>{
+      const rd=t.regs[rg];
+      if(!rd||rd.peso===0||!rd.peso) return '<td class="r" style="color:var(--text3)">—</td>';
+      const ckg=rd.frete/rd.peso;
+      return`<td class="r" style="color:var(--amber);font-weight:500">R$${ckg.toFixed(2)}<br><span style="font-size:9px;color:var(--text3)">${rd.peso.toLocaleString('pt-BR',{maximumFractionDigits:0})} kg</span></td>`;
+    }).join('');
+    const geral=t.tot_kg>0?`R$${(t.tot_f/t.tot_kg).toFixed(2)}`:'—';
+    return`<tr>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${t.nome}">${t.nome}</td>
+      ${rkgCols}
+      <td class="r" style="color:var(--red);font-weight:600">${geral}</td>
+    </tr>`;
+  }).join('');
+
+  // ── Gráfico % frete por transportadora ───────────────────
+  const top10=list.slice(0,10);
+  const outrosF=list.slice(10).reduce((s,t)=>s+t.tot_f,0);
+  const labPct=[...top10.map(t=>t.nome.substring(0,25))];
+  const datPct=[...top10.map(t=>+t.tot_f.toFixed(0))];
+  if(outrosF>0){labPct.push('Outros');datPct.push(+outrosF.toFixed(0));}
+  const colors=['#185FA5','#1D9E75','#D85A30','#7F77DD','#854F0B','#5DCAA5',
+                '#EF9F27','#888780','#3B6D11','#A32D2D','#6B6B67'];
+  const el1=ch('c-fat-pct');
+  if(el1) CH['c-fat-pct']=new Chart(el1,{type:'doughnut',
+    data:{labels:labPct,datasets:[{data:datPct,backgroundColor:colors,borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:9},boxWidth:10,padding:4}},
+               tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('++(c.raw/totF*100).toFixed(1)+'%)'}}}}});
+
+  // ── Quarter table ─────────────────────────────────────────
+  const qMap={};
+  OPS.forEach(op=>{
+    const d=D[op];if(!d)return;
+    (d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano).forEach(q=>{
+      if(!qMap[q.q]) qMap[q.q]={q:q.q,ano:q.ano,f:0,n:0,out:0,in_:0,rev:0};
+      let f=q.frete,n=q.ctes;
+      if(F.emp==='GENOMMA') f=q.genomma_frete||0;
+      else if(F.emp==='INOVALAB') f=q.inovalab_frete||0;
+      qMap[q.q].f+=f;qMap[q.q].n+=n;
+      if(op==='outbound') qMap[q.q].out+=f;
+      else if(op==='inbound') qMap[q.q].in_+=f;
+      else qMap[q.q].rev+=f;
+    });
+  });
+  const qList=Object.values(qMap).sort((a,b)=>a.ano===b.ano?a.q.localeCompare(b.q):a.ano-b.ano);
+  const tqF=qList.reduce((s,q)=>s+q.f,0);
+  document.getElementById('tb-fat-qtr').innerHTML=
+    qList.map(q=>`<tr><td><strong>${q.q}</strong></td>
+      <td class="r">${q.n.toLocaleString('pt-BR')}</td>
+      <td class="r" style="color:var(--red);font-weight:600">${fM(q.f)}</td>
+      <td class="r" style="color:#185FA5">${fM(q.out)}</td>
+      <td class="r" style="color:#1D9E75">${fM(q.in_)}</td>
+      <td class="r" style="color:#D85A30">${fM(q.rev)}</td>
+    </tr>`).join('')+
+    `<tr class="tr-tot"><td>Total</td>
+     <td class="r">${qList.reduce((s,q)=>s+q.n,0).toLocaleString('pt-BR')}</td>
+     <td class="r" style="color:var(--red)">${fM(tqF)}</td>
+     <td class="r" style="color:#185FA5">${fM(qList.reduce((s,q)=>s+q.out,0))}</td>
+     <td class="r" style="color:#1D9E75">${fM(qList.reduce((s,q)=>s+q.in_,0))}</td>
+     <td class="r" style="color:#D85A30">${fM(qList.reduce((s,q)=>s+q.rev,0))}</td></tr>`;
+
+  // ── Donut por operação ────────────────────────────────────
+  const chartData=[totOut,totIn,totRev];
+  const chartLabels=['Outbound','Inbound','Devolução'];
+  const chartColors=['#185FA5','#1D9E75','#D85A30'];
+  if(totRee>0){chartData.push(totRee);chartLabels.push('Reentrega');chartColors.push('#7F77DD');}
+  if(totCom>0){chartData.push(totCom);chartLabels.push('Complementar');chartColors.push('#854F0B');}
+  const el2=ch('c-fat-op');
+  if(el2) CH['c-fat-op']=new Chart(el2,{type:'doughnut',
+    data:{labels:chartLabels,datasets:[{data:chartData,backgroundColor:chartColors,borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:12}},
+               tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('++(c.raw/totF*100).toFixed(1)+'%)'}}}}});
 }
 
 window.addEventListener('load',checkSession);

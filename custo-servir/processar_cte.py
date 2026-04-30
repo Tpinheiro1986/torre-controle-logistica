@@ -35,7 +35,7 @@ ESTADO_FILE    = "cte_estado.json"
 LOG_FILE       = "cte_processador.log"
 
 SUPABASE_URL   = "https://ennsbpibfnuwlvtodukg.supabase.co"
-SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50"   # <- chave Legacy service_role
+SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NDgzNywiZXhwIjoyMDg5OTYwODM3fQ.gnCLe-XvoWJoiVEG4jRCPCdX8OsevXACk0TISgo9S04"   # <- chave Legacy service_role
 BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 PATH_RAW       = "custo-servir/ctes_raw.json"
@@ -426,8 +426,9 @@ def _agg_op(ctes):
         if tr not in by_transp:
             by_transp[tr] = {"nome":tr,"cnpj":c.get("transp_cnpj",""),
                              "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,
+                             "kg":0,
                              "ree_f":0,"ree_n":0,"com_f":0,"com_n":0,
-                             "anos":{},"meses":{}}
+                             "regs":{},"anos":{},"meses":{}}
         _inc(by_transp[tr], f, m, e)
         _inc(_get_or_create(by_transp[tr]["anos"], ano_k, _GI), f, m, e)
         _inc(_get_or_create(by_transp[tr]["meses"], mes_k, _GI), f, m, e)
@@ -435,6 +436,13 @@ def _agg_op(ctes):
         sop = c.get("sub_op","")
         if sop == "REENTREGA":    by_transp[tr]["ree_f"]+=f; by_transp[tr]["ree_n"]+=1
         elif sop == "COMPLEMENTAR": by_transp[tr]["com_f"]+=f; by_transp[tr]["com_n"]+=1
+        # peso e custo por regiao
+        by_transp[tr]["kg"] += c.get("peso",0)
+        if rg not in by_transp[tr]["regs"]:
+            by_transp[tr]["regs"][rg] = {"f":0,"kg":0,"n":0}
+        by_transp[tr]["regs"][rg]["f"]  += f
+        by_transp[tr]["regs"][rg]["kg"] += c.get("peso",0)
+        by_transp[tr]["regs"][rg]["n"]  += 1
 
         # regiao
         if rg not in by_reg:
@@ -516,6 +524,10 @@ def _agg_op(ctes):
         "genomma_frete":_r(v["gf"]),"inovalab_frete":_r(v["inf"]),
         "reentrega_frete":_r(v["ree_f"]),"reentrega_ctes":v["ree_n"],
         "complementar_frete":_r(v["com_f"]),"complementar_ctes":v["com_n"],
+        "peso_total":_r(v["kg"]),
+        "regioes":{rg:{"frete":_r(d["f"]),"peso":_r(d["kg"]),"ctes":d["n"],
+                       "custo_kg":_r(d["f"]/d["kg"]) if d["kg"]>0 else None}
+                   for rg,d in v["regs"].items()},
         "anos":_agg_anos(v.get("anos",{})),
         "meses":_agg_anos(v.get("meses",{})),
         "meses":_agg_anos(v.get("meses",{})),
