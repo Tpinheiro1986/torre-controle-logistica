@@ -11,16 +11,16 @@
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);}}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:13px;line-height:1.5}
-
-
+#scr-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.lcard{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px}
 .lb{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-
+.lico{width:36px;height:36px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center}
 .lico svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
+.ltit{font-size:22px;font-weight:700;margin-bottom:6px}.lsub{font-size:13px;color:var(--text2);margin-bottom:28px}
 .fg{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .fi{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);font-size:13px;outline:none}.fi:focus{border-color:var(--green)}
 .bp{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px}.bp:hover{background:var(--green-dk)}.bp:disabled{background:#888;cursor:not-allowed}
-
+.lerr{background:#FCEBEB;color:var(--red);border:0.5px solid #F7C1C1;border-radius:var(--r);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
 #scr-app{display:none}
 .nav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .nbr{display:flex;align-items:center;gap:10px}.nico{width:28px;height:28px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center}
@@ -75,7 +75,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="nr">
       <a class="nbk" href="../index.html">← Início</a>
       <span class="abg" id="abg" style="display:none">Admin</span>
-      <div class="uch"><div class="uav" id="uav">GL</div><span class="uem" id="uem">Genomma Lab</span></div>
+      <div class="uch"><div class="uav" id="uav">?</div><span class="uem" id="uem">—</span></div>
       
     </div>
   </nav>
@@ -109,7 +109,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="tab" id="tab-rem" onclick="goTab('remetente',this)" style="display:none">Remetentes</div>
     <div class="tab" onclick="goTab('quarter',this)">Por Quarter</div>
     <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
-    <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
+    
   </div>
   <div class="wrap">
     <div id="cs-empty" class="empty"><p style="font-weight:600;margin-bottom:6px">Aguardando dados</p><p style="font-size:11px">Execute <strong>ATUALIZAR.bat</strong> para processar os XMLs.</p></div>
@@ -209,6 +209,68 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
             <th class="r">Genomma</th><th class="r">Inovalab</th>
           </tr></thead><tbody id="tb-qtr"></tbody></table></div></div>
       </div>
+
+      <!-- FAT. TRANSPORTADORA -->
+      <div class="sec" id="sec-fatransp" style="display:none">
+        <div class="krow k5" id="k-fat" style="margin-bottom:10px"></div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">1</span>Faturamento por transportadora — todas as operações</div>
+          <div style="overflow-x:auto"><table class="dt">
+            <thead><tr>
+              <th>Transportadora</th><th class="r">CTes</th>
+              <th class="r" style="color:var(--red)">Total Frete</th>
+              <th class="r" style="color:#185FA5">Genomma</th>
+              <th class="r" style="color:#1D9E75">Inovalab</th>
+              <th class="r" style="color:#185FA5">Outbound</th>
+              <th class="r" style="color:#1D9E75">Inbound</th>
+              <th class="r" style="color:#D85A30">Devolução</th>
+              <th class="r" style="color:#7F77DD">Reentrega</th>
+              <th class="r" style="color:#854F0B">Complementar</th>
+              <th class="r">Mercadoria</th>
+              <th class="r">Peso (kg)</th>
+              <th class="r" style="color:var(--amber)">R$/kg</th>
+              <th class="r" style="color:var(--amber)">%CTS</th>
+              <th class="r">% Total</th>
+            </tr></thead>
+            <tbody id="tb-fat-tr"></tbody>
+          </table></div>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">2</span>Custo por kg por região</div>
+          <div style="overflow-x:auto"><table class="dt">
+            <thead><tr>
+              <th>Transportadora</th>
+              <th class="r">Sudeste</th><th class="r">Nordeste</th>
+              <th class="r">Centro-Oeste</th><th class="r">Sul</th>
+              <th class="r">Norte</th><th class="r" style="color:var(--amber)">Geral</th>
+            </tr></thead>
+            <tbody id="tb-fat-rkg"></tbody>
+          </table></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="card">
+            <div class="slbl"><span class="sn">3</span>% Frete por transportadora</div>
+            <div style="position:relative;height:280px"><canvas id="c-fat-pct"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">4</span>Por quarter</div>
+            <div style="overflow-x:auto"><table class="dt">
+              <thead><tr>
+                <th>Quarter</th><th class="r">CTes</th>
+                <th class="r" style="color:var(--red)">Total</th>
+                <th class="r" style="color:#185FA5">Outbound</th>
+                <th class="r" style="color:#1D9E75">Inbound</th>
+                <th class="r" style="color:#D85A30">Devolução</th>
+              </tr></thead>
+              <tbody id="tb-fat-qtr"></tbody>
+            </table></div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">5</span>Por operação</div>
+            <div style="position:relative;height:280px"><canvas id="c-fat-op"></canvas></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -225,7 +287,7 @@ async function loadData(){
       D=JSON.parse(await r.text());initDash();return;
     }catch(e){await new Promise(x=>setTimeout(x,800));}
   }
-  document.getElementById('cs-empty').innerHTML='<p style="color:var(--red)">Erro ao carregar dados. Verifique a conexao.</p>';
+  document.getElementById('cs-empty').innerHTML='<p style="color:var(--red);padding:20px">Erro ao carregar dados.</p>';
 }
 
 function initDash(){
@@ -261,6 +323,8 @@ function setOp(op,btn){
 }
 
 const TIDS=['dash','transp','regiao','cliente','remetente','quarter','fatransp'];
+const F={emp:'all',ano:'all',qtr:'all',mes:'all',tipo:'all',reg:'all'};
+
 function goTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   TIDS.forEach(s=>{const el=document.getElementById('sec-'+s);if(el){el.classList.remove('on');el.style.display='none';}});
@@ -297,6 +361,41 @@ function getRegs(){
     const res=_filtrar(r,r.frete,r.v_merc,r.pct_cts);
     return res?{...r,...res}:null;
   }).filter(Boolean).sort((a,b)=>b.frete-a.frete);
+}
+function _filtrar(v,dF,dM,dP){
+  var f=dF||0,m_=dM||0,p=dP,ct=v.ctes||0;
+  if(F.mes!=='all'){
+    var aas=F.ano!=='all'?[F.ano]:Object.keys(v.anos||{});
+    var tf=0,tm=0,tn=0;
+    aas.forEach(function(a){var mk=a+'-'+String(F.mes).padStart(2,'0'),md=v.meses&&v.meses[mk];if(!md)return;
+      if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
+      else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
+      else{tf+=md.frete||0;tm+=md.v_merc||0;}tn+=md.ctes||0;});
+    if(!tf&&!tn)return null;
+    return{frete:tf,v_merc:tm,ctes:tn,pct_cts:tm>0?+(tf/tm*100).toFixed(2):null};
+  }
+  if(F.qtr!=='all'){
+    var qN=parseInt(F.qtr[1]),qA=parseInt('20'+F.qtr.slice(3)),ms=[(qN-1)*3+1,(qN-1)*3+2,qN*3];
+    var tf=0,tm=0,tn=0;
+    ms.forEach(function(mes){var mk=qA+'-'+String(mes).padStart(2,'0'),md=v.meses&&v.meses[mk];if(!md)return;
+      if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
+      else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
+      else{tf+=md.frete||0;tm+=md.v_merc||0;}tn+=md.ctes||0;});
+    if(!tf&&!tn)return null;
+    return{frete:tf,v_merc:tm,ctes:tn,pct_cts:tm>0?+(tf/tm*100).toFixed(2):null};
+  }
+  if(F.ano!=='all'){
+    var a=v.anos&&v.anos[F.ano];if(!a)return null;
+    if(F.emp==='GENOMMA'){f=a.genomma_frete||0;m_=a.genomma_merc||0;p=a.pct_genomma;}
+    else if(F.emp==='INOVALAB'){f=a.inovalab_frete||0;m_=a.inovalab_merc||0;p=a.pct_inovalab;}
+    else{f=a.frete||0;m_=a.v_merc||0;p=a.pct_cts;}
+    ct=a.ctes||0;if(!f)return null;
+    return{frete:f,v_merc:m_,ctes:ct,pct_cts:p};
+  }
+  if(F.emp==='GENOMMA'){f=v.genomma_frete||0;m_=v.genomma_merc||0;p=v.pct_genomma;}
+  else if(F.emp==='INOVALAB'){f=v.inovalab_frete||0;m_=v.inovalab_merc||0;p=v.pct_inovalab;}
+  if(!f&&F.emp!=='all')return null;
+  return{frete:f,v_merc:m_,ctes:ct,pct_cts:p};
 }
 function getTrs(){
   const d=getD();if(!d)return[];
@@ -415,12 +514,11 @@ async function exportarExcel(){
   try {
     // Download raw data if not cached
     if(!rawData){
-      const RAW_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/ctes_raw.json?t='+Date.now();
       try{
-        const rr=await fetch(RAW_URL);
-        if(!rr.ok){ alert('Erro ao baixar dados: '+rr.status); btn.innerHTML=origText; btn.disabled=false; return; }
+        const rr=await fetch(SURL+'/storage/v1/object/public/dashboards/custo-servir/ctes_raw.json?t='+Date.now());
+        if(!rr.ok){alert('Erro '+rr.status);btn.innerHTML=origText;btn.disabled=false;return;}
         rawData=JSON.parse(await rr.text());
-      }catch(e){ alert('Erro: '+e.message); btn.innerHTML=origText; btn.disabled=false; return; }
+      }catch(e){alert('Erro: '+e.message);btn.innerHTML=origText;btn.disabled=false;return;}
     }
 
     // Map compact keys to full names
@@ -553,112 +651,6 @@ async function exportarExcel(){
 
 
 // ── FAT. TRANSPORTADORA ──────────────────────────────────────────
-function rFatTransp(){
-  if(!D) return;
-
-  // Aggregate all 3 operations
-  const ops = ['outbound','inbound','reversa'];
-  const opLabels = {outbound:'Outbound',inbound:'Inbound',reversa:'Reversa'};
-  const trMap = {};
-
-  ops.forEach(op=>{
-    const d = D[op];
-    if(!d) return;
-    (d.transportadoras||[]).forEach(t=>{
-      if(!trMap[t.nome]) trMap[t.nome]={
-        nome:t.nome, cnpj:t.cnpj||'',
-        total_f:0, total_n:0, total_m:0,
-        out_f:0, out_n:0, in_f:0, in_n:0,
-        rev_f:0, rev_n:0, ree_f:0, ree_n:0, com_f:0, com_n:0
-      };
-      const tr = trMap[t.nome];
-
-      // Apply period filter using _filtrar
-      const res = _filtrar(t, t.frete, t.v_merc, t.pct_cts);
-      if(!res) return;
-      const f = res.frete, n = res.ctes||0, m = res.v_merc||0;
-
-      tr.total_f+=f; tr.total_n+=n; tr.total_m+=m;
-      if(op==='outbound'){tr.out_f+=f; tr.out_n+=n;}
-      else if(op==='inbound'){tr.in_f+=f; tr.in_n+=n;}
-      else if(op==='reversa'){tr.rev_f+=f; tr.rev_n+=n;}
-    });
-  });
-
-  const list = Object.values(trMap)
-    .filter(t=>t.total_f>0)
-    .sort((a,b)=>b.total_f-a.total_f);
-
-  if(!list.length){
-    document.getElementById('tb-fat-tr').innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--text2);padding:20px">Nenhum dado para os filtros selecionados</td></tr>';
-    return;
-  }
-
-  const maxF = list[0].total_f||1;
-  const totF = list.reduce((s,t)=>s+t.total_f,0);
-
-  document.getElementById('tb-fat-tr').innerHTML = list.map(t=>{
-    const pct = t.total_m>0?Math.round(t.total_f/t.total_m*10000)/100:null;
-    const w = Math.round(t.total_f/maxF*100);
-    return `<tr>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${t.nome}">${t.nome}</td>
-      <td class="r">${t.total_n.toLocaleString('pt-BR')}</td>
-      <td class="r" style="color:var(--red);font-weight:600">${fM(t.total_f)}</td>
-      <td class="r" style="color:#185FA5">${t.out_f>0?fM(t.out_f):'—'}<br><span style="font-size:9px;color:var(--text2)">${t.out_n} CTes</span></td>
-      <td class="r" style="color:#1D9E75">${t.in_f>0?fM(t.in_f):'—'}<br><span style="font-size:9px;color:var(--text2)">${t.in_n} CTes</span></td>
-      <td class="r" style="color:#D85A30">${t.rev_f>0?fM(t.rev_f):'—'}<br><span style="font-size:9px;color:var(--text2)">${t.rev_n} CTes</span></td>
-      <td class="r" style="color:#7F77DD">${t.ree_f>0?fM(t.ree_f):'—'}</td>
-      <td class="r" style="color:#854F0B">${t.com_f>0?fM(t.com_f):'—'}</td>
-      <td class="r" style="color:${cP(pct)};font-weight:600">${pct!=null?pct+'%':'—'}</td>
-      <td>
-        <div style="height:5px;background:var(--bg2);border-radius:3px">
-          <div style="height:100%;width:${w}%;background:var(--red);border-radius:3px"></div>
-        </div>
-        <div style="font-size:9px;color:var(--text2);margin-top:2px">${Math.round(t.total_f/totF*100)}% do total</div>
-      </td>
-    </tr>`;
-  }).join('');
-
-  // Quarter table - all ops combined
-  const qMap = {};
-  ops.forEach(op=>{
-    const d = D[op];if(!d) return;
-    (d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano).forEach(q=>{
-      if(!qMap[q.q]) qMap[q.q]={q:q.q,ano:q.ano,f:0,n:0,out:0,in_:0,rev:0};
-      const qd = qMap[q.q];
-      let f=q.frete,n=q.ctes;
-      if(F.emp==='GENOMMA'){f=q.genomma_frete||0;}
-      else if(F.emp==='INOVALAB'){f=q.inovalab_frete||0;}
-      qd.f+=f; qd.n+=n;
-      if(op==='outbound') qd.out+=f;
-      else if(op==='inbound') qd.in_+=f;
-      else qd.rev+=f;
-    });
-  });
-  const qList = Object.values(qMap).sort((a,b)=>a.ano===b.ano?a.q.localeCompare(b.q):a.ano-b.ano);
-  document.getElementById('tb-fat-qtr').innerHTML = qList.map(q=>`<tr>
-    <td><strong>${q.q}</strong></td>
-    <td class="r">${q.n.toLocaleString('pt-BR')}</td>
-    <td class="r" style="color:var(--red);font-weight:600">${fM(q.f)}</td>
-    <td class="r" style="color:#185FA5">${fM(q.out)}</td>
-    <td class="r" style="color:#1D9E75">${fM(q.in_)}</td>
-    <td class="r" style="color:#D85A30">${fM(q.rev)}</td>
-  </tr>`).join('');
-
-  // Donut chart
-  const totOut=list.reduce((s,t)=>s+t.out_f,0);
-  const totIn=list.reduce((s,t)=>s+t.in_f,0);
-  const totRev=list.reduce((s,t)=>s+t.rev_f,0);
-  const el=ch('c-fat-op');
-  if(el) CH['c-fat-op']=new Chart(el,{type:'doughnut',
-    data:{labels:['Outbound','Inbound','Reversa'],
-          datasets:[{data:[totOut,totIn,totRev],
-                     backgroundColor:['#185FA5','#1D9E75','#D85A30'],
-                     borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
-             plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12}},
-                      tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
-}
 
 function rFatTransp(){
   if(!D) return;
@@ -770,12 +762,10 @@ function rFatTransp(){
 }
 
 window.addEventListener('load',()=>{
-  const uav=document.getElementById('uav');
-  const uem=document.getElementById('uem');
-  const abg=document.getElementById('abg');
-  if(uav) uav.textContent='GL';
-  if(uem) uem.textContent='Genomma Lab';
-  if(abg) abg.style.display='inline-block';
+  const av=document.getElementById('uav');
+  const em=document.getElementById('uem');
+  if(av) av.textContent='GL';
+  if(em) em.textContent='Genomma Lab';
   loadData();
 });
 </script>
