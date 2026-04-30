@@ -217,13 +217,15 @@ const SURL='https://ennsbpibfnuwlvtodukg.supabase.co';
 let D=null,curOp='outbound',curTab='dash';
 
 async function loadData(){
+  const url=SURL+'/storage/v1/object/public/dashboards/custo-servir/dados.json?t='+Date.now();
   for(let i=0;i<4;i++){
     try{
-      const {data,error}=await sb.storage.from('dashboards').download('custo-servir/dados.json');
-      if(error||!data){await new Promise(r=>setTimeout(r,600));continue;}
-      D=JSON.parse(await data.text());initDash();return;
-    }catch(e){await new Promise(r=>setTimeout(r,600));}
+      const r=await fetch(url);
+      if(!r.ok){await new Promise(x=>setTimeout(x,800));continue;}
+      D=JSON.parse(await r.text());initDash();return;
+    }catch(e){await new Promise(x=>setTimeout(x,800));}
   }
+  document.getElementById('cs-empty').innerHTML='<p style="color:var(--red)">Erro ao carregar dados. Verifique a conexao.</p>';
 }
 
 function initDash(){
@@ -413,9 +415,12 @@ async function exportarExcel(){
   try {
     // Download raw data if not cached
     if(!rawData){
-      const {data,error} = await sb.storage.from('dashboards').download('custo-servir/ctes_raw.json');
-      if(error||!data){ alert('Erro ao baixar dados: '+error?.message); btn.innerHTML=origText; btn.disabled=false; return; }
-      rawData = JSON.parse(await data.text());
+      const RAW_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/ctes_raw.json?t='+Date.now();
+      try{
+        const rr=await fetch(RAW_URL);
+        if(!rr.ok){ alert('Erro ao baixar dados: '+rr.status); btn.innerHTML=origText; btn.disabled=false; return; }
+        rawData=JSON.parse(await rr.text());
+      }catch(e){ alert('Erro: '+e.message); btn.innerHTML=origText; btn.disabled=false; return; }
     }
 
     // Map compact keys to full names
