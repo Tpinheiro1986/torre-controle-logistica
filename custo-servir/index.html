@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Custo de Servir — Torre de Controle</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -12,16 +11,16 @@
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.16);}}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:13px;line-height:1.5}
-#scr-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.lcard{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px}
+
+
 .lb{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.lico{width:36px;height:36px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center}
+
 .lico svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.ltit{font-size:22px;font-weight:700;margin-bottom:6px}.lsub{font-size:13px;color:var(--text2);margin-bottom:28px}
+
 .fg{margin-bottom:14px}.fl{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .fi{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg2);color:var(--text);font-size:13px;outline:none}.fi:focus{border-color:var(--green)}
 .bp{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px}.bp:hover{background:var(--green-dk)}.bp:disabled{background:#888;cursor:not-allowed}
-.lerr{background:#FCEBEB;color:var(--red);border:0.5px solid #F7C1C1;border-radius:var(--r);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+
 #scr-app{display:none}
 .nav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .nbr{display:flex;align-items:center;gap:10px}.nico{width:28px;height:28px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center}
@@ -68,26 +67,16 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
 </style>
 </head>
 <body>
-<div id="scr-login">
-  <div class="lcard">
-    <div class="lb"><div class="lico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-      <div><div style="font-size:14px;font-weight:700">Custo de Servir</div><div style="font-size:11px;color:var(--text2)">Torre de Controle · Genomma Lab</div></div></div>
-    <div class="ltit">Bem-vindo</div><div class="lsub">Acesse com seu e-mail corporativo.</div>
-    <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="l-em" placeholder="seu@genommalab.com"></div>
-    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="l-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="bp" id="btn-login" onclick="doLogin()">Entrar</button>
-    <div class="lerr" id="lerr"></div>
-  </div>
-</div>
-<div id="scr-app">
+
+<div id="scr-app" style="display:block">
   <nav class="nav">
     <div class="nbr"><div class="nico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
       <div><div class="nti">Custo de Servir</div><div class="nsu">Torre de Controle · Genomma Lab</div></div></div>
     <div class="nr">
       <a class="nbk" href="../index.html">← Início</a>
       <span class="abg" id="abg" style="display:none">Admin</span>
-      <div class="uch"><div class="uav" id="uav">?</div><span class="uem" id="uem">—</span></div>
-      <button class="bsm" onclick="doLogout()">Sair</button>
+      <div class="uch"><div class="uav" id="uav">GL</div><span class="uem" id="uem">Genomma Lab</span></div>
+      
     </div>
   </nav>
   <div class="opsel">
@@ -119,6 +108,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="tab" id="tab-cli" onclick="goTab('cliente',this)">Clientes</div>
     <div class="tab" id="tab-rem" onclick="goTab('remetente',this)" style="display:none">Remetentes</div>
     <div class="tab" onclick="goTab('quarter',this)">Por Quarter</div>
+    <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
     <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
   </div>
   <div class="wrap">
@@ -219,221 +209,21 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
             <th class="r">Genomma</th><th class="r">Inovalab</th>
           </tr></thead><tbody id="tb-qtr"></tbody></table></div></div>
       </div>
-
-      <!-- ═══ FAT. TRANSPORTADORA ═══ -->
-      <div class="sec" id="sec-fatransp" style="display:none">
-
-        <!-- KPI row -->
-        <div class="krow k5" id="k-fat" style="margin-bottom:10px"></div>
-
-        <!-- Tabela principal -->
-        <div class="card" style="margin-bottom:10px">
-          <div class="slbl"><span class="sn">1</span>Faturamento acumulado por transportadora</div>
-          <div style="overflow-x:auto">
-          <table class="dt">
-            <thead><tr>
-              <th>Transportadora</th>
-              <th class="r">CTes</th>
-              <th class="r" style="color:var(--red)">Frete Total</th>
-              <th class="r" style="color:#185FA5">Genomma</th>
-              <th class="r" style="color:#1D9E75">Inovalab</th>
-              <th class="r" style="color:#185FA5">Outbound</th>
-              <th class="r" style="color:#1D9E75">Inbound</th>
-              <th class="r" style="color:#D85A30">Devolução</th>
-              <th class="r" style="color:#7F77DD">Reentrega</th>
-              <th class="r" style="color:#854F0B">Complementar</th>
-              <th class="r" style="color:var(--blue)">Mercadoria</th>
-              <th class="r">Peso (kg)</th>
-              <th class="r" style="color:var(--amber)">R$/kg</th>
-              <th class="r" style="color:var(--amber)">%CTS</th>
-              <th class="r">% do Total</th>
-            </tr></thead>
-            <tbody id="tb-fat-tr"></tbody>
-          </table>
-          </div>
-        </div>
-
-        <!-- Custo por kg por regiao -->
-        <div class="card" style="margin-bottom:10px">
-          <div class="slbl"><span class="sn">2</span>Custo por kg por região (R$/kg = frete ÷ peso)</div>
-          <div style="overflow-x:auto">
-          <table class="dt">
-            <thead><tr>
-              <th>Transportadora</th>
-              <th class="r">Sudeste</th>
-              <th class="r">Nordeste</th>
-              <th class="r">Centro-Oeste</th>
-              <th class="r">Sul</th>
-              <th class="r">Norte</th>
-              <th class="r">Geral</th>
-            </tr></thead>
-            <tbody id="tb-fat-rkg"></tbody>
-          </table>
-          </div>
-        </div>
-
-        <!-- Graficos -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-          <div class="card">
-            <div class="slbl"><span class="sn">3</span>% Frete por transportadora</div>
-            <div style="position:relative;height:280px"><canvas id="c-fat-pct"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="slbl"><span class="sn">4</span>Faturamento por quarter</div>
-            <div style="overflow-x:auto">
-            <table class="dt">
-              <thead><tr>
-                <th>Quarter</th><th class="r">CTes</th>
-                <th class="r" style="color:var(--red)">Total</th>
-                <th class="r" style="color:#185FA5">Outbound</th>
-                <th class="r" style="color:#1D9E75">Inbound</th>
-                <th class="r" style="color:#D85A30">Devolução</th>
-              </tr></thead>
-              <tbody id="tb-fat-qtr"></tbody>
-            </table>
-            </div>
-          </div>
-          <div class="card">
-            <div class="slbl"><span class="sn">5</span>Distribuição por operação</div>
-            <div style="position:relative;height:280px"><canvas id="c-fat-op"></canvas></div>
-          </div>
-        </div>
-
-      </div>
     </div>
   </div>
 </div>
 <script>
 const SURL='https://ennsbpibfnuwlvtodukg.supabase.co';
-const SANON='sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONwI5';
-const ADMIN='thiago_balao@yahoo.com.br';
-const {createClient}=supabase;
-const sb=createClient(SURL,SANON,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'torre-controle-auth'}});
-let user=null,D=null,curOp='outbound',curTab='dash';
-const OP_COR={outbound:'#185FA5',inbound:'#1D9E75',reversa:'#D85A30'};
-const OP_CLS={outbound:'on-out',inbound:'on-in',reversa:'on-rev'};
-const OP_LBL={outbound:'Entregas',inbound:'Recebimentos',reversa:'Devoluções'};
-const F={emp:'all',ano:'all',qtr:'all',mes:'all',tipo:'all',reg:'all'};
-const CH={};
-const RC={Sudeste:'#185FA5',Nordeste:'#EF9F27','Centro-Oeste':'#1D9E75',Sul:'#7F77DD',Norte:'#5DCAA5',Outros:'#888780'};
-const fM=v=>'R$'+(v/1e6).toFixed(2)+'M';
-const fK=v=>v>=1e6?'R$'+(v/1e6).toFixed(1)+'M':v>=1000?'R$'+(v/1e3).toFixed(0)+'K':'R$'+Math.round(v);
-const pf=v=>v!=null?v.toFixed(2)+'%':'—';
-const cP=v=>v==null?'var(--text2)':v>10?'#A32D2D':v>5?'#854F0B':'#3B6D11';
-function ch(id){if(CH[id])CH[id].destroy();return document.getElementById(id);}
-function getD(){return D?.[curOp]||null;}
-
-// Aplica filtros de ano+mes+quarter+empresa a uma entidade com .anos e .meses
-function _filtrar(v, defaultF, defaultM, defaultPct){
-  let frete=defaultF, merc=defaultM, pct=defaultPct;
-  const ctes = v.ctes||0;
-
-  // Filtro por mes especifico
-  if(F.mes!=='all'){
-    const anos_ativos = F.ano!=='all'?[F.ano]:Object.keys(v.anos||{});
-    let tf=0,tm=0,tn=0;
-    anos_ativos.forEach(a=>{
-      const mk=a+'-'+String(F.mes).padStart(2,'0');
-      const md=v.meses&&v.meses[mk];
-      if(!md) return;
-      if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
-      else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
-      else{tf+=md.frete||0;tm+=md.v_merc||0;}
-      tn+=md.ctes||0;
-    });
-    if(tf===0) return null;
-    return{frete:tf,v_merc:tm,ctes:tn,pct_cts:tm>0?Math.round(tf/tm*10000)/100:null};
-  }
-
-  // Filtro por quarter
-  if(F.qtr!=='all'){
-    const [qNum,qAno]=[parseInt(F.qtr[1]),parseInt('20'+F.qtr.slice(3))];
-    const meses_q=[(qNum-1)*3+1,(qNum-1)*3+2,qNum*3];
-    let tf=0,tm=0,tn=0;
-    meses_q.forEach(mes=>{
-      const mk=qAno+'-'+String(mes).padStart(2,'0');
-      const md=v.meses&&v.meses[mk];
-      if(!md) return;
-      if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
-      else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
-      else{tf+=md.frete||0;tm+=md.v_merc||0;}
-      tn+=md.ctes||0;
-    });
-    if(tf===0) return null;
-    return{frete:tf,v_merc:tm,ctes:tn,pct_cts:tm>0?Math.round(tf/tm*10000)/100:null};
-  }
-
-  // Filtro por ano apenas
-  if(F.ano!=='all'){
-    const a=v.anos&&v.anos[F.ano];
-    if(!a) return null;
-    if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
-    else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
-    else{frete=a.frete||0;merc=a.v_merc||0;pct=a.pct_cts;}
-    if(frete===0) return null;
-    return{frete,v_merc:merc,ctes:a.ctes||0,pct_cts:pct};
-  }
-
-  // Sem filtro de periodo - aplica apenas empresa
-  if(F.emp==='GENOMMA'){frete=v.genomma_frete||0;merc=v.genomma_merc||0;pct=v.pct_genomma;}
-  else if(F.emp==='INOVALAB'){frete=v.inovalab_frete||0;merc=v.inovalab_merc||0;pct=v.pct_inovalab;}
-  if(frete===0) return null;
-  return{frete,v_merc:merc,ctes,pct_cts:pct};
-}
-
-function _applyAno(v,defaultFrete,defaultMerc,defaultPct){
-  if(F.ano==='all') return {frete:defaultFrete,v_merc:defaultMerc,pct_cts:defaultPct};
-  const a=v.anos&&v.anos[F.ano];
-  if(!a) return null;
-  let frete=a.frete||0, merc=a.v_merc||0, pct=a.pct_cts;
-  if(F.emp==='GENOMMA'){frete=a.genomma_frete||0;merc=a.genomma_merc||0;pct=a.pct_genomma;}
-  else if(F.emp==='INOVALAB'){frete=a.inovalab_frete||0;merc=a.inovalab_merc||0;pct=a.pct_inovalab;}
-  if(frete===0) return null;
-  return {frete,v_merc:merc,pct_cts:pct};
-}
-
-async function checkSession(){
-  if(location.hash.includes('access_token')){await new Promise(r=>setTimeout(r,800));history.replaceState(null,'',location.pathname);}
-  const {data:{session}}=await sb.auth.getSession();
-  session?showApp(session.user):showLogin();
-}
-async function doLogin(){
-  const em=document.getElementById('l-em').value.trim(),pw=document.getElementById('l-pw').value;
-  const btn=document.getElementById('btn-login'),err=document.getElementById('lerr');
-  err.style.display='none';
-  if(!em||!pw){err.textContent='Preencha e-mail e senha.';err.style.display='block';return;}
-  btn.disabled=true;btn.textContent='Entrando…';
-  const {data,error}=await sb.auth.signInWithPassword({email:em,password:pw});
-  if(error){let m=error.message;if(m.includes('Invalid login')||m.includes('invalid_credentials'))m='E-mail ou senha incorretos.';err.textContent=m;err.style.display='block';btn.disabled=false;btn.textContent='Entrar';}
-  else showApp(data.user);
-}
-async function doLogout(){await sb.auth.signOut();user=null;showLogin();}
-function showLogin(){document.getElementById('scr-login').style.display='flex';document.getElementById('scr-app').style.display='none';}
-function showApp(u){
-  user=u;document.getElementById('scr-login').style.display='none';document.getElementById('scr-app').style.display='block';
-  document.getElementById('uav').textContent=u.email.slice(0,2).toUpperCase();
-  document.getElementById('uem').textContent=u.email;
-  if(u.email===ADMIN)document.getElementById('abg').style.display='inline-block';
-  setTimeout(loadData,400);
-}
-sb.auth.onAuthStateChange((ev,ses)=>{
-  if(ev==='SIGNED_IN'&&ses&&!user) showApp(ses.user);
-  else if(ev==='SIGNED_OUT'&&!user) showLogin();
-  // TOKEN_REFRESH_FAILED: try to keep user in app if data already loaded
-  else if(ev==='TOKEN_REFRESH_FAILED'){ if(D) return; showLogin(); }
-});
+let D=null,curOp='outbound',curTab='dash';
 
 async function loadData(){
-  const PUBLIC_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/dados.json';
   for(let i=0;i<4;i++){
     try{
-      const r=await fetch(PUBLIC_URL+'?t='+Date.now());
-      if(!r.ok){await new Promise(x=>setTimeout(x,600));continue;}
-      D=JSON.parse(await r.text());initDash();return;
-    }catch(e){await new Promise(x=>setTimeout(x,600));}
+      const {data,error}=await sb.storage.from('dashboards').download('custo-servir/dados.json');
+      if(error||!data){await new Promise(r=>setTimeout(r,600));continue;}
+      D=JSON.parse(await data.text());initDash();return;
+    }catch(e){await new Promise(r=>setTimeout(r,600));}
   }
-  // Never redirect to login on data load failure
-  console.error('Falha ao carregar dados');
 }
 
 function initDash(){
@@ -623,10 +413,9 @@ async function exportarExcel(){
   try {
     // Download raw data if not cached
     if(!rawData){
-      const RAW_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/ctes_raw.json';
-      const rr=await fetch(RAW_URL+'?t='+Date.now());
-      if(!rr.ok){ alert('Erro ao baixar dados: '+rr.status); btn.innerHTML=origText; btn.disabled=false; return; }
-      rawData = JSON.parse(await rr.text());
+      const {data,error} = await sb.storage.from('dashboards').download('custo-servir/ctes_raw.json');
+      if(error||!data){ alert('Erro ao baixar dados: '+error?.message); btn.innerHTML=origText; btn.disabled=false; return; }
+      rawData = JSON.parse(await data.text());
     }
 
     // Map compact keys to full names
@@ -759,6 +548,33 @@ async function exportarExcel(){
 
 
 // ── FAT. TRANSPORTADORA ──────────────────────────────────────────
+function rFatTransp(){
+  if(!D) return;
+
+  // Aggregate all 3 operations
+  const ops = ['outbound','inbound','reversa'];
+  const opLabels = {outbound:'Outbound',inbound:'Inbound',reversa:'Reversa'};
+  const trMap = {};
+
+  ops.forEach(op=>{
+    const d = D[op];
+    if(!d) return;
+    (d.transportadoras||[]).forEach(t=>{
+      if(!trMap[t.nome]) trMap[t.nome]={
+        nome:t.nome, cnpj:t.cnpj||'',
+        total_f:0, total_n:0, total_m:0,
+        out_f:0, out_n:0, in_f:0, in_n:0,
+        rev_f:0, rev_n:0, ree_f:0, ree_n:0, com_f:0, com_n:0
+      };
+      const tr = trMap[t.nome];
+
+      // Apply period filter using _filtrar
+      const res = _filtrar(t, t.frete, t.v_merc, t.pct_cts);
+      if(!res) return;
+      const f = res.frete, n = res.ctes||0, m = res.v_merc||0;
+
+      tr.total_f+=f; tr.total_n+=n; tr.total_m+=m;
+      if(op==='outbound'){tr.out_f+=f; tr.out_n+=n;}
       else if(op==='inbound'){tr.in_f+=f; tr.in_n+=n;}
       else if(op==='reversa'){tr.rev_f+=f; tr.rev_n+=n;}
     });
@@ -839,6 +655,29 @@ async function exportarExcel(){
                       tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)}}}}});
 }
 
+function rFatTransp(){
+  if(!D) return;
+  const OPS=['outbound','inbound','reversa'];
+  const trMap={};
+
+  // Aggregate all operations into one transportadora map
+  OPS.forEach(op=>{
+    const d=D[op];if(!d)return;
+    (d.transportadoras||[]).forEach(t=>{
+      if(!trMap[t.nome]) trMap[t.nome]={
+        nome:t.nome,cnpj:t.cnpj||'',
+        tot_f:0,tot_n:0,tot_m:0,
+        out_f:0,out_n:0,in_f:0,in_n:0,
+        rev_f:0,rev_n:0,
+        ree_f:t.reentrega_frete||0,ree_n:t.reentrega_ctes||0,
+        com_f:t.complementar_frete||0,com_n:t.complementar_ctes||0,
+      };
+      const tr=trMap[t.nome];
+      const res=_filtrar(t,t.frete,t.v_merc,t.pct_cts);
+      if(!res) return;
+      const f=res.frete,n=res.ctes||0,m=res.v_merc||0;
+      tr.tot_f+=f;tr.tot_n+=n;tr.tot_m+=m;
+      if(op==='outbound'){tr.out_f+=f;tr.out_n+=n;}
       else if(op==='inbound'){tr.in_f+=f;tr.in_n+=n;}
       else{tr.rev_f+=f;tr.rev_n+=n;}
     });
@@ -925,186 +764,15 @@ async function exportarExcel(){
                tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+Math.round(c.raw/totF*100)+'%)'}}}}});
 }
 
-
-function rFatTransp(){
-  if(!D) return;
-  const OPS=['outbound','inbound','reversa'];
-  const REGS=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'];
-  const trMap={};
-
-  // ── Aggregate all operations ──────────────────────────────
-  OPS.forEach(op=>{
-    const d=D[op];if(!d)return;
-    (d.transportadoras||[]).forEach(t=>{
-      if(!trMap[t.nome]) trMap[t.nome]={
-        nome:t.nome,cnpj:t.cnpj||'',
-        tot_f:0,tot_m:0,tot_n:0,tot_kg:t.peso_total||0,
-        gen_f:0,ino_f:0,
-        out_f:0,out_n:0,in_f:0,in_n:0,rev_f:0,rev_n:0,
-        ree_f:t.reentrega_frete||0,ree_n:t.reentrega_ctes||0,
-        com_f:t.complementar_frete||0,com_n:t.complementar_ctes||0,
-        regs:t.regioes||{},
-      };
-      const tr=trMap[t.nome];
-      const res=_filtrar(t,t.frete,t.v_merc,t.pct_cts);
-      if(!res) return;
-      const f=res.frete,n=res.ctes||0,m=res.v_merc||0;
-      tr.tot_f+=f;tr.tot_m+=m;tr.tot_n+=n;
-      tr.gen_f+=_filtrar({...t,frete:t.genomma_frete||0,v_merc:0,pct_cts:null,anos:t.anos,meses:t.meses},
-        t.genomma_frete||0,0,null)?.frete||0;
-      tr.ino_f+=_filtrar({...t,frete:t.inovalab_frete||0,v_merc:0,pct_cts:null,anos:t.anos,meses:t.meses},
-        t.inovalab_frete||0,0,null)?.frete||0;
-      if(op==='outbound'){tr.out_f+=f;tr.out_n+=n;}
-      else if(op==='inbound'){tr.in_f+=f;tr.in_n+=n;}
-      else{tr.rev_f+=f;tr.rev_n+=n;}
-    });
-  });
-
-  // ── Aggregate peso from UFs ───────────────────────────────
-  // peso nao esta disponivel no JSON agregado - usar ctes como proxy
-  // peso real vem do ctes_raw se disponivel
-  OPS.forEach(op=>{
-    const d=D[op];if(!d)return;
-    // Note: peso nao esta nos dados agregados - mostramos "--"
-  });
-
-  const list=Object.values(trMap).filter(t=>t.tot_f>0).sort((a,b)=>b.tot_f-a.tot_f);
-  if(!list.length){
-    document.getElementById('tb-fat-tr').innerHTML=
-      '<tr><td colspan="15" style="text-align:center;color:var(--text2);padding:20px">Nenhum dado encontrado</td></tr>';
-    return;
-  }
-
-  const totF=list.reduce((s,t)=>s+t.tot_f,0)||1;
-  const totM=list.reduce((s,t)=>s+t.tot_m,0)||1;
-
-  // ── KPI row ───────────────────────────────────────────────
-  const totOut=list.reduce((s,t)=>s+t.out_f,0);
-  const totIn=list.reduce((s,t)=>s+t.in_f,0);
-  const totRev=list.reduce((s,t)=>s+t.rev_f,0);
-  const totRee=list.reduce((s,t)=>s+t.ree_f,0);
-  const totCom=list.reduce((s,t)=>s+t.com_f,0);
-  const pctCTS=totM>0?+(totF/totM*100).toFixed(2):null;
-  document.getElementById('k-fat').innerHTML=[
-    {l:'Frete Total',v:fM(totF),s:list.length+' transportadoras',co:'var(--red)'},
-    {l:'Mercadoria Total',v:fM(totM),s:'valor transportado',co:'#185FA5'},
-    {l:'%CTS Geral',v:pctCTS!=null?pctCTS+'%':'—',s:'frete/mercadoria',co:'var(--amber)'},
-    {l:'Outbound',v:fM(totOut),s:Math.round(totOut/totF*100)+'% do frete',co:'#185FA5'},
-    {l:'Inbound+Dev.',v:fM(totIn+totRev),s:(Math.round((totIn+totRev)/totF*100))+'% do frete',co:'#1D9E75'},
-  ].map(k=>`<div class="kpi"><div class="kl">${k.l}</div>
-    <div class="kv" style="color:${k.co}">${k.v}</div>
-    <div class="ks">${k.s}</div></div>`).join('');
-
-  // ── Tabela principal ──────────────────────────────────────
-  document.getElementById('tb-fat-tr').innerHTML=list.map(t=>{
-    const pct=t.tot_m>0?+(t.tot_f/t.tot_m*100).toFixed(2):null;
-    const pct_tot=+(t.tot_f/totF*100).toFixed(1);
-    const w=Math.round(t.tot_f/list[0].tot_f*100);
-    const bar=`<div style="height:5px;background:var(--bg2);border-radius:3px;margin-bottom:2px">
-      <div style="height:100%;width:${w}%;background:var(--red);border-radius:3px"></div></div>
-      <span style="font-size:9px;color:var(--text2)">${pct_tot}%</span>`;
-    return`<tr>
-      <td style="max-width:190px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${t.nome}">${t.nome}</td>
-      <td class="r">${t.tot_n.toLocaleString('pt-BR')}</td>
-      <td class="r" style="color:var(--red);font-weight:600">${fM(t.tot_f)}</td>
-      <td class="r" style="color:#185FA5">${t.gen_f>0?fM(t.gen_f):'—'}</td>
-      <td class="r" style="color:#1D9E75">${t.ino_f>0?fM(t.ino_f):'—'}</td>
-      <td class="r" style="color:#185FA5">${t.out_f>0?`${fM(t.out_f)}<br><span style="font-size:9px;color:var(--text3)">${t.out_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#1D9E75">${t.in_f>0?`${fM(t.in_f)}<br><span style="font-size:9px;color:var(--text3)">${t.in_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#D85A30">${t.rev_f>0?`${fM(t.rev_f)}<br><span style="font-size:9px;color:var(--text3)">${t.rev_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#7F77DD">${t.ree_f>0?`${fM(t.ree_f)}<br><span style="font-size:9px;color:var(--text3)">${t.ree_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#854F0B">${t.com_f>0?`${fM(t.com_f)}<br><span style="font-size:9px;color:var(--text3)">${t.com_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#185FA5">${t.tot_m>0?fM(t.tot_m):'—'}</td>
-      <td class="r" style="color:var(--text2)">${t.tot_kg>0?t.tot_kg.toLocaleString('pt-BR',{maximumFractionDigits:0})+' kg':'—'}</td>
-      <td class="r" style="color:var(--amber)">${t.tot_kg>0&&t.tot_f>0?'R$'+(t.tot_f/t.tot_kg).toFixed(2):'—'}</td>
-      <td class="r" style="color:${cP(pct)};font-weight:600">${pct!=null?pct+'%':'—'}</td>
-      <td>${bar}</td>
-    </tr>`;
-  }).join('');
-
-  // ── Custo por kg por região ───────────────────────────────
-  // Aggregate regioes across all ops for each transportadora
-  // This requires per-transp per-regiao data which is not in current JSON
-  // Show message for now - will work after script adds this data
-  // Custo por kg por regiao
-  const REGS=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'];
-  document.getElementById('tb-fat-rkg').innerHTML=list.map(t=>{
-    const rkgCols=REGS.map(rg=>{
-      const rd=t.regs[rg];
-      if(!rd||rd.peso===0||!rd.peso) return '<td class="r" style="color:var(--text3)">—</td>';
-      const ckg=rd.frete/rd.peso;
-      return`<td class="r" style="color:var(--amber);font-weight:500">R$${ckg.toFixed(2)}<br><span style="font-size:9px;color:var(--text3)">${rd.peso.toLocaleString('pt-BR',{maximumFractionDigits:0})} kg</span></td>`;
-    }).join('');
-    const geral=t.tot_kg>0?`R$${(t.tot_f/t.tot_kg).toFixed(2)}`:'—';
-    return`<tr>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${t.nome}">${t.nome}</td>
-      ${rkgCols}
-      <td class="r" style="color:var(--red);font-weight:600">${geral}</td>
-    </tr>`;
-  }).join('');
-
-  // ── Gráfico % frete por transportadora ───────────────────
-  const top10=list.slice(0,10);
-  const outrosF=list.slice(10).reduce((s,t)=>s+t.tot_f,0);
-  const labPct=[...top10.map(t=>t.nome.substring(0,25))];
-  const datPct=[...top10.map(t=>+t.tot_f.toFixed(0))];
-  if(outrosF>0){labPct.push('Outros');datPct.push(+outrosF.toFixed(0));}
-  const colors=['#185FA5','#1D9E75','#D85A30','#7F77DD','#854F0B','#5DCAA5',
-                '#EF9F27','#888780','#3B6D11','#A32D2D','#6B6B67'];
-  const el1=ch('c-fat-pct');
-  if(el1) CH['c-fat-pct']=new Chart(el1,{type:'doughnut',
-    data:{labels:labPct,datasets:[{data:datPct,backgroundColor:colors,borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
-      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:9},boxWidth:10,padding:4}},
-               tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('++(c.raw/totF*100).toFixed(1)+'%)'}}}}});
-
-  // ── Quarter table ─────────────────────────────────────────
-  const qMap={};
-  OPS.forEach(op=>{
-    const d=D[op];if(!d)return;
-    (d.quarters||[]).filter(q=>F.ano==='all'||String(q.ano)===F.ano).forEach(q=>{
-      if(!qMap[q.q]) qMap[q.q]={q:q.q,ano:q.ano,f:0,n:0,out:0,in_:0,rev:0};
-      let f=q.frete,n=q.ctes;
-      if(F.emp==='GENOMMA') f=q.genomma_frete||0;
-      else if(F.emp==='INOVALAB') f=q.inovalab_frete||0;
-      qMap[q.q].f+=f;qMap[q.q].n+=n;
-      if(op==='outbound') qMap[q.q].out+=f;
-      else if(op==='inbound') qMap[q.q].in_+=f;
-      else qMap[q.q].rev+=f;
-    });
-  });
-  const qList=Object.values(qMap).sort((a,b)=>a.ano===b.ano?a.q.localeCompare(b.q):a.ano-b.ano);
-  const tqF=qList.reduce((s,q)=>s+q.f,0);
-  document.getElementById('tb-fat-qtr').innerHTML=
-    qList.map(q=>`<tr><td><strong>${q.q}</strong></td>
-      <td class="r">${q.n.toLocaleString('pt-BR')}</td>
-      <td class="r" style="color:var(--red);font-weight:600">${fM(q.f)}</td>
-      <td class="r" style="color:#185FA5">${fM(q.out)}</td>
-      <td class="r" style="color:#1D9E75">${fM(q.in_)}</td>
-      <td class="r" style="color:#D85A30">${fM(q.rev)}</td>
-    </tr>`).join('')+
-    `<tr class="tr-tot"><td>Total</td>
-     <td class="r">${qList.reduce((s,q)=>s+q.n,0).toLocaleString('pt-BR')}</td>
-     <td class="r" style="color:var(--red)">${fM(tqF)}</td>
-     <td class="r" style="color:#185FA5">${fM(qList.reduce((s,q)=>s+q.out,0))}</td>
-     <td class="r" style="color:#1D9E75">${fM(qList.reduce((s,q)=>s+q.in_,0))}</td>
-     <td class="r" style="color:#D85A30">${fM(qList.reduce((s,q)=>s+q.rev,0))}</td></tr>`;
-
-  // ── Donut por operação ────────────────────────────────────
-  const chartData=[totOut,totIn,totRev];
-  const chartLabels=['Outbound','Inbound','Devolução'];
-  const chartColors=['#185FA5','#1D9E75','#D85A30'];
-  if(totRee>0){chartData.push(totRee);chartLabels.push('Reentrega');chartColors.push('#7F77DD');}
-  if(totCom>0){chartData.push(totCom);chartLabels.push('Complementar');chartColors.push('#854F0B');}
-  const el2=ch('c-fat-op');
-  if(el2) CH['c-fat-op']=new Chart(el2,{type:'doughnut',
-    data:{labels:chartLabels,datasets:[{data:chartData,backgroundColor:chartColors,borderWidth:0,hoverOffset:4}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
-      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10},boxWidth:12}},
-               tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('++(c.raw/totF*100).toFixed(1)+'%)'}}}}});
-}
-
-window.addEventListener('load',checkSession);
+window.addEventListener('load',()=>{
+  const uav=document.getElementById('uav');
+  const uem=document.getElementById('uem');
+  const abg=document.getElementById('abg');
+  if(uav) uav.textContent='GL';
+  if(uem) uem.textContent='Genomma Lab';
+  if(abg) abg.style.display='inline-block';
+  loadData();
+});
 </script>
 </body>
 </html>
