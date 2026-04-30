@@ -35,7 +35,7 @@ ESTADO_FILE    = "cte_estado.json"
 LOG_FILE       = "cte_processador.log"
 
 SUPABASE_URL   = "https://ennsbpibfnuwlvtodukg.supabase.co"
-SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NDgzNywiZXhwIjoyMDg5OTYwODM3fQ.gnCLe-XvoWJoiVEG4jRCPCdX8OsevXACk0TISgo9S04"   # <- chave Legacy service_role
+SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50"   # <- chave Legacy service_role
 BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 PATH_RAW       = "custo-servir/ctes_raw.json"
@@ -277,6 +277,12 @@ def parse_cte(filepath: str):
     x_carac_ser = _txt(root, "cte:xCaracSer") or ""
     x_obs       = _txt(root, "cte:xObs")      or ""
 
+    # Sub-operacao: detecta REENTREGA ou COMPLEMENTAR em xCaracAd ou xCaracSer
+    _carac_all = (x_carac_ad + " " + x_carac_ser).upper()
+    if "REENTREGA"    in _carac_all: sub_operacao = "REENTREGA"
+    elif "COMPLEMENTAR" in _carac_all: sub_operacao = "COMPLEMENTAR"
+    else: sub_operacao = ""
+
     # Protocolo e status descritivo
     prot = root.find(".//cte:infProt", NS)
     n_prot = status_desc = ""
@@ -304,6 +310,7 @@ def parse_cte(filepath: str):
         "cfop":         cfop,
         "n_prot":       n_prot,
         "status_desc":  status_desc[:60],
+        "sub_op":       sub_operacao,
         "x_carac_ad":   x_carac_ad[:40],
         "x_carac_ser":  x_carac_ser[:40],
         "x_obs":        x_obs[:100],
@@ -418,10 +425,16 @@ def _agg_op(ctes):
         # transportadora
         if tr not in by_transp:
             by_transp[tr] = {"nome":tr,"cnpj":c.get("transp_cnpj",""),
-                             "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{},"meses":{}}
+                             "f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,
+                             "ree_f":0,"ree_n":0,"com_f":0,"com_n":0,
+                             "anos":{},"meses":{}}
         _inc(by_transp[tr], f, m, e)
         _inc(_get_or_create(by_transp[tr]["anos"], ano_k, _GI), f, m, e)
         _inc(_get_or_create(by_transp[tr]["meses"], mes_k, _GI), f, m, e)
+        # sub-operacao reentrega/complementar
+        sop = c.get("sub_op","")
+        if sop == "REENTREGA":    by_transp[tr]["ree_f"]+=f; by_transp[tr]["ree_n"]+=1
+        elif sop == "COMPLEMENTAR": by_transp[tr]["com_f"]+=f; by_transp[tr]["com_n"]+=1
 
         # regiao
         if rg not in by_reg:
@@ -501,6 +514,8 @@ def _agg_op(ctes):
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
         "genomma_frete":_r(v["gf"]),"inovalab_frete":_r(v["inf"]),
+        "reentrega_frete":_r(v["ree_f"]),"reentrega_ctes":v["ree_n"],
+        "complementar_frete":_r(v["com_f"]),"complementar_ctes":v["com_n"],
         "anos":_agg_anos(v.get("anos",{})),
         "meses":_agg_anos(v.get("meses",{})),
         "meses":_agg_anos(v.get("meses",{})),
@@ -634,6 +649,7 @@ def publicar_raw(ctes: list) -> bool:
              "nct":c.get("n_cte",""),"ser":c.get("serie",""),
              "cf":c.get("cfop",""),"np":c.get("n_prot",""),
              "st":c.get("status_desc",""),
+             "sop":c.get("sub_op",""),
              "xca":c.get("x_carac_ad",""),"xcs":c.get("x_carac_ser",""),
              "xob":c.get("x_obs",""),
              "nfs":c.get("nfs",""),
