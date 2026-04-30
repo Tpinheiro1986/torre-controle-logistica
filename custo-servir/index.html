@@ -416,7 +416,12 @@ function showApp(u){
   if(u.email===ADMIN)document.getElementById('abg').style.display='inline-block';
   setTimeout(loadData,400);
 }
-sb.auth.onAuthStateChange((ev,ses)=>{if(ev==='SIGNED_IN'&&ses&&!user)showApp(ses.user);else if(ev==='SIGNED_OUT')showLogin();});
+sb.auth.onAuthStateChange((ev,ses)=>{
+  if(ev==='SIGNED_IN'&&ses&&!user) showApp(ses.user);
+  else if(ev==='SIGNED_OUT'&&!user) showLogin();
+  // TOKEN_REFRESH_FAILED: try to keep user in app if data already loaded
+  else if(ev==='TOKEN_REFRESH_FAILED'){ if(D) return; showLogin(); }
+});
 
 async function loadData(){
   const PUBLIC_URL=SURL+'/storage/v1/object/public/dashboards/custo-servir/dados.json';
@@ -427,6 +432,8 @@ async function loadData(){
       D=JSON.parse(await r.text());initDash();return;
     }catch(e){await new Promise(x=>setTimeout(x,600));}
   }
+  // Never redirect to login on data load failure
+  console.error('Falha ao carregar dados');
 }
 
 function initDash(){
