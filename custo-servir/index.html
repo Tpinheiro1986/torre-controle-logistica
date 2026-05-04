@@ -692,6 +692,44 @@ function rFatTransp(){
   const OPS=['outbound','inbound','reversa'];
   const trMap={};
 
+  // Helper: pega valores de uma empresa especifica respeitando F.ano/F.mes/F.qtr
+  // Retorna {f:frete, m:merc, n:ctes_estimado_proporcional}
+  const getEmpVals=(v,emp)=>{
+    if(!v) return {f:0,m:0,n:0};
+    const fK=emp==='GENOMMA'?'genomma_frete':'inovalab_frete';
+    const mK=emp==='GENOMMA'?'genomma_merc':'inovalab_merc';
+    const estCtes=(totFr,totN,empFr)=>totFr>0?Math.round(totN*empFr/totFr):0;
+    if(F.mes!=='all'){
+      const aas=F.ano!=='all'?[F.ano]:Object.keys(v.anos||{});
+      let tf=0,tm=0,totFr=0,totN=0;
+      aas.forEach(a=>{
+        const mk=a+'-'+String(F.mes).padStart(2,'0');
+        const md=v.meses&&v.meses[mk];
+        if(md){tf+=md[fK]||0;tm+=md[mK]||0;totFr+=md.frete||0;totN+=md.ctes||0;}
+      });
+      return {f:tf,m:tm,n:estCtes(totFr,totN,tf)};
+    }
+    if(F.qtr!=='all'){
+      const qN=parseInt(F.qtr[1]),qA=parseInt('20'+F.qtr.slice(3));
+      const ms=[(qN-1)*3+1,(qN-1)*3+2,qN*3];
+      let tf=0,tm=0,totFr=0,totN=0;
+      ms.forEach(mes=>{
+        const mk=qA+'-'+String(mes).padStart(2,'0');
+        const md=v.meses&&v.meses[mk];
+        if(md){tf+=md[fK]||0;tm+=md[mK]||0;totFr+=md.frete||0;totN+=md.ctes||0;}
+      });
+      return {f:tf,m:tm,n:estCtes(totFr,totN,tf)};
+    }
+    if(F.ano!=='all'){
+      const a=v.anos&&v.anos[F.ano];
+      if(!a) return {f:0,m:0,n:0};
+      const ef=a[fK]||0;
+      return {f:ef,m:a[mK]||0,n:estCtes(a.frete||0,a.ctes||0,ef)};
+    }
+    const ef=v[fK]||0;
+    return {f:ef,m:v[mK]||0,n:estCtes(v.frete||0,v.ctes||0,ef)};
+  };
+
   // Aggregate all operations into one transportadora map
   OPS.forEach(op=>{
     const d=D[op];if(!d)return;
@@ -699,48 +737,130 @@ function rFatTransp(){
       if(!trMap[t.nome]) trMap[t.nome]={
         nome:t.nome,cnpj:t.cnpj||'',
         tot_f:0,tot_n:0,tot_m:0,
+        gen_f:0,gen_n:0,gen_m:0,
+        ino_f:0,ino_n:0,ino_m:0,
         out_f:0,out_n:0,in_f:0,in_n:0,
         rev_f:0,rev_n:0,
-        ree_f:t.reentrega_frete||0,ree_n:t.reentrega_ctes||0,
-        com_f:t.complementar_frete||0,com_n:t.complementar_ctes||0,
+        ree_f:0,ree_n:0,
+        com_f:0,com_n:0,
+        peso:0,
       };
       const tr=trMap[t.nome];
       const res=_filtrar(t,t.frete,t.v_merc,t.pct_cts);
       if(!res) return;
       const f=res.frete,n=res.ctes||0,m=res.v_merc||0;
       tr.tot_f+=f;tr.tot_n+=n;tr.tot_m+=m;
+
+      // Por empresa - respeita F.emp (zera a outra quando filtrado)
+      if(F.emp==='all'||F.emp==='GENOMMA'){
+        const g=getEmpVals(t,'GENOMMA');
+        tr.gen_f+=g.f;tr.gen_m+=g.m;tr.gen_n+=g.n;
+      }
+      if(F.emp==='all'||F.emp==='INOVALAB'){
+        const i=getEmpVals(t,'INOVALAB');
+        tr.ino_f+=i.f;tr.ino_m+=i.m;tr.ino_n+=i.n;
+      }
+
+      // Por operacao
       if(op==='outbound'){tr.out_f+=f;tr.out_n+=n;}
       else if(op==='inbound'){tr.in_f+=f;tr.in_n+=n;}
       else{tr.rev_f+=f;tr.rev_n+=n;}
+
+      // Reentrega/Complementar - totais brutos do JSON (so na 1a ocorrencia)
+      if(op==='outbound'){
+        tr.ree_f=t.reentrega_frete||0;
+        tr.ree_n=t.reentrega_ctes||0;
+        tr.com_f=t.complementar_frete||0;
+        tr.com_n=t.complementar_ctes||0;
+      }
+
+      // Peso (defensivo - se o JSON nao tiver, fica 0)
+      tr.peso+=(t.peso||t.peso_total||t.kg||0);
     });
   });
 
   const list=Object.values(trMap).filter(t=>t.tot_f>0).sort((a,b)=>b.tot_f-a.tot_f);
   const totF=list.reduce((s,t)=>s+t.tot_f,0)||1;
-  const maxF=list[0]?.tot_f||1;
+
+  // Helper para celula com valor + CTes + % do total da linha
+  const cellVal=(val,cnt,totRef,color)=>{
+    if(!val||val===0) return '<td class="r" style="color:'+color+'">—</td>';
+    const pct=totRef>0?(val/totRef*100):0;
+    const pctStr=pct>=10?Math.round(pct):pct.toFixed(1).replace('.',',');
+    return '<td class="r" style="color:'+color+'">'
+      +'<div style="font-weight:600">'+fM(val)+'</div>'
+      +(cnt>0?'<div style="font-size:9px;color:var(--text2);margin-top:1px">'+cnt.toLocaleString('pt-BR')+' CTes</div>':'')
+      +'<div style="font-size:9px;color:var(--text2)">'+pctStr+'% da linha</div>'
+      +'</td>';
+  };
 
   document.getElementById('tb-fat-tr').innerHTML=list.map(t=>{
-    const pct=t.tot_m>0?+(t.tot_f/t.tot_m*100).toFixed(2):null;
-    const w=Math.round(t.tot_f/maxF*100);
-    const pct_tot=Math.round(t.tot_f/totF*100);
-    return`<tr>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="${t.nome}">${t.nome}</td>
-      <td class="r">${t.tot_n.toLocaleString('pt-BR')}</td>
-      <td class="r" style="color:var(--red);font-weight:600">${fM(t.tot_f)}</td>
-      <td class="r" style="color:#185FA5">${t.out_f>0?`${fM(t.out_f)}<br><span style="font-size:9px;color:var(--text2)">${t.out_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#1D9E75">${t.in_f>0?`${fM(t.in_f)}<br><span style="font-size:9px;color:var(--text2)">${t.in_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#D85A30">${t.rev_f>0?`${fM(t.rev_f)}<br><span style="font-size:9px;color:var(--text2)">${t.rev_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#7F77DD">${t.ree_f>0?`${fM(t.ree_f)}<br><span style="font-size:9px;color:var(--text2)">${t.ree_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:#854F0B">${t.com_f>0?`${fM(t.com_f)}<br><span style="font-size:9px;color:var(--text2)">${t.com_n} CTes</span>`:'—'}</td>
-      <td class="r" style="color:${cP(pct)};font-weight:600">${pct!=null?pct+'%':'—'}</td>
-      <td>
-        <div style="height:5px;background:var(--bg2);border-radius:3px">
-          <div style="height:100%;width:${w}%;background:var(--red);border-radius:3px"></div>
-        </div>
-        <div style="font-size:9px;color:var(--text2);margin-top:2px">${pct_tot}% do total</div>
-      </td>
-    </tr>`;
+    const pctCts=t.tot_m>0?+(t.tot_f/t.tot_m*100).toFixed(2):null;
+    const pctTot=t.tot_f/totF*100;
+    const wbar=Math.round(pctTot);
+    const rkg=t.peso>0?t.tot_f/t.peso:null;
+    return '<tr>'
+      +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="'+t.nome+'">'+t.nome+'</td>'
+      +'<td class="r">'+t.tot_n.toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:var(--red);font-weight:700">'+fM(t.tot_f)+'</td>'
+      +cellVal(t.gen_f,t.gen_n,t.tot_f,'#185FA5')
+      +cellVal(t.ino_f,t.ino_n,t.tot_f,'#1D9E75')
+      +cellVal(t.out_f,t.out_n,t.tot_f,'#185FA5')
+      +cellVal(t.in_f,t.in_n,t.tot_f,'#1D9E75')
+      +cellVal(t.rev_f,t.rev_n,t.tot_f,'#D85A30')
+      +cellVal(t.ree_f,t.ree_n,t.tot_f,'#7F77DD')
+      +cellVal(t.com_f,t.com_n,t.tot_f,'#854F0B')
+      +'<td class="r">'+(t.tot_m>0?fM(t.tot_m):'—')+'</td>'
+      +'<td class="r">'+(t.peso>0?Math.round(t.peso).toLocaleString('pt-BR'):'—')+'</td>'
+      +'<td class="r" style="color:var(--amber)">'+(rkg?'R$ '+rkg.toFixed(2).replace('.',','):'—')+'</td>'
+      +'<td class="r" style="color:'+cP(pctCts)+';font-weight:600">'
+        +pf(pctCts)
+        +(t.tot_m>0?'<div style="font-size:9px;color:var(--text2);font-weight:400;margin-top:1px">'+fM(t.tot_f)+' / '+fM(t.tot_m)+'</div>':'')
+      +'</td>'
+      +'<td>'
+        +'<div style="height:5px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+wbar+'%;background:var(--red);border-radius:3px"></div></div>'
+        +'<div style="font-size:10px;color:var(--text2);margin-top:3px">'+pctTot.toFixed(1).replace('.',',')+'%</div>'
+      +'</td>'
+      +'</tr>';
   }).join('');
+
+  // Linha de TOTAL no rodape
+  const tN=list.reduce((s,t)=>s+t.tot_n,0);
+  const tM=list.reduce((s,t)=>s+t.tot_m,0);
+  const tGenF=list.reduce((s,t)=>s+t.gen_f,0),tGenN=list.reduce((s,t)=>s+t.gen_n,0);
+  const tInoF=list.reduce((s,t)=>s+t.ino_f,0),tInoN=list.reduce((s,t)=>s+t.ino_n,0);
+  const tOut=list.reduce((s,t)=>s+t.out_f,0),tOutN=list.reduce((s,t)=>s+t.out_n,0);
+  const tIn=list.reduce((s,t)=>s+t.in_f,0),tInN=list.reduce((s,t)=>s+t.in_n,0);
+  const tRev=list.reduce((s,t)=>s+t.rev_f,0),tRevN=list.reduce((s,t)=>s+t.rev_n,0);
+  const tRee=list.reduce((s,t)=>s+t.ree_f,0),tReeN=list.reduce((s,t)=>s+t.ree_n,0);
+  const tCom=list.reduce((s,t)=>s+t.com_f,0),tComN=list.reduce((s,t)=>s+t.com_n,0);
+  const tPeso=list.reduce((s,t)=>s+t.peso,0);
+  const tPctCts=tM>0?+(totF/tM*100).toFixed(2):null;
+  const tRkg=tPeso>0?totF/tPeso:null;
+  const totCell=(v,n,co)=>{
+    if(!v||v===0) return '<td class="r" style="color:'+co+'">—</td>';
+    return '<td class="r" style="color:'+co+'"><strong>'+fM(v)+'</strong>'
+      +(n>0?'<div style="font-size:9px;font-weight:400;color:var(--text2)">'+n.toLocaleString('pt-BR')+' CTes</div>':'')+'</td>';
+  };
+  document.getElementById('tb-fat-tr').innerHTML+='<tr class="tr-tot">'
+    +'<td><strong>TOTAL</strong></td>'
+    +'<td class="r"><strong>'+tN.toLocaleString('pt-BR')+'</strong></td>'
+    +'<td class="r" style="color:var(--red)"><strong>'+fM(totF)+'</strong></td>'
+    +totCell(tGenF,tGenN,'#185FA5')
+    +totCell(tInoF,tInoN,'#1D9E75')
+    +totCell(tOut,tOutN,'#185FA5')
+    +totCell(tIn,tInN,'#1D9E75')
+    +totCell(tRev,tRevN,'#D85A30')
+    +totCell(tRee,tReeN,'#7F77DD')
+    +totCell(tCom,tComN,'#854F0B')
+    +'<td class="r"><strong>'+(tM>0?fM(tM):'—')+'</strong></td>'
+    +'<td class="r"><strong>'+(tPeso>0?Math.round(tPeso).toLocaleString('pt-BR'):'—')+'</strong></td>'
+    +'<td class="r" style="color:var(--amber)"><strong>'+(tRkg?'R$ '+tRkg.toFixed(2).replace('.',','):'—')+'</strong></td>'
+    +'<td class="r" style="color:'+cP(tPctCts)+'"><strong>'+pf(tPctCts)+'</strong>'
+      +(tM>0?'<div style="font-size:9px;font-weight:400;color:var(--text2)">'+fM(totF)+' / '+fM(tM)+'</div>':'')
+    +'</td>'
+    +'<td class="r"><strong>100%</strong></td>'
+    +'</tr>';
 
   // Quarter table — all ops combined
   const qMap={};
@@ -789,11 +909,12 @@ function rFatTransp(){
   if(totRee>0){chartData.push(totRee);chartLabels.push('Reentrega');chartColors.push('#7F77DD');}
   if(totCom>0){chartData.push(totCom);chartLabels.push('Complementar');chartColors.push('#854F0B');}
   const el=ch('c-fat-op');
+  const totDonut=chartData.reduce((s,v)=>s+v,0)||1;
   if(el) CH['c-fat-op']=new Chart(el,{type:'doughnut',
     data:{labels:chartLabels,datasets:[{data:chartData,backgroundColor:chartColors,borderWidth:0,hoverOffset:4}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
       plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12}},
-               tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+Math.round(c.raw/totF*100)+'%)'}}}}});
+               tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+Math.round(c.raw/totDonut*100)+'%)'}}}}});
 }
 
 window.addEventListener('load',()=>{
