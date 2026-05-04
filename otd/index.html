@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v2026.05.04.1508', date: '04/05 15:08' };
+window.__BUILD__ = { version: '__BUILD_VERSION__', date: '__BUILD_DATE__' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1969,7 +1969,22 @@ let otdData=null;
 let otdFilter_state={type:'all',val:'all'};
 let fatChart=null,diasChart=null;
 
-const fmtM=v=>'R$ '+(v/1e6).toFixed(1)+'M';
+// Formata valor monetário com escala dinâmica:
+//   R$ 165.000.000 → "R$ 165,0 mi"     (milhões: 1 casa decimal)
+//   R$ 850.000     → "R$ 850 mil"      (10k+: sem decimal)
+//   R$ 5.500       → "R$ 5,5 mil"      (1k a 10k: 1 casa decimal)
+//   R$ 750         → "R$ 750"          (centenas)
+//   R$ 0           → "R$ 0"
+function fmtM(v){
+  if(v == null || isNaN(v)) return '—';
+  v = Number(v);
+  if(v === 0) return 'R$ 0';
+  const abs = Math.abs(v);
+  if(abs >= 1000000) return 'R$ ' + (v/1e6).toFixed(1).replace('.',',') + ' mi';
+  if(abs >= 10000)   return 'R$ ' + Math.round(v/1000).toLocaleString('pt-BR') + ' mil';
+  if(abs >= 1000)    return 'R$ ' + (v/1000).toFixed(1).replace('.',',') + ' mil';
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
 const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
 const MES_PALETTE=['#378ADD','#185FA5','#0C447C','#042C53','#85B7EB'];
 const REG_CORES={'Sudeste':'#185FA5','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
