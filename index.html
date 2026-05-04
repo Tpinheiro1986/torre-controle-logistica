@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Torre de Controle — Logística</title>
+<script>
+window.__BUILD__ = { version: '__BUILD_VERSION__', date: '__BUILD_DATE__' };
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -18,7 +24,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px}
 
-/* LOGIN */
 #screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
 .login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
 .login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
@@ -37,7 +42,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .btn-primary:disabled{background:#888;cursor:not-allowed}
 .login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
 
-/* APP */
 #screen-app{display:none;min-height:100vh}
 .topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .nav-brand{display:flex;align-items:center;gap:10px}
@@ -53,12 +57,10 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .btn-sm:hover{background:var(--bg2)}
 .admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500;cursor:pointer}
 
-/* CONTAINER */
 .container{max-width:1100px;margin:0 auto;padding:40px 32px}
 .page-title{font-size:22px;font-weight:700;margin-bottom:6px}
 .page-sub{font-size:13px;color:var(--text2);margin-bottom:32px}
 
-/* PAINEL GRID */
 .painel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:32px}
 .painel-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;cursor:pointer;text-decoration:none;color:var(--text);transition:box-shadow .15s,transform .15s;display:block}
 .painel-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.10);transform:translateY(-2px)}
@@ -71,7 +73,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .badge-live{background:#EAF3DE;color:#3B6D11}
 .badge-soon{background:#F0F0EE;color:#9b9b97}
 
-/* UPLOAD SECTION (admin) */
 .upload-section{display:none;margin-top:16px}
 .upload-section.on{display:block}
 .upload-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:14px}
@@ -110,6 +111,17 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 </head>
 <body>
 
+<div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(24,95,165,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Versao da Torre principal" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
+<script>
+(function(){
+  const b = document.getElementById('build-badge');
+  const v = (window.__BUILD__ && window.__BUILD__.version) || '?';
+  const d = (window.__BUILD__ && window.__BUILD__.date) || '?';
+  if(v.indexOf('__BUILD')===0) b.textContent = 'TORRE-DEV';
+  else b.textContent = 'TORRE ' + v + ' · ' + d;
+})();
+</script>
+
 <!-- LOGIN -->
 <div id="screen-login">
   <div class="login-card">
@@ -144,10 +156,7 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
     <div class="page-title">Painéis de Indicadores</div>
     <div class="page-sub">Selecione um painel para visualizar os indicadores de logística.</div>
 
-    <!-- GRID DE PAINÉIS -->
     <div class="painel-grid">
-
-      <!-- OTD -->
       <a class="painel-card" href="otd/index.html">
         <div class="painel-icon" style="background:#185FA5">
           <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -157,7 +166,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <span class="painel-badge badge-live">● Ao vivo</span>
       </a>
 
-      <!-- CUSTO DE SERVIR -->
       <a class="painel-card" href="custo-servir/index.html">
         <div class="painel-icon" style="background:#1D9E75">
           <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -167,7 +175,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <span class="painel-badge badge-live">● Ao vivo</span>
       </a>
 
-      <!-- ESTOQUE -->
       <div class="painel-card disabled">
         <div class="painel-icon" style="background:#888">
           <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
@@ -177,7 +184,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <span class="painel-badge badge-soon">Em breve</span>
       </div>
 
-      <!-- NÍVEL DE SERVIÇO -->
       <div class="painel-card disabled">
         <div class="painel-icon" style="background:#888">
           <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -187,7 +193,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <span class="painel-badge badge-soon">Em breve</span>
       </div>
 
-      <!-- DEVOLUÇÕES -->
       <div class="painel-card disabled">
         <div class="painel-icon" style="background:#888">
           <svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 006 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0015 6.7l3-2.7"/></svg>
@@ -197,7 +202,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <span class="painel-badge badge-soon">Em breve</span>
       </div>
 
-      <!-- PRODUTIVIDADE -->
       <div class="painel-card disabled">
         <div class="painel-icon" style="background:#888">
           <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
@@ -206,17 +210,15 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <div class="painel-sub">Expedição · Separação · Recebimento</div>
         <span class="painel-badge badge-soon">Em breve</span>
       </div>
-
     </div>
 
-    <!-- UPLOAD SECTION (só admin) -->
+    <!-- UPLOAD SECTION (admin) -->
     <div class="upload-section" id="upload-section">
       <div class="upload-card">
         <div class="upload-title">Upload de bases de dados</div>
         <div class="upload-sub">Faça upload dos arquivos Excel para atualizar os indicadores automaticamente. Cada base é processada e salva no servidor.</div>
         <div class="upload-grid">
 
-          <!-- OTD -->
           <div class="upload-box" id="box-otd" ondragover="ev(event,'otd',1)" ondragleave="ev(event,'otd',0)" ondrop="drop(event,'otd')">
             <input type="file" accept=".xlsx,.csv" onchange="pick(this,'otd')">
             <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
@@ -225,7 +227,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
             <div class="upload-box-status" id="st-otd" style="color:var(--text3)">Aguardando arquivo...</div>
           </div>
 
-          <!-- ESTOQUE -->
           <div class="upload-box" id="box-est" ondragover="ev(event,'est',1)" ondragleave="ev(event,'est',0)" ondrop="drop(event,'est')">
             <input type="file" accept=".xlsx,.csv" onchange="pick(this,'est')">
             <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
@@ -234,7 +235,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
             <div class="upload-box-status" id="st-est" style="color:var(--text3)">Aguardando arquivo...</div>
           </div>
 
-          <!-- NÍVEL DE SERVIÇO -->
           <div class="upload-box" id="box-ns" ondragover="ev(event,'ns',1)" ondragleave="ev(event,'ns',0)" ondrop="drop(event,'ns')">
             <input type="file" accept=".xlsx,.csv" onchange="pick(this,'ns')">
             <div class="upload-box-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
@@ -243,7 +243,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
             <div class="upload-box-status" id="st-ns" style="color:var(--text3)">Aguardando arquivo...</div>
           </div>
 
-          <!-- DEVOLUÇÕES -->
           <div class="upload-box" id="box-dev" ondragover="ev(event,'dev',1)" ondragleave="ev(event,'dev',0)" ondrop="drop(event,'dev')">
             <input type="file" accept=".xlsx,.csv" onchange="pick(this,'dev')">
             <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 006 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0015 6.7l3-2.7"/></svg></div>
@@ -252,7 +251,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
             <div class="upload-box-status" id="st-dev" style="color:var(--text3)">Aguardando arquivo...</div>
           </div>
 
-          <!-- PRODUTIVIDADE -->
           <div class="upload-box" id="box-prod" ondragover="ev(event,'prod',1)" ondragleave="ev(event,'prod',0)" ondrop="drop(event,'prod')">
             <input type="file" accept=".xlsx,.csv" onchange="pick(this,'prod')">
             <div class="upload-box-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
@@ -273,7 +271,6 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         <div class="process-log" id="process-log"></div>
       </div>
 
-      <!-- Histórico -->
       <div class="upload-card">
         <div class="upload-title">Histórico de atualizações</div>
         <div class="upload-sub" style="margin-bottom:14px">Últimas bases processadas nesta sessão</div>
@@ -434,7 +431,6 @@ async function processarTodos(){
     log('Processando OTD...','info');
     try{
       await processOTD(files.otd);
-      addHistorico('OTD',files.otd.name);
     }catch(e){log('Erro OTD: '+e.message,'err');}
   }
 
@@ -452,7 +448,8 @@ function addHistorico(indicador,arquivo,regs){
 }
 
 // ============================================================
-// PROCESS OTD — completo com clientesOff, hubAll, prazo_medio
+// PROCESS OTD — versão CORRETA com 3 naturezas, Romaneio, trs_atr
+// (mesma lógica do painel OTD - garante compatibilidade total)
 // ============================================================
 const REGIOES_MAP={
   'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
@@ -464,7 +461,19 @@ const REGIOES_MAP={
 };
 
 const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+// Naturezas no escopo do relatório (acordadas com a operação):
+//   • VENDA DE MERCADORIA ADQUIRIDA  → entra em vendas (compõe OTD)
+//   • VENDA DE PRODUCAO              → entra em vendas (compõe OTD)
+//   • REMESSA EM BONIFICACAO, DOACAO OU BRINDE → entra em bonificação (somada à parte)
+// As demais naturezas (TRANSFERENCIA, AMOSTRA, OUTRA SAIDA) ficam fora do relatório.
+const NATUREZAS_ESCOPO=[
+  'REMESSA EM BONIFICACAO, DOACAO OU BRINDE',
+  'VENDA DE MERCADORIA ADQUIRIDA',
+  'VENDA DE PRODUCAO'
+];
 const VENDAS_NAT=['VENDA DE MERCADORIA ADQUIRIDA','VENDA DE PRODUCAO'];
+const BONIF_NAT='REMESSA EM BONIFICACAO, DOACAO OU BRINDE';
 
 function col(r,...names){
   for(const n of names){if(r[n]!==undefined&&r[n]!==null)return r[n];}
@@ -484,12 +493,20 @@ function pd(v){
   const d=new Date(v);return isNaN(d)?null:d;
 }
 
-function classificar(status){
-  const s=String(status||'');
-  if(s==='Entregue no Prazo')   return 'on_time';
-  if(s==='Entregue em Atraso')  return 'off_time';
+// Classifica a NF segundo os 4 status oficiais + regra de Romaneio.
+// Regra: notas SEM romaneio que ainda NÃO foram entregues = CD (Hub).
+//        notas COM romaneio (ou em atraso) = Trânsito.
+function classificar(status, romaneio){
+  const s=String(status||'').trim();
+  const temRom = romaneio!=null && String(romaneio).trim()!=='' && String(romaneio).trim()!=='0';
+  if(s==='Entregue no Prazo')        return 'on_time';
+  if(s==='Entregue em Atraso')       return 'off_time';
+  if(s==='Ainda Pendente em Atraso') return 'transito_atr';
+  if(s==='Ainda Pendente'){
+    return temRom ? 'transito' : 'hub';
+  }
   if(s==='Aguardando Embarque') return 'hub';
-  if(s.includes('Pendente'))    return 'transito';
+  if(s.includes('Pendente'))    return temRom ? 'transito' : 'hub';
   return 'outros';
 }
 
@@ -521,61 +538,119 @@ async function processOTD(file){
     const nf=col(r,'Número NF','Numero NF','NF','Nota Fiscal');
     return nf?'NF '+String(nf).substring(0,15):'Cliente não identificado';
   };
+  const getRomaneio=r=>{
+    const v=col(r,'Romaneio','Romaneio NF');
+    if(v==null) return '';
+    const s=String(v).trim();
+    return (s==='' || s==='0' || s.toLowerCase()==='null') ? '' : s;
+  };
+  function getDiasAtraso(r){
+    const dent=getDent(r), prev=getPrev(r);
+    if(!dent||!prev) return null;
+    const diff=Math.round((dent-prev)/(1000*60*60*24));
+    return diff>0?diff:null;
+  }
+  function getDiasAtrasoPendente(r){
+    const dat=col(r,'Dias Atraso','Dias_Atraso');
+    if(dat!=null && dat!==''){
+      const n=Math.abs(parseFloat(String(dat).replace(',','.')));
+      if(!isNaN(n) && n>0) return Math.round(n);
+    }
+    const prev=getPrev(r);
+    if(!prev) return null;
+    const hoje=new Date();
+    const diff=Math.round((hoje-prev)/(1000*60*60*24));
+    return diff>0?diff:null;
+  }
 
-  const vendas=processed.filter(r=>VENDAS_NAT.includes(getNat(r)));
-  const bonifs=processed.filter(r=>!VENDAS_NAT.includes(getNat(r)));
-  log('Vendas: '+vendas.length+' | Bonif: '+bonifs.length,'info');
+  // FILTRO POR NATUREZA - 3 naturezas no escopo
+  const escopo = processed.filter(r=>NATUREZAS_ESCOPO.includes(getNat(r)));
+  const vendas = escopo.filter(r=>VENDAS_NAT.includes(getNat(r)));
+  const bonifs = escopo.filter(r=>getNat(r)===BONIF_NAT);
+  const fora   = processed.filter(r=>!NATUREZAS_ESCOPO.includes(getNat(r)));
+  log('Notas no escopo: '+escopo.length+' (vendas: '+vendas.length+' | bonif: '+bonifs.length+')','info');
+  log('Fora do escopo (descartadas): '+fora.length,'info');
 
-  // Meses
+  // Meses (vendas)
   const meses={};
   vendas.forEach(r=>{
+    const tipo=classificar(getStatus(r), getRomaneio(r));
     const de=getDE(r); if(!de)return;
     const mes=de.getMonth()+1;
     const val=getValor(r);
-    const tipo=classificar(getStatus(r));
     const emp=getEmp(r);
-    if(!meses[mes])meses[mes]={fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,qtd_genomma:0,qtd_inovalab:0,on:0,off:0,hub:0,trs:0,on_val:0,off_val:0,hub_val:0,trs_val:0,nome:NOME_MES[mes]||('M'+mes)};
+    if(!meses[mes])meses[mes]={
+      fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,qtd_genomma:0,qtd_inovalab:0,
+      on:0,off:0,hub:0,trs:0,trs_atr:0,
+      on_val:0,off_val:0,hub_val:0,trs_val:0,trs_atr_val:0,
+      on_genomma:0,off_genomma:0,on_inovalab:0,off_inovalab:0,
+      nome:NOME_MES[mes]||('M'+mes)
+    };
     const m=meses[mes];
     m.fat+=val;m.qtd++;
     if(emp==='GENOMMA'){m.fat_genomma+=val;m.qtd_genomma++;}else{m.fat_inovalab+=val;m.qtd_inovalab++;}
-    if(tipo==='on_time'){m.on++;m.on_val+=val;}
-    else if(tipo==='off_time'){m.off++;m.off_val+=val;}
-    else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
+    if(tipo==='on_time'){m.on++;m.on_val+=val;
+      if(emp==='GENOMMA')m.on_genomma++;else m.on_inovalab++;
+    } else if(tipo==='off_time'){m.off++;m.off_val+=val;
+      if(emp==='GENOMMA')m.off_genomma++;else m.off_inovalab++;
+    } else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
     else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
+    else if(tipo==='transito_atr'){m.trs_atr++;m.trs_atr_val+=val;}
   });
   Object.keys(meses).forEach(m=>{
-    ['fat','fat_genomma','fat_inovalab','on_val','off_val','hub_val','trs_val'].forEach(k=>{meses[m][k]=Math.round(meses[m][k]*100)/100;});
+    ['fat','fat_genomma','fat_inovalab','on_val','off_val','hub_val','trs_val','trs_atr_val'].forEach(k=>{meses[m][k]=Math.round(meses[m][k]*100)/100;});
   });
 
-  // Hub/trs ALL (para KPI bloco 3 bater com prevQ)
-  let totalHubAll=0,totalTrsAll=0,totalHubValAll=0,totalTrsValAll=0;
-  processed.forEach(r=>{
-    const tipo=classificar(getStatus(r));
+  // Hub/trs/trs_atr ALL — TODO o escopo (vendas + bonif) para consistência com prevQ
+  let totalHubAll=0,totalTrsAll=0,totalTrsAtrAll=0;
+  let totalHubValAll=0,totalTrsValAll=0,totalTrsAtrValAll=0;
+  escopo.forEach(r=>{
+    const tipo=classificar(getStatus(r), getRomaneio(r));
     const val=getValor(r);
     if(tipo==='hub'){totalHubAll++;totalHubValAll+=val;}
     else if(tipo==='transito'){totalTrsAll++;totalTrsValAll+=val;}
+    else if(tipo==='transito_atr'){totalTrsAtrAll++;totalTrsAtrValAll+=val;}
   });
 
-  // Bonificações
+  // Bonificações — quebrado por status
   const bonif_mes={};
   bonifs.forEach(r=>{
     const de=getDE(r); if(!de)return;
     const mes=de.getMonth()+1;
     const val=getValor(r);
-    if(!bonif_mes[mes])bonif_mes[mes]={fat:0,qtd:0};
-    bonif_mes[mes].fat+=val;bonif_mes[mes].qtd++;
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    if(!bonif_mes[mes]) bonif_mes[mes]={
+      fat:0,qtd:0,
+      on:0,off:0,hub:0,trs:0,trs_atr:0,
+      on_val:0,off_val:0,hub_val:0,trs_val:0,trs_atr_val:0
+    };
+    const b=bonif_mes[mes];
+    b.fat+=val; b.qtd++;
+    if(tipo==='on_time'){b.on++;b.on_val+=val;}
+    else if(tipo==='off_time'){b.off++;b.off_val+=val;}
+    else if(tipo==='hub'){b.hub++;b.hub_val+=val;}
+    else if(tipo==='transito'){b.trs++;b.trs_val+=val;}
+    else if(tipo==='transito_atr'){b.trs_atr++;b.trs_atr_val+=val;}
   });
-  Object.keys(bonif_mes).forEach(m=>{bonif_mes[m].fat=Math.round(bonif_mes[m].fat*100)/100;});
+  Object.keys(bonif_mes).forEach(m=>{
+    ['fat','on_val','off_val','hub_val','trs_val','trs_atr_val'].forEach(k=>{bonif_mes[m][k]=Math.round(bonif_mes[m][k]*100)/100;});
+  });
 
   // Transportadoras
   const transpMap={};
   vendas.forEach(r=>{
-    const tipo=classificar(getStatus(r));
+    const tipo=classificar(getStatus(r), getRomaneio(r));
     const val=getValor(r);
     const t=getTransp(r); if(!t)return;
     const uf=getUF(r);
     const reg=REGIOES_MAP[uf]||'Outros';
-    if(!transpMap[t])transpMap[t]={n:t,fin:0,on:0,off:0,hub:0,trs:0,nao_val:0,dias_sum:0,dias_n:0,uf_map:{},reg_map:{}};
+    if(!transpMap[t])transpMap[t]={
+      n:t,fin:0,on:0,off:0,
+      hub:0,trs:0,trs_atr:0,
+      hub_val:0,trs_val:0,trs_atr_val:0,nao_val:0,
+      dias_sum:0,dias_n:0,
+      uf_map:{},reg_map:{}
+    };
     if(tipo==='on_time'||tipo==='off_time'){
       transpMap[t].fin++;
       if(tipo==='on_time')transpMap[t].on++;else transpMap[t].off++;
@@ -591,27 +666,45 @@ async function processOTD(file){
           transpMap[t].reg_map[reg].dias_sum+=dias;transpMap[t].reg_map[reg].dias_n++;
         }
       }
-    }else if(tipo==='hub'){transpMap[t].hub++;transpMap[t].nao_val+=val;}
-    else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].nao_val+=val;}
+    }
+    else if(tipo==='hub'){transpMap[t].hub++;transpMap[t].hub_val+=val;transpMap[t].nao_val+=val;}
+    else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].trs_val+=val;transpMap[t].nao_val+=val;}
+    else if(tipo==='transito_atr'){transpMap[t].trs_atr++;transpMap[t].trs_atr_val+=val;transpMap[t].nao_val+=val;}
   });
   const transpList=Object.values(transpMap).map(t=>({
     ...t,
     otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,
     prazo_medio:t.dias_n>0?Math.round(t.dias_sum/t.dias_n*10)/10:null,
+    hub_val:Math.round(t.hub_val*100)/100,
+    trs_val:Math.round(t.trs_val*100)/100,
+    trs_atr_val:Math.round(t.trs_atr_val*100)/100,
     nao_val:Math.round(t.nao_val*100)/100,
     ufs:Object.values(t.uf_map).map(u=>({...u,otd:u.fin>0?Math.round(u.on/u.fin*1000)/10:null,prazo_medio:u.dias_n>0?Math.round(u.dias_sum/u.dias_n*10)/10:null})).sort((a,b)=>b.fin-a.fin),
     regs:Object.values(t.reg_map).map(rg=>({...rg,otd:rg.fin>0?Math.round(rg.on/rg.fin*1000)/10:null,prazo_medio:rg.dias_n>0?Math.round(rg.dias_sum/rg.dias_n*10)/10:null})).sort((a,b)=>b.fin-a.fin)
   })).sort((a,b)=>b.fin-a.fin);
 
-  // prevQ
+  // prevQ - inclui transito_atr
   const Q_ENDS={Q1:new Date('2026-03-31'),Q2:new Date('2026-06-30'),Q3:new Date('2026-09-30'),Q4:new Date('2026-12-31')};
-  const getPQ=r=>{const p=getPrev(r);if(!p)return'Sem previsão';if(p<=Q_ENDS.Q1)return'Q1';if(p<=Q_ENDS.Q2)return'Q2';if(p<=Q_ENDS.Q3)return'Q3';return'Q4';};
+  function getPQ(ts){
+    if(!ts) return 'Sem previsão';
+    const d=pd(ts); if(!d) return 'Sem previsão';
+    if(d<=Q_ENDS.Q1) return 'Q1';
+    if(d<=Q_ENDS.Q2) return 'Q2';
+    if(d<=Q_ENDS.Q3) return 'Q3';
+    return 'Q4';
+  }
   const prevQ={};
-  processed.filter(r=>classificar(getStatus(r)).match(/hub|transito/)).forEach(r=>{
-    const pq=getPQ(r);const val=getValor(r);const tipo=classificar(getStatus(r));
-    if(!prevQ[pq])prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0};
+  escopo.filter(r=>{
+    const t=classificar(getStatus(r), getRomaneio(r));
+    return t==='hub' || t==='transito' || t==='transito_atr';
+  }).forEach(r=>{
+    const pq=getPQ(getPrev(r));const val=getValor(r);
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    if(!prevQ[pq])prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0,transito_atr:0};
     prevQ[pq].qtd++;prevQ[pq].valor+=val;
-    if(tipo==='hub')prevQ[pq].hub++;else prevQ[pq].transito++;
+    if(tipo==='hub')prevQ[pq].hub++;
+    else if(tipo==='transito_atr')prevQ[pq].transito_atr++;
+    else prevQ[pq].transito++;
   });
   const prevQLista=Object.values(prevQ).map(p=>({...p,valor:Math.round(p.valor*100)/100}))
     .sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q));
@@ -619,10 +712,10 @@ async function processOTD(file){
   // Regiões
   const regMap={};const diasRegMap={};
   vendas.forEach(r=>{
-    const tipo=classificar(getStatus(r));
+    const tipo=classificar(getStatus(r), getRomaneio(r));
     const uf=getUF(r);const reg=REGIOES_MAP[uf]||'Outros';const val=getValor(r);
     const diasDec=Math.abs(parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0);
-    if(tipo==='transito'){
+    if(tipo==='transito' || tipo==='transito_atr'){
       if(!regMap[reg])regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
       regMap[reg].atr_qtd++;regMap[reg].atr_val+=val;regMap[reg].dias_sum+=diasDec;
       if(!regMap[reg].ufs[uf])regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
@@ -650,54 +743,75 @@ async function processOTD(file){
   });
 
   // Empresa total
-  const empresa_total={GENOMMA:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0},INOVALAB:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0}};
+  const empresa_total={GENOMMA:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0,trs_atr:0},INOVALAB:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0,trs_atr:0}};
   vendas.forEach(r=>{
-    const emp=getEmp(r);const tipo=classificar(getStatus(r));const val=getValor(r);
+    const emp=getEmp(r);const tipo=classificar(getStatus(r), getRomaneio(r));const val=getValor(r);
     empresa_total[emp].fat+=val;empresa_total[emp].qtd++;
     if(tipo==='on_time')empresa_total[emp].on++;
     else if(tipo==='off_time')empresa_total[emp].off++;
     else if(tipo==='hub')empresa_total[emp].hub++;
     else if(tipo==='transito')empresa_total[emp].trs++;
+    else if(tipo==='transito_atr')empresa_total[emp].trs_atr++;
   });
   Object.keys(empresa_total).forEach(e=>{empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;});
 
-  // clientesOff
+  // clientesOff - inclui Off Time E Pendente em Atraso, com campo "situacao"
   const clienteOffMap={};
-  const allOffRows=processed.filter(r=>classificar(getStatus(r))==='off_time');
-  log('Off Time rows: '+allOffRows.length,'info');
+  const allOffRows=escopo.filter(r=>{
+    const t=classificar(getStatus(r), getRomaneio(r));
+    return t==='off_time' || t==='transito_atr';
+  });
+  log('Off Time + Pendente em Atraso: '+allOffRows.length,'info');
+
   allOffRows.forEach(r=>{
     const cliente=getCliente(r);const uf=getUF(r);const reg=REGIOES_MAP[uf]||'Outros';
     const cidade=getCidade(r);const val=getValor(r);const de=getDE(r);
-    const dent=getDent(r);const prev=getPrev(r);
-    const diasAtr=(dent&&prev)?Math.max(0,Math.round((dent-prev)/(1000*60*60*24))):null;
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    const diasAtr = (tipo==='off_time') ? getDiasAtraso(r) : getDiasAtrasoPendente(r);
     const mes=de?de.getMonth()+1:0;const transp=getTransp(r);
-    const key=cliente+'|'+uf+'|'+cidade;
-    if(!clienteOffMap[key])clienteOffMap[key]={cliente,cidade,uf,regiao:reg,qtd:0,valor:0,dias_sum:0,dias_n:0,transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):''};
-    const c=clienteOffMap[key];c.qtd++;c.valor+=val;
-    if(diasAtr!=null){c.dias_sum+=diasAtr;c.dias_n++;}
+    const key=cliente+'|'+uf+'|'+(cidade||'')+'|'+tipo;
+    if(!clienteOffMap[key]) clienteOffMap[key]={
+      cliente,cidade,uf,regiao:reg,
+      qtd:0,valor:0,dias_sum:0,dias_n:0,dias_max:0,
+      transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):'',
+      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Pendente em Atraso'
+    };
+    const c=clienteOffMap[key];
+    c.qtd++;c.valor+=val;
+    if(diasAtr!=null){
+      c.dias_sum+=diasAtr;c.dias_n++;
+      if(diasAtr>c.dias_max) c.dias_max=diasAtr;
+    }
   });
-  const clientesOff=Object.values(clienteOffMap).map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null})).sort((a,b)=>b.qtd-a.qtd);
-  log('Clientes Off Time: '+clientesOff.length,'info');
+  const clientesOff=Object.values(clienteOffMap).map(c=>({
+    ...c,
+    valor:Math.round(c.valor*100)/100,
+    dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null
+  })).sort((a,b)=>b.qtd-a.qtd);
+  log('Clientes com atraso: '+clientesOff.length,'info');
 
   const payload={
     meses,bonif_mes,otd:transpList,regioes,dias_mes,
     prevQ:prevQLista,empresa_total,clientesOff,
-    totalHubAll,totalTrsAll,
+    totalHubAll,totalTrsAll,totalTrsAtrAll,
     totalHubValAll:Math.round(totalHubValAll*100)/100,
     totalTrsValAll:Math.round(totalTrsValAll*100)/100,
+    totalTrsAtrValAll:Math.round(totalTrsAtrValAll*100)/100,
     atualizado:new Date().toLocaleString('pt-BR'),
     base_nome:file.name,
     total_nfs:vendas.length,
-    total_bonif:bonifs.length
+    total_bonif:bonifs.length,
+    total_escopo:escopo.length,
+    total_fora_escopo:fora.length
   };
 
-  log('Salvando...','info');
+  log('Salvando no Supabase...','info');
   const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
   const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json',cacheControl:'0'});
-  if(error)log('Aviso: '+error.message,'err');
-  else log('✓ Salvo: otd/dados.json','ok');
-  log('OTD concluído: '+vendas.length+' NFs','ok');
-  addHistorico('OTD',file.name,vendas.length);
+  if(error){log('Aviso: '+error.message,'err');}
+  else {log('✓ Salvo: otd/dados.json','ok');}
+  log('OTD concluído: escopo '+escopo.length+' NFs (vendas '+vendas.length+' + bonif '+bonifs.length+'). Fora descartadas: '+fora.length,'ok');
+  addHistorico('OTD',file.name,escopo.length);
   log('Tudo concluído!','ok');
   document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
 }
