@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v2026.05.04.1356', date: '04/05 13:56' };
+window.__BUILD__ = { version: 'v2026.05.04.1404', date: '04/05 14:04' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1876,17 +1876,76 @@ function atrasosPaginar(dir){
 
 async function loadOTDFromStorage(){
   try{
-    const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
-    if(error) return; // no data yet
-    const text=await data.text();
-    const payload=JSON.parse(text);
+    // Força download FRESH (sem cache) usando getPublicUrl com timestamp
+    // O download direto via SDK do Supabase pode pegar versão cacheada do CDN.
+    const {data:pubUrlData} = sb.storage.from('dashboards').getPublicUrl('otd/dados.json');
+    let payload = null;
+    if(pubUrlData && pubUrlData.publicUrl){
+      // Tenta primeiro o fetch direto com cache-bust agressivo
+      try {
+        const url = pubUrlData.publicUrl + '?_=' + Date.now();
+        const resp = await fetch(url, {cache:'no-store', headers:{'Cache-Control':'no-cache'}});
+        if(resp.ok){
+          payload = await resp.json();
+        }
+      } catch(_){}
+    }
+    // Fallback: SDK do Supabase
+    if(!payload){
+      const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
+      if(error) return;
+      payload = JSON.parse(await data.text());
+    }
+
+    // ===== DETECTOR DE BASE DESATUALIZADA =====
+    // Se o JSON nao tem os campos novos (trs_atr, situacao em clientesOff, etc),
+    // foi gerado por uma versao antiga do processador e PRECISA ser regerado.
+    const desatualizado = detectarBaseDesatualizada(payload);
+    if(desatualizado){
+      mostrarBannerDesatualizado(desatualizado);
+    }
+
     renderOTD(payload);
     if(typeof renderTransp==='function') renderTransp();
     if(typeof renderOffTime==='function') renderOffTime();
     if(typeof renderAtrasos==='function') renderAtrasos();
   }catch(e){
-    // no data yet, show empty state
+    console.error('Erro ao carregar dados.json:', e);
   }
+}
+
+function detectarBaseDesatualizada(payload){
+  if(!payload) return null;
+  const motivos = [];
+  // Verifica: meses tem o campo trs_atr?
+  const algumMes = Object.values(payload.meses||{})[0];
+  if(algumMes && algumMes.trs_atr === undefined){
+    motivos.push('campos de Pendente em Atraso ausentes');
+  }
+  // Verifica: bonif_mes tem quebra por status?
+  const algumBonif = Object.values(payload.bonif_mes||{})[0];
+  if(algumBonif && algumBonif.on === undefined){
+    motivos.push('quebra de status em bonificacoes ausente');
+  }
+  // Verifica: clientesOff tem campo situacao?
+  const algumCliente = (payload.clientesOff||[])[0];
+  if(algumCliente && algumCliente.situacao === undefined){
+    motivos.push('situacao dos clientes em atraso ausente');
+  }
+  return motivos.length ? motivos : null;
+}
+
+function mostrarBannerDesatualizado(motivos){
+  if(document.getElementById('banner-desatualizado')) return;
+  const banner = document.createElement('div');
+  banner.id = 'banner-desatualizado';
+  banner.style.cssText = 'position:sticky;top:0;z-index:99;background:#FAEEDA;color:#854F0B;padding:10px 16px;border-bottom:2px solid #EF9F27;font-size:13px;display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap';
+  banner.innerHTML = '<strong>⚠ Base de dados desatualizada</strong>'
+    +'<span>O dados.json foi gerado por uma versão antiga do código — campos novos (Pendente em Atraso, etc.) podem aparecer zerados.</span>'
+    +'<strong style="background:#854F0B;color:#FAEEDA;padding:4px 10px;border-radius:4px">Vá na Torre principal e faça novo upload da base XLSX.</strong>'
+    +'<button onclick="this.parentNode.remove()" style="background:transparent;border:1px solid #854F0B;color:#854F0B;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">Dispensar</button>';
+  document.body.insertBefore(banner, document.body.firstChild);
+  console.warn('Base desatualizada — motivos:', motivos);
 }
 
 // ============================================================
