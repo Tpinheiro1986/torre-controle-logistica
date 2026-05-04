@@ -312,6 +312,14 @@ function cP(p){
   if(p<15)return 'var(--amber)';
   return 'var(--red)';
 }
+// F.mes pode ser 'all' ou 'ANO-MES' (ex: '2026-1'). Retorna {ano,mes} ou null.
+function parseMes(){
+  if(F.mes==='all')return null;
+  const p=String(F.mes).split('-');
+  if(p.length===2)return {ano:p[0],mes:parseInt(p[1])};
+  // retrocompatibilidade: F.mes='1' (formato antigo, sem ano)
+  return {ano:null,mes:parseInt(F.mes)};
+}
 
 async function loadData(){
   const url=SURL+'/storage/v1/object/public/dashboards/custo-servir/dados.json?t='+Date.now();
@@ -339,7 +347,7 @@ function initDash(){
   const allQ=[...new Set([...(D.outbound?.quarters||[]),...(D.inbound?.quarters||[]),...(D.reversa?.quarters||[])].map(q=>q.q))].sort();
   const fq=document.getElementById('f-qtrs');fq.innerHTML='';allQ.forEach(q=>{fq.appendChild(mkb(q,'qtr',q));});
   const mU=[...new Map(allM.map(m=>[m.ano+'-'+m.mes,m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
-  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',String(m.mes)));});
+  const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',m.ano+'-'+m.mes));});
   renderAll();
 }
 function mkb(label,g,v){const b=document.createElement('button');b.className='fb';b.textContent=label;b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;}
@@ -373,15 +381,36 @@ function fil(btn){
   document.querySelectorAll('.fb[data-g="'+g+'"]').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');F[g]=v;
   if(g==='ano'){F.qtr='all';F.mes='all';document.querySelectorAll('.fb[data-g="qtr"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));document.querySelector('.fb[data-g="qtr"][data-v="all"]').classList.add('on');document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');}
-  if(g==='qtr'&&v!=='all'){F.mes='all';document.querySelectorAll('.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');}
+  if(g==='qtr'&&v!=='all'){
+    // Auto-selecionar o ano correspondente (Q1/26 => ano=2026)
+    const anoQ='20'+v.slice(3);
+    F.ano=anoQ;F.mes='all';
+    document.querySelectorAll('.fb[data-g="ano"],.fb[data-g="mes"]').forEach(b=>b.classList.remove('on'));
+    const btnAno=document.querySelector('.fb[data-g="ano"][data-v="'+anoQ+'"]');
+    if(btnAno)btnAno.classList.add('on');else document.querySelector('.fb[data-g="ano"][data-v="all"]').classList.add('on');
+    document.querySelector('.fb[data-g="mes"][data-v="all"]').classList.add('on');
+  }
+  if(g==='mes'&&v!=='all'){
+    // Valor do mes vem como 'ANO-MES' (ex: '2026-1'). Auto-selecionar ano correspondente.
+    const partes=v.split('-');
+    if(partes.length===2){
+      const anoM=partes[0];
+      F.ano=anoM;F.qtr='all';
+      document.querySelectorAll('.fb[data-g="ano"],.fb[data-g="qtr"]').forEach(b=>b.classList.remove('on'));
+      const btnAno=document.querySelector('.fb[data-g="ano"][data-v="'+anoM+'"]');
+      if(btnAno)btnAno.classList.add('on');else document.querySelector('.fb[data-g="ano"][data-v="all"]').classList.add('on');
+      document.querySelector('.fb[data-g="qtr"][data-v="all"]').classList.add('on');
+    }
+  }
   renderAll();
 }
 
 function fMs(){
   const d=getD();if(!d)return[];
+  const pm=parseMes();
   return (d.meses||[]).filter(m=>
     (F.ano==='all'||String(m.ano)===F.ano)&&
-    (F.mes==='all'||String(m.mes)===F.mes)&&
+    (!pm||(m.mes===pm.mes&&(!pm.ano||String(m.ano)===pm.ano)))&&
     (F.qtr==='all'||'Q'+Math.ceil(m.mes/3)+'/'+String(m.ano).slice(2)===F.qtr)
   ).map(m=>({...m,mes_nome:m.mes_nome||m.nome||('M'+m.mes)}));
 }
@@ -400,9 +429,10 @@ function getRegs(){
 function _filtrar(v,dF,dM,dP){
   var f=dF||0,m_=dM||0,p=dP,ct=v.ctes||0;
   if(F.mes!=='all'){
-    var aas=F.ano!=='all'?[F.ano]:Object.keys(v.anos||{});
+    var pm=parseMes();
+    var aas=pm.ano?[pm.ano]:(F.ano!=='all'?[F.ano]:Object.keys(v.anos||{}));
     var tf=0,tm=0,tn=0;
-    aas.forEach(function(a){var mk=a+'-'+String(F.mes).padStart(2,'0'),md=v.meses&&v.meses[mk];if(!md)return;
+    aas.forEach(function(a){var mk=a+'-'+String(pm.mes).padStart(2,'0'),md=v.meses&&v.meses[mk];if(!md)return;
       if(F.emp==='GENOMMA'){tf+=md.genomma_frete||0;tm+=md.genomma_merc||0;}
       else if(F.emp==='INOVALAB'){tf+=md.inovalab_frete||0;tm+=md.inovalab_merc||0;}
       else{tf+=md.frete||0;tm+=md.v_merc||0;}tn+=md.ctes||0;});
@@ -572,7 +602,11 @@ async function exportarExcel(){
       // ano
       if(F.ano!=='all' && String(r.ano)!==F.ano) return false;
       // mes
-      if(F.mes!=='all' && String(r.mes)!==F.mes) return false;
+      if(F.mes!=='all'){
+        const pm=parseMes();
+        if(r.mes!==pm.mes) return false;
+        if(pm.ano && String(r.ano)!==pm.ano) return false;
+      }
       // quarter
       if(F.qtr!=='all'){
         const q='Q'+Math.ceil(r.mes/3)+'/'+String(r.ano).slice(2);
@@ -652,7 +686,7 @@ async function exportarExcel(){
       ['Empresa:', F.emp==='all'?'Todas':F.emp],
       ['Ano:', F.ano==='all'?'Todos':F.ano],
       ['Quarter:', F.qtr==='all'?'Todos':F.qtr],
-      ['Mês:', F.mes==='all'?'Todos':F.mes],
+      ['Mês:', (function(){if(F.mes==='all')return 'Todos';const pm=parseMes();return pm.ano?(MNOM[pm.mes]+'/'+String(pm.ano).slice(2)):MNOM[pm.mes];})()],
       ['Tipo Op.:', F.tipo==='all'?'Todos':F.tipo],
       ['Região:', F.reg==='all'?'Todas':F.reg],
       [''],
@@ -700,10 +734,11 @@ function rFatTransp(){
     const mK=emp==='GENOMMA'?'genomma_merc':'inovalab_merc';
     const estCtes=(totFr,totN,empFr)=>totFr>0?Math.round(totN*empFr/totFr):0;
     if(F.mes!=='all'){
-      const aas=F.ano!=='all'?[F.ano]:Object.keys(v.anos||{});
+      const pm=parseMes();
+      const aas=pm.ano?[pm.ano]:(F.ano!=='all'?[F.ano]:Object.keys(v.anos||{}));
       let tf=0,tm=0,totFr=0,totN=0;
       aas.forEach(a=>{
-        const mk=a+'-'+String(F.mes).padStart(2,'0');
+        const mk=a+'-'+String(pm.mes).padStart(2,'0');
         const md=v.meses&&v.meses[mk];
         if(md){tf+=md[fK]||0;tm+=md[mK]||0;totFr+=md.frete||0;totN+=md.ctes||0;}
       });
