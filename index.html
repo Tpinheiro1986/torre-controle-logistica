@@ -262,6 +262,10 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
         </div>
 
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button class="btn-process" id="btn-load-server" onclick="carregarDoServidorEProcessar()" style="margin-right:8px;background:#1a472a">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Carregar do Servidor e Processar
+          </button>
           <button class="btn-process" id="btn-process" onclick="processarTodos()" disabled>
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Processar e atualizar indicadores
@@ -814,6 +818,46 @@ async function processOTD(file){
   addHistorico('OTD',file.name,escopo.length);
   log('Tudo concluído!','ok');
   document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
+}
+
+// ============================================================
+// CARREGAR DO SERVIDOR E PROCESSAR (adicionado pelo consolidador)
+// ============================================================
+async function carregarDoServidorEProcessar(){
+  const session = (await sb.auth.getSession()).data.session;
+  if(!session){
+    log('Voce precisa estar logado.','err');
+    alert('Faca login primeiro.');
+    return;
+  }
+  const btnLoad = document.getElementById('btn-load-server');
+  const btnProc = document.getElementById('btn-process');
+  if(btnLoad){ btnLoad.disabled = true; btnLoad.textContent = ' Baixando do servidor...'; }
+  log('Baixando historico_mestre.xlsx do servidor...','info');
+  try{
+    const { data, error } = await sb.storage.from('dashboards').download('otd/historico_mestre.xlsx');
+    if(error){
+      log('Erro ao baixar do servidor: '+error.message,'err');
+      log('Verifique se o consolidador ja rodou hoje (atualizar.bat).','err');
+      if(btnLoad){ btnLoad.disabled = false; btnLoad.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Carregar do Servidor e Processar'; }
+      return;
+    }
+    log('✓ Baixado: '+(data.size/1024).toFixed(1)+' KB','ok');
+    const file = new File([data], 'historico_mestre.xlsx',
+                          {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    // Reusa a logica existente que registra o arquivo no slot 'otd'
+    pick2(file, 'otd');
+    log('Iniciando processamento...','info');
+    // Chama o processamento padrao do painel
+    await processarTodos();
+  }catch(e){
+    log('Erro inesperado: '+e.message,'err');
+  }finally{
+    if(btnLoad){
+      btnLoad.disabled = false;
+      btnLoad.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Carregar do Servidor e Processar';
+    }
+  }
 }
 </script>
 </body>
