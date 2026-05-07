@@ -803,7 +803,26 @@ async function processOTD(file){
     if(!v) return null;
     if(v instanceof Date) return isNaN(v)?null:v;
     if(typeof v==='number') return new Date(Math.round((v-25569)*86400*1000)); // Excel serial date
-    const d=new Date(v); return isNaN(d)?null:d;
+    const s=String(v).trim();
+    if(!s) return null;
+    // Formato BR: dd/mm/yyyy [HH:MM[:SS]]
+    let m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/);
+    if(m){
+      const dia=parseInt(m[1],10), mes=parseInt(m[2],10)-1, ano=parseInt(m[3],10);
+      const h=parseInt(m[4]||'0',10), mi=parseInt(m[5]||'0',10), se=parseInt(m[6]||'0',10);
+      const d=new Date(ano,mes,dia,h,mi,se);
+      return isNaN(d)?null:d;
+    }
+    // Formato ISO: yyyy-mm-dd[ THH:MM:SS]
+    m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    if(m){
+      const ano=parseInt(m[1],10), mes=parseInt(m[2],10)-1, dia=parseInt(m[3],10);
+      const h=parseInt(m[4]||'0',10), mi=parseInt(m[5]||'0',10), se=parseInt(m[6]||'0',10);
+      const d=new Date(ano,mes,dia,h,mi,se);
+      return isNaN(d)?null:d;
+    }
+    // Fallback: deixa o JS tentar
+    const d=new Date(s); return isNaN(d)?null:d;
   }
 
   // Helper: get empresa
