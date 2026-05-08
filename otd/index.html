@@ -381,7 +381,12 @@ table.dt tr:hover td{background:var(--bg2)}
 
         <!-- Lista de Clientes em Atraso -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Clientes com Atrasos</div>
+          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">3</span>Clientes com Atrasos
+            <button onclick="exportarAtrasosExcel()" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar para Excel
+            </button>
+          </div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
             Clientes ordenados por dias de atraso (decrescente).
             <span id="atrasos-count" style="font-weight:600;color:#A32D2D;margin-left:6px"></span>
@@ -838,7 +843,7 @@ async function processOTD(file){
   // Helper: get valor
   function getValor(r){ 
     const v=col(r,'Valor Total','Valor Nota','ValorTotal','valor_total');
-    return parseFloat(String(v||0).replace(',','.'))||0; 
+    return parseFloat(v) || 0; 
   }
 
   // Helper: get natureza
@@ -912,8 +917,24 @@ async function processOTD(file){
     return diff>0?diff:null;
   }
 
+  
+  // === PATCH v8.2: Filtro de Pedido válido ===
+  function pedidoValido(v){
+    if(v==null) return false;
+    const s=String(v).trim();
+    if(s===''||s==='0'||s==='0.0'||s.toLowerCase()==='null'||s.toLowerCase()==='nan') return false;
+    const n=parseFloat(s);
+    if(!isNaN(n)&&n===0) return false;
+    return true;
+  }
+  function getPedido(r){ return col(r,'Pedido','Nr Pedido','Numero Pedido'); }
+
   // Filtra dataset pelo escopo (3 naturezas) — descarta TRANSFERENCIA/AMOSTRA/OUTRA SAIDA
-  const escopo = processed.filter(r=>NATUREZAS_ESCOPO.includes(getNatureza(r)));
+  const totalAntesFiltroPedido = processed.length;
+  const comPedido = processed.filter(r => pedidoValido(getPedido(r)));
+  const semPedidoCount = totalAntesFiltroPedido - comPedido.length;
+  if(typeof log==='function') log('NFs descartadas por Pedido vazio/zero: '+semPedidoCount,'info');
+  const escopo = comPedido.filter(r=>NATUREZAS_ESCOPO.includes(getNatureza(r)));
   const vendas = escopo.filter(r=>VENDAS_NAT.includes(getNatureza(r)));
   const bonifs = escopo.filter(r=>getNatureza(r)===BONIF_NAT);
   const fora   = processed.filter(r=>!NATUREZAS_ESCOPO.includes(getNatureza(r)));
@@ -1885,6 +1906,39 @@ function atrasosFilter(tipo,val,btn){
 function atrasosSearch(){
   atrasosPage=1;
   renderAtrasosTabelas();
+}
+
+function exportarAtrasosExcel(){
+  const filt = getAtrasosFiltrado();
+  if(!filt.length){
+    alert('Nenhum cliente com atraso para exportar nos filtros atuais.');
+    return;
+  }
+  const rows = filt.map((c,i)=>({
+    '#': i+1,
+    'Cliente': c.cliente,
+    'Cidade': c.cidade||'',
+    'UF': c.uf||'',
+    'Regiao': c.regiao,
+    'Transportadora': c.transp||'',
+    'Mes Embarque': c.mes_nome||'',
+    'Situacao': c.situacao,
+    'Qtd NFs': c.qtd,
+    'Dias Medio Atraso': c.dias_medio!=null?c.dias_medio:'',
+    'Maior Atraso (dias)': c.dias_max||'',
+    'Valor (R$)': c.valor||0
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:5},{wch:35},{wch:18},{wch:5},{wch:14},{wch:30},{wch:12},{wch:22},{wch:8},{wch:14},{wch:14},{wch:16}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Clientes em Atraso');
+  let nome = 'atrasos';
+  if(atrasosFilter_state.sit!=='todas') nome += '_' + atrasosFilter_state.sit.replace(/ /g,'-');
+  if(atrasosFilter_state.reg!=='todas') nome += '_' + atrasosFilter_state.reg;
+  if(atrasosFilter_state.mes!=='todos') nome += '_' + atrasosFilter_state.mes;
+  const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+  nome += '_' + stamp + '.xlsx';
+  XLSX.writeFile(wb, nome);
 }
 
 function atrasosPaginar(dir){
