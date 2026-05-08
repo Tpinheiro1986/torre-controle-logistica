@@ -466,7 +466,19 @@ const REGIOES_MAP={
 
 const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-// Naturezas no escopo do relatório (acordadas com a operação):
+
+  // === PATCH v8.2: Filtro de Pedido válido ===
+  function pedidoValido(v){
+    if(v==null) return false;
+    const s=String(v).trim();
+    if(s===''||s==='0'||s==='0.0'||s.toLowerCase()==='null'||s.toLowerCase()==='nan') return false;
+    const n=parseFloat(s);
+    if(!isNaN(n)&&n===0) return false;
+    return true;
+  }
+  function getPedido(r){ return col(r,'Pedido','Nr Pedido','Numero Pedido'); }
+
+  // Naturezas no escopo do relatório (acordadas com a operação):
 //   • VENDA DE MERCADORIA ADQUIRIDA  → entra em vendas (compõe OTD)
 //   • VENDA DE PRODUCAO              → entra em vendas (compõe OTD)
 //   • REMESSA EM BONIFICACAO, DOACAO OU BRINDE → entra em bonificação (somada à parte)
@@ -568,10 +580,14 @@ async function processOTD(file){
   }
 
   // FILTRO POR NATUREZA - 3 naturezas no escopo
-  const escopo = processed.filter(r=>NATUREZAS_ESCOPO.includes(getNat(r)));
+  const totalAntesFiltroPedido = processed.length;  
+  const comPedido = processed.filter(r => pedidoValido(getPedido(r)));  
+  const semPedidoCount = totalAntesFiltroPedido - comPedido.length;
+  if(typeof log==='function') log('NFs descartadas por Pedido vazio/zero: '+semPedidoCount,'info'); 
+  const escopo = comPedido.filter(r=>NATUREZAS_ESCOPO.includes(getNat(r)));
   const vendas = escopo.filter(r=>VENDAS_NAT.includes(getNat(r)));
   const bonifs = escopo.filter(r=>getNat(r)===BONIF_NAT);
-  const fora   = processed.filter(r=>!NATUREZAS_ESCOPO.includes(getNat(r)));
+  const fora   = comPedido.filter(r=>!NATUREZAS_ESCOPO.includes(getNat(r)));
   log('Notas no escopo: '+escopo.length+' (vendas: '+vendas.length+' | bonif: '+bonifs.length+')','info');
   log('Fora do escopo (descartadas): '+fora.length,'info');
 
