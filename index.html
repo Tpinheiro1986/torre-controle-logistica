@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>Torre de Controle — Logística</title>
 <script>
-window.__BUILD__ = { version: '__BUILD_VERSION__', date: '__BUILD_DATE__' };
+window.__BUILD__ = { version: 'v9.0-trsAtr', date: '11/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -517,7 +517,7 @@ function classificar(status, romaneio){
   const temRom = romaneio!=null && String(romaneio).trim()!=='' && String(romaneio).trim()!=='0';
   if(s==='Entregue no Prazo')        return 'on_time';
   if(s==='Entregue em Atraso')       return 'off_time';
-  if(s==='Ainda Pendente em Atraso') return 'transito_atr';
+  if(s==='Ainda Em Trânsito em Atraso') return 'transito_atr';
   if(s==='Ainda Pendente'){
     return temRom ? 'transito' : 'hub';
   }
@@ -775,13 +775,13 @@ async function processOTD(file){
   });
   Object.keys(empresa_total).forEach(e=>{empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;});
 
-  // clientesOff - inclui Off Time E Pendente em Atraso, com campo "situacao"
+  // clientesOff - inclui Off Time E Em Trânsito em Atraso, com campo "situacao"
   const clienteOffMap={};
   const allOffRows=escopo.filter(r=>{
     const t=classificar(getStatus(r), getRomaneio(r));
     return t==='off_time' || t==='transito_atr';
   });
-  log('Off Time + Pendente em Atraso: '+allOffRows.length,'info');
+  log('Off Time + Em Trânsito em Atraso: '+allOffRows.length,'info');
 
   allOffRows.forEach(r=>{
     const cliente=getCliente(r);const uf=getUF(r);const reg=REGIOES_MAP[uf]||'Outros';
@@ -794,7 +794,7 @@ async function processOTD(file){
       cliente,cidade,uf,regiao:reg,
       qtd:0,valor:0,dias_sum:0,dias_n:0,dias_max:0,
       transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):'',
-      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Pendente em Atraso'
+      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Em Trânsito em Atraso'
     };
     const c=clienteOffMap[key];
     c.qtd++;c.valor+=val;
