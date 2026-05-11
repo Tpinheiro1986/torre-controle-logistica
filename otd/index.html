@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: '__BUILD_VERSION__', date: '__BUILD_DATE__' };
+window.__BUILD__ = { version: 'v9.0-trsAtr', date: '11/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -250,7 +250,7 @@ table.dt tr:hover td{background:var(--bg2)}
           <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
           <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
           <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="o-trs">—</div><div class="kpi-sub" id="o-trs-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Pendente em Atraso</div><div class="kpi-val" style="color:#A32D2D" id="o-trs-atr">—</div><div class="kpi-sub" id="o-trs-atr-s">—</div></div>
+          <div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Em Trânsito em Atraso</div><div class="kpi-val" style="color:#A32D2D" id="o-trs-atr">—</div><div class="kpi-sub" id="o-trs-atr-s">—</div></div>
         </div>
         <div class="card" style="padding:14px 18px">
           <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
@@ -285,11 +285,11 @@ table.dt tr:hover td{background:var(--bg2)}
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Pendentes em Atraso e Previsão por Quarter</div>
+          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Trânsito em Atraso e Previsão por Quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
             <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
             <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
-            <div class="status-hl" style="background:#FCEBEB"><div style="font-size:9px;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Pendente em Atraso</div><div style="font-size:24px;font-weight:700;color:#A32D2D" id="o3-trs-atr">—</div><div style="font-size:11px;color:#A32D2D;margin-top:2px" id="o3-trs-atr-val">—</div></div>
+            <div class="status-hl" style="background:#FCEBEB"><div style="font-size:9px;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito em Atraso</div><div style="font-size:24px;font-weight:700;color:#A32D2D" id="o3-trs-atr">—</div><div style="font-size:11px;color:#A32D2D;margin-top:2px" id="o3-trs-atr-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
@@ -332,7 +332,7 @@ table.dt tr:hover td{background:var(--bg2)}
         <div class="fbar" id="atrasos-fbar">
           <span class="fl">Situação</span>
           <button class="fbtn on" onclick="atrasosFilter('sit','todas',this)">Todas</button>
-          <button class="fbtn" onclick="atrasosFilter('sit','Pendente em Atraso',this)">Pendentes em Atraso</button>
+          <button class="fbtn" onclick="atrasosFilter('sit','Em Trânsito em Atraso',this)">Em Trânsito em Atraso</button>
           <button class="fbtn" onclick="atrasosFilter('sit','Entregue em Atraso',this)">Entregues em Atraso</button>
           <div class="fdiv"></div>
           <span class="fl">Região</span>
@@ -749,7 +749,7 @@ function classificar(status, romaneio){
   const temRom = romaneio!=null && String(romaneio).trim()!=='' && String(romaneio).trim()!=='0';
   if(s==='Entregue no Prazo')        return 'on_time';
   if(s==='Entregue em Atraso')       return 'off_time';
-  if(s==='Ainda Pendente em Atraso') return 'transito_atr'; // pendente atrasado (sempre trânsito)
+  if(s==='Ainda Em Trânsito em Atraso') return 'transito_atr'; // pendente atrasado (sempre trânsito)
   if(s==='Ainda Pendente'){
     // Sem romaneio e não entregue → ainda no CD aguardando expedição
     return temRom ? 'transito' : 'hub';
@@ -1023,7 +1023,7 @@ async function processOTD(file){
 
   // Transportadoras — OTD por transportador (cálculo único usado tanto na base quanto no painel)
   // Regra OTD = On Time / (On Time + Off Time)  — apenas notas finalizadas entram no denominador.
-  // Pendentes (incluindo "Pendente em Atraso") aparecem como risco, mas NÃO entram no OTD.
+  // Pendentes (incluindo "Em Trânsito em Atraso") aparecem como risco, mas NÃO entram no OTD.
   const transpMap={};
   vendas.forEach(r=>{
     const tipo=classificar(getStatus(r), getRomaneio(r));
@@ -1131,7 +1131,7 @@ async function processOTD(file){
     // Dias Decorridos = time in transit for pending NFs
     const diasDecorridos=Math.abs(parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0);
 
-    // transito stats — inclui Pendente normal + Pendente em Atraso (ambos estão na rota)
+    // transito stats — inclui Pendente normal + Em Trânsito em Atraso (ambos estão na rota)
     if(tipo==='transito' || tipo==='transito_atr'){
       if(!regMap[reg]) regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
       regMap[reg].atr_qtd++;
@@ -1209,14 +1209,14 @@ async function processOTD(file){
 
   // Off Time por cliente — lista detalhada
   // Inclui: (a) NFs Entregues em Atraso (off_time)
-  //         (b) NFs Ainda Pendentes em Atraso (transito_atr) — atrasos AINDA correndo
+  //         (b) NFs Ainda Em Trânsito em Atraso (transito_atr) — atrasos AINDA correndo
   // Usa escopo (3 naturezas) em vez de processed
   const clienteOffMap={};
   const allOffRows=escopo.filter(r=>{
     const t=classificar(getStatus(r), getRomaneio(r));
     return t==='off_time' || t==='transito_atr';
   });
-  log('Off Time + Pendente em Atraso encontradas: '+allOffRows.length,'info');
+  log('Off Time + Em Trânsito em Atraso encontradas: '+allOffRows.length,'info');
   if(allOffRows.length>0){
     const sampleKeys=Object.keys(allOffRows[0]).slice(0,15).join(', ');
     log('Colunas disponíveis: '+sampleKeys,'info');
@@ -1246,7 +1246,7 @@ async function processOTD(file){
     const de=getDataEmissao(r);
     const tipo=classificar(getStatus(r), getRomaneio(r));
     // Para off_time já entregue, dias de atraso = entrega - previsão
-    // Para transito_atr (pendente em atraso), dias de atraso = hoje - previsão
+    // Para transito_atr (em trânsito em atraso), dias de atraso = hoje - previsão
     const diasAtr = (tipo==='off_time') ? getDiasAtraso(r) : getDiasAtrasoPendente(r);
     const mes=de?de.getMonth()+1:0;
     const transp=getTransp(r);
@@ -1255,7 +1255,7 @@ async function processOTD(file){
       cliente,cidade,uf,regiao:reg,
       qtd:0,valor:0,dias_sum:0,dias_n:0,dias_max:0,
       transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):'',
-      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Pendente em Atraso'
+      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Em Trânsito em Atraso'
     };
     const c=clienteOffMap[key];
     c.qtd++;
@@ -1717,7 +1717,7 @@ function renderAtrasos(){
   // KPIs gerais (sem filtro)
   const totalQtd=lista.reduce((s,c)=>s+c.qtd,0);
   const totalVal=lista.reduce((s,c)=>s+c.valor,0);
-  const pend=lista.filter(c=>c.situacao==='Pendente em Atraso').reduce((s,c)=>s+c.qtd,0);
+  const pend=lista.filter(c=>(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')).reduce((s,c)=>s+c.qtd,0);
   const entAtr=lista.filter(c=>c.situacao==='Entregue em Atraso').reduce((s,c)=>s+c.qtd,0);
   const diasArr=lista.filter(c=>c.dias_medio!=null);
   const diasMed=diasArr.length
@@ -1727,7 +1727,7 @@ function renderAtrasos(){
 
   document.getElementById('atrasos-kpis').innerHTML=
     '<div class="kpi kpi-red"><div class="kpi-lbl">Total Atrasos</div><div class="kpi-val">'+totalQtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">NFs em atraso</div></div>'
-   +'<div class="kpi kpi-red"><div class="kpi-lbl">Pendentes em Atraso</div><div class="kpi-val">'+pend+'</div><div class="kpi-sub">ainda não entregues</div></div>'
+   +'<div class="kpi kpi-red"><div class="kpi-lbl">Em Trânsito em Atraso</div><div class="kpi-val">'+pend+'</div><div class="kpi-sub">ainda não entregues</div></div>'
    +'<div class="kpi kpi-amb"><div class="kpi-lbl">Entregues em Atraso</div><div class="kpi-val">'+entAtr+'</div><div class="kpi-sub">off time finalizadas</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>'
    +'<div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Maior Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMax>0?diasMax+'d':'—')+'</div><div class="kpi-sub">'+fmtM(totalVal)+' total</div></div>';
@@ -1777,7 +1777,7 @@ function renderAtrasosTabelas(){
     const x=transpMap[t];
     x.qtd+=c.qtd;
     x.valor+=c.valor;
-    if(c.situacao==='Pendente em Atraso') x.pend+=c.qtd;
+    if((c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')) x.pend+=c.qtd;
     else x.off+=c.qtd;
     if(c.dias_medio!=null){x.dias_sum+=c.dias_medio*c.qtd;x.dias_n+=c.qtd;}
     if((c.dias_max||0)>x.dias_max) x.dias_max=c.dias_max;
@@ -1846,8 +1846,8 @@ function renderAtrasosTabelas(){
     const start=(atrasosPage-1)*ATRASOS_PER_PAGE;
     slice.forEach((c,i)=>{
       const cor=REG_CORES[c.regiao]||'#888';
-      const sitColor=c.situacao==='Pendente em Atraso'?'#A32D2D':'#854F0B';
-      const sitBg   =c.situacao==='Pendente em Atraso'?'#FCEBEB':'#FAEEDA';
+      const sitColor=(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')?'#A32D2D':'#854F0B';
+      const sitBg   =(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')?'#FCEBEB':'#FAEEDA';
       rows+='<tr>'
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
         +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
@@ -1989,7 +1989,7 @@ function detectarBaseDesatualizada(payload){
   // Verifica: meses tem o campo trs_atr?
   const algumMes = Object.values(payload.meses||{})[0];
   if(algumMes && algumMes.trs_atr === undefined){
-    motivos.push('campos de Pendente em Atraso ausentes');
+    motivos.push('campos de Em Trânsito em Atraso ausentes');
   }
   // Verifica: bonif_mes tem quebra por status?
   const algumBonif = Object.values(payload.bonif_mes||{})[0];
@@ -2015,7 +2015,7 @@ function mostrarBannerDesatualizado(motivos){
   banner.id = 'banner-desatualizado';
   banner.style.cssText = 'position:sticky;top:0;z-index:99;background:#FAEEDA;color:#854F0B;padding:10px 16px;border-bottom:2px solid #EF9F27;font-size:13px;display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap';
   banner.innerHTML = '<strong>⚠ Base de dados desatualizada</strong>'
-    +'<span>O dados.json foi gerado por uma versão antiga do código — campos novos (Pendente em Atraso, etc.) podem aparecer zerados.</span>'
+    +'<span>O dados.json foi gerado por uma versão antiga do código — campos novos (Em Trânsito em Atraso, etc.) podem aparecer zerados.</span>'
     +'<strong style="background:#854F0B;color:#FAEEDA;padding:4px 10px;border-radius:4px">Vá na Torre principal e faça novo upload da base XLSX.</strong>'
     +'<button onclick="this.parentNode.remove()" style="background:transparent;border:1px solid #854F0B;color:#854F0B;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">Dispensar</button>';
   document.body.insertBefore(banner, document.body.firstChild);
@@ -2348,7 +2348,7 @@ function renderOTDChart(d){
   if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+otdAll+'%</td><td class="r">'+fmtP(finAll,qtdTotal)+'</td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
 
-  // ---- BLOCO 3: CD + Trânsito + Pendente em Atraso por mês (Vendas + Bonificações) ----
+  // ---- BLOCO 3: CD + Trânsito + Em Trânsito em Atraso por mês (Vendas + Bonificações) ----
   let r3='';
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)];if(!md)return;
