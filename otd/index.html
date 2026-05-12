@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.0-trsAtr', date: '11/05/2026' };
+window.__BUILD__ = { version: 'v9.1-final', date: '12/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -234,7 +234,13 @@ table.dt tr:hover td{background:var(--bg2)}
         <p style="font-size:11px">Faça upload do arquivo pela <strong>Torre de Controle</strong> (página inicial) para visualizar os indicadores.</p>
       </div>
       <div id="otd-content" style="display:none">
-        <div class="update-bar"><span class="update-dot"></span><span id="otd-update-text">—</span></div>
+        <div class="update-bar" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div><span class="update-dot"></span><span id="otd-update-text">—</span></div>
+          <button onclick="exportarTodasNotasExcel(event)" style="padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar Todas as Notas (Excel)
+          </button>
+        </div>
         <div class="fbar" id="otd-fbar">
           <span class="fl">Quarter</span>
           <button class="fbtn on" onclick="otdFilter('all',this,'q')">Acumulado</button>
@@ -262,7 +268,7 @@ table.dt tr:hover td{background:var(--bg2)}
         </div>
         <!-- BLOCO 1 FATURAMENTO -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">1</span>Faturamento acumulado — Vendas + Bonificações (3 naturezas no escopo)</div>
+          <div class="slabel"><span class="slabel-num">1</span>Entregas — Faturamento bruto</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="emp-kpis"></div>
           <div id="otd-mes-bars" style="margin-bottom:10px"></div>
           <div style="height:140px;position:relative"><canvas id="otd-fat-chart"></canvas></div>
@@ -277,11 +283,11 @@ table.dt tr:hover td{background:var(--bg2)}
             <div class="stat-cell"><div class="stat-val" style="color:#185FA5" id="o2-val">—</div><div class="stat-lbl">Receita</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-otd">—</div><div class="stat-lbl">OTD</div></div>
             <div class="stat-bar-cell">
-              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px"><span>Finalizadas</span><span id="o2-pct">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px"><span>Entregas no periodo</span><span id="o2-pct">—</span></div>
               <div style="height:8px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="o2-bar" style="height:100%;background:#185FA5;border-radius:3px;transition:width .5s"></div></div>
             </div>
           </div>
-          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th><th class="r">% faturado</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
@@ -1908,6 +1914,73 @@ function atrasosSearch(){
   renderAtrasosTabelas();
 }
 
+// ============================================================
+// EXPORTAR TODAS AS NOTAS PARA EXCEL - baixa do historico_mestre.csv
+// ============================================================
+async function exportarTodasNotasExcel(ev){
+  const btn = ev && ev.target ? ev.target.closest('button') : null;
+  const txt = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = 'Baixando...'; }
+  try{
+    const {data:pub} = sb.storage.from('dashboards').getPublicUrl('otd/historico_mestre.csv');
+    if(!pub || !pub.publicUrl){ throw new Error('URL do mestre nao encontrada'); }
+    const url = pub.publicUrl + '?_=' + Date.now();
+    const resp = await fetch(url, {cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const csvText = await resp.text();
+
+    // Parser CSV simples (separador ;, aceita aspas)
+    function parseCSV(text){
+      const rows=[]; let row=[], cell='', inQ=false;
+      for(let i=0;i<text.length;i++){
+        const c=text[i], n=text[i+1];
+        if(inQ){
+          if(c==='"' && n==='"'){ cell+='"'; i++; }
+          else if(c==='"'){ inQ=false; }
+          else cell+=c;
+        } else {
+          if(c==='"'){ inQ=true; }
+          else if(c===';'){ row.push(cell); cell=''; }
+          else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+          else if(c==='\r'){ }
+          else cell+=c;
+        }
+      }
+      if(cell.length>0 || row.length>0){ row.push(cell); rows.push(row); }
+      return rows;
+    }
+    const rows = parseCSV(csvText).filter(r => r.length > 1);
+    if(rows.length<2) throw new Error('Mestre vazio');
+
+    const headers = rows[0];
+    const data = rows.slice(1).map(r => {
+      const obj = {};
+      headers.forEach((h,i) => { obj[h] = r[i] || ''; });
+      return obj;
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws['!cols'] = headers.map(h => {
+      const l = h.toLowerCase();
+      if(l.includes('cliente') || l.includes('razao')) return {wch:35};
+      if(l.includes('cidade') || l.includes('transp')) return {wch:25};
+      if(l.includes('data') || l.includes('cnpj'))     return {wch:14};
+      if(l.length<10) return {wch:10};
+      return {wch:18};
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Todas as Notas');
+    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    XLSX.writeFile(wb, 'todas_as_notas_' + stamp + '.xlsx');
+
+  } catch(e) {
+    alert('Erro ao exportar: ' + e.message);
+    console.error(e);
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = txt; }
+  }
+}
+
 function exportarAtrasosExcel(){
   const filt = getAtrasosFiltrado();
   if(!filt.length){
@@ -2197,7 +2270,10 @@ function renderOTDChart(d){
   document.getElementById('o-otd-bar').style.width=otdAll+'%';
   document.getElementById('o2-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=offAll;
   document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll+'%';
-  document.getElementById('o2-bar').style.width=fmtP(finAll,qtdTotal);document.getElementById('o2-pct').textContent=fmtP(finAll,qtdTotal);
+  // Barra de progresso no topo: % entregue no escopo (entregas / total escopo)
+  const totEscopo = finAll + nfinAll;
+  document.getElementById('o2-bar').style.width = fmtP(finAll, totEscopo);
+  document.getElementById('o2-pct').textContent = finAll.toLocaleString('pt-BR') + ' de ' + totEscopo.toLocaleString('pt-BR');
   document.getElementById('o3-hub').textContent=hubAll;document.getElementById('o3-hub-val').textContent=fmtM(hubValAll);
   document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
   document.getElementById('o3-trs-atr').textContent=trsAtrAll;document.getElementById('o3-trs-atr-val').textContent=fmtM(trsAtrValAll);
@@ -2342,10 +2418,9 @@ function renderOTDChart(d){
       +'<td class="r" style="color:'+(mOff>0?'#A32D2D':'var(--text2)')+'">'+mOff+'</td>'
       +'<td class="r">'+mFin.toLocaleString('pt-BR')+'</td>'
       +'<td class="r">'+fmtM(mFinVal)+'</td>'
-      +'<td class="r" style="color:#3B6D11;font-weight:600">'+mO+'</td>'
-      +'<td class="r" style="color:var(--text2)">'+fmtP(mFin,mQtd)+'</td></tr>';
+      +'<td class="r" style="color:#3B6D11;font-weight:600">'+mO+'</td></tr>';
   });
-  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+otdAll+'%</td><td class="r">'+fmtP(finAll,qtdTotal)+'</td></tr>';
+  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+otdAll+'%</td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
 
   // ---- BLOCO 3: CD + Trânsito + Em Trânsito em Atraso por mês (Vendas + Bonificações) ----
