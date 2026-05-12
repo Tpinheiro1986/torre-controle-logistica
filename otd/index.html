@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.1-final', date: '12/05/2026' };
+window.__BUILD__ = { version: 'v9.2-infull', date: '12/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -222,6 +222,7 @@ table.dt tr:hover td{background:var(--bg2)}
     <div class="tab" onclick="switchTab('atrasos',this)">Atrasos</div>
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
+    <div class="tab" onclick="switchTab('infull',this)">In Full</div>
   </div>
 
   <div class="container">
@@ -509,7 +510,149 @@ table.dt tr:hover td{background:var(--bg2)}
       </div>
     </div>
 
-    <!-- OFF TIME CLIENTES -->
+    <!-- IN FULL -->
+    <div class="dash-section" id="sec-infull" style="display:none">
+      <div id="infull-empty" class="empty-state">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+      </div>
+      <div id="infull-content" style="display:none">
+
+        <!-- KPIs -->
+        <div class="krow" id="infull-kpis" style="margin-bottom:12px"></div>
+
+        <!-- Filtros -->
+        <div class="fbar" id="infull-fbar" style="margin-bottom:10px">
+          <span class="fl">Mês</span>
+          <button class="fbtn on" id="infull-m-all" onclick="inFullFilter('mes','todos',this)">Todos</button>
+          <span id="infull-mes-btns"></span>
+        </div>
+
+        <!-- Resumo por mes -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">1</span>Resumo Mês a Mês</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            % In Full = pedidos atendidos em 1 único romaneio / total de pedidos com romaneio. Bucketizado pela emissão.
+          </p>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Mês</th>
+              <th class="r">Total Pedidos</th>
+              <th class="r" style="color:#3B6D11">In Full</th>
+              <th class="r" style="color:#A32D2D">Fracionados</th>
+              <th class="r">% In Full</th>
+              <th>Performance</th>
+              <th class="r" style="color:#A32D2D">Valor Fracionado</th>
+            </tr></thead>
+            <tbody id="infull-mes-tbody"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Distribuicao de romaneios -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">2</span>Distribuição de Romaneios por Pedido</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Quantos pedidos sairam em 1, 2, 3, 4 ou 5+ romaneios. Quanto mais à direita, mais fracionado.
+          </p>
+          <div id="infull-distribuicao" style="display:flex;gap:8px"></div>
+        </div>
+
+        <!-- Por cliente -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel" style="display:flex;align-items:center"><span class="slabel-num">3</span>Por Cliente
+            <button onclick="exportarInFullExcel(event,'cliente')" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar Clientes
+            </button>
+          </div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Clientes ordenados por total de pedidos. Romaneio médio &gt; 1,5 indica fracionamento alto.
+          </p>
+          <div style="margin-bottom:10px">
+            <input id="infull-cli-search" type="text" placeholder="Buscar cliente..."
+              class="form-input" style="max-width:340px;padding:6px 12px;font-size:12px"
+              oninput="renderInFullClientes()">
+          </div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>UF</th>
+              <th>Região</th>
+              <th class="r">Pedidos</th>
+              <th class="r" style="color:#3B6D11">In Full</th>
+              <th class="r" style="color:#A32D2D">Fracionados</th>
+              <th class="r">% In Full</th>
+              <th class="r">Rom. Médio</th>
+              <th class="r" style="color:#A32D2D">Valor Fracionado</th>
+            </tr></thead>
+            <tbody id="infull-cli-tbody"></tbody>
+          </table></div>
+          <div id="infull-cli-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2)"></div>
+        </div>
+
+        <!-- Top fracionados -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">4</span>Top 20 Pedidos Mais Fracionados</div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>#</th>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>UF</th>
+              <th>Transportadora</th>
+              <th>Mês</th>
+              <th class="r" style="color:#A32D2D">Romaneios</th>
+              <th class="r">NFs</th>
+              <th>Status</th>
+              <th class="r">Valor</th>
+            </tr></thead>
+            <tbody id="infull-top-tbody"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Lista completa de pedidos -->
+        <div class="card">
+          <div class="slabel" style="display:flex;align-items:center"><span class="slabel-num">5</span>Lista Completa de Pedidos
+            <button onclick="exportarInFullExcel(event,'pedidos')" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar Pedidos
+            </button>
+          </div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            <span id="infull-ped-count" style="font-weight:600">—</span>. Use os filtros e a busca para refinar.
+          </p>
+          <div style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <input id="infull-ped-search" type="text" placeholder="Buscar pedido, cliente, transportadora..."
+              class="form-input" style="max-width:340px;padding:6px 12px;font-size:12px"
+              oninput="renderInFullPedidos()">
+            <button class="fbtn on" id="infull-ped-todos" onclick="inFullFilterPed('todos',this)">Todos</button>
+            <button class="fbtn" onclick="inFullFilterPed('in_full',this)">Apenas In Full</button>
+            <button class="fbtn" onclick="inFullFilterPed('fracionados',this)">Apenas Fracionados</button>
+          </div>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>#</th>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>UF</th>
+              <th>Transp.</th>
+              <th>Mês</th>
+              <th>Emissão</th>
+              <th class="r">Romaneios</th>
+              <th class="r">NFs</th>
+              <th>Status</th>
+              <th class="r">Valor</th>
+            </tr></thead>
+            <tbody id="infull-ped-tbody"></tbody>
+          </table></div>
+          <div id="infull-ped-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2)"></div>
+        </div>
+
+      </div>
+    </div>
+
+        <!-- OFF TIME CLIENTES -->
     <div class="dash-section" id="sec-offtime" style="display:none">
       <div id="offtime-empty" class="empty-state">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -691,7 +834,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime'
+  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime', infull:'sec-infull'
 };
 
 function switchTab(id, btn){
@@ -706,6 +849,7 @@ function switchTab(id, btn){
   if(id==='transp'){ renderTransp(); }
   if(id==='offtime'){ renderOffTime(); }
   if(id==='atrasos'){ renderAtrasos(); }
+  if(id==='infull'){ renderInFull(); }
 }
 
 // init visibility
@@ -2020,6 +2164,351 @@ function atrasosPaginar(dir){
   document.getElementById('atrasos-clientes-table')?.scrollIntoView({behavior:'smooth'});
 }
 
+
+// ============================================================
+// RENDER IN FULL
+// ============================================================
+let inFullFilter_state = {mes:'todos', ped:'todos'};
+let inFullPageCli = 1;
+let inFullPagePed = 1;
+const INFULL_PER_PAGE = 50;
+
+function renderInFull(){
+  if(!otdData || !otdData.inFull){
+    document.getElementById('infull-empty').style.display='block';
+    document.getElementById('infull-content').style.display='none';
+    return;
+  }
+  const inf = otdData.inFull;
+  if(!inf.total_pedidos){
+    document.getElementById('infull-empty').style.display='block';
+    document.getElementById('infull-content').style.display='none';
+    return;
+  }
+  document.getElementById('infull-empty').style.display='none';
+  document.getElementById('infull-content').style.display='block';
+
+  // KPIs
+  document.getElementById('infull-kpis').innerHTML =
+    '<div class="kpi kpi-blu"><div class="kpi-lbl">Total Pedidos</div><div class="kpi-val">'+inf.total_pedidos.toLocaleString('pt-BR')+'</div><div class="kpi-sub">com pelo menos 1 romaneio</div></div>'
+   +'<div class="kpi kpi-grn"><div class="kpi-lbl">In Full</div><div class="kpi-val">'+inf.in_full_qtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">1 romaneio apenas</div></div>'
+   +'<div class="kpi kpi-red"><div class="kpi-lbl">Fracionados</div><div class="kpi-val">'+inf.fracionados_qtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">2+ romaneios</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">% In Full Geral</div><div class="kpi-val" style="color:'+(inf.in_full_pct>=85?'#3B6D11':inf.in_full_pct>=70?'#854F0B':'#A32D2D')+'">'+inf.in_full_pct+'%</div><div class="kpi-sub">acumulado</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">3+ Romaneios</div><div class="kpi-val">'+(inf.com_3_romaneios + inf.com_4mais_romaneios)+'</div><div class="kpi-sub">'+inf.com_3_romaneios+' c/ 3 · '+inf.com_4mais_romaneios+' c/ 4+</div></div>';
+
+  // Filtros mês
+  const mesBtns = document.getElementById('infull-mes-btns');
+  mesBtns.innerHTML = '';
+  inf.por_mes.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'fbtn'; b.textContent = m.nome;
+    b.onclick = function(){ inFullFilter('mes', m.mes, this); };
+    mesBtns.appendChild(b);
+  });
+
+  // Resumo por mes (bloco 1)
+  let rMes = '';
+  inf.por_mes.forEach(m => {
+    const cor = m.pct >= 85 ? '#3B6D11' : m.pct >= 70 ? '#854F0B' : '#A32D2D';
+    rMes += '<tr>'
+      +'<td><strong>'+m.nome+'</strong></td>'
+      +'<td class="r">'+m.total.toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:#3B6D11;font-weight:600">'+m.in_full+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+m.fracionados+'</td>'
+      +'<td class="r" style="color:'+cor+';font-weight:700">'+m.pct+'%</td>'
+      +'<td style="min-width:120px"><div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+m.pct+'%;background:'+cor+';border-radius:3px"></div></div></td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(m.valor_fracionado)+'</td>'
+      +'</tr>';
+  });
+  // total
+  rMes += '<tr class="tr-total">'
+    +'<td>Total</td>'
+    +'<td class="r">'+inf.total_pedidos+'</td>'
+    +'<td class="r" style="color:#3B6D11;font-weight:700">'+inf.in_full_qtd+'</td>'
+    +'<td class="r" style="color:#A32D2D">'+inf.fracionados_qtd+'</td>'
+    +'<td class="r" style="color:'+(inf.in_full_pct>=85?'#3B6D11':inf.in_full_pct>=70?'#854F0B':'#A32D2D')+';font-weight:700">'+inf.in_full_pct+'%</td>'
+    +'<td></td>'
+    +'<td class="r" style="color:#A32D2D;font-weight:600">'+fmtM(inf.valor_fracionados)+'</td>'
+    +'</tr>';
+  document.getElementById('infull-mes-tbody').innerHTML = rMes;
+
+  // Distribuicao (bloco 2)
+  const dist = inf.distribuicao || {};
+  const maxDist = Math.max.apply(null, Object.values(dist));
+  const distLabels = {1:'1 romaneio', 2:'2 romaneios', 3:'3 romaneios', 4:'4 romaneios', 5:'5+ romaneios'};
+  const distCores  = {1:'#3B6D11', 2:'#EF9F27', 3:'#A32D2D', 4:'#7F1818', 5:'#4A0000'};
+  let distHtml = '';
+  [1,2,3,4,5].forEach(n => {
+    const v = dist[n] || dist[String(n)] || 0;
+    const pct = inf.total_pedidos ? (v/inf.total_pedidos*100) : 0;
+    const altura = maxDist ? Math.round(v/maxDist*120) : 0;
+    distHtml += '<div style="flex:1;text-align:center">'
+      +'<div style="height:140px;display:flex;align-items:flex-end;justify-content:center">'
+      +'<div style="width:60%;height:'+altura+'px;background:'+distCores[n]+';border-radius:4px 4px 0 0;min-height:4px"></div>'
+      +'</div>'
+      +'<div style="font-size:14px;font-weight:700;margin-top:4px;color:'+distCores[n]+'">'+v.toLocaleString('pt-BR')+'</div>'
+      +'<div style="font-size:10px;color:var(--text2)">'+distLabels[n]+'</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+pct.toFixed(1)+'%</div>'
+      +'</div>';
+  });
+  document.getElementById('infull-distribuicao').innerHTML = distHtml;
+
+  // Top 20 fracionados (bloco 4)
+  let rTop = '';
+  inf.top_fracionados.slice(0,20).forEach((p,i) => {
+    const corStatus = p.status === 'Em Trânsito em Atraso' ? '#A32D2D' :
+                      p.status === 'Em Trânsito' ? '#185FA5' :
+                      p.status === 'Em Rota' ? '#854F0B' : '#3B6D11';
+    rTop += '<tr>'
+      +'<td style="color:var(--text3)">'+(i+1)+'</td>'
+      +'<td style="font-family:monospace;font-weight:600">'+p.pedido+'</td>'
+      +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.cliente+'">'+p.cliente+'</td>'
+      +'<td>'+p.uf+'</td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.transp+'">'+p.transp+'</td>'
+      +'<td>'+p.mes_nome+'</td>'
+      +'<td class="r" style="color:#A32D2D;font-weight:700">'+p.n_romaneios+'</td>'
+      +'<td class="r">'+p.n_nfs+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corStatus+'22;color:'+corStatus+';font-weight:500">'+p.status+'</span></td>'
+      +'<td class="r">'+fmtM(p.valor)+'</td>'
+      +'</tr>';
+  });
+  document.getElementById('infull-top-tbody').innerHTML = rTop;
+
+  inFullPageCli = 1;
+  inFullPagePed = 1;
+  renderInFullClientes();
+  renderInFullPedidos();
+}
+
+function inFullFilter(tipo, val, btn){
+  if(tipo === 'mes'){
+    inFullFilter_state.mes = val;
+    document.querySelectorAll('#infull-fbar .fbtn').forEach(b => b.classList.remove('on'));
+    if(val === 'todos') document.getElementById('infull-m-all').classList.add('on');
+    else btn.classList.add('on');
+  }
+  inFullPageCli = 1;
+  inFullPagePed = 1;
+  renderInFullClientes();
+  renderInFullPedidos();
+}
+
+function inFullFilterPed(val, btn){
+  inFullFilter_state.ped = val;
+  document.querySelectorAll('#infull-content .fbtn').forEach(b => {
+    if(b.textContent === 'Todos' || b.textContent.includes('In Full') || b.textContent.includes('Fracionados')) {
+      // só os botões de pedido — vou ser mais especifico
+    }
+  });
+  // Recoloca o "on" certo
+  document.querySelectorAll('#infull-content .card:last-child .fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  inFullPagePed = 1;
+  renderInFullPedidos();
+}
+
+function getInFullClientesFiltrados(){
+  if(!otdData || !otdData.inFull) return [];
+  const search = (document.getElementById('infull-cli-search')?.value || '').toLowerCase();
+  let lista = otdData.inFull.por_cliente.slice();
+  // Filtro por mes: precisa recalcular agregando os pedidos por cliente naquele mes
+  if(inFullFilter_state.mes !== 'todos'){
+    const mesFiltro = parseInt(inFullFilter_state.mes);
+    const agg = {};
+    otdData.inFull.pedidos.forEach(p => {
+      if(p.mes !== mesFiltro) return;
+      const c = p.cliente;
+      if(!agg[c]) agg[c] = {cliente:c, uf:p.uf, regiao:p.regiao, total:0, in_full:0, fracionados:0, soma_rom:0, valor_total:0, valor_fracionado:0};
+      const x = agg[c];
+      x.total++;
+      x.soma_rom += p.n_romaneios;
+      x.valor_total += p.valor;
+      if(p.in_full) x.in_full++;
+      else { x.fracionados++; x.valor_fracionado += p.valor; }
+    });
+    lista = Object.values(agg).map(x => ({
+      ...x,
+      pct: x.total ? +(x.in_full/x.total*100).toFixed(1) : 0,
+      rom_medio: x.total ? +(x.soma_rom/x.total).toFixed(2) : 0,
+      valor_total: Math.round(x.valor_total*100)/100,
+      valor_fracionado: Math.round(x.valor_fracionado*100)/100,
+    })).sort((a,b)=>b.total-a.total);
+  }
+  if(search) lista = lista.filter(c => c.cliente.toLowerCase().includes(search) || (c.uf||'').toLowerCase().includes(search));
+  return lista;
+}
+
+function renderInFullClientes(){
+  const lista = getInFullClientesFiltrados();
+  const total = lista.length;
+  const pages = Math.ceil(total/INFULL_PER_PAGE) || 1;
+  if(inFullPageCli > pages) inFullPageCli = pages;
+  const slice = lista.slice((inFullPageCli-1)*INFULL_PER_PAGE, inFullPageCli*INFULL_PER_PAGE);
+
+  let rows = '';
+  if(!slice.length){
+    rows = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+  } else {
+    const start = (inFullPageCli-1)*INFULL_PER_PAGE;
+    slice.forEach((c,i) => {
+      const cor = c.pct >= 85 ? '#3B6D11' : c.pct >= 70 ? '#854F0B' : '#A32D2D';
+      const corReg = REG_CORES[c.regiao] || '#888';
+      rows += '<tr>'
+        +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
+        +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
+        +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(c.regiao||'—')+'</span></td>'
+        +'<td class="r">'+c.total+'</td>'
+        +'<td class="r" style="color:#3B6D11;font-weight:600">'+c.in_full+'</td>'
+        +'<td class="r" style="color:#A32D2D">'+c.fracionados+'</td>'
+        +'<td class="r" style="color:'+cor+';font-weight:600">'+c.pct+'%</td>'
+        +'<td class="r" style="color:'+(c.rom_medio>=1.5?'#A32D2D':c.rom_medio>=1.2?'#854F0B':'var(--text)')+'">'+c.rom_medio+'</td>'
+        +'<td class="r" style="color:#A32D2D">'+fmtM(c.valor_fracionado)+'</td>'
+        +'</tr>';
+    });
+  }
+  document.getElementById('infull-cli-tbody').innerHTML = rows;
+
+  let pag = '<span>'+total+' clientes</span><span style="margin:0 8px">|</span>';
+  if(pages > 1){
+    pag += '<button class="btn-sm" onclick="inFullPaginarCli(-1)" '+(inFullPageCli<=1?'disabled':'')+'>← Ant</button>';
+    pag += '<span style="margin:0 6px">Pág '+inFullPageCli+' de '+pages+'</span>';
+    pag += '<button class="btn-sm" onclick="inFullPaginarCli(1)" '+(inFullPageCli>=pages?'disabled':'')+'>Próx →</button>';
+  }
+  document.getElementById('infull-cli-paginacao').innerHTML = pag;
+}
+
+function getInFullPedidosFiltrados(){
+  if(!otdData || !otdData.inFull) return [];
+  const search = (document.getElementById('infull-ped-search')?.value || '').toLowerCase();
+  let lista = otdData.inFull.pedidos.slice();
+  if(inFullFilter_state.mes !== 'todos'){
+    const mesFiltro = parseInt(inFullFilter_state.mes);
+    lista = lista.filter(p => p.mes === mesFiltro);
+  }
+  if(inFullFilter_state.ped === 'in_full') lista = lista.filter(p => p.in_full);
+  else if(inFullFilter_state.ped === 'fracionados') lista = lista.filter(p => !p.in_full);
+  if(search) lista = lista.filter(p =>
+    p.pedido.toLowerCase().includes(search) ||
+    (p.cliente||'').toLowerCase().includes(search) ||
+    (p.transp||'').toLowerCase().includes(search) ||
+    (p.uf||'').toLowerCase().includes(search)
+  );
+  return lista;
+}
+
+function renderInFullPedidos(){
+  const lista = getInFullPedidosFiltrados();
+  const total = lista.length;
+  const pages = Math.ceil(total/INFULL_PER_PAGE) || 1;
+  if(inFullPagePed > pages) inFullPagePed = pages;
+  const slice = lista.slice((inFullPagePed-1)*INFULL_PER_PAGE, inFullPagePed*INFULL_PER_PAGE);
+
+  document.getElementById('infull-ped-count').textContent = total.toLocaleString('pt-BR') + ' pedido(s)';
+
+  let rows = '';
+  if(!slice.length){
+    rows = '<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:20px">Nenhum pedido encontrado</td></tr>';
+  } else {
+    const start = (inFullPagePed-1)*INFULL_PER_PAGE;
+    slice.forEach((p,i) => {
+      const corStatus = p.status === 'Em Trânsito em Atraso' ? '#A32D2D' :
+                        p.status === 'Em Trânsito' ? '#185FA5' :
+                        p.status === 'Em Rota' ? '#854F0B' : '#3B6D11';
+      const corRom = p.n_romaneios === 1 ? '#3B6D11' : p.n_romaneios === 2 ? '#854F0B' : '#A32D2D';
+      rows += '<tr>'
+        +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
+        +'<td style="font-family:monospace;font-weight:500">'+p.pedido+'</td>'
+        +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.cliente+'">'+p.cliente+'</td>'
+        +'<td>'+p.uf+'</td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.transp+'">'+p.transp+'</td>'
+        +'<td>'+p.mes_nome+'</td>'
+        +'<td style="color:var(--text2)">'+p.data_emissao+'</td>'
+        +'<td class="r" style="color:'+corRom+';font-weight:'+(p.n_romaneios>1?'700':'500')+'">'+p.n_romaneios+'</td>'
+        +'<td class="r">'+p.n_nfs+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corStatus+'22;color:'+corStatus+';font-weight:500">'+p.status+'</span></td>'
+        +'<td class="r">'+fmtM(p.valor)+'</td>'
+        +'</tr>';
+    });
+  }
+  document.getElementById('infull-ped-tbody').innerHTML = rows;
+
+  let pag = '<span>'+total.toLocaleString('pt-BR')+' pedidos</span><span style="margin:0 8px">|</span>';
+  if(pages > 1){
+    pag += '<button class="btn-sm" onclick="inFullPaginarPed(-1)" '+(inFullPagePed<=1?'disabled':'')+'>← Ant</button>';
+    pag += '<span style="margin:0 6px">Pág '+inFullPagePed+' de '+pages+'</span>';
+    pag += '<button class="btn-sm" onclick="inFullPaginarPed(1)" '+(inFullPagePed>=pages?'disabled':'')+'>Próx →</button>';
+  }
+  document.getElementById('infull-ped-paginacao').innerHTML = pag;
+}
+
+function inFullPaginarCli(dir){
+  inFullPageCli += dir;
+  renderInFullClientes();
+}
+function inFullPaginarPed(dir){
+  inFullPagePed += dir;
+  renderInFullPedidos();
+}
+
+function exportarInFullExcel(ev, tipo){
+  if(!otdData || !otdData.inFull) return;
+  const btn = ev && ev.target ? ev.target.closest('button') : null;
+  const txt = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = 'Gerando...'; }
+  try{
+    let ws, nome;
+    if(tipo === 'cliente'){
+      const lista = getInFullClientesFiltrados();
+      const rows = lista.map((c,i) => ({
+        '#': i+1,
+        'Cliente': c.cliente,
+        'UF': c.uf || '',
+        'Regiao': c.regiao || '',
+        'Total Pedidos': c.total,
+        'In Full': c.in_full,
+        'Fracionados': c.fracionados,
+        '% In Full': c.pct,
+        'Romaneio Medio': c.rom_medio,
+        'Valor Total': c.valor_total,
+        'Valor Fracionado': c.valor_fracionado,
+      }));
+      ws = XLSX.utils.json_to_sheet(rows);
+      ws['!cols'] = [{wch:5},{wch:38},{wch:5},{wch:14},{wch:12},{wch:8},{wch:10},{wch:10},{wch:12},{wch:14},{wch:16}];
+      nome = 'in_full_clientes';
+    } else {
+      const lista = getInFullPedidosFiltrados();
+      const rows = lista.map((p,i) => ({
+        '#': i+1,
+        'Pedido': p.pedido,
+        'Cliente': p.cliente,
+        'Cidade': p.cidade || '',
+        'UF': p.uf,
+        'Regiao': p.regiao,
+        'Transportadora': p.transp,
+        'Mes': p.mes_nome,
+        'Data Emissao': p.data_emissao,
+        'Romaneios': p.n_romaneios,
+        'NFs': p.n_nfs,
+        'Status': p.status,
+        'In Full?': p.in_full ? 'Sim' : 'Nao',
+        'Valor': p.valor,
+      }));
+      ws = XLSX.utils.json_to_sheet(rows);
+      ws['!cols'] = [{wch:5},{wch:16},{wch:38},{wch:18},{wch:5},{wch:14},{wch:30},{wch:6},{wch:12},{wch:10},{wch:6},{wch:22},{wch:9},{wch:14}];
+      nome = 'in_full_pedidos';
+    }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, tipo === 'cliente' ? 'Clientes' : 'Pedidos');
+    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    XLSX.writeFile(wb, nome + '_' + stamp + '.xlsx');
+  } catch(e) {
+    alert('Erro ao exportar: ' + e.message);
+    console.error(e);
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = txt; }
+  }
+}
 
 async function loadOTDFromStorage(){
   try{
