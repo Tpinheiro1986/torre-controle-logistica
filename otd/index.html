@@ -2760,9 +2760,11 @@ function renderOTDChart(d){
   document.getElementById('o2-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=offAll;
   document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll+'%';
   // Barra de progresso no topo: % entregue no escopo (entregas / total escopo)
-  const totEscopo = finAll + nfinAll;
-  document.getElementById('o2-bar').style.width = fmtP(finAll, totEscopo);
-  document.getElementById('o2-pct').textContent = finAll.toLocaleString('pt-BR') + ' de ' + totEscopo.toLocaleString('pt-BR');
+  try {
+    const totEscopo = (finAll||0) + (nfinAll||0);
+    document.getElementById('o2-bar').style.width = totEscopo>0 ? ((finAll/totEscopo*100).toFixed(1)+'%') : '0%';
+    document.getElementById('o2-pct').textContent = (finAll||0).toLocaleString('pt-BR') + ' de ' + totEscopo.toLocaleString('pt-BR');
+  } catch(e) { console.error('Erro no o2-bar:', e); }
   document.getElementById('o3-hub').textContent=hubAll;document.getElementById('o3-hub-val').textContent=fmtM(hubValAll);
   document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
   document.getElementById('o3-trs-atr').textContent=trsAtrAll;document.getElementById('o3-trs-atr-val').textContent=fmtM(trsAtrValAll);
@@ -2912,6 +2914,7 @@ function renderOTDChart(d){
   if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+otdAll+'%</td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
 
+  try {
   // ---- BLOCO 3: CD + Trânsito + Em Trânsito em Atraso por mês (Vendas + Bonificações) ----
   let r3='';
   ms.forEach(m=>{
@@ -2970,7 +2973,9 @@ function renderOTDChart(d){
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+(totPrev.qtd||0)+'</td>'
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(totPrev.valor||0)+'</td></tr>';
   document.getElementById('o3-prev-tbody').innerHTML=rPrev;
+  } catch(e) { console.error('Erro bloco 3:', e); }
 
+  try {
   // ---- BLOCO 4: Transportadoras ----
   const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
   document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
@@ -2987,7 +2992,9 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#A32D2D">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
       +'</tr>';
   }).join('');
+  } catch(e) { console.error('Erro bloco 4:', e); }
 
+  try {
   // ---- BLOCO 5: Regiões ----
   const tA=(d.regioes||[]).reduce((a,r)=>a+r.atr_qtd,0)||1;
   document.getElementById('o5-kpis').innerHTML=(d.regioes||[]).map(r=>'<div class="kpi" style="border-left:3px solid '+(REG_CORES[r.r]||'#888')+'"><div class="kpi-lbl">'+r.r+'</div><div class="kpi-val" style="font-size:20px;color:'+(REG_CORES[r.r]||'#888')+'">'+r.atr_qtd+'</div><div class="kpi-sub">'+((r.atr_qtd/tA)*100).toFixed(0)+'% do trânsito</div></div>').join('');
@@ -3038,6 +3045,7 @@ function renderOTDChart(d){
            min:0}
       }}})
   document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
+  } catch(e) { console.error('Erro bloco 5:', e); }
 }
 </script>
 </body>
