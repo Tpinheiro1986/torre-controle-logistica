@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>Torre de Controle — Logística</title>
 <script>
-window.__BUILD__ = { version: 'v9.0-trsAtr', date: '11/05/2026' };
+window.__BUILD__ = { version: 'v9.3-leadtimes', date: '13/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -546,6 +546,25 @@ async function processOTD(file){
   const getDE=r=>pd(col(r,'Data Emissão','Data Emissao','Data_Emissao'));
   const getDent=r=>pd(col(r,'Data Entrega','Data Entregue','Data_Entrega'));
   const getPrev=r=>pd(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
+  const getDemb=r=>pd(col(r,'Data Embarque','Data de Embarque','Data Embarcado','Data_Embarque','DataEmbarque','Embarque'));
+  // Tipo Ent. formato "6+1" → soma das parcelas em dias
+  function getTipoEntregaDias(r){
+    const v = col(r,'Tipo Entrega','Tipo de Entrega','Tipo Ent','Tipo Ent.','Tipo_Entrega');
+    if(v == null || v === '') return null;
+    if(typeof v === 'number') return (v >= 0 && v <= 60) ? v : null;
+    const s = String(v).trim();
+    if(!s) return null;
+    if(s.includes('+')){
+      const partes = s.split('+').map(p => parseFloat(p.replace(',','.').trim()));
+      if(partes.every(p => !isNaN(p))){
+        const total = partes.reduce((a,b) => a+b, 0);
+        return (total >= 0 && total <= 60) ? total : null;
+      }
+      return null;
+    }
+    const n = parseFloat(s.replace(',','.'));
+    return (!isNaN(n) && n >= 0 && n <= 60) ? n : null;
+  }
   const getCidade=r=>String(col(r,'Cidade Destino','Cidade Dest','Cidade','Municipio Destino','Município Destino','Municipio','Município')||'');
   const getCliente=r=>{
     const v=col(r,'Destinatário','Destinatario','Cliente','Nome Cliente','Razão Social Destino','Razao Social Destino','Nome Destinatário','Nome Destinatario','Dest','RazaoSocialDest','Razao Social','Razão Social');
@@ -810,6 +829,126 @@ async function processOTD(file){
   })).sort((a,b)=>b.qtd-a.qtd);
   log('Clientes com atraso: '+clientesOff.length,'info');
 
+  // ============================================================
+  // NOVOS INDICADORES: Lead Times, Faturamento por Região, Impacto Agenda
+  // ============================================================
+  const REGS_LT = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+
+  // --- (A) Faturamento por Região × Mês -----------------------
+  const fatRegMes = {};
+  REGS_LT.forEach(reg => { fatRegMes[reg] = {}; });
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    if(!reg || !fatRegMes[reg]) return;
+    const de = getDE(r);
+    if(!de) return;
+    const mes = de.getMonth() + 1;
+    const val = getValor(r);
+    if(!fatRegMes[reg][mes]) fatRegMes[reg][mes] = { fat: 0, qtd: 0 };
+    fatRegMes[reg][mes].fat += val;
+    fatRegMes[reg][mes].qtd++;
+  });
+  Object.keys(fatRegMes).forEach(reg => {
+    Object.keys(fatRegMes[reg]).forEach(m => {
+      fatRegMes[reg][m].fat = Math.round(fatRegMes[reg][m].fat * 100) / 100;
+    });
+  });
+
+  // --- (B) Lead Times por Região + Total Brasil ---------------
+  const ltReg = {};
+  REGS_LT.forEach(reg => {
+    ltReg[reg] = { total_sum:0, total_n:0, exp_sum:0, exp_n:0, trans_sum:0, trans_n:0 };
+  });
+  const ltBR = { total_sum:0, total_n:0, exp_sum:0, exp_n:0, trans_sum:0, trans_n:0 };
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    const de   = getDE(r);
+    const demb = getDemb(r);
+    const dent = getDent(r);
+    if(de && dent){
+      const dias = Math.round((dent - de) / 86400000);
+      if(dias >= 0 && dias <= 90){
+        ltBR.total_sum += dias; ltBR.total_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].total_sum += dias; ltReg[reg].total_n++; }
+      }
+    }
+    if(de && demb){
+      const dias = Math.round((demb - de) / 86400000);
+      if(dias >= 0 && dias <= 60){
+        ltBR.exp_sum += dias; ltBR.exp_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].exp_sum += dias; ltReg[reg].exp_n++; }
+      }
+    }
+    if(demb && dent){
+      const dias = Math.round((dent - demb) / 86400000);
+      if(dias >= 0 && dias <= 90){
+        ltBR.trans_sum += dias; ltBR.trans_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].trans_sum += dias; ltReg[reg].trans_n++; }
+      }
+    }
+  });
+  const avgLT = (s,n) => n > 0 ? Math.round(s/n*10)/10 : null;
+  const lead_times_regiao = REGS_LT.map(reg => {
+    const lt = ltReg[reg];
+    return {
+      regiao: reg,
+      lt_total: avgLT(lt.total_sum, lt.total_n),
+      lt_exp:   avgLT(lt.exp_sum,   lt.exp_n),
+      lt_trans: avgLT(lt.trans_sum, lt.trans_n),
+      n_total: lt.total_n, n_exp: lt.exp_n, n_trans: lt.trans_n
+    };
+  });
+  const lead_time_brasil = {
+    lt_total: avgLT(ltBR.total_sum, ltBR.total_n),
+    lt_exp:   avgLT(ltBR.exp_sum,   ltBR.exp_n),
+    lt_trans: avgLT(ltBR.trans_sum, ltBR.trans_n),
+    n_total: ltBR.total_n, n_exp: ltBR.exp_n, n_trans: ltBR.trans_n
+  };
+
+  // --- (C) Impacto Agenda --------------------------------------
+  const impactoMap = {};
+  REGS_LT.forEach(reg => {
+    impactoMap[reg] = { qtd_avaliadas:0, qtd_com_impacto:0, soma_dias:0, max_dias:0, valor_impactado:0 };
+  });
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    if(!reg || !impactoMap[reg]) return;
+    const demb = getDemb(r);
+    const dent = getDent(r);
+    const tipoDias = getTipoEntregaDias(r);
+    if(!demb || !dent || tipoDias == null) return;
+    const previsaoReal = new Date(demb.getTime());
+    previsaoReal.setDate(previsaoReal.getDate() + Math.round(tipoDias) + 2);
+    impactoMap[reg].qtd_avaliadas++;
+    if(dent > previsaoReal){
+      const diasImpacto = Math.round((dent - previsaoReal) / 86400000);
+      if(diasImpacto > 0 && diasImpacto <= 120){
+        const ia = impactoMap[reg];
+        ia.qtd_com_impacto++;
+        ia.soma_dias += diasImpacto;
+        ia.valor_impactado += getValor(r);
+        if(diasImpacto > ia.max_dias) ia.max_dias = diasImpacto;
+      }
+    }
+  });
+  const impacto_agenda = REGS_LT.map(reg => {
+    const ia = impactoMap[reg];
+    return {
+      regiao: reg,
+      qtd_avaliadas: ia.qtd_avaliadas,
+      qtd_com_impacto: ia.qtd_com_impacto,
+      pct_impacto: ia.qtd_avaliadas > 0 ? Math.round(ia.qtd_com_impacto / ia.qtd_avaliadas * 1000) / 10 : 0,
+      dias_medio: ia.qtd_com_impacto > 0 ? Math.round(ia.soma_dias / ia.qtd_com_impacto * 10) / 10 : 0,
+      dias_max: ia.max_dias,
+      valor_impactado: Math.round(ia.valor_impactado * 100) / 100
+    };
+  });
+  log('Lead Times Brasil — total='+lead_time_brasil.lt_total+'d, exp='+lead_time_brasil.lt_exp+'d, trans='+lead_time_brasil.lt_trans+'d','info');
+  log('Impacto Agenda — NFs avaliadas: '+impacto_agenda.reduce((s,i)=>s+i.qtd_avaliadas,0),'info');
+
   const payload={
     meses,bonif_mes,otd:transpList,regioes,dias_mes,
     prevQ:prevQLista,empresa_total,clientesOff,
@@ -817,6 +956,10 @@ async function processOTD(file){
     totalHubValAll:Math.round(totalHubValAll*100)/100,
     totalTrsValAll:Math.round(totalTrsValAll*100)/100,
     totalTrsAtrValAll:Math.round(totalTrsAtrValAll*100)/100,
+    fat_regiao_mes: fatRegMes,
+    lead_times_regiao,
+    lead_time_brasil,
+    impacto_agenda,
     atualizado:new Date().toLocaleString('pt-BR'),
     base_nome:file.name,
     total_nfs:vendas.length,
