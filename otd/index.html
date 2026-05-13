@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.2-infull', date: '12/05/2026' };
+window.__BUILD__ = { version: 'v9.3-leadtimes', date: '13/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -223,6 +223,7 @@ table.dt tr:hover td{background:var(--bg2)}
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
+    <div class="tab" onclick="switchTab('leadtime',this)">Lead Times</div>
   </div>
 
   <div class="container">
@@ -519,7 +520,7 @@ table.dt tr:hover td{background:var(--bg2)}
       <div id="infull-content" style="display:none">
 
         <!-- KPIs -->
-        <div class="krow" id="infull-kpis" style="margin-bottom:12px"></div>
+        <div class="krow" id="infull-kpis" style="margin-bottom:12px;grid-template-columns:repeat(6,minmax(0,1fr))"></div>
 
         <!-- Filtros -->
         <div class="fbar" id="infull-fbar" style="margin-bottom:10px">
@@ -737,6 +738,75 @@ table.dt tr:hover td{background:var(--bg2)}
       </div>
     </div>
 
+    <!-- LEAD TIMES & IMPACTO AGENDA -->
+    <div class="dash-section" id="sec-leadtime" style="display:none">
+      <div id="leadtime-empty" class="empty-state">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+        <p style="font-size:11px">A base precisa ter as colunas <strong>Data Embarque</strong> e <strong>Tipo Ent.</strong> para o Impacto Agenda funcionar.</p>
+      </div>
+      <div id="leadtime-content" style="display:none">
+
+        <!-- KPIs Brasil -->
+        <div class="krow" id="leadtime-kpis" style="margin-bottom:12px;grid-template-columns:repeat(4,minmax(0,1fr))"></div>
+
+        <!-- 1. Faturamento % por Região × Mês -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">1</span>Faturamento % por Região — Mês a Mês</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Distribuição percentual do faturamento (vendas + bonificações) por região, mês a mês. A última linha mostra os valores absolutos.
+          </p>
+          <div class="tw"><table class="dt">
+            <thead><tr id="leadtime-fat-thead"></tr></thead>
+            <tbody id="leadtime-fat-tbody"></tbody>
+          </table></div>
+        </div>
+
+        <!-- 2. Lead Time por Região -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slabel"><span class="slabel-num">2</span>Lead Time por Região — Nº médio de dias</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            <strong>Total:</strong> Emissão → Entrega &nbsp;·&nbsp;
+            <strong>Expedição:</strong> Emissão → Embarque &nbsp;·&nbsp;
+            <strong>Transportes:</strong> Embarque → Entrega
+          </p>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Região</th>
+              <th class="r">Lead Time Total<br><span style="font-weight:400;font-size:10px;color:var(--text2)">Emissão → Entrega</span></th>
+              <th class="r">Lead Time Expedição<br><span style="font-weight:400;font-size:10px;color:var(--text2)">Emissão → Embarque</span></th>
+              <th class="r">Lead Time Transportes<br><span style="font-weight:400;font-size:10px;color:var(--text2)">Embarque → Entrega</span></th>
+              <th class="r">NFs avaliadas</th>
+            </tr></thead>
+            <tbody id="leadtime-reg-tbody"></tbody>
+            <tfoot id="leadtime-reg-tfoot" style="font-weight:600;background:var(--bg2)"></tfoot>
+          </table></div>
+        </div>
+
+        <!-- 3. Quadro Impacto Agenda -->
+        <div class="card">
+          <div class="slabel"><span class="slabel-num">3</span>Quadro Impacto Agenda</div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            <strong>Previsão Real</strong> = Data Embarque + Tipo Ent. + 2 dias. Quando a Data de Entrega ultrapassa essa previsão, contabiliza-se o impacto da agenda (dias além do esperado) por região.
+          </p>
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>Região</th>
+              <th class="r">NFs avaliadas</th>
+              <th class="r" style="color:#A32D2D">NFs c/ impacto</th>
+              <th class="r" style="color:#A32D2D">% impacto</th>
+              <th class="r" style="color:#A32D2D">Dias médio</th>
+              <th class="r">Maior impacto</th>
+              <th class="r">Valor impactado</th>
+            </tr></thead>
+            <tbody id="leadtime-impacto-tbody"></tbody>
+            <tfoot id="leadtime-impacto-tfoot" style="font-weight:600;background:var(--bg2)"></tfoot>
+          </table></div>
+        </div>
+
+      </div>
+    </div>
+
 
 
   </div>
@@ -834,7 +904,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime', infull:'sec-infull'
+  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime'
 };
 
 function switchTab(id, btn){
@@ -850,6 +920,7 @@ function switchTab(id, btn){
   if(id==='offtime'){ renderOffTime(); }
   if(id==='atrasos'){ renderAtrasos(); }
   if(id==='infull'){ renderInFull(); }
+  if(id==='leadtime'){ renderLeadTimes(); }
 }
 
 // init visibility
@@ -1034,6 +1105,32 @@ async function processOTD(file){
   // Helper: get previsao entrega
   function getPrevisao(r){
     return parseDate(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
+  }
+
+  // Helper: get data embarque
+  function getDataEmbarque(r){
+    return parseDate(col(r,'Data Embarque','Data de Embarque','Data Embarcado','Data_Embarque','DataEmbarque','Embarque'));
+  }
+
+  // Helper: get prazo do Tipo de Entrega em dias
+  // Formato típico da base: "6+1" (6 dias trânsito + 1 dia descarga) → soma = 7 dias
+  // Aceita também número puro ("7"), decimal ("6,5"), múltiplas parcelas ("6+1+2")
+  function getTipoEntregaDias(r){
+    const v = col(r,'Tipo Entrega','Tipo de Entrega','Tipo Ent','Tipo Ent.','Tipo_Entrega');
+    if(v == null || v === '') return null;
+    if(typeof v === 'number') return (v >= 0 && v <= 60) ? v : null;
+    const s = String(v).trim();
+    if(!s) return null;
+    if(s.includes('+')){
+      const partes = s.split('+').map(p => parseFloat(p.replace(',','.').trim()));
+      if(partes.every(p => !isNaN(p))){
+        const total = partes.reduce((a,b) => a+b, 0);
+        return (total >= 0 && total <= 60) ? total : null;
+      }
+      return null;
+    }
+    const n = parseFloat(s.replace(',','.'));
+    return (!isNaN(n) && n >= 0 && n <= 60) ? n : null;
   }
 
   // Helper: get cliente (destinatário) — tenta múltiplas colunas possíveis
@@ -1421,6 +1518,131 @@ async function processOTD(file){
     .sort((a,b)=>b.qtd-a.qtd);
   log('Clientes com atraso agregados: '+clientesOff.length,'info');
 
+  // ============================================================
+  // NOVOS INDICADORES: Lead Times, Faturamento por Região, Impacto Agenda
+  // ============================================================
+  const REGS_LT = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+
+  // --- (A) Faturamento por Região × Mês -----------------------
+  const fatRegMes = {};
+  REGS_LT.forEach(reg => { fatRegMes[reg] = {}; });
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    if(!reg || !fatRegMes[reg]) return;
+    const de = getDataEmissao(r);
+    if(!de) return;
+    const mes = de.getMonth() + 1;
+    const val = getValor(r);
+    if(!fatRegMes[reg][mes]) fatRegMes[reg][mes] = { fat: 0, qtd: 0 };
+    fatRegMes[reg][mes].fat += val;
+    fatRegMes[reg][mes].qtd++;
+  });
+  Object.keys(fatRegMes).forEach(reg => {
+    Object.keys(fatRegMes[reg]).forEach(m => {
+      fatRegMes[reg][m].fat = Math.round(fatRegMes[reg][m].fat * 100) / 100;
+    });
+  });
+
+  // --- (B) Lead Times por Região + Total Brasil ---------------
+  const ltReg = {};
+  REGS_LT.forEach(reg => {
+    ltReg[reg] = { total_sum:0, total_n:0, exp_sum:0, exp_n:0, trans_sum:0, trans_n:0 };
+  });
+  const ltBR = { total_sum:0, total_n:0, exp_sum:0, exp_n:0, trans_sum:0, trans_n:0 };
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    const de   = getDataEmissao(r);
+    const demb = getDataEmbarque(r);
+    const dent = getDataEntrega(r);
+    // Lead Time Total (Emissão → Entrega)
+    if(de && dent){
+      const dias = Math.round((dent - de) / 86400000);
+      if(dias >= 0 && dias <= 90){
+        ltBR.total_sum += dias; ltBR.total_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].total_sum += dias; ltReg[reg].total_n++; }
+      }
+    }
+    // Lead Time Expedição (Emissão → Embarque)
+    if(de && demb){
+      const dias = Math.round((demb - de) / 86400000);
+      if(dias >= 0 && dias <= 60){
+        ltBR.exp_sum += dias; ltBR.exp_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].exp_sum += dias; ltReg[reg].exp_n++; }
+      }
+    }
+    // Lead Time Transportes (Embarque → Entrega)
+    if(demb && dent){
+      const dias = Math.round((dent - demb) / 86400000);
+      if(dias >= 0 && dias <= 90){
+        ltBR.trans_sum += dias; ltBR.trans_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].trans_sum += dias; ltReg[reg].trans_n++; }
+      }
+    }
+  });
+  const avgLT = (s,n) => n > 0 ? Math.round(s/n*10)/10 : null;
+  const lead_times_regiao = REGS_LT.map(reg => {
+    const lt = ltReg[reg];
+    return {
+      regiao: reg,
+      lt_total: avgLT(lt.total_sum, lt.total_n),
+      lt_exp:   avgLT(lt.exp_sum,   lt.exp_n),
+      lt_trans: avgLT(lt.trans_sum, lt.trans_n),
+      n_total: lt.total_n, n_exp: lt.exp_n, n_trans: lt.trans_n
+    };
+  });
+  const lead_time_brasil = {
+    lt_total: avgLT(ltBR.total_sum, ltBR.total_n),
+    lt_exp:   avgLT(ltBR.exp_sum,   ltBR.exp_n),
+    lt_trans: avgLT(ltBR.trans_sum, ltBR.trans_n),
+    n_total: ltBR.total_n, n_exp: ltBR.exp_n, n_trans: ltBR.trans_n
+  };
+
+  // --- (C) Impacto Agenda --------------------------------------
+  // Previsão Real = Data Embarque + Tipo Ent. + 2 dias
+  // Se Data Entrega > Previsão Real → conta o impacto em dias
+  const impactoMap = {};
+  REGS_LT.forEach(reg => {
+    impactoMap[reg] = { qtd_avaliadas:0, qtd_com_impacto:0, soma_dias:0, max_dias:0, valor_impactado:0 };
+  });
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    if(!reg || !impactoMap[reg]) return;
+    const demb = getDataEmbarque(r);
+    const dent = getDataEntrega(r);
+    const tipoDias = getTipoEntregaDias(r);
+    if(!demb || !dent || tipoDias == null) return;
+    const previsaoReal = new Date(demb.getTime());
+    previsaoReal.setDate(previsaoReal.getDate() + Math.round(tipoDias) + 2);
+    impactoMap[reg].qtd_avaliadas++;
+    if(dent > previsaoReal){
+      const diasImpacto = Math.round((dent - previsaoReal) / 86400000);
+      if(diasImpacto > 0 && diasImpacto <= 120){
+        const ia = impactoMap[reg];
+        ia.qtd_com_impacto++;
+        ia.soma_dias += diasImpacto;
+        ia.valor_impactado += getValor(r);
+        if(diasImpacto > ia.max_dias) ia.max_dias = diasImpacto;
+      }
+    }
+  });
+  const impacto_agenda = REGS_LT.map(reg => {
+    const ia = impactoMap[reg];
+    return {
+      regiao: reg,
+      qtd_avaliadas: ia.qtd_avaliadas,
+      qtd_com_impacto: ia.qtd_com_impacto,
+      pct_impacto: ia.qtd_avaliadas > 0 ? Math.round(ia.qtd_com_impacto / ia.qtd_avaliadas * 1000) / 10 : 0,
+      dias_medio: ia.qtd_com_impacto > 0 ? Math.round(ia.soma_dias / ia.qtd_com_impacto * 10) / 10 : 0,
+      dias_max: ia.max_dias,
+      valor_impactado: Math.round(ia.valor_impactado * 100) / 100
+    };
+  });
+  log('Lead Times Brasil — total='+lead_time_brasil.lt_total+'d, exp='+lead_time_brasil.lt_exp+'d, trans='+lead_time_brasil.lt_trans+'d','info');
+  log('Impacto Agenda — NFs avaliadas: '+impacto_agenda.reduce((s,i)=>s+i.qtd_avaliadas,0),'info');
+
   // Build payload
   const payload = {
     meses, bonif_mes, otd:transpList, regioes, dias_mes,
@@ -1429,6 +1651,10 @@ async function processOTD(file){
     totalHubValAll:Math.round(totalHubValAll*100)/100,
     totalTrsValAll:Math.round(totalTrsValAll*100)/100,
     totalTrsAtrValAll:Math.round(totalTrsAtrValAll*100)/100,
+    fat_regiao_mes: fatRegMes,
+    lead_times_regiao,
+    lead_time_brasil,
+    impacto_agenda,
     atualizado: new Date().toLocaleString('pt-BR'),
     base_nome: file.name,
     total_nfs: vendas.length,
@@ -1451,6 +1677,8 @@ async function processOTD(file){
   if(typeof renderTransp==='function') renderTransp();
   if(typeof renderOffTime==='function') renderOffTime();
   if(typeof renderAtrasos==='function') renderAtrasos();
+  if(typeof renderInFull==='function') renderInFull();
+  if(typeof renderLeadTimes==='function') renderLeadTimes();
 }
 
 // ============================================================
@@ -2189,12 +2417,15 @@ function renderInFull(){
   document.getElementById('infull-content').style.display='block';
 
   // KPIs
+  const ltt = otdData.lead_time_brasil && otdData.lead_time_brasil.lt_trans;
+  const corLTT = ltt == null ? 'var(--text2)' : ltt <= 5 ? '#3B6D11' : ltt <= 10 ? '#854F0B' : '#A32D2D';
   document.getElementById('infull-kpis').innerHTML =
     '<div class="kpi kpi-blu"><div class="kpi-lbl">Total Pedidos</div><div class="kpi-val">'+inf.total_pedidos.toLocaleString('pt-BR')+'</div><div class="kpi-sub">com pelo menos 1 romaneio</div></div>'
    +'<div class="kpi kpi-grn"><div class="kpi-lbl">In Full</div><div class="kpi-val">'+inf.in_full_qtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">1 romaneio apenas</div></div>'
    +'<div class="kpi kpi-red"><div class="kpi-lbl">Fracionados</div><div class="kpi-val">'+inf.fracionados_qtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">2+ romaneios</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">% In Full Geral</div><div class="kpi-val" style="color:'+(inf.in_full_pct>=85?'#3B6D11':inf.in_full_pct>=70?'#854F0B':'#A32D2D')+'">'+inf.in_full_pct+'%</div><div class="kpi-sub">acumulado</div></div>'
-   +'<div class="kpi kpi-amb"><div class="kpi-lbl">3+ Romaneios</div><div class="kpi-val">'+(inf.com_3_romaneios + inf.com_4mais_romaneios)+'</div><div class="kpi-sub">'+inf.com_3_romaneios+' c/ 3 · '+inf.com_4mais_romaneios+' c/ 4+</div></div>';
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">3+ Romaneios</div><div class="kpi-val">'+(inf.com_3_romaneios + inf.com_4mais_romaneios)+'</div><div class="kpi-sub">'+inf.com_3_romaneios+' c/ 3 · '+inf.com_4mais_romaneios+' c/ 4+</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Lead Time Transportes</div><div class="kpi-val" style="color:'+corLTT+'">'+(ltt!=null?ltt.toFixed(1)+'d':'—')+'</div><div class="kpi-sub">Embarque → Entrega · Brasil</div></div>';
 
   // Filtros mês
   const mesBtns = document.getElementById('infull-mes-btns');
@@ -2540,6 +2771,8 @@ async function loadOTDFromStorage(){
     if(typeof renderTransp==='function') renderTransp();
     if(typeof renderOffTime==='function') renderOffTime();
     if(typeof renderAtrasos==='function') renderAtrasos();
+    if(typeof renderInFull==='function') renderInFull();
+    if(typeof renderLeadTimes==='function') renderLeadTimes();
   }catch(e){
     console.error('Erro ao carregar dados.json:', e);
   }
@@ -2562,6 +2795,10 @@ function detectarBaseDesatualizada(payload){
   const algumCliente = (payload.clientesOff||[])[0];
   if(algumCliente && algumCliente.situacao === undefined){
     motivos.push('situacao dos clientes em atraso ausente');
+  }
+  // Verifica: payload tem Lead Times?
+  if(payload.lead_time_brasil === undefined){
+    motivos.push('Lead Times e Impacto Agenda ausentes (reprocesse a base)');
   }
   return motivos.length ? motivos : null;
 }
@@ -3046,6 +3283,160 @@ function renderOTDChart(d){
       }}})
   document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
   } catch(e) { console.error('Erro bloco 5:', e); }
+}
+
+// ============================================================
+// RENDER LEAD TIMES & IMPACTO AGENDA
+// ============================================================
+function renderLeadTimes(){
+  if(!otdData || (!otdData.lead_time_brasil && !otdData.fat_regiao_mes)){
+    document.getElementById('leadtime-empty').style.display = 'block';
+    document.getElementById('leadtime-content').style.display = 'none';
+    return;
+  }
+  document.getElementById('leadtime-empty').style.display = 'none';
+  document.getElementById('leadtime-content').style.display = 'block';
+
+  const ltBR    = otdData.lead_time_brasil || {};
+  const ltRegs  = otdData.lead_times_regiao || [];
+  const fatReg  = otdData.fat_regiao_mes || {};
+  const impacto = otdData.impacto_agenda || [];
+  const REGS    = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+  const NOME_MES_LT = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // --- KPIs Brasil ---
+  const corLT = v => v == null ? 'var(--text2)' : v <= 5 ? '#3B6D11' : v <= 10 ? '#854F0B' : '#A32D2D';
+  document.getElementById('leadtime-kpis').innerHTML =
+    '<div class="kpi kpi-blu"><div class="kpi-lbl">Lead Time Total Brasil</div>'
+    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_total)+'">'
+    +(ltBR.lt_total!=null ? ltBR.lt_total.toFixed(1)+'d' : '—')
+    +'</div><div class="kpi-sub">Emissão → Entrega</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Lead Time Expedição</div>'
+    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_exp)+'">'
+    +(ltBR.lt_exp!=null ? ltBR.lt_exp.toFixed(1)+'d' : '—')
+    +'</div><div class="kpi-sub">Emissão → Embarque</div></div>'
+   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Lead Time Transportes</div>'
+    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_trans)+'">'
+    +(ltBR.lt_trans!=null ? ltBR.lt_trans.toFixed(1)+'d' : '—')
+    +'</div><div class="kpi-sub">Embarque → Entrega</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">NFs avaliadas</div>'
+    +'<div class="kpi-val">'+(ltBR.n_total||0).toLocaleString('pt-BR')+'</div>'
+    +'<div class="kpi-sub">com datas válidas</div></div>';
+
+  // --- (1) Faturamento % por Região × Mês ---
+  const mesesSet = new Set();
+  REGS.forEach(reg => {
+    Object.keys(fatReg[reg]||{}).forEach(m => mesesSet.add(parseInt(m)));
+  });
+  const mesesArr = [...mesesSet].sort((a,b) => a-b);
+
+  let thead = '<th>Região</th>';
+  mesesArr.forEach(m => { thead += '<th class="r">'+NOME_MES_LT[m]+'</th>'; });
+  thead += '<th class="r">Total</th>';
+  document.getElementById('leadtime-fat-thead').innerHTML = thead;
+
+  const totalMes = {};
+  mesesArr.forEach(m => {
+    totalMes[m] = REGS.reduce((s,reg) => {
+      const v = (fatReg[reg]||{})[m];
+      return s + (v ? v.fat : 0);
+    }, 0);
+  });
+  const totalGeral = Object.values(totalMes).reduce((s,v) => s+v, 0);
+
+  let body = '';
+  REGS.forEach(reg => {
+    let row = '<tr><td style="font-weight:600">'+reg+'</td>';
+    let totalRow = 0;
+    mesesArr.forEach(m => {
+      const v = (fatReg[reg]||{})[m];
+      const fat = v ? v.fat : 0;
+      totalRow += fat;
+      const tot = totalMes[m] || 0;
+      const pct = tot > 0 ? fat/tot*100 : 0;
+      const color = pct >= 40 ? '#0C447C' : pct >= 20 ? '#185FA5' : 'var(--text)';
+      row += '<td class="r" style="color:'+color+'">'+(pct>0?pct.toFixed(1)+'%':'—')+'</td>';
+    });
+    const pctRow = totalGeral > 0 ? totalRow/totalGeral*100 : 0;
+    row += '<td class="r" style="font-weight:600">'+pctRow.toFixed(1)+'%</td></tr>';
+    body += row;
+  });
+  body += '<tr style="background:var(--bg2);font-weight:600"><td>Total (R$)</td>';
+  mesesArr.forEach(m => { body += '<td class="r">'+fmtM(totalMes[m])+'</td>'; });
+  body += '<td class="r">'+fmtM(totalGeral)+'</td></tr>';
+  document.getElementById('leadtime-fat-tbody').innerHTML = body;
+
+  // --- (2) Lead Times por Região ---
+  let rLT = '';
+  REGS.forEach(reg => {
+    const lt = ltRegs.find(x => x.regiao === reg) || {};
+    rLT += '<tr>'
+      +'<td style="font-weight:600">'+reg+'</td>'
+      +'<td class="r" style="color:'+corLT(lt.lt_total)+';font-weight:600">'
+        +(lt.lt_total!=null ? lt.lt_total.toFixed(1)+' d' : '—')+'</td>'
+      +'<td class="r" style="color:'+corLT(lt.lt_exp)+';font-weight:600">'
+        +(lt.lt_exp!=null ? lt.lt_exp.toFixed(1)+' d' : '—')+'</td>'
+      +'<td class="r" style="color:'+corLT(lt.lt_trans)+';font-weight:600">'
+        +(lt.lt_trans!=null ? lt.lt_trans.toFixed(1)+' d' : '—')+'</td>'
+      +'<td class="r" style="color:var(--text2)">'
+        +(lt.n_total||0).toLocaleString('pt-BR')+'</td>'
+      +'</tr>';
+  });
+  document.getElementById('leadtime-reg-tbody').innerHTML = rLT;
+
+  document.getElementById('leadtime-reg-tfoot').innerHTML = '<tr>'
+    +'<td>Total Brasil</td>'
+    +'<td class="r" style="color:'+corLT(ltBR.lt_total)+'">'
+      +(ltBR.lt_total!=null ? ltBR.lt_total.toFixed(1)+' d' : '—')+'</td>'
+    +'<td class="r" style="color:'+corLT(ltBR.lt_exp)+'">'
+      +(ltBR.lt_exp!=null ? ltBR.lt_exp.toFixed(1)+' d' : '—')+'</td>'
+    +'<td class="r" style="color:'+corLT(ltBR.lt_trans)+'">'
+      +(ltBR.lt_trans!=null ? ltBR.lt_trans.toFixed(1)+' d' : '—')+'</td>'
+    +'<td class="r">'+(ltBR.n_total||0).toLocaleString('pt-BR')+'</td>'
+    +'</tr>';
+
+  // --- (3) Quadro Impacto Agenda ---
+  let tAv=0, tImp=0, somaDias=0, valImp=0, maxDias=0;
+  let rImp = '';
+  REGS.forEach(reg => {
+    const ia = impacto.find(x => x.regiao === reg)
+      || { qtd_avaliadas:0, qtd_com_impacto:0, pct_impacto:0,
+           dias_medio:0, dias_max:0, valor_impactado:0 };
+    tAv  += ia.qtd_avaliadas  || 0;
+    tImp += ia.qtd_com_impacto || 0;
+    somaDias += (ia.dias_medio||0) * (ia.qtd_com_impacto||0);
+    valImp += ia.valor_impactado || 0;
+    if((ia.dias_max||0) > maxDias) maxDias = ia.dias_max;
+    const corPct = ia.pct_impacto >= 30 ? '#A32D2D'
+                 : ia.pct_impacto >= 15 ? '#854F0B'
+                 : '#3B6D11';
+    rImp += '<tr>'
+      +'<td style="font-weight:600">'+reg+'</td>'
+      +'<td class="r">'+(ia.qtd_avaliadas||0).toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:#A32D2D;font-weight:600">'
+        +(ia.qtd_com_impacto||0).toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:'+corPct+';font-weight:600">'
+        +(ia.pct_impacto||0).toFixed(1)+'%</td>'
+      +'<td class="r" style="color:#A32D2D">'
+        +(ia.dias_medio>0 ? ia.dias_medio.toFixed(1)+' d' : '—')+'</td>'
+      +'<td class="r">'+(ia.dias_max>0 ? ia.dias_max+' d' : '—')+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(ia.valor_impactado)+'</td>'
+      +'</tr>';
+  });
+  document.getElementById('leadtime-impacto-tbody').innerHTML = rImp;
+
+  const pctTotal     = tAv  > 0 ? tImp/tAv*100 : 0;
+  const diasMedTotal = tImp > 0 ? somaDias/tImp : 0;
+  document.getElementById('leadtime-impacto-tfoot').innerHTML = '<tr>'
+    +'<td>Total Brasil</td>'
+    +'<td class="r">'+tAv.toLocaleString('pt-BR')+'</td>'
+    +'<td class="r" style="color:#A32D2D">'+tImp.toLocaleString('pt-BR')+'</td>'
+    +'<td class="r" style="color:#A32D2D">'+pctTotal.toFixed(1)+'%</td>'
+    +'<td class="r" style="color:#A32D2D">'
+      +(diasMedTotal>0 ? diasMedTotal.toFixed(1)+' d' : '—')+'</td>'
+    +'<td class="r">'+(maxDias>0 ? maxDias+' d' : '—')+'</td>'
+    +'<td class="r" style="color:#A32D2D">'+fmtM(valImp)+'</td>'
+    +'</tr>';
 }
 </script>
 </body>
