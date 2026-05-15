@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.3-leadtimes', date: '13/05/2026' };
+window.__BUILD__ = { version: 'v9.5-transp-valores', date: '15/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -223,7 +223,7 @@ table.dt tr:hover td{background:var(--bg2)}
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
-    <div class="tab" onclick="switchTab('leadtime',this)">Lead Times</div>
+    <div class="tab" onclick="switchTab('leadtime',this)">Lead Time</div>
   </div>
 
   <div class="container">
@@ -449,9 +449,11 @@ table.dt tr:hover td{background:var(--bg2)}
               <th class="r" style="color:#A32D2D">Off Time</th>
               <th class="r">OTD%</th>
               <th class="r">Prazo Médio</th>
+              <th class="r" style="color:#185FA5">Receita Finalizada</th>
               <th class="r" style="color:#854F0B">CD</th>
               <th class="r" style="color:#185FA5">Trânsito</th>
               <th class="r" style="color:#A32D2D">Pend. Atraso</th>
+              <th class="r" style="color:#A32D2D">Valor Pendente</th>
               <th style="min-width:80px">OTD Perf.</th>
             </tr></thead>
             <tbody id="transp-tbody"></tbody>
@@ -521,13 +523,6 @@ table.dt tr:hover td{background:var(--bg2)}
 
         <!-- KPIs -->
         <div class="krow" id="infull-kpis" style="margin-bottom:12px;grid-template-columns:repeat(6,minmax(0,1fr))"></div>
-
-        <!-- Filtros -->
-        <div class="fbar" id="infull-fbar" style="margin-bottom:10px">
-          <span class="fl">Mês</span>
-          <button class="fbtn on" id="infull-m-all" onclick="inFullFilter('mes','todos',this)">Todos</button>
-          <span id="infull-mes-btns"></span>
-        </div>
 
         <!-- Resumo por mes -->
         <div class="card" style="margin-bottom:10px">
@@ -750,6 +745,15 @@ table.dt tr:hover td{background:var(--bg2)}
         <!-- KPIs Brasil -->
         <div class="krow" id="leadtime-kpis" style="margin-bottom:12px;grid-template-columns:repeat(4,minmax(0,1fr))"></div>
 
+        <!-- Filtros -->
+        <div class="fbar" id="leadtime-fbar" style="margin-bottom:10px">
+          <span class="fl">Mês</span>
+          <button class="fbtn on" id="leadtime-m-all" onclick="leadTimeFilter('todos',this)">Todos</button>
+          <span id="leadtime-mes-btns"></span>
+          <div class="fdiv"></div>
+          <span style="font-size:10px;color:var(--text2)">O filtro afeta os quadros <strong>2</strong> e <strong>3</strong>. O quadro <strong>1</strong> sempre mostra a visão mês a mês.</span>
+        </div>
+
         <!-- 1. Faturamento % por Região × Mês -->
         <div class="card" style="margin-bottom:10px">
           <div class="slabel"><span class="slabel-num">1</span>Faturamento % por Região — Mês a Mês</div>
@@ -764,7 +768,7 @@ table.dt tr:hover td{background:var(--bg2)}
 
         <!-- 2. Lead Time por Região -->
         <div class="card" style="margin-bottom:10px">
-          <div class="slabel"><span class="slabel-num">2</span>Lead Time por Região — Nº médio de dias</div>
+          <div class="slabel"><span class="slabel-num">2</span>Lead Time por Região — Nº médio de dias <span id="leadtime-mes-label-2" style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px"></span></div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
             <strong>Total:</strong> Emissão → Entrega &nbsp;·&nbsp;
             <strong>Expedição:</strong> Emissão → Embarque &nbsp;·&nbsp;
@@ -785,7 +789,7 @@ table.dt tr:hover td{background:var(--bg2)}
 
         <!-- 3. Quadro Impacto Agenda -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Quadro Impacto Agenda</div>
+          <div class="slabel"><span class="slabel-num">3</span>Quadro Impacto Agenda <span id="leadtime-mes-label-3" style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px"></span></div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
             <strong>Previsão Real</strong> = Data Embarque + Tipo Ent. + 2 dias. Quando a Data de Entrega ultrapassa essa previsão, contabiliza-se o impacto da agenda (dias além do esperado) por região.
           </p>
@@ -1698,6 +1702,9 @@ function renderTransp(){
     if(t.otd == null && t.fin > 0) {
       t.otd = Math.round(t.on / t.fin * 1000) / 10;
     }
+    // Compatibilidade com JSON antigo: se faltar fin_val, infere (zero)
+    // O painel mostrará '—' até a base ser reprocessada com Python v9.4+
+    if(t.fin_val == null) t.fin_val = 0;
     // Also fix nested ufs and regs
     (t.ufs||[]).forEach(u => {
       if(u.prazo_medio == null && u.dias_n > 0) u.prazo_medio = Math.round(u.dias_sum / u.dias_n * 10) / 10;
@@ -1768,9 +1775,11 @@ function renderTransp(){
       <td class="r" style="color:#A32D2D">${t.off}</td>
       <td class="r" style="${otdC(t.otd)}">${t.otd!=null?t.otd.toFixed(1)+'%':'—'}</td>
       <td class="r" style="${prazoC(t.prazo_medio)}">${t.prazo_medio!=null?t.prazo_medio.toFixed(1)+' dias':'—'}</td>
+      <td class="r" style="color:#185FA5;font-weight:500">${t.fin_val>0?fmtM(t.fin_val):'—'}</td>
       <td class="r" style="color:#854F0B">${t.hub}</td>
       <td class="r" style="color:#185FA5">${t.trs}</td>
       <td class="r" style="color:#A32D2D;font-weight:600">${t.trs_atr||0}</td>
+      <td class="r" style="color:#A32D2D;font-weight:500">${t.nao_val>0?fmtM(t.nao_val):'—'}</td>
       <td style="min-width:80px;padding-right:10px">
         <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
           <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#0C447C':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
@@ -2427,15 +2436,17 @@ function renderInFull(){
    +'<div class="kpi kpi-amb"><div class="kpi-lbl">3+ Romaneios</div><div class="kpi-val">'+(inf.com_3_romaneios + inf.com_4mais_romaneios)+'</div><div class="kpi-sub">'+inf.com_3_romaneios+' c/ 3 · '+inf.com_4mais_romaneios+' c/ 4+</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">Lead Time Transportes</div><div class="kpi-val" style="color:'+corLTT+'">'+(ltt!=null?ltt.toFixed(1)+'d':'—')+'</div><div class="kpi-sub">Embarque → Entrega · Brasil</div></div>';
 
-  // Filtros mês
+  // Filtros mês (removidos da interface — verificação defensiva caso elemento exista)
   const mesBtns = document.getElementById('infull-mes-btns');
-  mesBtns.innerHTML = '';
-  inf.por_mes.forEach(m => {
-    const b = document.createElement('button');
-    b.className = 'fbtn'; b.textContent = m.nome;
-    b.onclick = function(){ inFullFilter('mes', m.mes, this); };
-    mesBtns.appendChild(b);
-  });
+  if(mesBtns){
+    mesBtns.innerHTML = '';
+    inf.por_mes.forEach(m => {
+      const b = document.createElement('button');
+      b.className = 'fbtn'; b.textContent = m.nome;
+      b.onclick = function(){ inFullFilter('mes', m.mes, this); };
+      mesBtns.appendChild(b);
+    });
+  }
 
   // Resumo por mes (bloco 1)
   let rMes = '';
@@ -2514,9 +2525,13 @@ function renderInFull(){
 function inFullFilter(tipo, val, btn){
   if(tipo === 'mes'){
     inFullFilter_state.mes = val;
-    document.querySelectorAll('#infull-fbar .fbtn').forEach(b => b.classList.remove('on'));
-    if(val === 'todos') document.getElementById('infull-m-all').classList.add('on');
-    else btn.classList.add('on');
+    const fbar = document.getElementById('infull-fbar');
+    if(fbar){
+      fbar.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+      const allBtn = document.getElementById('infull-m-all');
+      if(val === 'todos' && allBtn) allBtn.classList.add('on');
+      else if(btn) btn.classList.add('on');
+    }
   }
   inFullPageCli = 1;
   inFullPagePed = 1;
@@ -3286,8 +3301,19 @@ function renderOTDChart(d){
 }
 
 // ============================================================
-// RENDER LEAD TIMES & IMPACTO AGENDA
+// RENDER LEAD TIME & IMPACTO AGENDA
 // ============================================================
+let leadTime_state = { mes: 'todos' };
+
+function leadTimeFilter(mes, btn){
+  leadTime_state.mes = mes;
+  // Botões: tirar 'on' de todos e marcar o clicado
+  document.querySelectorAll('#leadtime-fbar .fbtn').forEach(b => b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  // Re-renderizar quadros 2 e 3 (o 1 não muda)
+  renderLeadTimes_quadros_2_3();
+}
+
 function renderLeadTimes(){
   if(!otdData || (!otdData.lead_time_brasil && !otdData.fat_regiao_mes)){
     document.getElementById('leadtime-empty').style.display = 'block';
@@ -3297,33 +3323,35 @@ function renderLeadTimes(){
   document.getElementById('leadtime-empty').style.display = 'none';
   document.getElementById('leadtime-content').style.display = 'block';
 
-  const ltBR    = otdData.lead_time_brasil || {};
-  const ltRegs  = otdData.lead_times_regiao || [];
   const fatReg  = otdData.fat_regiao_mes || {};
-  const impacto = otdData.impacto_agenda || [];
   const REGS    = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
   const NOME_MES_LT = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-  // --- KPIs Brasil ---
-  const corLT = v => v == null ? 'var(--text2)' : v <= 5 ? '#3B6D11' : v <= 10 ? '#854F0B' : '#A32D2D';
-  document.getElementById('leadtime-kpis').innerHTML =
-    '<div class="kpi kpi-blu"><div class="kpi-lbl">Lead Time Total Brasil</div>'
-    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_total)+'">'
-    +(ltBR.lt_total!=null ? ltBR.lt_total.toFixed(1)+'d' : '—')
-    +'</div><div class="kpi-sub">Emissão → Entrega</div></div>'
-   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Lead Time Expedição</div>'
-    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_exp)+'">'
-    +(ltBR.lt_exp!=null ? ltBR.lt_exp.toFixed(1)+'d' : '—')
-    +'</div><div class="kpi-sub">Emissão → Embarque</div></div>'
-   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Lead Time Transportes</div>'
-    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_trans)+'">'
-    +(ltBR.lt_trans!=null ? ltBR.lt_trans.toFixed(1)+'d' : '—')
-    +'</div><div class="kpi-sub">Embarque → Entrega</div></div>'
-   +'<div class="kpi"><div class="kpi-lbl">NFs avaliadas</div>'
-    +'<div class="kpi-val">'+(ltBR.n_total||0).toLocaleString('pt-BR')+'</div>'
-    +'<div class="kpi-sub">com datas válidas</div></div>';
+  // --- (0) Construir botões de filtro de mês ---
+  // Coletar todos os meses presentes nos dados de Lead Time
+  const ltBR_full = otdData.lead_time_brasil || {};
+  const mesesDisponiveis = new Set();
+  if(ltBR_full.por_mes) Object.keys(ltBR_full.por_mes).forEach(m => mesesDisponiveis.add(parseInt(m)));
+  // Fallback: se não tem por_mes (base antiga), tira filtro e segue
+  const temFiltro = mesesDisponiveis.size > 0;
+  const mesesArrFiltro = [...mesesDisponiveis].sort((a,b) => a-b);
 
-  // --- (1) Faturamento % por Região × Mês ---
+  if(temFiltro){
+    document.getElementById('leadtime-fbar').style.display = '';
+    const btnsHTML = mesesArrFiltro.map(m =>
+      '<button class="fbtn'+(String(leadTime_state.mes)===String(m)?' on':'')+'" onclick="leadTimeFilter(\''+m+'\',this)">'+NOME_MES_LT[m]+'</button>'
+    ).join('');
+    document.getElementById('leadtime-mes-btns').innerHTML = btnsHTML;
+    // Atualizar estado do botão 'Todos'
+    document.getElementById('leadtime-m-all').classList.toggle('on', leadTime_state.mes === 'todos');
+  } else {
+    // Sem dados mensais → esconde a barra de filtro
+    document.getElementById('leadtime-fbar').style.display = 'none';
+    document.getElementById('leadtime-mes-btns').innerHTML = '';
+    leadTime_state.mes = 'todos';
+  }
+
+  // --- (1) Faturamento % por Região × Mês — não depende do filtro ---
   const mesesSet = new Set();
   REGS.forEach(reg => {
     Object.keys(fatReg[reg]||{}).forEach(m => mesesSet.add(parseInt(m)));
@@ -3366,10 +3394,69 @@ function renderLeadTimes(){
   body += '<td class="r">'+fmtM(totalGeral)+'</td></tr>';
   document.getElementById('leadtime-fat-tbody').innerHTML = body;
 
+  // --- Renderizar quadros 2 e 3 conforme filtro atual ---
+  renderLeadTimes_quadros_2_3();
+}
+
+function renderLeadTimes_quadros_2_3(){
+  if(!otdData) return;
+  const ltBR_full = otdData.lead_time_brasil || {};
+  const ltRegs_full = otdData.lead_times_regiao || [];
+  const impacto_full = otdData.impacto_agenda || [];
+  const REGS = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+  const NOME_MES_LT = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const corLT = v => v == null ? 'var(--text2)' : v <= 5 ? '#3B6D11' : v <= 10 ? '#854F0B' : '#A32D2D';
+  const mesAtual = leadTime_state.mes;
+  const mesNum = mesAtual === 'todos' ? null : parseInt(mesAtual);
+
+  // --- Selecionar dados conforme filtro ---
+  // Função helper: retorna o bucket de lead time da região para o mês selecionado
+  function getLTRegiao(regiao){
+    const reg = ltRegs_full.find(x => x.regiao === regiao);
+    if(!reg) return null;
+    if(mesNum === null) return reg;  // acumulado
+    return (reg.por_mes || {})[mesNum] || (reg.por_mes || {})[String(mesNum)] || null;
+  }
+  function getLTBrasil(){
+    if(mesNum === null) return ltBR_full;
+    return (ltBR_full.por_mes || {})[mesNum] || (ltBR_full.por_mes || {})[String(mesNum)] || null;
+  }
+  function getImpactoRegiao(regiao){
+    const reg = impacto_full.find(x => x.regiao === regiao);
+    if(!reg) return null;
+    if(mesNum === null) return reg;
+    return (reg.por_mes || {})[mesNum] || (reg.por_mes || {})[String(mesNum)] || null;
+  }
+
+  const ltBR = getLTBrasil() || { lt_total:null, lt_exp:null, lt_trans:null, n_total:0 };
+
+  // --- Labels de período ---
+  const labelPeriodo = mesAtual === 'todos' ? '(acumulado)' : '('+NOME_MES_LT[mesNum]+')';
+  document.getElementById('leadtime-mes-label-2').textContent = labelPeriodo;
+  document.getElementById('leadtime-mes-label-3').textContent = labelPeriodo;
+
+  // --- KPIs Brasil (refletem o filtro também) ---
+  document.getElementById('leadtime-kpis').innerHTML =
+    '<div class="kpi kpi-blu"><div class="kpi-lbl">Lead Time Total Brasil</div>'
+    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_total)+'">'
+    +(ltBR.lt_total!=null ? ltBR.lt_total.toFixed(1)+'d' : '—')
+    +'</div><div class="kpi-sub">Emissão → Entrega '+labelPeriodo+'</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Lead Time Expedição</div>'
+    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_exp)+'">'
+    +(ltBR.lt_exp!=null ? ltBR.lt_exp.toFixed(1)+'d' : '—')
+    +'</div><div class="kpi-sub">Emissão → Embarque '+labelPeriodo+'</div></div>'
+   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Lead Time Transportes</div>'
+    +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_trans)+'">'
+    +(ltBR.lt_trans!=null ? ltBR.lt_trans.toFixed(1)+'d' : '—')
+    +'</div><div class="kpi-sub">Embarque → Entrega '+labelPeriodo+'</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">NFs avaliadas</div>'
+    +'<div class="kpi-val">'+(ltBR.n_total||0).toLocaleString('pt-BR')+'</div>'
+    +'<div class="kpi-sub">com datas válidas</div></div>';
+
   // --- (2) Lead Times por Região ---
   let rLT = '';
   REGS.forEach(reg => {
-    const lt = ltRegs.find(x => x.regiao === reg) || {};
+    const lt = getLTRegiao(reg) || { lt_total:null, lt_exp:null, lt_trans:null, n_total:0 };
     rLT += '<tr>'
       +'<td style="font-weight:600">'+reg+'</td>'
       +'<td class="r" style="color:'+corLT(lt.lt_total)+';font-weight:600">'
@@ -3399,7 +3486,7 @@ function renderLeadTimes(){
   let tAv=0, tImp=0, somaDias=0, valImp=0, maxDias=0;
   let rImp = '';
   REGS.forEach(reg => {
-    const ia = impacto.find(x => x.regiao === reg)
+    const ia = getImpactoRegiao(reg)
       || { qtd_avaliadas:0, qtd_com_impacto:0, pct_impacto:0,
            dias_medio:0, dias_max:0, valor_impactado:0 };
     tAv  += ia.qtd_avaliadas  || 0;
