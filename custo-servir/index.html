@@ -109,6 +109,7 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
     <div class="tab" id="tab-rem" onclick="goTab('remetente',this)" style="display:none">Remetentes</div>
     <div class="tab" onclick="goTab('quarter',this)">Por Quarter</div>
     <div class="tab" onclick="goTab('fatransp',this)">Fat. Transportadora</div>
+    <div class="tab" onclick="goTab('custo',this)">Custo</div>
     
   </div>
   <div class="wrap">
@@ -271,6 +272,80 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
           </div>
         </div>
       </div>
+
+      <!-- CUSTO (perspectiva final: R$/kg ATIVA+FL + %merc demais) -->
+      <div class="sec" id="sec-custo" style="display:none">
+        <div class="krow k5" id="k-custo" style="margin-bottom:10px"></div>
+
+        <div class="card" style="margin-bottom:10px;padding:10px 12px;background:var(--card2,#fafafa);border-left:3px solid var(--amber)">
+          <div style="font-size:11px;color:var(--text2);line-height:1.55">
+            <strong style="color:var(--text)">Metodologia (Outbound, dois pools de custo):</strong><br>
+            <strong>R$/kg</strong> — calculado apenas para CTes da <strong>ATIVA</strong> e <strong>FL BRASIL</strong> com peso informado (qCarga BASE no XML). Estas transportadoras têm cobertura de peso &gt; 88%, garantindo precisão da métrica.<br>
+            <strong>% mercadoria</strong> — calculado para as <strong>demais transportadoras</strong> (LD CARGO, ALA URB, TRANSCUNHA, MKT LOG, etc.) onde peso não é informado de forma confiável; usa frete ÷ valor da mercadoria como proxy de custo logístico.<br>
+            Ambos os pools somam o universo Outbound. Filtros de empresa, ano, quarter, mês e região acima se aplicam a esta visão.
+          </div>
+        </div>
+
+        <!-- Tabela 1: R$/kg por Região × Mês -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">1</span><span id="custo-rkg-title">R$/kg por Região × Mês — pool ATIVA + FL Brasil</span>
+            <span id="custo-rkg-cob" style="font-weight:400;font-size:10px;color:var(--text2);margin-left:8px"></span>
+          </div>
+          <div style="overflow-x:auto"><table class="dt" id="tb-custo-rkg">
+            <thead id="th-custo-rkg"></thead>
+            <tbody id="tb-custo-rkg-body"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Tabela 2: %merc por Região × Mês -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">2</span><span id="custo-pct-title">% do valor da mercadoria por Região × Mês — demais transportadoras</span>
+            <span id="custo-pct-cob" style="font-weight:400;font-size:10px;color:var(--text2);margin-left:8px"></span>
+          </div>
+          <div style="overflow-x:auto"><table class="dt" id="tb-custo-pct">
+            <thead id="th-custo-pct"></thead>
+            <tbody id="tb-custo-pct-body"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Resumo lado a lado por região -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">3</span>Resumo por Região — perspectiva final</div>
+          <div style="overflow-x:auto"><table class="dt">
+            <thead>
+              <tr>
+                <th rowspan="2" style="vertical-align:bottom">Região</th>
+                <th colspan="3" class="r" style="background:rgba(212,142,30,.07);border-left:2px solid var(--amber);border-right:2px solid var(--amber)">Pool R$/kg (ATIVA + FL Brasil)</th>
+                <th colspan="3" class="r" style="background:rgba(24,95,165,.07);border-right:2px solid var(--blue,#185FA5)">Pool % mercadoria (demais)</th>
+                <th rowspan="2" class="r" style="vertical-align:bottom;color:var(--red)">Frete Total</th>
+              </tr>
+              <tr>
+                <th class="r" style="border-left:2px solid var(--amber)">CTes</th>
+                <th class="r">Peso (kg)</th>
+                <th class="r" style="color:var(--amber);border-right:2px solid var(--amber)">R$/kg</th>
+                <th class="r">CTes</th>
+                <th class="r">Mercadoria</th>
+                <th class="r" style="color:var(--blue,#185FA5);border-right:2px solid var(--blue,#185FA5)">%merc</th>
+              </tr>
+            </thead>
+            <tbody id="tb-custo-resumo"></tbody>
+          </table></div>
+        </div>
+
+        <!-- Gráficos -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="card">
+            <div class="slbl"><span class="sn">4</span>R$/kg ao longo dos meses</div>
+            <div id="leg-custo-rkg" style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--text2);flex-wrap:wrap"></div>
+            <div style="position:relative;height:260px"><canvas id="c-custo-rkg-line"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="slbl"><span class="sn">5</span>% mercadoria ao longo dos meses</div>
+            <div id="leg-custo-pct" style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--text2);flex-wrap:wrap"></div>
+            <div style="position:relative;height:260px"><canvas id="c-custo-pct-line"></canvas></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -365,7 +440,7 @@ function setOp(op,btn){
   renderAll();
 }
 
-const TIDS=['dash','transp','regiao','cliente','remetente','quarter','fatransp'];
+const TIDS=['dash','transp','regiao','cliente','remetente','quarter','fatransp','custo'];
 const F={emp:'all',ano:'all',qtr:'all',mes:'all',tipo:'all',reg:'all'};
 
 function goTab(id,btn){
@@ -499,7 +574,7 @@ function getQs(){
 }
 
 function renderAll(){renderTab(curTab);}
-function renderTab(id){if(id==='dash')rDash();if(id==='transp')rTr();if(id==='regiao')rReg();if(id==='cliente')rCli();if(id==='remetente')rRem();if(id==='quarter')rQ();if(id==='fatransp')rFatTransp();}
+function renderTab(id){if(id==='dash')rDash();if(id==='transp')rTr();if(id==='regiao')rReg();if(id==='cliente')rCli();if(id==='remetente')rRem();if(id==='quarter')rQ();if(id==='fatransp')rFatTransp();if(id==='custo')rCusto();}
 
 function kpi(l,v,s,co){return'<div class="kpi"><div class="kl">'+l+'</div><div class="kv" style="color:'+co+'">'+v+'</div><div class="ks">'+s+'</div></div>';}
 function eCard(nome,co,f,m){const p=m>0?pf(+(f/m*100).toFixed(2)):'—';return'<div style="border:0.5px solid var(--border);border-left:3px solid '+co+';border-radius:var(--r);padding:11px 13px;margin-bottom:8px"><div style="font-size:9px;font-weight:600;color:'+co+';text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">'+nome+'</div><div style="display:flex;gap:14px;flex-wrap:wrap"><div><div style="font-size:9px;color:var(--text2);margin-bottom:2px">Frete</div><div style="font-size:17px;font-weight:700;color:var(--red)">'+fM(f)+'</div></div><div><div style="font-size:9px;color:var(--text2);margin-bottom:2px">Mercadoria</div><div style="font-size:17px;font-weight:700;color:#185FA5">'+fM(m)+'</div></div><div><div style="font-size:9px;color:var(--text2);margin-bottom:2px">%CTS</div><div style="font-size:17px;font-weight:700;color:var(--amber)">'+p+'</div></div></div></div>';}
@@ -952,7 +1027,260 @@ function rFatTransp(){
                tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+Math.round(c.raw/totDonut*100)+'%)'}}}}});
 }
 
-window.addEventListener('load',()=>{
+// ── CUSTO (perspectiva final: R$/kg ATIVA+FL + %merc demais) ────────
+// Aba sempre Outbound. Dois pools complementares:
+// - R$/kg: subset de CTes da ATIVA + FL Brasil (peso > 0) — cobertura ~93%
+// - %merc: subset das demais transportadoras (v_merc > 0)  — cobertura ~95%
+function rCusto(){
+  if(!D||!D.outbound) return;
+  const d=D.outbound;
+  const ORDEM=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'];
+
+  // ── Filtros de mês (mesma lógica que fMs aplica em outras abas)
+  const meses=(d.meses||[]).filter(m=>
+    (F.ano==='all'||String(m.ano)===F.ano)&&
+    (F.mes==='all'||(function(){const pm=parseMes();return pm.ano?(String(m.ano)===pm.ano&&m.mes===pm.mes):(m.mes===pm.mes);}()))&&
+    (F.qtr==='all'||'Q'+Math.ceil(m.mes/3)+'/'+String(m.ano).slice(2)===F.qtr)
+  ).map(m=>({chave:m.chave||(m.ano+'-'+String(m.mes).padStart(2,'0')),
+             ano:m.ano,mes:m.mes,
+             nome:(m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2)}));
+
+  if(meses.length===0){
+    document.getElementById('k-custo').innerHTML='<div class="kpi"><div class="kl">Sem dados no escopo</div><div class="kv">—</div></div>';
+    ['tb-custo-rkg-body','tb-custo-pct-body','tb-custo-resumo'].forEach(id=>document.getElementById(id).innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--text2)">Sem dados no escopo</td></tr>');
+    ['th-custo-rkg','th-custo-pct'].forEach(id=>document.getElementById(id).innerHTML='<tr><th>—</th></tr>');
+    return;
+  }
+
+  // ── Regiões respeitando F.reg
+  let regs=(d.regioes||[]).slice().sort((a,b)=>{
+    const ia=ORDEM.indexOf(a.regiao),ib=ORDEM.indexOf(b.regiao);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+  if(F.reg!=='all') regs=regs.filter(r=>r.regiao===F.reg);
+
+  // ── Seletor de campos baseado em F.emp
+  // Para R$/kg: rk_frete / rk_peso / rk_ctes  (ou _g_/_i_ se filtrado)
+  // Para %merc: pc_frete / pc_merc / pc_ctes  (idem)
+  const empSuf = (F.emp==='GENOMMA')?'_g':(F.emp==='INOVALAB')?'_i':'';
+  const fldF_rk = 'rk'+empSuf+'_frete';
+  const fldP_rk = 'rk'+empSuf+'_peso';
+  const fldN_rk = 'rk'+empSuf+'_ctes';
+  const fldF_pc = 'pc'+empSuf+'_frete';
+  const fldM_pc = 'pc'+empSuf+'_merc';
+  const fldN_pc = 'pc'+empSuf+'_ctes';
+
+  // ── Helper para extrair valores de uma célula (região × mês)
+  const cell=(reg,mk,tipo)=>{
+    const md=reg.meses&&reg.meses[mk]; if(!md) return null;
+    if(tipo==='rk') return {f:md[fldF_rk]||0, kg:md[fldP_rk]||0, n:md[fldN_rk]||0};
+    else            return {f:md[fldF_pc]||0, m:md[fldM_pc]||0, n:md[fldN_pc]||0};
+  };
+
+  // ── Monta matriz R$/kg
+  const mtRkg=regs.map(r=>{
+    const linha={regiao:r.regiao,cels:{},tot_f:0,tot_kg:0,tot_n:0};
+    meses.forEach(mItem=>{
+      const c=cell(r,mItem.chave,'rk');
+      linha.cels[mItem.chave]=c;
+      if(c){linha.tot_f+=c.f;linha.tot_kg+=c.kg;linha.tot_n+=c.n;}
+    });
+    linha.med=linha.tot_kg>0?linha.tot_f/linha.tot_kg:null;
+    return linha;
+  });
+
+  // ── Monta matriz %merc
+  const mtPct=regs.map(r=>{
+    const linha={regiao:r.regiao,cels:{},tot_f:0,tot_m:0,tot_n:0};
+    meses.forEach(mItem=>{
+      const c=cell(r,mItem.chave,'pc');
+      linha.cels[mItem.chave]=c;
+      if(c){linha.tot_f+=c.f;linha.tot_m+=c.m;linha.tot_n+=c.n;}
+    });
+    linha.med=linha.tot_m>0?linha.tot_f/linha.tot_m:null;
+    return linha;
+  });
+
+  // ── Totais gerais
+  const gR={f:mtRkg.reduce((s,l)=>s+l.tot_f,0),kg:mtRkg.reduce((s,l)=>s+l.tot_kg,0),n:mtRkg.reduce((s,l)=>s+l.tot_n,0)};
+  gR.rkg=gR.kg>0?gR.f/gR.kg:null;
+  const gP={f:mtPct.reduce((s,l)=>s+l.tot_f,0),m:mtPct.reduce((s,l)=>s+l.tot_m,0),n:mtPct.reduce((s,l)=>s+l.tot_n,0)};
+  gP.pct=gP.m>0?gP.f/gP.m:null;
+  const freteTotal=gR.f+gP.f;
+
+  // ── Formatadores
+  const fRkg=v=>v!=null?'R$ '+v.toFixed(2).replace('.',','):'—';
+  const fPct=v=>v!=null?(v*100).toFixed(2).replace('.',',')+'%':'—';
+  const fInt=v=>Math.round(v||0).toLocaleString('pt-BR');
+
+  // ── KPIs
+  const empTag = F.emp==='all'?'Genomma+Inovalab':F.emp==='GENOMMA'?'Genomma':'Inovalab';
+  const regsValRkg=mtRkg.filter(l=>l.med!=null);
+  const regsValPct=mtPct.filter(l=>l.med!=null);
+  const menorRkg=regsValRkg.slice().sort((a,b)=>a.med-b.med)[0];
+  const maiorRkg=regsValRkg.slice().sort((a,b)=>b.med-a.med)[0];
+  const menorPct=regsValPct.slice().sort((a,b)=>a.med-b.med)[0];
+  const maiorPct=regsValPct.slice().sort((a,b)=>b.med-a.med)[0];
+  document.getElementById('k-custo').innerHTML=
+    kpi('R$/kg médio',fRkg(gR.rkg),gR.n.toLocaleString('pt-BR')+' CTes · '+empTag,'var(--amber)')+
+    kpi('% mercadoria',fPct(gP.pct),gP.n.toLocaleString('pt-BR')+' CTes · '+empTag,'var(--blue,#185FA5)')+
+    kpi('Frete Total',fM(freteTotal),'Outbound · '+(gR.n+gP.n).toLocaleString('pt-BR')+' CTes','var(--red)')+
+    kpi('Região barata',menorRkg?menorRkg.regiao:'—',menorRkg?fRkg(menorRkg.med):'','var(--green)')+
+    kpi('Região cara',maiorRkg?maiorRkg.regiao:'—',maiorRkg?fRkg(maiorRkg.med):'','var(--red)');
+
+  // ── Cor da célula vs média da região (mesma escala pra ambas tabelas)
+  const corCel=(v,med)=>{
+    if(v==null||med==null||med===0) return 'var(--text)';
+    const dif=(v-med)/med;
+    if(dif<-0.10) return 'var(--green)';
+    if(dif>0.10)  return 'var(--red)';
+    return 'var(--text)';
+  };
+
+  // ── Header comum (lista de meses)
+  let thHTML='<tr><th>Região</th>';
+  meses.forEach(m=>{thHTML+='<th class="r" style="font-size:10px;min-width:62px">'+m.nome+'</th>';});
+  thHTML+='<th class="r" style="min-width:70px">Média</th></tr>';
+  document.getElementById('th-custo-rkg').innerHTML=thHTML;
+  document.getElementById('th-custo-pct').innerHTML=thHTML;
+
+  // ── Body Tabela 1 (R$/kg)
+  let body='';
+  mtRkg.forEach(l=>{
+    body+='<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+(RC[l.regiao]||'#888')+'"></span><strong>'+l.regiao+'</strong></span></td>';
+    meses.forEach(m=>{
+      const c=l.cels[m.chave];
+      const rkg=(c&&c.kg>0)?c.f/c.kg:null;
+      const cor=corCel(rkg,l.med);
+      body+='<td class="r" style="color:'+cor+'">'+
+        (rkg!=null?'<div style="font-weight:600">'+rkg.toFixed(2).replace('.',',')+'</div>'+
+                   '<div style="font-size:9px;color:var(--text2);margin-top:1px">'+fInt(c.kg)+' kg · '+c.n+'</div>'
+                  :'<span style="color:var(--text2)">—</span>')+
+        '</td>';
+    });
+    body+='<td class="r" style="color:var(--amber);font-weight:700">'+fRkg(l.med)+
+          '<div style="font-size:9px;color:var(--text2);font-weight:400;margin-top:1px">'+
+          (l.tot_kg>0?fInt(l.tot_kg)+' kg · '+l.tot_n:'')+'</div></td></tr>';
+  });
+  body+='<tr class="tr-tot"><td><strong>TOTAL</strong></td>';
+  meses.forEach(m=>{
+    let f=0,kg=0,n=0;
+    mtRkg.forEach(l=>{const c=l.cels[m.chave];if(c){f+=c.f;kg+=c.kg;n+=c.n;}});
+    const rkg=kg>0?f/kg:null;
+    body+='<td class="r"><strong>'+(rkg!=null?rkg.toFixed(2).replace('.',','):'—')+'</strong>'+
+          (kg>0?'<div style="font-size:9px;font-weight:400;color:var(--text2)">'+fInt(kg)+' kg · '+n+'</div>':'')+'</td>';
+  });
+  body+='<td class="r" style="color:var(--amber)"><strong>'+fRkg(gR.rkg)+'</strong></td></tr>';
+  document.getElementById('tb-custo-rkg-body').innerHTML=body;
+  document.getElementById('custo-rkg-cob').textContent=
+    '· '+gR.n.toLocaleString('pt-BR')+' CTes · '+fInt(gR.kg)+' kg · '+fM(gR.f)+(F.emp!=='all'?' · só '+empTag:'');
+
+  // ── Body Tabela 2 (%merc)
+  body='';
+  mtPct.forEach(l=>{
+    body+='<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+(RC[l.regiao]||'#888')+'"></span><strong>'+l.regiao+'</strong></span></td>';
+    meses.forEach(m=>{
+      const c=l.cels[m.chave];
+      const pct=(c&&c.m>0)?c.f/c.m:null;
+      const cor=corCel(pct,l.med);
+      body+='<td class="r" style="color:'+cor+'">'+
+        (pct!=null?'<div style="font-weight:600">'+(pct*100).toFixed(2).replace('.',',')+'%</div>'+
+                   '<div style="font-size:9px;color:var(--text2);margin-top:1px">'+c.n+' CTes</div>'
+                  :'<span style="color:var(--text2)">—</span>')+
+        '</td>';
+    });
+    body+='<td class="r" style="color:var(--blue,#185FA5);font-weight:700">'+fPct(l.med)+
+          '<div style="font-size:9px;color:var(--text2);font-weight:400;margin-top:1px">'+
+          (l.tot_n>0?l.tot_n+' CTes':'')+'</div></td></tr>';
+  });
+  body+='<tr class="tr-tot"><td><strong>TOTAL</strong></td>';
+  meses.forEach(m=>{
+    let f=0,mm=0,n=0;
+    mtPct.forEach(l=>{const c=l.cels[m.chave];if(c){f+=c.f;mm+=c.m;n+=c.n;}});
+    const pct=mm>0?f/mm:null;
+    body+='<td class="r"><strong>'+(pct!=null?(pct*100).toFixed(2).replace('.',',')+'%':'—')+'</strong>'+
+          (n>0?'<div style="font-size:9px;font-weight:400;color:var(--text2)">'+n+' CTes</div>':'')+'</td>';
+  });
+  body+='<td class="r" style="color:var(--blue,#185FA5)"><strong>'+fPct(gP.pct)+'</strong></td></tr>';
+  document.getElementById('tb-custo-pct-body').innerHTML=body;
+  document.getElementById('custo-pct-cob').textContent=
+    '· '+gP.n.toLocaleString('pt-BR')+' CTes · '+fM(gP.f)+' frete · '+fM(gP.m)+' mercadoria'+(F.emp!=='all'?' · só '+empTag:'');
+
+  // ── Resumo por região (perspectiva final lado a lado)
+  body='';
+  regs.forEach((r,i)=>{
+    const lr=mtRkg[i],lp=mtPct[i];
+    const totFrete=(lr.tot_f||0)+(lp.tot_f||0);
+    body+='<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+(RC[r.regiao]||'#888')+'"></span><strong>'+r.regiao+'</strong></span></td>'+
+      '<td class="r" style="border-left:2px solid var(--amber);background:rgba(212,142,30,.03)">'+lr.tot_n.toLocaleString('pt-BR')+'</td>'+
+      '<td class="r" style="background:rgba(212,142,30,.03)">'+(lr.tot_kg>0?fInt(lr.tot_kg):'—')+'</td>'+
+      '<td class="r" style="color:var(--amber);font-weight:600;border-right:2px solid var(--amber);background:rgba(212,142,30,.03)">'+fRkg(lr.med)+'</td>'+
+      '<td class="r" style="background:rgba(24,95,165,.03)">'+lp.tot_n.toLocaleString('pt-BR')+'</td>'+
+      '<td class="r" style="background:rgba(24,95,165,.03)">'+(lp.tot_m>0?fM(lp.tot_m):'—')+'</td>'+
+      '<td class="r" style="color:var(--blue,#185FA5);font-weight:600;border-right:2px solid var(--blue,#185FA5);background:rgba(24,95,165,.03)">'+fPct(lp.med)+'</td>'+
+      '<td class="r" style="color:var(--red);font-weight:600">'+fM(totFrete)+'</td></tr>';
+  });
+  body+='<tr class="tr-tot"><td><strong>TOTAL</strong></td>'+
+        '<td class="r" style="border-left:2px solid var(--amber)"><strong>'+gR.n.toLocaleString('pt-BR')+'</strong></td>'+
+        '<td class="r"><strong>'+(gR.kg>0?fInt(gR.kg):'—')+'</strong></td>'+
+        '<td class="r" style="color:var(--amber);border-right:2px solid var(--amber)"><strong>'+fRkg(gR.rkg)+'</strong></td>'+
+        '<td class="r"><strong>'+gP.n.toLocaleString('pt-BR')+'</strong></td>'+
+        '<td class="r"><strong>'+(gP.m>0?fM(gP.m):'—')+'</strong></td>'+
+        '<td class="r" style="color:var(--blue,#185FA5);border-right:2px solid var(--blue,#185FA5)"><strong>'+fPct(gP.pct)+'</strong></td>'+
+        '<td class="r" style="color:var(--red)"><strong>'+fM(freteTotal)+'</strong></td></tr>';
+  document.getElementById('tb-custo-resumo').innerHTML=body;
+
+  // ── Gráfico 1: R$/kg ao longo dos meses
+  const elR=ch('c-custo-rkg-line'); if(elR){
+    const labels=meses.map(m=>m.nome);
+    const datasets=mtRkg.map(l=>({
+      label:l.regiao,
+      data:meses.map(m=>{const c=l.cels[m.chave];return (c&&c.kg>0)?+(c.f/c.kg).toFixed(2):null;}),
+      borderColor:RC[l.regiao]||'#888',
+      backgroundColor:(RC[l.regiao]||'#888')+'18',
+      pointBackgroundColor:'#fff',pointBorderColor:RC[l.regiao]||'#888',
+      pointBorderWidth:2,pointRadius:3,borderWidth:2,tension:.3,spanGaps:true,fill:false
+    }));
+    document.getElementById('leg-custo-rkg').innerHTML=datasets.map(ds=>
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;background:'+ds.borderColor+';display:inline-block;border-radius:2px"></span>'+ds.label+'</span>'
+    ).join('');
+    CH['c-custo-rkg-line']=new Chart(elR,{type:'line',data:{labels,datasets},options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.raw!=null?'R$ '+c.raw.toFixed(2).replace('.',',')+'/kg':'—')}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false,maxRotation:45},border:{display:false}},
+        y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>'R$'+v},min:0}
+      }
+    }});
+  }
+
+  // ── Gráfico 2: %merc ao longo dos meses
+  const elP=ch('c-custo-pct-line'); if(elP){
+    const labels=meses.map(m=>m.nome);
+    const datasets=mtPct.map(l=>({
+      label:l.regiao,
+      data:meses.map(m=>{const c=l.cels[m.chave];return (c&&c.m>0)?+(c.f/c.m*100).toFixed(2):null;}),
+      borderColor:RC[l.regiao]||'#888',
+      backgroundColor:(RC[l.regiao]||'#888')+'18',
+      pointBackgroundColor:'#fff',pointBorderColor:RC[l.regiao]||'#888',
+      pointBorderWidth:2,pointRadius:3,borderWidth:2,tension:.3,spanGaps:true,fill:false
+    }));
+    document.getElementById('leg-custo-pct').innerHTML=datasets.map(ds=>
+      '<span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:2px;background:'+ds.borderColor+';display:inline-block;border-radius:2px"></span>'+ds.label+'</span>'
+    ).join('');
+    CH['c-custo-pct-line']=new Chart(elP,{type:'line',data:{labels,datasets},options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.raw!=null?c.raw.toFixed(2).replace('.',',')+'%':'—')}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10},autoSkip:false,maxRotation:45},border:{display:false}},
+        y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},min:0}
+      }
+    }});
+  }
+}
+
+
+
   const av=document.getElementById('uav');
   const em=document.getElementById('uem');
   if(av) av.textContent='GL';
