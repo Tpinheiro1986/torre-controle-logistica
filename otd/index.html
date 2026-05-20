@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.8-resumo-completo', date: '20/05/2026' };
+window.__BUILD__ = { version: 'v9.9-excel-status', date: '20/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -2314,6 +2314,80 @@ function atrasosSearch(){
 // ============================================================
 // EXPORTAR TODAS AS NOTAS PARA EXCEL - baixa do historico_mestre.csv
 // ============================================================
+// ============================================================
+// CLASSIFICAÇÃO DE STATUS PAINEL (espelho da função Python)
+// Usado pelo Excel "Exportar Todas as Notas" para incluir a coluna
+// "Status Painel" derivada das regras de negócio (v9.6+).
+// ============================================================
+function classificarStatusPainel(status, romaneio, ocorrencia, dataMaxEntrega){
+  const s = String(status||'').trim();
+  const tem_rom = romaneio != null && String(romaneio).trim() !== '' && String(romaneio).trim() !== '0';
+
+  // Parse ocorrência (aceita "5", "5.0", "", null, " ")
+  function parseOcor(v){
+    if(v==null) return null;
+    const sv = String(v).trim();
+    if(!sv || /^(nan|none|null|-)$/i.test(sv)) return null;
+    const n = parseFloat(sv.replace(',','.'));
+    return isNaN(n) ? null : Math.trunc(n);
+  }
+  const ocor = parseOcor(ocorrencia);
+
+  // Parse data dd/mm/yyyy
+  function parseDateBR(v){
+    if(!v) return null;
+    const sv = String(v).trim().split(' ')[0];
+    const m = sv.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(!m) {
+      const m2 = sv.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if(!m2) return null;
+      return new Date(parseInt(m2[1]), parseInt(m2[2])-1, parseInt(m2[3]));
+    }
+    return new Date(parseInt(m[3]), parseInt(m[2])-1, parseInt(m[1]));
+  }
+  const dataMax = parseDateBR(dataMaxEntrega);
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  // 1. Entregue no Prazo
+  if(s === 'Entregue no Prazo') return 'On Time';
+
+  // 2. Entregue em Atraso
+  if(s === 'Entregue em Atraso') return 'Off Time';
+
+  // 3. Desconsiderada
+  if(s.includes('Desconsiderada')) return 'Desconsiderada';
+
+  // 4. Aguardando Embarque
+  if(s === 'Aguardando Embarque') return tem_rom ? 'Tratativa' : 'CD';
+
+  // 5. Ainda Pendente
+  if(s === 'Ainda Pendente') {
+    if(ocor === 91 || ocor === 602) return 'Trânsito Agenda';
+    if(ocor === null) return 'Ag. CTE';
+    return 'Em Trânsito';
+  }
+
+  // 6. Ainda Pendente em Atraso
+  if(s === 'Ainda Pendente em Atraso') {
+    if(ocor === 5 || ocor === 19 || ocor === 23 || ocor === 28) return 'Tratativa';
+    if(ocor === 84) return 'Trânsito Agenda';
+    if(ocor === 91 || ocor === 602) return 'Em Trânsito';
+    return 'Em Trânsito em Atraso';
+  }
+
+  // 7. Status em Atualização
+  if(s.includes('Status em Atualização') || s.includes('Status em Atualizacao')) {
+    if(ocor === 84) return 'Trânsito Agenda';
+    if(dataMax && dataMax < hoje) return 'Em Trânsito em Atraso';
+    return 'Em Trânsito';
+  }
+
+  // Fallback
+  if(s.includes('Pendente')) return tem_rom ? 'Em Trânsito' : 'CD';
+  return 'Outros';
+}
+
 async function exportarTodasNotasExcel(ev){
   const btn = ev && ev.target ? ev.target.closest('button') : null;
   const txt = btn ? btn.innerHTML : '';
@@ -2353,12 +2427,32 @@ async function exportarTodasNotasExcel(ev){
     const data = rows.slice(1).map(r => {
       const obj = {};
       headers.forEach((h,i) => { obj[h] = r[i] || ''; });
+      // v9.8: adicionar coluna "Status Painel" derivada das regras de negócio
+      obj['Status Painel'] = classificarStatusPainel(
+        obj['Status da Entrega'],
+        obj['Romaneio'],
+        obj['Ocorrencia'] || obj['Ocorrência'],
+        obj['Data Max Entrega']
+      );
       return obj;
     });
 
-    const ws = XLSX.utils.json_to_sheet(data);
-    ws['!cols'] = headers.map(h => {
+    // Garantir que "Status Painel" apareça logo após "Status da Entrega"
+    const headersFinal = [];
+    let inseriu = false;
+    for(const h of headers){
+      headersFinal.push(h);
+      if(h === 'Status da Entrega' && !inseriu){
+        headersFinal.push('Status Painel');
+        inseriu = true;
+      }
+    }
+    if(!inseriu) headersFinal.push('Status Painel');
+
+    const ws = XLSX.utils.json_to_sheet(data, {header: headersFinal});
+    ws['!cols'] = headersFinal.map(h => {
       const l = h.toLowerCase();
+      if(l === 'status painel') return {wch:22};
       if(l.includes('cliente') || l.includes('razao')) return {wch:35};
       if(l.includes('cidade') || l.includes('transp')) return {wch:25};
       if(l.includes('data') || l.includes('cnpj'))     return {wch:14};
