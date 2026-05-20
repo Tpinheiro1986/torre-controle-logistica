@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.6-status-refinados', date: '15/05/2026' };
+window.__BUILD__ = { version: 'v9.7-bloco3-completo', date: '20/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -293,23 +293,26 @@ table.dt tr:hover td{background:var(--bg2)}
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Trânsito em Atraso e Previsão por Quarter</div>
+          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Trânsito em Atraso, Tratativa, Ag. CTE, Trânsito Agenda e Previsão por Quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
             <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
             <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
             <div class="status-hl" style="background:#FCEBEB"><div style="font-size:9px;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito em Atraso</div><div style="font-size:24px;font-weight:700;color:#A32D2D" id="o3-trs-atr">—</div><div style="font-size:11px;color:#A32D2D;margin-top:2px" id="o3-trs-atr-val">—</div></div>
+            <div class="status-hl" style="background:#EFE6FB"><div style="font-size:9px;color:#7A4FBF;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Tratativa</div><div style="font-size:24px;font-weight:700;color:#7A4FBF" id="o3-trat">—</div><div style="font-size:11px;color:#7A4FBF;margin-top:2px" id="o3-trat-val">—</div></div>
+            <div class="status-hl" style="background:#E6F0FB"><div style="font-size:9px;color:#3787C7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Ag. CTE</div><div style="font-size:24px;font-weight:700;color:#3787C7" id="o3-agcte">—</div><div style="font-size:11px;color:#3787C7;margin-top:2px" id="o3-agcte-val">—</div></div>
+            <div class="status-hl" style="background:#FBEEE3"><div style="font-size:9px;color:#C76137;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Trânsito Agenda</div><div style="font-size:24px;font-weight:700;color:#C76137" id="o3-tag">—</div><div style="font-size:11px;color:#C76137;margin-top:2px" id="o3-tag-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
-          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r">CD</th><th class="r">Em Trânsito</th><th class="r">Pend. Atraso</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Em Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:8px">OTD = On Time / (On Time + Off Time). Pendentes não entram no OTD, mas indicam risco.</p>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
@@ -2961,6 +2964,8 @@ function renderOTDChart(d){
   const MC=d._MC||{};
   let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,trs_atr=0;
   let on_val=0,off_val=0,hub_val=0,trs_val=0,trs_atr_val=0;
+  let trat=0,agcte=0,tag=0;
+  let trat_val=0,agcte_val=0,tag_val=0;
   let fatBonif=0,qtdBonif=0; // bonificações por mês filtrado
   ms.forEach(m=>{
     // tentar chave numérica e string
@@ -2968,6 +2973,8 @@ function renderOTDChart(d){
     if(!md)return;
     fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;trs_atr+=(md.trs_atr||0);
     on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;trs_atr_val+=(md.trs_atr_val||0);
+    trat+=(md.tratativa||0); agcte+=(md.ag_cte||0); tag+=(md.transito_agenda||0);
+    trat_val+=(md.tratativa_val||0); agcte_val+=(md.ag_cte_val||0); tag_val+=(md.transito_agenda_val||0);
     const bmm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)];
     if(bmm){fatBonif+=(bmm.fat||0);qtdBonif+=(bmm.qtd||0);}
   });
@@ -3001,8 +3008,16 @@ function renderOTDChart(d){
   const hubValAll    = filtroAtivo ? (hub_val+bHubVal)      : (d.totalHubValAll!=null    ? d.totalHubValAll    : (hub_val+bHubVal));
   const trsValAll    = filtroAtivo ? (trs_val+bTrsVal)      : (d.totalTrsValAll!=null    ? d.totalTrsValAll    : (trs_val+bTrsVal));
   const trsAtrValAll = filtroAtivo ? (trs_atr_val+bTrsAtrVal): (d.totalTrsAtrValAll!=null ? d.totalTrsAtrValAll : (trs_atr_val+bTrsAtrVal));
-  const nfinAll=hubAll+trsAll+trsAtrAll;
-  const nfinValAll=hubValAll+trsValAll+trsAtrValAll;
+  // v9.7: subcategorias (Tratativa, Ag.CTE, Trânsito Agenda)
+  const tratAll      = filtroAtivo ? trat                    : (d.totalTratativaAll!=null       ? d.totalTratativaAll       : trat);
+  const agcteAll     = filtroAtivo ? agcte                   : (d.totalAgCteAll!=null           ? d.totalAgCteAll           : agcte);
+  const tagAll       = filtroAtivo ? tag                     : (d.totalTransitoAgendaAll!=null  ? d.totalTransitoAgendaAll  : tag);
+  const tratValAll   = filtroAtivo ? trat_val                : (d.totalTratativaValAll!=null      ? d.totalTratativaValAll      : trat_val);
+  const agcteValAll  = filtroAtivo ? agcte_val               : (d.totalAgCteValAll!=null          ? d.totalAgCteValAll          : agcte_val);
+  const tagValAll    = filtroAtivo ? tag_val                 : (d.totalTransitoAgendaValAll!=null ? d.totalTransitoAgendaValAll : tag_val);
+  // v9.7: Total não finalizado = TUDO que não entregou
+  const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll;
+  const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll;
 
   document.getElementById('o-fat').textContent=fmtM(fatTotal);
   document.getElementById('o-fat-s').textContent=qtdTotal.toLocaleString('pt-BR')+' NFs (vendas + bonif)';
@@ -3030,6 +3045,9 @@ function renderOTDChart(d){
   document.getElementById('o3-hub').textContent=hubAll;document.getElementById('o3-hub-val').textContent=fmtM(hubValAll);
   document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
   document.getElementById('o3-trs-atr').textContent=trsAtrAll;document.getElementById('o3-trs-atr-val').textContent=fmtM(trsAtrValAll);
+  document.getElementById('o3-trat').textContent=tratAll;document.getElementById('o3-trat-val').textContent=fmtM(tratValAll);
+  document.getElementById('o3-agcte').textContent=agcteAll;document.getElementById('o3-agcte-val').textContent=fmtM(agcteValAll);
+  document.getElementById('o3-tag').textContent=tagAll;document.getElementById('o3-tag-val').textContent=fmtM(tagValAll);
   document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
   // ---- BLOCO 1: Genomma vs Inovalab — calculado dos meses filtrados ----
@@ -3177,7 +3195,7 @@ function renderOTDChart(d){
   document.getElementById('o2-tbody').innerHTML=r2;
 
   try {
-  // ---- BLOCO 3: CD + Trânsito + Em Trânsito em Atraso por mês (Vendas + Bonificações) ----
+  // ---- BLOCO 3: CD + Trânsito + Em Trânsito em Atraso + 3 subcategorias por mês ----
   let r3='';
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)];if(!md)return;
@@ -3185,12 +3203,18 @@ function renderOTDChart(d){
     const mHub=md.hub+(bmm.hub||0);
     const mTrs=md.trs+(bmm.trs||0);
     const mTrsAtr=(md.trs_atr||0)+(bmm.trs_atr||0);
+    const mTrat=(md.tratativa||0)+(bmm.tratativa||0);
+    const mAgcte=(md.ag_cte||0)+(bmm.ag_cte||0);
+    const mTag=(md.transito_agenda||0)+(bmm.transito_agenda||0);
     const mHubVal=md.hub_val+(bmm.hub_val||0);
     const mTrsVal=md.trs_val+(bmm.trs_val||0);
     const mTrsAtrVal=(md.trs_atr_val||0)+(bmm.trs_atr_val||0);
-    if(mHub+mTrs+mTrsAtr===0&&ms.length>1)return;
-    const tot=mHub+mTrs+mTrsAtr;
-    const totVal=mHubVal+mTrsVal+mTrsAtrVal;
+    const mTratVal=(md.tratativa_val||0)+(bmm.tratativa_val||0);
+    const mAgcteVal=(md.ag_cte_val||0)+(bmm.ag_cte_val||0);
+    const mTagVal=(md.transito_agenda_val||0)+(bmm.transito_agenda_val||0);
+    if(mHub+mTrs+mTrsAtr+mTrat+mAgcte+mTag===0&&ms.length>1)return;
+    const tot=mHub+mTrs+mTrsAtr+mTrat+mAgcte+mTag;
+    const totVal=mHubVal+mTrsVal+mTrsAtrVal+mTratVal+mAgcteVal+mTagVal;
     r3+='<tr><td>'+md.nome+'</td>'
       +'<td class="r" style="color:#854F0B">'+(mHub||'—')+'</td>'
       +'<td class="r" style="color:#854F0B">'+(mHubVal>0?fmtM(mHubVal):'—')+'</td>'
@@ -3198,6 +3222,9 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#185FA5">'+(mTrsVal>0?fmtM(mTrsVal):'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+(mTrsAtr||'—')+'</td>'
       +'<td class="r" style="color:#A32D2D">'+(mTrsAtrVal>0?fmtM(mTrsAtrVal):'—')+'</td>'
+      +'<td class="r" style="color:#7A4FBF">'+(mTrat||'—')+'</td>'
+      +'<td class="r" style="color:#3787C7">'+(mAgcte||'—')+'</td>'
+      +'<td class="r" style="color:#C76137">'+(mTag||'—')+'</td>'
       +'<td class="r">'+(tot||'—')+'</td>'
       +'<td class="r">'+(totVal>0?fmtM(totVal):'—')+'</td></tr>';
   });
@@ -3208,6 +3235,9 @@ function renderOTDChart(d){
     +'<td class="r" style="color:#185FA5">'+fmtM(trsValAll)+'</td>'
     +'<td class="r" style="color:#A32D2D;font-weight:600">'+trsAtrAll+'</td>'
     +'<td class="r" style="color:#A32D2D">'+fmtM(trsAtrValAll)+'</td>'
+    +'<td class="r" style="color:#7A4FBF">'+tratAll+'</td>'
+    +'<td class="r" style="color:#3787C7">'+agcteAll+'</td>'
+    +'<td class="r" style="color:#C76137">'+tagAll+'</td>'
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+nfinAll+'</td>'
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(nfinValAll)+'</td></tr>';
   document.getElementById('o3-tbody').innerHTML=r3;
@@ -3223,15 +3253,25 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#854F0B">'+(p.hub>0?p.hub:'—')+'</td>'
       +'<td class="r" style="color:#185FA5">'+(p.transito>0?p.transito:'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+((p.transito_atr||0)>0?p.transito_atr:'—')+'</td>'
+      +'<td class="r" style="color:#7A4FBF">'+((p.tratativa||0)>0?p.tratativa:'—')+'</td>'
+      +'<td class="r" style="color:#3787C7">'+((p.ag_cte||0)>0?p.ag_cte:'—')+'</td>'
+      +'<td class="r" style="color:#C76137">'+((p.transito_agenda||0)>0?p.transito_agenda:'—')+'</td>'
       +'<td class="r" style="font-weight:600">'+p.qtd+'</td>'
       +'<td class="r" style="color:#A32D2D">'+fmtM(p.valor)+'</td>'
       +'</tr>';
   });
-  const totPrev=prevQ.reduce((a,p)=>({qtd:a.qtd+(p.qtd||0),valor:a.valor+(p.valor||0),hub:a.hub+(p.hub||0),trs:a.trs+(p.transito||0),trs_atr:a.trs_atr+(p.transito_atr||0)}),{qtd:0,valor:0,hub:0,trs:0,trs_atr:0});
+  const totPrev=prevQ.reduce((a,p)=>({
+    qtd:a.qtd+(p.qtd||0),valor:a.valor+(p.valor||0),
+    hub:a.hub+(p.hub||0),trs:a.trs+(p.transito||0),trs_atr:a.trs_atr+(p.transito_atr||0),
+    trat:a.trat+(p.tratativa||0),agcte:a.agcte+(p.ag_cte||0),tag:a.tag+(p.transito_agenda||0)
+  }),{qtd:0,valor:0,hub:0,trs:0,trs_atr:0,trat:0,agcte:0,tag:0});
   rPrev+='<tr class="tr-total"><td>Total Pendente</td>'
     +'<td class="r" style="color:#854F0B">'+(totPrev.hub||0)+'</td>'
     +'<td class="r" style="color:#185FA5">'+(totPrev.trs||0)+'</td>'
     +'<td class="r" style="color:#A32D2D;font-weight:600">'+(totPrev.trs_atr||0)+'</td>'
+    +'<td class="r" style="color:#7A4FBF">'+(totPrev.trat||0)+'</td>'
+    +'<td class="r" style="color:#3787C7">'+(totPrev.agcte||0)+'</td>'
+    +'<td class="r" style="color:#C76137">'+(totPrev.tag||0)+'</td>'
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+(totPrev.qtd||0)+'</td>'
     +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(totPrev.valor||0)+'</td></tr>';
   document.getElementById('o3-prev-tbody').innerHTML=rPrev;
@@ -3251,6 +3291,9 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
       +'<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+((t.trs_atr||0)>0?t.trs_atr:'—')+'</td>'
+      +'<td class="r" style="color:#7A4FBF">'+((t.tratativa||0)>0?t.tratativa:'—')+'</td>'
+      +'<td class="r" style="color:#3787C7">'+((t.ag_cte||0)>0?t.ag_cte:'—')+'</td>'
+      +'<td class="r" style="color:#C76137">'+((t.transito_agenda||0)>0?t.transito_agenda:'—')+'</td>'
       +'<td class="r" style="color:#A32D2D">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
       +'</tr>';
   }).join('');
