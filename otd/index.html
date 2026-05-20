@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.7-bloco3-completo', date: '20/05/2026' };
+window.__BUILD__ = { version: 'v9.8-resumo-completo', date: '20/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -252,13 +252,16 @@ table.dt tr:hover td{background:var(--bg2)}
           <button class="fbtn on" id="otd-m-all" onclick="otdFilter('all',this,'m')">Todos</button>
           <span id="otd-m-btns"></span>
         </div>
-        <div class="krow" style="grid-template-columns:repeat(6,minmax(0,1fr))">
+        <div class="krow" style="grid-template-columns:repeat(9,minmax(0,1fr))">
           <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento Bruto</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
           <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
           <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
           <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
           <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="o-trs">—</div><div class="kpi-sub" id="o-trs-s">—</div></div>
           <div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Em Trânsito em Atraso</div><div class="kpi-val" style="color:#A32D2D" id="o-trs-atr">—</div><div class="kpi-sub" id="o-trs-atr-s">—</div></div>
+          <div class="kpi" style="border-left:3px solid #7A4FBF"><div class="kpi-lbl">Tratativa</div><div class="kpi-val" style="color:#7A4FBF" id="o-trat">—</div><div class="kpi-sub" id="o-trat-s">—</div></div>
+          <div class="kpi" style="border-left:3px solid #3787C7"><div class="kpi-lbl">Ag. CTE</div><div class="kpi-val" style="color:#3787C7" id="o-agcte">—</div><div class="kpi-sub" id="o-agcte-s">—</div></div>
+          <div class="kpi" style="border-left:3px solid #C76137"><div class="kpi-lbl">Trânsito Agenda</div><div class="kpi-val" style="color:#C76137" id="o-tag">—</div><div class="kpi-sub" id="o-tag-s">—</div></div>
         </div>
         <div class="card" style="padding:14px 18px">
           <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
@@ -3026,6 +3029,9 @@ function renderOTDChart(d){
   document.getElementById('o-hub').textContent=hubAll;document.getElementById('o-hub-s').textContent=fmtM(hubValAll);
   document.getElementById('o-trs').textContent=trsAll;document.getElementById('o-trs-s').textContent=fmtM(trsValAll);
   document.getElementById('o-trs-atr').textContent=trsAtrAll;document.getElementById('o-trs-atr-s').textContent=fmtM(trsAtrValAll);
+  document.getElementById('o-trat').textContent=tratAll;document.getElementById('o-trat-s').textContent=fmtM(tratValAll);
+  document.getElementById('o-agcte').textContent=agcteAll;document.getElementById('o-agcte-s').textContent=fmtM(agcteValAll);
+  document.getElementById('o-tag').textContent=tagAll;document.getElementById('o-tag-s').textContent=fmtM(tagValAll);
   document.getElementById('o-otd').textContent=otdAll+'%';
   // Subtexto do OTD: mostra o filtro ativo claramente
   let otdLabel = onAll.toLocaleString('pt-BR')+' On Time de '+finAll.toLocaleString('pt-BR')+' finalizadas';
