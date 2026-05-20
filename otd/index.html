@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.5-transp-valores', date: '15/05/2026' };
+window.__BUILD__ = { version: 'v9.6-status-refinados', date: '15/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -453,6 +453,9 @@ table.dt tr:hover td{background:var(--bg2)}
               <th class="r" style="color:#854F0B">CD</th>
               <th class="r" style="color:#185FA5">Trânsito</th>
               <th class="r" style="color:#A32D2D">Pend. Atraso</th>
+              <th class="r" style="color:#7A4FBF">Tratativa</th>
+              <th class="r" style="color:#3787C7">Ag. CTE</th>
+              <th class="r" style="color:#C76137">Trânsito Agenda</th>
               <th class="r" style="color:#A32D2D">Valor Pendente</th>
               <th style="min-width:80px">OTD Perf.</th>
             </tr></thead>
@@ -1705,6 +1708,10 @@ function renderTransp(){
     // Compatibilidade com JSON antigo: se faltar fin_val, infere (zero)
     // O painel mostrará '—' até a base ser reprocessada com Python v9.4+
     if(t.fin_val == null) t.fin_val = 0;
+    // Compatibilidade com JSON v9.5 e anteriores (sem subcategorias)
+    if(t.tratativa == null) t.tratativa = 0;
+    if(t.ag_cte == null) t.ag_cte = 0;
+    if(t.transito_agenda == null) t.transito_agenda = 0;
     // Also fix nested ufs and regs
     (t.ufs||[]).forEach(u => {
       if(u.prazo_medio == null && u.dias_n > 0) u.prazo_medio = Math.round(u.dias_sum / u.dias_n * 10) / 10;
@@ -1779,12 +1786,15 @@ function renderTransp(){
       <td class="r" style="color:#854F0B">${t.hub}</td>
       <td class="r" style="color:#185FA5">${t.trs}</td>
       <td class="r" style="color:#A32D2D;font-weight:600">${t.trs_atr||0}</td>
+      <td class="r" style="color:#7A4FBF">${t.tratativa||0}</td>
+      <td class="r" style="color:#3787C7">${t.ag_cte||0}</td>
+      <td class="r" style="color:#C76137">${t.transito_agenda||0}</td>
       <td class="r" style="color:#A32D2D;font-weight:500">${t.nao_val>0?fmtM(t.nao_val):'—'}</td>
       <td style="min-width:80px;padding-right:10px">
         <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
           <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#0C447C':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
         </div>
-        <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${(list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0),0)||1)} NFs</div>
+        <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${(list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0)+(x.tratativa||0)+(x.ag_cte||0)+(x.transito_agenda||0),0)||1)} NFs</div>
       </td>
     </tr>`).join('');
 
