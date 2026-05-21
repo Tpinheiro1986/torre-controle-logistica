@@ -5,3 +5,17 @@
 # Backups
 _backups_otd/
 otd/index.bkp.*.html
+
+# === Adicionado pelo deploy.py ===
+.env
+__pycache__/
+*.pyc
+
+# Pasta antiga (depois de mover para simulador-frete/)
+Simulador de Frete/
+
+# Arquivos auxiliares do OTD
+otd/Ferramentas/
+otd/index_admin_corrigido.html
+otd/index_publico_corrigido.html
+otd/otd-index.html
