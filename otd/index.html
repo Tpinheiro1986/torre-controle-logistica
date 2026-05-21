@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.10-layout-resumo', date: '20/05/2026' };
+window.__BUILD__ = { version: 'v9.12-card4-card5', date: '21/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -306,12 +306,13 @@ table.dt tr:hover td{background:var(--bg2)}
             </tbody>
           </table>
         </div>
-        <div class="card" style="padding:14px 18px">
+        <div class="card" style="padding:14px 18px" id="otd-empresas-card">
           <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <span style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">OTD</span>
-            <span style="font-size:36px;font-weight:700;color:#3B6D11" id="o-otd">—</span>
-            <span style="font-size:12px;color:var(--text2)" id="o-otd-s">—</span>
-            <div style="flex:1;min-width:180px"><div style="height:10px;background:var(--bg2);border-radius:5px;overflow:hidden;border:0.5px solid var(--border)"><div id="o-otd-bar" style="height:100%;width:0%;background:#3B6D11;border-radius:5px;transition:width .5s"></div></div></div>
+            <span style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">OTD por Empresa</span>
+            <div style="flex:1;display:grid;grid-template-columns:1fr 0.5px 1fr;gap:24px;align-items:center" id="otd-empresas-grid">
+              <!-- preenchido por JS: GENOMMA + divider + INOVALAB -->
+              <div style="font-size:12px;color:var(--text2)">Carregando…</div>
+            </div>
           </div>
         </div>
         <!-- BLOCO 1 FATURAMENTO -->
@@ -3187,8 +3188,37 @@ function renderOTDChart(d){
   if(otdFilter_state.type==='q')      otdLabel = '['+otdFilter_state.val+'] '+otdLabel;
   else if(otdFilter_state.type==='m') otdLabel = '['+(NOME_MES[parseInt(otdFilter_state.val)]||otdFilter_state.val)+'] '+otdLabel;
   else                                otdLabel = '[Acumulado] '+otdLabel;
-  document.getElementById('o-otd-s').textContent=otdLabel;
-  document.getElementById('o-otd-bar').style.width=otdAll+'%';
+  // Atualiza o subtexto do OTD do cabeçalho (v9.10) — usar query no documento (1º o-otd-s)
+  const otdSubEl2 = document.getElementById('o-otd-s');
+  if(otdSubEl2) otdSubEl2.textContent = otdLabel;
+
+  // OTD por empresa (v9.11) — calcula direto de empresa_total do payload
+  try {
+    const et = d.empresa_total || {};
+    const corOTD = v => v == null ? 'var(--text2)' : v >= 99 ? '#3B6D11' : v >= 80 ? '#854F0B' : '#A32D2D';
+    const empBlock = (empKey, label) => {
+      const e = et[empKey] || {on:0, off:0};
+      const fin = (e.on||0) + (e.off||0);
+      const pct = fin > 0 ? (e.on / fin * 100) : null;
+      return '<div>'
+        + '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'
+          + '<span style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-weight:500">'+label+'</span>'
+          + '<span style="font-size:28px;font-weight:600;color:'+corOTD(pct)+'">'+(pct!=null ? pct.toFixed(1)+'%' : '—')+'</span>'
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--text2);margin-top:2px">'
+          + (e.on||0).toLocaleString('pt-BR')+' On Time / '+fin.toLocaleString('pt-BR')+' finalizadas'
+        + '</div>'
+        + '</div>';
+    };
+    const grid = document.getElementById('otd-empresas-grid');
+    if(grid){
+      grid.innerHTML =
+        empBlock('GENOMMA', 'Genomma')
+        + '<div style="background:var(--border);width:0.5px;height:46px;align-self:center"></div>'
+        + empBlock('INOVALAB', 'Inovalab');
+    }
+  } catch(e) { console.error('Erro no card OTD por empresa:', e); }
+
   document.getElementById('o2-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=offAll;
   document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll+'%';
   // Barra de progresso no topo: % entregue no escopo (entregas / total escopo)
@@ -3437,6 +3467,11 @@ function renderOTDChart(d){
   const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
   document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
     const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';
+    // v9.12: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
+    // Recalculado no JS para funcionar com JSON de qualquer versão (mesmo antes do
+    // Python ser rodado com a v9.7).
+    const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
+                       + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
     return'<tr><td>'+t.n+'</td>'
       +'<td class="r">'+(t.fin||'—')+'</td>'
       +'<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'
@@ -3449,7 +3484,7 @@ function renderOTDChart(d){
       +'<td class="r" style="color:#7A4FBF">'+((t.tratativa||0)>0?t.tratativa:'—')+'</td>'
       +'<td class="r" style="color:#3787C7">'+((t.ag_cte||0)>0?t.ag_cte:'—')+'</td>'
       +'<td class="r" style="color:#C76137">'+((t.transito_agenda||0)>0?t.transito_agenda:'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+(t.nao_val>0?fmtM(t.nao_val):'—')+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+(valPendTotal>0?fmtM(valPendTotal):'—')+'</td>'
       +'</tr>';
   }).join('');
   } catch(e) { console.error('Erro bloco 4:', e); }
