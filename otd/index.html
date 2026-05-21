@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.9-excel-status', date: '20/05/2026' };
+window.__BUILD__ = { version: 'v9.10-layout-resumo', date: '20/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -252,16 +252,59 @@ table.dt tr:hover td{background:var(--bg2)}
           <button class="fbtn on" id="otd-m-all" onclick="otdFilter('all',this,'m')">Todos</button>
           <span id="otd-m-btns"></span>
         </div>
-        <div class="krow" style="grid-template-columns:repeat(9,minmax(0,1fr))">
-          <div class="kpi kpi-blu"><div class="kpi-lbl">Faturamento Bruto</div><div class="kpi-val" id="o-fat">—</div><div class="kpi-sub" id="o-fat-s">—</div></div>
-          <div class="kpi kpi-grn"><div class="kpi-lbl">On Time</div><div class="kpi-val" id="o-on">—</div><div class="kpi-sub" id="o-on-s">—</div></div>
-          <div class="kpi kpi-red"><div class="kpi-lbl">Off Time</div><div class="kpi-val" id="o-off">—</div><div class="kpi-sub" id="o-off-s">—</div></div>
-          <div class="kpi kpi-amb"><div class="kpi-lbl">CD — Ag. Expedição</div><div class="kpi-val" id="o-hub">—</div><div class="kpi-sub" id="o-hub-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #185FA5"><div class="kpi-lbl">Em Trânsito</div><div class="kpi-val" style="color:#185FA5" id="o-trs">—</div><div class="kpi-sub" id="o-trs-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Em Trânsito em Atraso</div><div class="kpi-val" style="color:#A32D2D" id="o-trs-atr">—</div><div class="kpi-sub" id="o-trs-atr-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #7A4FBF"><div class="kpi-lbl">Tratativa</div><div class="kpi-val" style="color:#7A4FBF" id="o-trat">—</div><div class="kpi-sub" id="o-trat-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #3787C7"><div class="kpi-lbl">Ag. CTE</div><div class="kpi-val" style="color:#3787C7" id="o-agcte">—</div><div class="kpi-sub" id="o-agcte-s">—</div></div>
-          <div class="kpi" style="border-left:3px solid #C76137"><div class="kpi-lbl">Trânsito Agenda</div><div class="kpi-val" style="color:#C76137" id="o-tag">—</div><div class="kpi-sub" id="o-tag-s">—</div></div>
+        <!-- Resumo OTD (v9.10 — layout Opção C: compacto, dois níveis) -->
+        <div style="background:var(--bg2); border-radius:8px; padding:12px 16px; margin-bottom:10px">
+          <div style="display:flex; align-items:baseline; gap:30px; flex-wrap:wrap">
+            <div>
+              <div style="font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:.06em">Faturamento Bruto</div>
+              <div style="font-size:22px; font-weight:500; color:#185FA5; margin-top:2px" id="o-fat">—</div>
+              <div style="font-size:10px; color:var(--text2)" id="o-fat-s">—</div>
+            </div>
+            <div style="border-left:0.5px solid var(--border); padding-left:30px">
+              <div style="font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:.06em">OTD</div>
+              <div style="font-size:22px; font-weight:500; color:#3B6D11; margin-top:2px" id="o-otd">—</div>
+              <div style="font-size:10px; color:var(--text2)" id="o-otd-s">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg2); border-radius:8px; padding:12px 16px; margin-bottom:12px; overflow-x:auto">
+          <table style="width:100%; border-collapse:collapse; min-width:680px">
+            <thead>
+              <tr style="border-bottom:0.5px solid var(--border)">
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#3B6D11; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">On Time</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Off Time</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#854F0B; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">CD</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#185FA5; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Trânsito</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Atraso</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#7A4FBF; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Tratativa</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#3787C7; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Ag. CTE</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#C76137; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Tr. Agenda</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3B6D11" id="o-on">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#A32D2D" id="o-off">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#854F0B" id="o-hub">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#185FA5" id="o-trs">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#A32D2D" id="o-trs-atr">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#7A4FBF" id="o-trat">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3787C7" id="o-agcte">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#C76137" id="o-tag">—</span></td>
+              </tr>
+              <tr>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-on-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-off-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-hub-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trs-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trs-atr-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trat-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-agcte-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-tag-s">—</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div class="card" style="padding:14px 18px">
           <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
@@ -3118,6 +3161,18 @@ function renderOTDChart(d){
 
   document.getElementById('o-fat').textContent=fmtM(fatTotal);
   document.getElementById('o-fat-s').textContent=qtdTotal.toLocaleString('pt-BR')+' NFs (vendas + bonif)';
+  // OTD% no cabeçalho (v9.10): On Time / (On Time + Off Time)
+  const otdPct = (onAll + offAll) > 0 ? (onAll / (onAll + offAll)) * 100 : null;
+  const otdEl = document.getElementById('o-otd');
+  const otdSubEl = document.getElementById('o-otd-s');
+  if(otdEl){
+    otdEl.textContent = otdPct != null ? otdPct.toFixed(1) + '%' : '—';
+    // Cor por faixa
+    otdEl.style.color = otdPct == null ? 'var(--text2)' : otdPct >= 99 ? '#3B6D11' : otdPct >= 80 ? '#854F0B' : '#A32D2D';
+  }
+  if(otdSubEl){
+    otdSubEl.textContent = onAll.toLocaleString('pt-BR') + ' de ' + (onAll + offAll).toLocaleString('pt-BR') + ' finalizadas';
+  }
   document.getElementById('o-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o-on-s').textContent=fmtM(onValAll);
   document.getElementById('o-off').textContent=offAll;document.getElementById('o-off-s').textContent=fmtM(offValAll);
   document.getElementById('o-hub').textContent=hubAll;document.getElementById('o-hub-s').textContent=fmtM(hubValAll);
