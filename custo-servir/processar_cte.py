@@ -1,12 +1,22 @@
 """
-TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v6
+TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v7
 ================================================
-CLASSIFICACAO CORRIGIDA:
+v7 (26/mai/2026):
+  - Pools de custo (rk_frete / pc_frete) na aba Custo do dashboard
+  - Identificacao da ATIVA e FL Brasil por CNPJ raiz (matriz + filiais)
+  - Lista de 23 transportadoras a excluir (CNPJS_TRANSP_EXCLUIR)
+
+Para confirmar que esta executando esta versao:
+  No log do RECLASSIFICAR.bat deve aparecer "descartados (transp excluida)"
+  No cte_dados.json gerado, o nivel de cada regiao deve ter rk_frete e pc_frete
+
+CLASSIFICACAO:
   1. rem vazio OU dest vazio -> IGNORAR (descartar)
-  2. rem = Genomma/Inovalab -> OUTBOUND
-  3. rem = fornecedor da lista INBOUND -> INBOUND (independente do dest)
-  4. dest = Genomma/Inovalab + rem nao identificado -> REVERSA
-  5. Demais -> OUTBOUND
+  2. transportadora em CNPJS_TRANSP_EXCLUIR -> IGNORAR
+  3. rem = Genomma/Inovalab -> OUTBOUND
+  4. rem = fornecedor da lista INBOUND -> INBOUND (independente do dest)
+  5. dest = Genomma/Inovalab + rem nao identificado -> REVERSA
+  6. Demais -> OUTBOUND
 
 ARQUIVOS:
   214xxxxx.xml -> CTe emitido
@@ -74,6 +84,40 @@ INBOUND_NOMES = [
     "PORTO SECO SUL", "ATHENAS", "FIRMO CAVALCANTI",
     "RCR REPRESENTACOES", "DELL COMPUTADORES", "GOOXXY",
 ]
+
+# CNPJs de TRANSPORTADORAS a excluir do relatorio
+# (colocaram Genomma como tomadora mas o frete nao e nosso)
+CNPJS_TRANSP_EXCLUIR = {
+    "04281818000180",  # DEL LOGISTIC TRANSPORTES LTDA
+    "23850588000178",  # FAZENDA SAO JUDAS LOGISTICA LTDA
+    "05882643000120",  # MADRI EXPRESS LOGISTICA LTDA
+    "15769911000155",  # MKT LOG LOGISTICA INTEGRADA LTDA
+    "18485037000112",  # SLIM LOG SERVICOS LOGISTICOS LTDA
+    "11253589000156",  # TRANSUL ENCOMENDAS LTDA ME
+    "74155052000173",  # UPS DO BRASIL REMESSAS EXPRESSAS LTDA
+    # 2a leva (mai/2026)
+    "05777666000174",  # DIOR DE AZEVEDO TRANSPORTES LTDA
+    "20872887000115",  # G LOG TRANSPORTES RODOVIARIO LTDA
+    "33962636000173",  # LIBFARMA DISTRIBUIDORA DE MEDICAMENTOS E PRODUTOS HOSPITALAR
+    "02317708000287",  # QUASAR TRANSPORTE E LOGISTICA LTDA
+    "19700976000103",  # SOLUCIONA LOGISTICA E TRANSPORTE LTDA
+    "26153828000173",  # LL TRANSPORTES E LOGISTICA LTDA
+    "50569035000114",  # HLN TRANSPORTES E LOGISTICA LTDA
+    "20275520000114",  # COMAR LOGISTICA LTDA
+    "05530576001903",  # LOGFAR LOGISTICA LTDA
+    "19479536000160",  # EPOCA TRANSPORTE E LOGISTICA LTDA
+    "27752626000100",  # NTM EXPRESS TRANSPORTES EIRELI ME
+    "00833219000252",  # SOLIDEZ TRANSPORTES LTDA
+    "27406208000161",  # D.M.X LOGISTICA E SERVICOS AUXILIARES LTDA
+    "35856333000100",  # R&R ISA'S TRANSPORTES LTDA
+    "28545604000132",  # TSG LOG TRANSPORTES E ARM. LTDA
+    "10730615000127",  # FAMILY FIGUEIREDO E CUNHA LTDA
+}
+
+def transp_excluida(transp_cnpj):
+    """True se a transportadora deve ser excluida do relatorio."""
+    tc = (transp_cnpj or "").strip().replace(".", "").replace("/", "").replace("-", "")
+    return tc in CNPJS_TRANSP_EXCLUIR
 
 # ===============================================================
 NS = {"cte": "http://www.portalfiscal.inf.br/cte"}
@@ -213,6 +257,10 @@ def parse_cte(filepath: str):
         transp_nome = (emit.findtext("cte:xNome", namespaces=NS) or
                        emit.findtext("cte:xFant", namespaces=NS) or "").strip()[:60]
         transp_cnpj = (emit.findtext("cte:CNPJ", namespaces=NS) or "").strip()
+
+    # Descarta CTes de transportadoras excluidas (Genomma como tomadora indevida)
+    if transp_excluida(transp_cnpj):
+        return None
 
     # Remetente (expedidor — quem manda a mercadoria)
     rem = root.find(".//cte:rem", NS)
@@ -411,16 +459,54 @@ def _agg_op(ctes):
         ano_k = str(c["ano"])
         mes_k = f"{c['ano']}-{c['mes']:02d}"
 
-        def _inc(d, f, m, e):
+        kg = c.get("peso", 0) or 0
+        transp_nome  = (c.get("transp_nome","") or "").upper()
+        transp_cnpj  = (c.get("transp_cnpj","") or "").strip()
+        transp_raiz  = transp_cnpj[:8] if len(transp_cnpj) >= 8 else ""
+
+        # Pools para a aba Custo:
+        # R$/kg: transportadoras com peso confiavel (ATIVA + FL Brasil) & peso > 0
+        # %merc: demais transportadoras                                 & v_merc > 0
+        #
+        # Identificacao por CNPJ raiz (8 primeiros digitos = matriz),
+        # cobre todas as filiais sem precisar listar cada uma.
+        # Fallback por nome cobre CTes legados sem CNPJ.
+        ATIVA_FL_RAIZES = {
+            "01125797",  # ATIVA DISTRIBUICAO E LOGISTICA (matriz + 17 filiais)
+            "18233211",  # FL BRASIL HOLDING LOGISTICA E TRANSPORTE (matriz + 18 filiais)
+        }
+        eh_ativa_fl = (
+            (transp_raiz in ATIVA_FL_RAIZES) or
+            ("ATIVA DISTR" in transp_nome) or
+            ("FL BRASIL HOLDING" in transp_nome)
+        )
+        in_rkg_pool = eh_ativa_fl and kg > 0
+        in_pct_pool = (not eh_ativa_fl) and m > 0
+
+        def _inc(d, f, m, e, kg=0):
             d["f"]+=f; d["m"]+=m; d["n"]+=1
+            if "kg" in d: d["kg"]+=kg
             if e=="GENOMMA":  d["gf"]+=f; d["gm"]+=m
             if e=="INOVALAB": d["inf"]+=f; d["inm"]+=m
+            # Pool R$/kg (ATIVA + FL Brasil, peso > 0) — só atualiza se o dict aceita campos custo
+            if in_rkg_pool and "rkf" in d:
+                d["rkf"]+=f; d["rkkg"]+=kg; d["rkn"]+=1
+                if e=="GENOMMA":  d["rkgf"]+=f; d["rkkgg"]+=kg; d["rkgn"]+=1
+                if e=="INOVALAB": d["rkinf"]+=f; d["rkkgi"]+=kg; d["rkinn"]+=1
+            # Pool %merc (demais transportadoras, v_merc > 0)
+            if in_pct_pool and "pf" in d:
+                d["pf"]+=f; d["pm"]+=m; d["pn"]+=1
+                if e=="GENOMMA":  d["pgf"]+=f; d["pgm"]+=m; d["pgn"]+=1
+                if e=="INOVALAB": d["pinf"]+=f; d["pinm"]+=m; d["pinn"]+=1
 
         def _get_or_create(dic, key, proto):
             if key not in dic: dic[key] = dict(proto)
             return dic[key]
 
-        _GI = {"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0}
+        _COST = {"rkf":0,"rkkg":0,"rkn":0,"rkgf":0,"rkkgg":0,"rkgn":0,"rkinf":0,"rkkgi":0,"rkinn":0,
+                 "pf":0,"pm":0,"pn":0,"pgf":0,"pgm":0,"pgn":0,"pinf":0,"pinm":0,"pinn":0}
+        _GI       = {"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0, **_COST}
+        _GI_KG    = {"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"kg":0, **_COST}
 
         # transportadora
         if tr not in by_transp:
@@ -446,18 +532,18 @@ def _agg_op(ctes):
 
         # regiao
         if rg not in by_reg:
-            by_reg[rg] = {"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{},"meses":{}}
-        _inc(by_reg[rg], f, m, e)
-        _inc(_get_or_create(by_reg[rg]["anos"], ano_k, _GI), f, m, e)
-        _inc(_get_or_create(by_reg[rg]["meses"], mes_k, _GI), f, m, e)
+            by_reg[rg] = {"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"kg":0,"anos":{},"meses":{},**_COST}
+        _inc(by_reg[rg], f, m, e, kg)
+        _inc(_get_or_create(by_reg[rg]["anos"],  ano_k, _GI_KG), f, m, e, kg)
+        _inc(_get_or_create(by_reg[rg]["meses"], mes_k, _GI_KG), f, m, e, kg)
 
         # UF
         if uf:
             if uf not in by_uf:
-                by_uf[uf] = {"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"anos":{},"meses":{}}
-            _inc(by_uf[uf], f, m, e)
-            _inc(_get_or_create(by_uf[uf]["anos"], ano_k, _GI), f, m, e)
-            _inc(_get_or_create(by_uf[uf]["meses"], mes_k, _GI), f, m, e)
+                by_uf[uf] = {"uf":uf,"regiao":rg,"f":0,"m":0,"n":0,"gf":0,"gm":0,"inf":0,"inm":0,"kg":0,"anos":{},"meses":{},**_COST}
+            _inc(by_uf[uf], f, m, e, kg)
+            _inc(_get_or_create(by_uf[uf]["anos"],  ano_k, _GI_KG), f, m, e, kg)
+            _inc(_get_or_create(by_uf[uf]["meses"], mes_k, _GI_KG), f, m, e, kg)
 
         # remetente
         _SR = {"f":0,"m":0,"n":0}
@@ -511,9 +597,18 @@ def _agg_op(ctes):
     def _agg_anos(anos_raw):
         return {ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
                      "pct_cts":_p(d["f"],d["m"]),
+                     "peso":_r(d.get("kg",0)),
                      "genomma_frete":_r(d["gf"]),"inovalab_frete":_r(d["inf"]),
                      "pct_genomma":_p(d["gf"],d["gm"]),
-                     "pct_inovalab":_p(d["inf"],d["inm"])}
+                     "pct_inovalab":_p(d["inf"],d["inm"]),
+                     # pool R$/kg (ATIVA + FL Brasil)
+                     "rk_frete":_r(d.get("rkf",0)),"rk_peso":_r(d.get("rkkg",0)),"rk_ctes":d.get("rkn",0),
+                     "rk_g_frete":_r(d.get("rkgf",0)),"rk_g_peso":_r(d.get("rkkgg",0)),"rk_g_ctes":d.get("rkgn",0),
+                     "rk_i_frete":_r(d.get("rkinf",0)),"rk_i_peso":_r(d.get("rkkgi",0)),"rk_i_ctes":d.get("rkinn",0),
+                     # pool % mercadoria (demais transportadoras)
+                     "pc_frete":_r(d.get("pf",0)),"pc_merc":_r(d.get("pm",0)),"pc_ctes":d.get("pn",0),
+                     "pc_g_frete":_r(d.get("pgf",0)),"pc_g_merc":_r(d.get("pgm",0)),"pc_g_ctes":d.get("pgn",0),
+                     "pc_i_frete":_r(d.get("pinf",0)),"pc_i_merc":_r(d.get("pinm",0)),"pc_i_ctes":d.get("pinn",0)}
                 for ano,d in anos_raw.items()}
     transp_out = sorted([{
         "nome":v["nome"],"cnpj":v["cnpj"],
@@ -535,17 +630,26 @@ def _agg_op(ctes):
     } for v in by_transp.values()], key=lambda x:x["frete"], reverse=True)
 
     # regioes
+    def _cost_fields(v):
+        return {
+            "rk_frete":_r(v.get("rkf",0)),"rk_peso":_r(v.get("rkkg",0)),"rk_ctes":v.get("rkn",0),
+            "rk_g_frete":_r(v.get("rkgf",0)),"rk_g_peso":_r(v.get("rkkgg",0)),"rk_g_ctes":v.get("rkgn",0),
+            "rk_i_frete":_r(v.get("rkinf",0)),"rk_i_peso":_r(v.get("rkkgi",0)),"rk_i_ctes":v.get("rkinn",0),
+            "pc_frete":_r(v.get("pf",0)),"pc_merc":_r(v.get("pm",0)),"pc_ctes":v.get("pn",0),
+            "pc_g_frete":_r(v.get("pgf",0)),"pc_g_merc":_r(v.get("pgm",0)),"pc_g_ctes":v.get("pgn",0),
+            "pc_i_frete":_r(v.get("pinf",0)),"pc_i_merc":_r(v.get("pinm",0)),"pc_i_ctes":v.get("pinn",0),
+        }
     regs_out = sorted([{
         "regiao":v["regiao"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
+        "peso":_r(v.get("kg",0)),
         "genomma_frete":_r(v["gf"]),"genomma_merc":_r(v["gm"]),
         "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
+        **_cost_fields(v),
         "anos":_agg_anos(v.get("anos",{})),
-        "meses":_agg_anos(v.get("meses",{})),
-        "meses":_agg_anos(v.get("meses",{})),
         "meses":_agg_anos(v.get("meses",{})),
     } for v in by_reg.values()], key=lambda x:x["frete"], reverse=True)
 
@@ -554,13 +658,13 @@ def _agg_op(ctes):
         "uf":v["uf"],"regiao":v["regiao"],
         "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
         "pct_cts":_p(v["f"],v["m"]),
+        "peso":_r(v.get("kg",0)),
         "genomma_frete":_r(v["gf"]),"genomma_merc":_r(v["gm"]),
         "inovalab_frete":_r(v["inf"]),"inovalab_merc":_r(v["inm"]),
         "pct_genomma":_p(v["gf"],v["gm"]),
         "pct_inovalab":_p(v["inf"],v["inm"]),
+        **_cost_fields(v),
         "anos":_agg_anos(v.get("anos",{})),
-        "meses":_agg_anos(v.get("meses",{})),
-        "meses":_agg_anos(v.get("meses",{})),
         "meses":_agg_anos(v.get("meses",{})),
     } for v in by_uf.values()], key=lambda x:x["frete"], reverse=True)
 
@@ -751,9 +855,13 @@ def main():
             input("  Pressione Enter..."); sys.exit(0)
 
         log.info(f"Reclassificando {len(ctes):,} CTes...")
-        alterados = descartados = 0
+        alterados = descartados = excluidos_transp = 0
         ctes_validos = []
         for c in ctes:
+            # Descarta CTes de transportadoras excluidas
+            if transp_excluida(c.get("transp_cnpj","")):
+                excluidos_transp += 1
+                continue
             op_nova = classificar_op(
                 c.get("rem_cnpj",""), c.get("rem_nome",""),
                 c.get("cli_cnpj",""), c.get("cliente","")
@@ -766,7 +874,7 @@ def main():
                 alterados += 1
             ctes_validos.append(c)
 
-        log.info(f"  {alterados:,} reclassificados | {descartados:,} descartados (rem vazio)")
+        log.info(f"  {alterados:,} reclassificados | {descartados:,} descartados (rem vazio) | {excluidos_transp:,} descartados (transp excluida)")
 
         log.info("Agregando...")
         dados = agregar(ctes_validos)
@@ -890,10 +998,12 @@ def main():
                             c.get("cli_cnpj",""), c.get("cliente",""))
         c["operacao"] = op or "OUTBOUND"
 
-    # descarta CTes com remetente vazio do historico
-    hist_valido = [c for c in hist if classificar_op(
-        c.get("rem_cnpj",""), c.get("rem_nome",""),
-        c.get("cli_cnpj",""), c.get("cliente","")) is not None]
+    # descarta CTes com remetente vazio ou de transportadora excluida do historico
+    hist_valido = [c for c in hist
+                   if not transp_excluida(c.get("transp_cnpj",""))
+                   and classificar_op(
+                       c.get("rem_cnpj",""), c.get("rem_nome",""),
+                       c.get("cli_cnpj",""), c.get("cliente","")) is not None]
 
     if not novos_ctes and not novos_cancel and not args.tudo:
         estado["ultima_execucao"] = ts_inicio.isoformat()

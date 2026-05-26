@@ -111,10 +111,14 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg3);color:
 
 .result-row{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden;transition:box-shadow .15s}
 .result-row.best{border-color:var(--green);box-shadow:0 0 0 1px var(--green)}
+.result-row.over-capacity{border-color:var(--red);background:linear-gradient(to right, rgba(163,45,45,.03) 0%, var(--bg) 50%)}
 .result-row:hover{box-shadow:0 4px 16px rgba(0,0,0,.06)}
 .result-head{padding:14px 20px;display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;cursor:pointer}
 .result-name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:10px}
 .best-badge{background:var(--green-l);color:var(--green-d);font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.cap-badge{background:var(--red-l);color:var(--red);font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:inline-flex;align-items:center;gap:3px}
+.cap-badge svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:2.5}
+.veiculo-info{font-size:10px;color:var(--text3);font-weight:400;margin-top:1px}
 .result-transp{font-size:10px;color:var(--text2);font-weight:400;margin-top:2px}
 .result-price{font-size:18px;font-weight:700;text-align:right}
 .result-diff{font-size:10px;color:var(--text2);margin-top:2px}
@@ -517,6 +521,28 @@ const BACKUPS_PREFIX = 'simulador-frete/backups/';     // backups versionados
 const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
 const FATOR_M3      = 300;  // kg/m³ — padrão das tabelas
 
+// Capacidade máxima por tipo de veículo (em kg).
+// A detecção é feita por palavra-chave no NOME da tabela.
+// Tabelas que não casam com nenhuma palavra-chave (ex: ATIVA 2026, FL BRASIL 2025)
+// são tratadas como FRACIONADAS — sem limite de peso (sempre aparecem).
+const CAPACIDADE_VEICULO = [
+  { chave: 'FIORINO',  kg:    700, label: 'Fiorino'  },
+  { chave: 'VAN',      kg:   1400, label: 'Van'      },
+  { chave: 'VUC',      kg:   2200, label: 'VUC'      },
+  { chave: ' 34',      kg:   4500, label: '3/4'      },   // ALA CARGO 34
+  { chave: 'TOCO',     kg:   7500, label: 'Toco'     },
+  { chave: 'TRUCK',    kg:  13500, label: 'Truck'    },
+  { chave: 'CARRETA',  kg:  30000, label: 'Carreta'  },
+];
+
+function getCapacidadeVeiculo(nomeTabela){
+  const up = (nomeTabela||'').toUpperCase();
+  for(const v of CAPACIDADE_VEICULO){
+    if(up.includes(v.chave)) return v;
+  }
+  return null; // fracionada — sem limite
+}
+
 const {createClient} = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'torre-controle-auth'}
@@ -814,7 +840,12 @@ function simular(origem, destino, pesoKg, m3, valorNF){
       taxasRestritas: tx.restritas,
       totalTaxas: tx.totalTaxas,
       total: fp.valor + tx.totalTaxas,
-      pesoConsiderado
+      pesoConsiderado,
+      veiculo: getCapacidadeVeiculo(tab.nome),
+      excedeCapacidade: (function(){
+        const cap = getCapacidadeVeiculo(tab.nome);
+        return cap && pesoConsiderado > cap.kg;
+      })()
     });
   });
 
@@ -873,10 +904,24 @@ function renderResultados(){
     return;
   }
 
-  // Ordenar
+  // Ordenar: primeiro por capacidade compatível (compatíveis > excedidas), depois pelo critério escolhido
   let sorted = [...resultados];
-  if(SORT_MODE==='preco') sorted.sort((a,b)=>a.total-b.total);
-  else sorted.sort((a,b)=>a.tabela.localeCompare(b.tabela,'pt-BR'));
+  if(SORT_MODE==='preco'){
+    sorted.sort((a,b) => {
+      // capacidade ok vem primeiro
+      if(a.excedeCapacidade !== b.excedeCapacidade) return a.excedeCapacidade ? 1 : -1;
+      return a.total - b.total;
+    });
+  } else {
+    sorted.sort((a,b) => {
+      if(a.excedeCapacidade !== b.excedeCapacidade) return a.excedeCapacidade ? 1 : -1;
+      return a.tabela.localeCompare(b.tabela,'pt-BR');
+    });
+  }
+
+  // Encontrar o melhor preço entre as VIÁVEIS (excluindo as que excedem)
+  const viaveis = sorted.filter(r => !r.excedeCapacidade);
+  const minVal = viaveis.length ? viaveis[0].total : 0;
 
   count.textContent = `${resultados.length} ${resultados.length===1?'transportadora':'transportadoras'} disponíveis`;
 
@@ -886,22 +931,29 @@ function renderResultados(){
     noticeText.textContent = `${motivosExclusao.length} ${motivosExclusao.length===1?'tabela atende esta rota mas foi excluída':'tabelas atendem esta rota mas foram excluídas'} por falta de regras de preço.`;
   } else { notice.classList.remove('on'); }
 
-  const melhor = sorted.find(()=>true);
-  const minVal = melhor ? melhor.total : 0;
-
   rows.innerHTML = sorted.map((r,i)=>{
-    const isBest = SORT_MODE==='preco' && i===0;
-    const diff = i>0 ? ` (+R$ ${fmtBR(r.total - minVal)})` : '';
+    const isBest = SORT_MODE==='preco' && !r.excedeCapacidade && i===0;
+    let diff = '';
+    if(!r.excedeCapacidade && i>0 && viaveis.length){
+      diff = ` (+R$ ${fmtBR(r.total - minVal)})`;
+    } else if(r.excedeCapacidade && viaveis.length){
+      diff = `vs. melhor viável: R$ ${fmtBR(r.total - minVal)}`;
+    }
+    const vehLabel = r.veiculo ? `${r.veiculo.label} · cap. ${r.veiculo.kg.toLocaleString('pt-BR')} kg` : 'Fracionada';
+    const capBadge = r.excedeCapacidade
+      ? `<span class="cap-badge" title="Peso considerado ${fmtKg(r.pesoConsiderado)} excede ${r.veiculo.kg.toLocaleString('pt-BR')} kg do ${r.veiculo.label}"><svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>capacidade excedida</span>`
+      : '';
     return `
-      <div class="result-row ${isBest?'best':''}" data-i="${i}">
+      <div class="result-row ${isBest?'best':''} ${r.excedeCapacidade?'over-capacity':''}" data-i="${i}">
         <div class="result-head" onclick="toggleDetail(this.parentElement)">
           <div>
-            <div class="result-name">${escapeHtml(r.tabela)} ${isBest?'<span class="best-badge">Melhor preço</span>':''}</div>
+            <div class="result-name">${escapeHtml(r.tabela)} ${isBest ? '<span class="best-badge">Melhor preço</span>':''} ${capBadge}</div>
             <div class="result-transp">${escapeHtml(r.transportador||'')}</div>
+            <div class="veiculo-info">${vehLabel}</div>
           </div>
           <div>
             <div class="result-price">R$ ${fmtBR(r.total)}</div>
-            <div class="result-diff">${diff || (SORT_MODE==='preco' && i===0 ? 'menor custo' : '')}</div>
+            <div class="result-diff">${diff || (isBest ? 'menor custo' : '')}</div>
           </div>
           <div class="result-toggle"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
