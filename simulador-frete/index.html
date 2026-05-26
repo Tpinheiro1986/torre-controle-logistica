@@ -719,28 +719,49 @@ function calcularFretePeso(regras, pesoConsiderado){
 // Calcula taxas aplicáveis: combina taxas_gerais (da tabela) + taxas da rota
 function aplicarTaxas(tab, rota, fretePeso, valorNF, pesoConsiderado, destino){
   const detalhes = [];
+  const restritas = [];   // taxas que podem aplicar mas dependem de CNPJ específico
   let totalTaxas = 0;
+
+  // Extrair UF do destino (ex: "São Paulo-SP" → "SP")
+  const ufDestino = (destino.split('-').pop() || '').trim().toUpperCase();
 
   const taxasCombo = [...(tab.taxas_gerais||[]), ...(rota.taxas||[])];
 
   for(const t of taxasCombo){
-    // Filtrar por cidade aplicável se a taxa tem restrição
-    if(t.aplicar_cidades && t.aplicar_cidades.length && destino){
-      if(!t.aplicar_cidades.some(c => norm(c) === norm(destino))) continue;
-    }
-    // Devolução/Reentrega NÃO entram no cálculo normal (só se for cenário específico)
     const nome = (t.nome||'').toUpperCase();
-    if(nome.includes('DEVOLUC') || nome.includes('REENTREGA') || nome==='TDA' || nome==='TDE') continue;
+    // Devolução/Reentrega NÃO entram no cálculo normal (só se for cenário específico)
+    if(nome.includes('DEVOLUC') || nome.includes('REENTREGA')) continue;
+
+    // Taxas restritas SOMENTE por CNPJ (sem cidade nem UF) → marcar como "depende do cliente"
+    if(t.restrita_cnpj && !t.aplicar_cidades && !t.aplicar_ufs){
+      // Registra como "potencial" mas não soma ao total
+      let valPotencial = 0;
+      if(t.tipo==='PERCENT_NF') valPotencial = Math.max((valorNF||0) * (t.percentual/100), t.minimo||0);
+      else if(t.tipo==='PERCENT_FRETE') valPotencial = Math.max((fretePeso||0) * (t.percentual/100), t.minimo||0);
+      else if(t.tipo==='VALOR_DOC') valPotencial = t.valor||0;
+      restritas.push({ nome: t.nome, valor: valPotencial, motivo:`Aplica apenas a ${t.aplicar_cnpjs_count||'alguns'} CNPJ(s) específico(s)` });
+      continue;
+    }
+
+    // Filtrar por cidade aplicável se a taxa tem restrição
+    if(t.aplicar_cidades && t.aplicar_cidades.length){
+      const cidadeMatch = t.aplicar_cidades.some(c => norm(c) === norm(destino));
+      const ufMatch = t.aplicar_ufs && t.aplicar_ufs.includes(ufDestino);
+      if(!cidadeMatch && !ufMatch) continue;
+    } else if(t.aplicar_ufs && t.aplicar_ufs.length){
+      // taxa restrita por UF: aplica só se a UF do destino estiver na lista
+      if(!t.aplicar_ufs.includes(ufDestino)) continue;
+    }
 
     let val = 0;
     if(t.tipo==='PERCENT_NF'){
       val = (valorNF||0) * (t.percentual/100);
       if(t.minimo && val < t.minimo) val = t.minimo;
-      detalhes.push({nome: t.nome, valor: val, desc:`${fmtBR(t.percentual,2)}% × R$ ${fmtBR(valorNF)}` + (t.minimo && (valorNF*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
+      detalhes.push({nome: t.nome, valor: val, desc:`${fmtBR(t.percentual,4)}% × R$ ${fmtBR(valorNF)}` + (t.minimo && (valorNF*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
     } else if(t.tipo==='PERCENT_FRETE'){
       val = (fretePeso||0) * (t.percentual/100);
       if(t.minimo && val < t.minimo) val = t.minimo;
-      detalhes.push({nome: t.nome, valor: val, desc:`${fmtBR(t.percentual,2)}% × R$ ${fmtBR(fretePeso)}`});
+      detalhes.push({nome: t.nome, valor: val, desc:`${fmtBR(t.percentual,2)}% × R$ ${fmtBR(fretePeso)}` + (t.minimo && (fretePeso*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
     } else if(t.tipo==='VALOR_DOC'){
       val = t.valor||0;
       detalhes.push({nome: t.nome, valor: val, desc:'R$ por documento'});
@@ -752,7 +773,7 @@ function aplicarTaxas(tab, rota, fretePeso, valorNF, pesoConsiderado, destino){
     totalTaxas += val;
   }
 
-  return { detalhes, totalTaxas };
+  return { detalhes, totalTaxas, restritas };
 }
 
 function simular(origem, destino, pesoKg, m3, valorNF){
@@ -790,6 +811,7 @@ function simular(origem, destino, pesoKg, m3, valorNF){
       fretePeso: fp.valor,
       fretePesoModo: fp.modo,
       taxasDetalhe: tx.detalhes,
+      taxasRestritas: tx.restritas,
       totalTaxas: tx.totalTaxas,
       total: fp.valor + tx.totalTaxas,
       pesoConsiderado
@@ -890,6 +912,12 @@ function renderResultados(){
               <div class="det-row"><span class="lbl">Frete-peso</span><span class="val">R$ ${fmtBR(r.fretePeso)}</span></div>
               ${r.taxasDetalhe.map(t=>`<div class="det-row"><span class="lbl">${escapeHtml(t.nome)}</span><span class="val">R$ ${fmtBR(t.valor)}</span></div>`).join('')}
               <div class="det-total"><span>Total</span><span>R$ ${fmtBR(r.total)}</span></div>
+              ${(r.taxasRestritas && r.taxasRestritas.length) ? `
+                <div style="margin-top:12px;padding-top:8px;border-top:0.5px dashed var(--border2)">
+                  <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:6px">⚠ Taxas adicionais (dependem do cliente)</div>
+                  ${r.taxasRestritas.map(t=>`<div class="det-row" style="opacity:.7"><span class="lbl">${escapeHtml(t.nome)} <span style="font-size:9px;color:var(--text3)">(${escapeHtml(t.motivo)})</span></span><span class="val" style="color:var(--text2)">+R$ ${fmtBR(t.valor)}</span></div>`).join('')}
+                </div>
+              ` : ''}
             </div>
             <div class="det-block">
               <div class="det-block-title">Memória de cálculo</div>
