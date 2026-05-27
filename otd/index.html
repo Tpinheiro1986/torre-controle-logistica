@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.12-card4-card5', date: '21/05/2026' };
+window.__BUILD__ = { version: 'v9.17-status-valor-rs', date: '27/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -168,9 +168,24 @@ table.dt tr:hover td{background:var(--bg2)}
 .empty-state svg{width:48px;height:48px;margin:0 auto 16px;display:block;opacity:.3}
 .empty-state p{font-size:13px;margin-bottom:12px}
 @media(max-width:900px){.krow{grid-template-columns:repeat(3,minmax(0,1fr))}.upload-grid{grid-template-columns:1fr}.container{padding:16px 14px}}
+
+/* ============ MODO TV (v9.14) ============ */
+/* Ativo quando body tem class .tv-on. Esconde TUDO do painel principal e mostra a TV. */
+body.tv-on > *:not(#tv-mode):not(script){display:none !important}
+body.tv-on{background:#0A1B3A !important;margin:0;padding:0;overflow:hidden;height:100vh}
+#tv-mode{display:none;position:fixed;inset:0;background:#0A1B3A;color:#fff;font-family:system-ui,sans-serif;overflow:hidden}
+body.tv-on #tv-mode{display:block}
+#tv-mode svg{width:100vw;height:100vh;display:block}
+/* Pulse mais suave em texto */
+@keyframes tv-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.tv-pulse{animation:tv-pulse 1.6s ease-in-out infinite}
 </style>
 </head>
 <body>
+
+<!-- ============== CONTAINER MODO TV (v9.14) ============== -->
+<!-- Só fica visível quando body tem class .tv-on. -->
+<div id="tv-mode" aria-hidden="true"></div>
 
 <!-- SELO DE VERSÃO (canto inferior direito) — fácil de ver para confirmar que a versão online é a certa -->
 <div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(24,95,165,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Clique para copiar a versão" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
@@ -1824,7 +1839,12 @@ function renderTransp(){
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
   const maxFin = fin[0]?.fin || 1;
 
-  document.getElementById('transp-tbody').innerHTML = fin.map(t => `
+  document.getElementById('transp-tbody').innerHTML = fin.map(t => {
+    // v9.13: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
+    // Recalculado no JS para funcionar com JSON de qualquer versão.
+    const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
+                       + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
+    return `
     <tr style="cursor:pointer" onclick="showTranspDetalhe('${t.n.replace(/'/g,"\'")}')">
       <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis">${t.n}</td>
       <td class="r">${t.fin}</td>
@@ -1839,14 +1859,15 @@ function renderTransp(){
       <td class="r" style="color:#7A4FBF">${t.tratativa||0}</td>
       <td class="r" style="color:#3787C7">${t.ag_cte||0}</td>
       <td class="r" style="color:#C76137">${t.transito_agenda||0}</td>
-      <td class="r" style="color:#A32D2D;font-weight:500">${t.nao_val>0?fmtM(t.nao_val):'—'}</td>
+      <td class="r" style="color:#A32D2D;font-weight:500">${valPendTotal>0?fmtM(valPendTotal):'—'}</td>
       <td style="min-width:80px;padding-right:10px">
         <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
           <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#0C447C':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
         </div>
         <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${(list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0)+(x.tratativa||0)+(x.ag_cte||0)+(x.transito_agenda||0),0)||1)} NFs</div>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 
   // Rankings
   const byOTD = [...fin].filter(t=>t.otd!=null).sort((a,b)=>b.otd-a.otd);
@@ -3264,16 +3285,12 @@ function renderOTDChart(d){
   document.getElementById('emp-kpis').innerHTML=
     '<div style="background:#E6F1FB20;border:0.5px solid #185FA544;border-radius:var(--radius);padding:12px 16px">'
     +'<div style="font-size:10px;font-weight:600;color:#0C447C;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Genomma Lab</div>'
-    +'<div style="display:flex;gap:20px;flex-wrap:wrap">'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:20px;font-weight:700;color:#185FA5">'+fmtM(gFat)+'</div><div style="font-size:10px;color:var(--text2)">'+gQtd.toLocaleString('pt-BR')+' NFs'+'</div></div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">OTD</div><div style="font-size:20px;font-weight:700;color:#3B6D11">'+gOtd+'%</div><div style="font-size:10px;color:var(--text2)">'+gOn+' on / '+gOff+' off'+'</div></div>'
-    +'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:24px;font-weight:700;color:#185FA5">'+fmtM(gFat)+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+gQtd.toLocaleString('pt-BR')+' NFs</div></div>'
+    +'</div>'
     +'<div style="background:#EAF3DE20;border:0.5px solid #3B6D1144;border-radius:var(--radius);padding:12px 16px">'
     +'<div style="font-size:10px;font-weight:600;color:#3B6D11;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Inovalab</div>'
-    +'<div style="display:flex;gap:20px;flex-wrap:wrap">'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:20px;font-weight:700;color:#1D9E75">'+fmtM(iFat)+'</div><div style="font-size:10px;color:var(--text2)">'+iQtd.toLocaleString('pt-BR')+' NFs'+'</div></div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">OTD</div><div style="font-size:20px;font-weight:700;color:#3B6D11">'+iOtd+'%</div><div style="font-size:10px;color:var(--text2)">'+iOn+' on / '+iOff+' off'+'</div></div>'
-    +'</div></div>';
+    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:24px;font-weight:700;color:#1D9E75">'+fmtM(iFat)+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+iQtd.toLocaleString('pt-BR')+' NFs</div></div>'
+    +'</div>';
 
   // ---- Helpers para somar Vendas + Bonificações por mês ----
   const bm = d.bonif_mes || {};
@@ -3464,10 +3481,23 @@ function renderOTDChart(d){
 
   try {
   // ---- BLOCO 4: Transportadoras ----
+  // v9.13: Log diagnóstico — confirma se o JSON tem os campos por subcategoria
+  if(d.otd && d.otd.length > 0){
+    const tDiag = d.otd[0];
+    const camposNovos = ['tratativa','ag_cte','transito_agenda','tratativa_val','ag_cte_val','transito_agenda_val'];
+    const faltam = camposNovos.filter(c => tDiag[c] === undefined);
+    if(faltam.length > 0){
+      console.warn('[v9.13 DIAG] JSON está desatualizado! Faltam campos no transp_list:', faltam);
+      console.warn('[v9.13 DIAG] Reprocesse a base com o Python v9.6+ (atualizar.bat)');
+    } else {
+      const ex = d.otd.find(t => (t.tratativa||0)+(t.ag_cte||0)+(t.transito_agenda||0) > 0) || tDiag;
+      console.log('[v9.13 DIAG] '+ex.n+': tratativa='+ex.tratativa+'/'+ex.tratativa_val+', ag_cte='+ex.ag_cte+'/'+ex.ag_cte_val+', tag='+ex.transito_agenda+'/'+ex.transito_agenda_val+', nao_val(do JSON)='+ex.nao_val);
+    }
+  }
   const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
   document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
     const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';
-    // v9.12: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
+    // v9.13: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
     // Recalculado no JS para funcionar com JSON de qualquer versão (mesmo antes do
     // Python ser rodado com a v9.7).
     const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
@@ -3768,6 +3798,522 @@ function renderLeadTimes_quadros_2_3(){
     +'<td class="r" style="color:#A32D2D">'+fmtM(valImp)+'</td>'
     +'</tr>';
 }
+
+// ============================================================
+// MODO TV — Torre de Controle Genomma (v9.14)
+// Ativa quando a URL tem ?tv=1. Renderiza uma view standalone
+// que se atualiza junto com o painel (chamada de dentro de renderOTD).
+// ============================================================
+(function(){
+  const TV_ENABLED = new URLSearchParams(location.search).get('tv') === '1';
+  if(!TV_ENABLED) return;
+
+  // Ativa o modo TV logo de cara — esconde o painel principal
+  document.body.classList.add('tv-on');
+
+  // Helper: descobre o quarter atual a partir do mês de hoje
+  function quarterAtual(){
+    const m = new Date().getMonth() + 1;
+    return Math.ceil(m / 3);  // 1, 2, 3 ou 4
+  }
+
+  // Helper: monta um relógio digital HH:MM:SS
+  function tvRelogio(){
+    const d = new Date();
+    const p = n => String(n).padStart(2,'0');
+    return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  }
+  function tvData(){
+    const d = new Date();
+    const p = n => String(n).padStart(2,'0');
+    return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}`;
+  }
+
+  // Helper: nome do mês em pt-BR
+  function nomeMes(m){
+    return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][m-1] || '?';
+  }
+
+  // Helper: agrega dados ACUMULADOS (igual ao painel principal)
+  function agregarTV(d){
+    if(!d) return null;
+
+    // Status — usa os totais acumulados que já existem no payload
+    // On Time / Off Time vem de empresa_total (Genomma + Inovalab) ou somando meses
+    let on=0, off=0;
+    if(d.empresa_total){
+      on  = (d.empresa_total.GENOMMA?.on||0)  + (d.empresa_total.INOVALAB?.on||0);
+      off = (d.empresa_total.GENOMMA?.off||0) + (d.empresa_total.INOVALAB?.off||0);
+    }
+    // Fallback: somar dos meses
+    if(on === 0 && off === 0){
+      Object.values(d.meses||{}).forEach(m => {
+        on  += m.on||0;
+        off += m.off||0;
+      });
+    }
+
+    const status = {
+      on, off,
+      hub:             d.totalHubAll             || 0,
+      trs:             d.totalTrsAll             || 0,
+      trs_atr:         d.totalTrsAtrAll          || 0,
+      tratativa:       d.totalTratativaAll       || 0,
+      ag_cte:          d.totalAgCteAll           || 0,
+      transito_agenda: d.totalTransitoAgendaAll  || 0,
+      // v9.17: valores R$ correspondentes (mostrados em tamanho menor abaixo)
+      hub_val:             d.totalHubValAll             || 0,
+      trs_val:             d.totalTrsValAll             || 0,
+      trs_atr_val:         d.totalTrsAtrValAll          || 0,
+      tratativa_val:       d.totalTratativaValAll       || 0,
+      ag_cte_val:          d.totalAgCteValAll           || 0,
+      transito_agenda_val: d.totalTransitoAgendaValAll  || 0
+    };
+
+    const finalizadas = status.on + status.off;
+    const otdPct = finalizadas > 0 ? (status.on / finalizadas * 100) : null;
+
+    // ====== v9.15: Lead time do mês corrente ======
+    const mesAtual = new Date().getMonth() + 1;
+    const ltBR = d.lead_time_brasil || {};
+    const ltMes = (ltBR.por_mes || {})[mesAtual] || (ltBR.por_mes || {})[String(mesAtual)];
+
+    // Fallback: se o mês atual não tiver dados, usa o último mês com dados
+    let ltUsado = ltMes;
+    let ltMesNumero = mesAtual;
+    if(!ltUsado){
+      // Procurar último mês com dados (decrescente)
+      for(let m = mesAtual - 1; m >= 1; m--){
+        const tentativa = (ltBR.por_mes || {})[m] || (ltBR.por_mes || {})[String(m)];
+        if(tentativa){ ltUsado = tentativa; ltMesNumero = m; break; }
+      }
+    }
+    const leadTime = {
+      mes: ltMesNumero,
+      mesNome: nomeMes(ltMesNumero),
+      lt_total: ltUsado?.lt_total || 0,
+      lt_exp:   ltUsado?.lt_exp   || 0,
+      lt_trans: ltUsado?.lt_trans || 0,
+      n_total:  ltUsado?.n_total  || 0
+    };
+
+    // ====== v9.15: OTD por região derivado dos UFs das transportadoras ======
+    // Cada otd[].ufs[] tem on/off/reg — somo tudo e calculo OTD% por região
+    const regAgg = {};  // {regiao: {on, off, fin}}
+    (d.otd || []).forEach(t => {
+      (t.ufs || []).forEach(u => {
+        const r = u.reg || 'Outros';
+        if(!regAgg[r]) regAgg[r] = {on:0, off:0, fin:0};
+        regAgg[r].on  += u.on  || 0;
+        regAgg[r].off += u.off || 0;
+        regAgg[r].fin += u.fin || 0;
+      });
+    });
+
+    // Lead times por região (acumulado, vem do JSON)
+    const ltRegMap = {};
+    (d.lead_times_regiao || []).forEach(lr => {
+      ltRegMap[lr.regiao] = lr;
+    });
+
+    // Junta tudo: regioes da TV agora têm OTD% + Lead Time + qtd em trânsito
+    const regioes = (d.regioes || []).map(r => {
+      const ag = regAgg[r.r] || {on:0, off:0, fin:0};
+      const otd = ag.fin > 0 ? (ag.on / ag.fin * 100) : null;
+      const lt = ltRegMap[r.r] || {};
+      return {
+        r: r.r,
+        atr_qtd: r.atr_qtd || 0,
+        otdPct: otd,
+        ltTotal: lt.lt_total || 0,
+        fin: ag.fin
+      };
+    });
+    // Inclui regiões com OTD mas que talvez nao apareçam no `regioes` (sem trânsito)
+    Object.keys(regAgg).forEach(rNome => {
+      if(!regioes.find(x => x.r === rNome) && rNome !== 'Outros'){
+        const ag = regAgg[rNome];
+        const otd = ag.fin > 0 ? (ag.on / ag.fin * 100) : null;
+        const lt = ltRegMap[rNome] || {};
+        regioes.push({
+          r: rNome,
+          atr_qtd: 0,
+          otdPct: otd,
+          ltTotal: lt.lt_total || 0,
+          fin: ag.fin
+        });
+      }
+    });
+
+    // Top transportadoras por nº finalizadas (acumulado)
+    const transps = (d.otd || []).slice().sort((a,b) => (b.fin||0)-(a.fin||0)).slice(0, 6);
+
+    // Label do período (mostra o ano corrente como contexto)
+    const Q = quarterAtual();
+    const ano = new Date().getFullYear();
+
+    return {
+      Q,
+      status,
+      otdPct,
+      finalizadas,
+      regioes,
+      transps,
+      leadTime,
+      quarterLabel: `ACUMULADO · ${ano}`
+    };
+  }
+
+  // ============================================================
+  // RENDER TV — produz o SVG completo
+  // ============================================================
+  function renderTV(){
+    const container = document.getElementById('tv-mode');
+    if(!container) return;
+    if(!otdData){
+      container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#60a5fa;font-size:24px;letter-spacing:4px">CARREGANDO TORRE…</div>';
+      return;
+    }
+
+    const agg = agregarTV(otdData);
+    if(!agg){ return; }
+
+    const otdStr = agg.otdPct != null ? agg.otdPct.toFixed(1).replace('.', ',') + '%' : '—';
+
+    // Render
+    container.innerHTML = `
+<svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="tv-radar" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#1e40af" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0A1B3A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="tv-sweep" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#60a5fa" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="tv-sweep2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#93c5fd" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Padrão de fundo radar -->
+  <g opacity="0.05" stroke="#60a5fa" stroke-width="0.5" fill="none">
+    <line x1="0" y1="540" x2="1920" y2="540"/>
+    <line x1="960" y1="0" x2="960" y2="1080"/>
+    <line x1="0" y1="0" x2="1920" y2="1080"/>
+    <line x1="1920" y1="0" x2="0" y2="1080"/>
+  </g>
+  <!-- Anéis concêntricos atrás de tudo, no centro -->
+  <g transform="translate(960,540)" opacity="0.04" stroke="#60a5fa" fill="none">
+    <circle r="200" stroke-width="0.5"/>
+    <circle r="350" stroke-width="0.5"/>
+    <circle r="500" stroke-width="0.5"/>
+    <circle r="700" stroke-width="0.5"/>
+  </g>
+
+  <!-- ===== TOPO ===== -->
+  <g transform="translate(60,50)">
+    <rect x="0" y="0" width="44" height="44" rx="6" fill="none" stroke="#60a5fa" stroke-width="1.5"/>
+    <path d="M 12 10 L 32 10 L 28 22 L 16 22 Z M 18 22 L 18 36 L 26 36 L 26 22" stroke="#60a5fa" stroke-width="1.5" fill="none"/>
+    <line x1="22" y1="10" x2="22" y2="6" stroke="#60a5fa" stroke-width="1.5"/>
+    <circle cx="22" cy="5" r="1.5" fill="#60a5fa">
+      <animate attributeName="opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <text x="120" y="68" fill="#fff" font-size="22" font-weight="500" letter-spacing="5">TORRE DE CONTROLE</text>
+  <text x="120" y="92" fill="#60a5fa" font-size="13" letter-spacing="4">GENOMMA LAB · LOGÍSTICA NACIONAL</text>
+
+  <g transform="translate(820,38)">
+    <rect width="280" height="64" rx="32" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1"/>
+    <circle cx="32" cy="32" r="6" fill="#60a5fa"/>
+    <circle cx="32" cy="32" r="6" fill="#60a5fa" opacity="0.5">
+      <animate attributeName="r" values="6;14;6" dur="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0;0.6" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="60" y="28" fill="#bfdbfe" font-size="11" letter-spacing="3">PERÍODO</text>
+    <text x="60" y="52" fill="#fff" font-size="22" font-weight="500" letter-spacing="4">${agg.quarterLabel}</text>
+  </g>
+
+  <g transform="translate(1700,50)">
+    <text x="160" y="22" fill="#60a5fa" font-size="11" text-anchor="end" letter-spacing="3">EM OPERAÇÃO</text>
+    <text x="160" y="60" fill="#fff" font-size="32" text-anchor="end" font-weight="500" font-family="ui-monospace,monospace" id="tv-clock">${tvRelogio()}</text>
+    <text x="160" y="84" fill="#60a5fa" font-size="11" text-anchor="end">${tvData()}</text>
+  </g>
+  <line x1="60" y1="130" x2="1860" y2="130" stroke="#1e3a8a"/>
+
+  <!-- ===== HERO OTD ===== -->
+  <g transform="translate(60,175)">
+    <rect width="780" height="430" rx="14" fill="#0E2452" stroke="#1e3a8a" stroke-width="1"/>
+    <g transform="translate(390,240)">
+      <circle r="180" fill="url(#tv-radar)"/>
+      <circle r="180" fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle r="135" fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle r="90"  fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle r="45"  fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <line x1="-180" y1="0" x2="180" y2="0" stroke="#1e3a8a" stroke-width="0.5"/>
+      <line x1="0" y1="-180" x2="0" y2="180" stroke="#1e3a8a" stroke-width="0.5"/>
+      <!-- Sweep principal -->
+      <path d="M 0 0 L 180 0 A 180 180 0 0 0 127 -127 Z" fill="url(#tv-sweep)" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/>
+      </path>
+      <!-- Segundo sweep mais lento e sutil -->
+      <path d="M 0 0 L 180 0 A 180 180 0 0 0 156 -90 Z" fill="url(#tv-sweep2)" opacity="0.5">
+        <animateTransform attributeName="transform" type="rotate" from="180" to="540" dur="11s" repeatCount="indefinite"/>
+      </path>
+      <!-- Blip 1 -->
+      <circle cx="80" cy="-40" r="3" fill="#60a5fa">
+        <animate attributeName="opacity" values="0;1;0" dur="2.4s" begin="0.5s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Blip 2 -->
+      <circle cx="-50" cy="70" r="2.5" fill="#93c5fd">
+        <animate attributeName="opacity" values="0;1;0" dur="3.1s" begin="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Blip 3 -->
+      <circle cx="-100" cy="-90" r="3" fill="#60a5fa">
+        <animate attributeName="opacity" values="0;1;0" dur="2.7s" begin="0.2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <text x="40" y="60" fill="#60a5fa" font-size="13" letter-spacing="4">OTD · ON-TIME DELIVERY</text>
+    <text x="390" y="295" fill="#fff" font-size="200" font-weight="500" text-anchor="middle">${otdStr}</text>
+    <text x="390" y="345" fill="#bfdbfe" font-size="20" text-anchor="middle">${agg.status.on.toLocaleString('pt-BR')} no prazo · ${agg.status.off.toLocaleString('pt-BR')} em atraso</text>
+    <g transform="translate(80,380)">
+      <rect width="620" height="6" rx="3" fill="#1e3a8a"/>
+      <rect width="${agg.finalizadas > 0 ? Math.min(620, 620*(agg.status.on/agg.finalizadas)).toFixed(0) : 0}" height="6" rx="3" fill="#60a5fa"/>
+      <text x="0" y="28" fill="#60a5fa" font-size="11" letter-spacing="2">META 99%${agg.otdPct >= 99 ? ' ✓' : ''}</text>
+      <text x="620" y="28" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">${agg.finalizadas.toLocaleString('pt-BR')} FINALIZADAS</text>
+    </g>
+  </g>
+
+  <!-- ===== STATUS DAS ENTREGAS ===== -->
+  <g transform="translate(880,175)">
+    <text x="0" y="-20" fill="#60a5fa" font-size="13" letter-spacing="4">STATUS DAS ENTREGAS · ${agg.quarterLabel.toUpperCase()}</text>
+    ${tvStatusCard(0,   0, 'CD · AG. EXPEDIÇÃO', agg.status.hub,             agg.status.hub_val,             '#60a5fa')}
+    ${tvStatusCard(340, 0, 'EM TRÂNSITO',         agg.status.trs,             agg.status.trs_val,             '#3b82f6')}
+    ${tvStatusCard(680, 0, 'EM ATRASO',           agg.status.trs_atr,         agg.status.trs_atr_val,         '#fbbf24', true)}
+    ${tvStatusCard(0,   155, 'TRATATIVA',         agg.status.tratativa,       agg.status.tratativa_val,       '#93c5fd')}
+    ${tvStatusCard(340, 155, 'AG. CTE',           agg.status.ag_cte,          agg.status.ag_cte_val,          '#7dd3fc')}
+    ${tvStatusCard(680, 155, 'TRÂNSITO AGENDA',   agg.status.transito_agenda, agg.status.transito_agenda_val, '#1e40af')}
+  </g>
+
+  <!-- ===== MAPA + LEAD TIME POR REGIÃO ===== -->
+  <g transform="translate(60,640)">
+    <rect width="780" height="380" rx="14" fill="#0E2452" stroke="#1e3a8a"/>
+    <text x="30" y="38" fill="#60a5fa" font-size="13" letter-spacing="4">MAPA · OTD &amp; LEAD TIME POR REGIÃO</text>
+
+    <!-- Lead time Brasil (mês corrente) — 3 KPIs em mini-faixa no topo -->
+    <g transform="translate(30,55)">
+      <text x="0" y="14" fill="#bfdbfe" font-size="10" letter-spacing="2">LEAD TIME BRASIL · ${agg.leadTime.mesNome.toUpperCase()}</text>
+      <g transform="translate(0,22)">
+        <rect width="720" height="56" rx="8" fill="#0A1B3A" stroke="#1e3a8a"/>
+        <g transform="translate(20,18)">
+          <text x="0" y="0" fill="#60a5fa" font-size="9" letter-spacing="2">TOTAL</text>
+          <text x="0" y="28" fill="#fff" font-size="26" font-weight="500">${agg.leadTime.lt_total.toFixed(1).replace('.',',')}<tspan fill="#60a5fa" font-size="13" font-weight="400"> d</tspan></text>
+        </g>
+        <line x1="240" y1="10" x2="240" y2="46" stroke="#1e3a8a"/>
+        <g transform="translate(260,18)">
+          <text x="0" y="0" fill="#60a5fa" font-size="9" letter-spacing="2">EXPEDIÇÃO</text>
+          <text x="0" y="28" fill="#fff" font-size="26" font-weight="500">${agg.leadTime.lt_exp.toFixed(1).replace('.',',')}<tspan fill="#60a5fa" font-size="13" font-weight="400"> d</tspan></text>
+        </g>
+        <line x1="480" y1="10" x2="480" y2="46" stroke="#1e3a8a"/>
+        <g transform="translate(500,18)">
+          <text x="0" y="0" fill="#60a5fa" font-size="9" letter-spacing="2">TRANSPORTE</text>
+          <text x="0" y="28" fill="#fff" font-size="26" font-weight="500">${agg.leadTime.lt_trans.toFixed(1).replace('.',',')}<tspan fill="#60a5fa" font-size="13" font-weight="400"> d</tspan></text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Mapa estilizado (v9.16: silhueta mais próxima do Brasil real) -->
+    <g transform="translate(20,145) scale(0.6)">
+      ${tvMapaRegioes(agg.regioes)}
+    </g>
+
+    <!-- Tabela lateral com OTD% e Lead Time -->
+    <g transform="translate(395,155)">
+      <text x="0" y="0" fill="#60a5fa" font-size="11" letter-spacing="2">REGIÃO</text>
+      <text x="220" y="0" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">OTD</text>
+      <text x="355" y="0" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">LT</text>
+      ${tvTabelaRegioes(agg.regioes)}
+    </g>
+  </g>
+
+  <!-- ===== RANKING TRANSPORTADORAS ===== -->
+  <g transform="translate(880,640)">
+    <rect width="1000" height="380" rx="14" fill="#0E2452" stroke="#1e3a8a"/>
+    <text x="30" y="40" fill="#60a5fa" font-size="13" letter-spacing="4">RANKING DE TRANSPORTADORAS · ACUMULADO</text>
+    <g transform="translate(30,75)">
+      <text x="50" y="0" fill="#60a5fa" font-size="11" letter-spacing="2">TRANSPORTADORA</text>
+      <text x="700" y="0" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">OTD</text>
+      <text x="940" y="0" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">FINALIZADAS</text>
+      <line x1="0" y1="14" x2="940" y2="14" stroke="#1e3a8a"/>
+      ${tvRankingTransps(agg.transps)}
+    </g>
+  </g>
+
+  <!-- ===== RODAPÉ ===== -->
+  <g transform="translate(60,1040)">
+    <circle cx="6" cy="-3" r="5" fill="#60a5fa">
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <text x="22" y="2" fill="#60a5fa" font-size="11" letter-spacing="2">SISTEMA EM OPERAÇÃO · BASE ATUALIZADA ${(otdData.atualizado||'').toUpperCase()}</text>
+    <text x="1860" y="2" fill="#3b82f6" font-size="11" text-anchor="end" letter-spacing="2">${(window.__BUILD__||{}).version||''} · TORRE OTD</text>
+  </g>
+</svg>`;
+  }
+
+  // ============================================================
+  // HELPERS de renderização (templates auxiliares)
+  // ============================================================
+  function tvStatusCard(x, y, label, valor, valorRS, cor, isAlerta){
+    const fmt = (valor||0).toLocaleString('pt-BR');
+    const corValor = isAlerta && valor > 0 ? cor : '#fff';
+    const corLabel = isAlerta && valor > 0 ? '#fde68a' : '#bfdbfe';
+    const blip = isAlerta && valor > 0
+      ? `<circle cx="297" cy="35" r="5" fill="${cor}"><animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/></circle>`
+      : '';
+    // v9.17: formatar valor monetário em R$ X,X mi / R$ XXX mil / R$ XXX / —
+    function fmtRS(v){
+      if(!v || v === 0) return '';
+      if(v >= 1_000_000) return 'R$ '+(v/1_000_000).toFixed(1).replace('.',',')+' mi';
+      if(v >= 1_000)     return 'R$ '+(v/1_000).toFixed(0)+' mil';
+      return 'R$ '+v.toFixed(0);
+    }
+    const valRS = fmtRS(valorRS);
+    return `<g transform="translate(${x},${y})">
+      <rect width="320" height="135" rx="12" fill="#0E2452" stroke="#1e3a8a"/>
+      <rect x="0" y="0" width="4" height="135" rx="2" fill="${cor}"/>
+      <text x="25" y="35" fill="${corLabel}" font-size="12" letter-spacing="3">${label}</text>
+      <text x="25" y="92" fill="${corValor}" font-size="60" font-weight="500">${fmt}</text>
+      <text x="295" y="92" fill="#3b82f6" font-size="13" text-anchor="end" letter-spacing="2">NFs</text>
+      <text x="25" y="118" fill="#7dd3fc" font-size="14" font-weight="400" letter-spacing="1">${valRS}</text>
+      ${blip}
+    </g>`;
+  }
+
+  // Mapa estilizado — cores baseadas em qtd em trânsito da região
+  function tvMapaRegioes(regioes){
+    // v9.16: paths estilizados mais próximos da silhueta real do Brasil.
+    // viewBox interno: 0 0 400 380 (Norte ocupa ~50% por ser de fato o maior)
+    function cor(otd){
+      if(otd == null) return '#1e3a8a';
+      if(otd >= 99)   return '#60a5fa';
+      if(otd >= 95)   return '#3b82f6';
+      if(otd >= 90)   return '#2563eb';
+      return '#1e40af';
+    }
+    function get(nome){
+      const r = regioes.find(x => x.r === nome);
+      return r ? r : {otdPct: null};
+    }
+    const rN  = get('Norte'),       rNE = get('Nordeste'),  rCO = get('Centro-Oeste');
+    const rSE = get('Sudeste'),     rS  = get('Sul');
+    const pct = v => v != null ? v.toFixed(1).replace('.',',') + '%' : '—';
+    return `
+      <!-- NORTE: cobre canto superior esquerdo, ~50% do território -->
+      <path d="M 20,80 L 50,40 L 100,30 L 150,25 L 200,30 L 230,50 L 250,80
+               L 245,140 L 235,180 L 220,195 L 180,210 L 140,215 L 95,205
+               L 55,180 L 25,140 Z"
+            fill="${cor(rN.otdPct)}" stroke="#fff" stroke-width="1" stroke-opacity="0.5"/>
+      <text x="135" y="115" fill="#fff" font-size="13" text-anchor="middle" font-weight="600" letter-spacing="1.5">NORTE</text>
+      <text x="135" y="138" fill="#fff" font-size="20" text-anchor="middle" font-weight="700">${pct(rN.otdPct)}</text>
+
+      <!-- NORDESTE: canto superior direito com "bico" pra fora -->
+      <path d="M 250,80 L 290,70 L 330,85 L 360,120 L 370,170 L 360,210
+               L 340,240 L 305,250 L 265,245 L 240,225 L 235,180 L 245,140
+               L 250,100 Z"
+            fill="${cor(rNE.otdPct)}" stroke="#fff" stroke-width="1" stroke-opacity="0.5"/>
+      <text x="305" y="150" fill="#fff" font-size="13" text-anchor="middle" font-weight="600" letter-spacing="1.5">NORDESTE</text>
+      <text x="305" y="173" fill="#fff" font-size="20" text-anchor="middle" font-weight="700">${pct(rNE.otdPct)}</text>
+
+      <!-- CENTRO-OESTE: centro do território -->
+      <path d="M 95,205 L 140,215 L 180,210 L 220,195 L 235,225 L 240,245
+               L 235,275 L 215,290 L 175,295 L 135,290 L 100,275 L 85,245 Z"
+            fill="${cor(rCO.otdPct)}" stroke="#fff" stroke-width="1" stroke-opacity="0.5"/>
+      <text x="165" y="245" fill="#fff" font-size="11" text-anchor="middle" font-weight="600" letter-spacing="1">CENTRO-OESTE</text>
+      <text x="165" y="268" fill="#fff" font-size="18" text-anchor="middle" font-weight="700">${pct(rCO.otdPct)}</text>
+
+      <!-- SUDESTE: meio direita, abaixo do Nordeste -->
+      <path d="M 215,290 L 240,245 L 265,245 L 305,250 L 340,240
+               L 335,270 L 320,295 L 290,315 L 260,325 L 225,320 Z"
+            fill="${cor(rSE.otdPct)}" stroke="#fff" stroke-width="1" stroke-opacity="0.5"/>
+      <text x="285" y="278" fill="#fff" font-size="13" text-anchor="middle" font-weight="600" letter-spacing="1.5">SUDESTE</text>
+      <text x="285" y="302" fill="#fff" font-size="20" text-anchor="middle" font-weight="700">${pct(rSE.otdPct)}</text>
+
+      <!-- SUL: pequeno, na ponta de baixo -->
+      <path d="M 175,295 L 215,290 L 225,320 L 260,325 L 250,355
+               L 215,370 L 180,370 L 155,355 L 145,325 Z"
+            fill="${cor(rS.otdPct)}" stroke="#fff" stroke-width="1" stroke-opacity="0.5"/>
+      <text x="200" y="335" fill="#fff" font-size="12" text-anchor="middle" font-weight="600" letter-spacing="1.5">SUL</text>
+      <text x="200" y="357" fill="#fff" font-size="18" text-anchor="middle" font-weight="700">${pct(rS.otdPct)}</text>`;
+  }
+
+  function tvTabelaRegioes(regioes){
+    // v9.15: ordena por OTD desc, mostra OTD% e Lead Time
+    const ord = regioes.slice()
+      .filter(r => r.r !== 'Outros')
+      .sort((a,b) => (b.otdPct||0) - (a.otdPct||0));
+    const corOTD = v => v == null ? '#bfdbfe' : v >= 99 ? '#60a5fa' : v >= 95 ? '#93c5fd' : v >= 90 ? '#fde68a' : '#fbbf24';
+    return ord.slice(0,5).map((r,i) => {
+      const otdStr = r.otdPct != null ? r.otdPct.toFixed(1).replace('.',',') + '%' : '—';
+      const ltStr  = r.ltTotal > 0 ? r.ltTotal.toFixed(1).replace('.',',') + 'd' : '—';
+      return `<g transform="translate(0,${30 + i*38})">
+        <text x="0" y="0" fill="#fff" font-size="15" font-weight="500">${r.r}</text>
+        <text x="220" y="0" fill="${corOTD(r.otdPct)}" font-size="18" font-weight="500" text-anchor="end">${otdStr}</text>
+        <text x="355" y="0" fill="#bfdbfe" font-size="14" text-anchor="end">${ltStr}</text>
+        ${i < 4 ? '<line x1="0" y1="14" x2="355" y2="14" stroke="#1e3a8a"/>' : ''}
+      </g>`;
+    }).join('');
+  }
+
+  function tvRankingTransps(transps){
+    if(!transps || transps.length === 0) return '';
+    const maxFin = Math.max(...transps.map(t => t.fin || 0), 1);
+    return transps.slice(0,6).map((t,i) => {
+      const otdStr = t.otd != null ? t.otd.toFixed(1).replace('.',',') + '%' : '—';
+      const fin = (t.fin||0);
+      const barW = Math.max(20, Math.min(160, 160*(fin/maxFin)));
+      const nome = (t.n||'').substring(0,30);
+      return `<g transform="translate(0,${45 + i*42})">
+        <text x="0" y="5" fill="#60a5fa" font-size="20" font-weight="500" font-family="ui-monospace,monospace">${String(i+1).padStart(2,'0')}</text>
+        <text x="50" y="5" fill="#fff" font-size="20" font-weight="500">${nome}</text>
+        <text x="700" y="5" fill="#fff" font-size="26" font-weight="500" text-anchor="end">${otdStr}</text>
+        <rect x="730" y="-10" width="160" height="22" rx="11" fill="#1e3a8a"/>
+        <rect x="730" y="-10" width="${barW.toFixed(0)}" height="22" rx="11" fill="#60a5fa" opacity="0.85"/>
+        <text x="940" y="5" fill="#0A1B3A" font-size="13" font-weight="500" text-anchor="end">${fin.toLocaleString('pt-BR')}</text>
+      </g>`;
+    }).join('');
+  }
+
+  // ============================================================
+  // HOOKS — atualização automática
+  // ============================================================
+  // 1. Quando otdData mudar, renderTV vai ser chamado pelo wrapping do renderOTD.
+  // 2. Relógio atualiza a cada segundo (independente do payload).
+  // 3. Quando o painel principal recarregar o JSON, tv re-renderiza inteiro.
+
+  // Wrap renderOTD para chamar renderTV depois (sem alterar a função original)
+  if(typeof window.renderOTD === 'function'){
+    const origRender = window.renderOTD;
+    window.renderOTD = function(payload){
+      const r = origRender.apply(this, arguments);
+      try { renderTV(); } catch(e){ console.error('[TV] Erro no render:', e); }
+      return r;
+    };
+  }
+
+  // Relógio digital tic-tac
+  setInterval(function(){
+    const el = document.getElementById('tv-clock');
+    if(el) el.textContent = tvRelogio();
+  }, 1000);
+
+  // Tenta renderizar imediatamente se já tem dados
+  setTimeout(renderTV, 100);
+  setTimeout(renderTV, 1500);
+  setTimeout(renderTV, 4000);
+})();
 </script>
 </body>
 </html>
