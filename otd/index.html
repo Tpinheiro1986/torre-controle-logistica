@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.17-status-valor-rs', date: '27/05/2026' };
+window.__BUILD__ = { version: 'v9.19-tv-aba-botao-voltar', date: '27/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -171,7 +171,7 @@ table.dt tr:hover td{background:var(--bg2)}
 
 /* ============ MODO TV (v9.14) ============ */
 /* Ativo quando body tem class .tv-on. Esconde TUDO do painel principal e mostra a TV. */
-body.tv-on > *:not(#tv-mode):not(script){display:none !important}
+body.tv-on > *:not(#tv-mode):not(#tv-back-btn):not(script){display:none !important}
 body.tv-on{background:#0A1B3A !important;margin:0;padding:0;overflow:hidden;height:100vh}
 #tv-mode{display:none;position:fixed;inset:0;background:#0A1B3A;color:#fff;font-family:system-ui,sans-serif;overflow:hidden}
 body.tv-on #tv-mode{display:block}
@@ -179,6 +179,28 @@ body.tv-on #tv-mode{display:block}
 /* Pulse mais suave em texto */
 @keyframes tv-pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .tv-pulse{animation:tv-pulse 1.6s ease-in-out infinite}
+/* v9.19: Botão Voltar discreto no canto superior direito */
+#tv-back-btn{
+  display:none;
+  position:fixed;
+  top:20px;
+  right:20px;
+  z-index:9999;
+  background:rgba(30,58,138,.85);
+  color:#fff;
+  border:1px solid #60a5fa;
+  border-radius:24px;
+  padding:8px 18px;
+  font-size:13px;
+  font-family:system-ui,sans-serif;
+  letter-spacing:1px;
+  cursor:pointer;
+  backdrop-filter:blur(4px);
+  transition:all .2s;
+  opacity:.5;
+}
+#tv-back-btn:hover{opacity:1;background:#1e3a8a;border-color:#93c5fd;transform:translateY(-1px)}
+body.tv-on #tv-back-btn{display:block}
 </style>
 </head>
 <body>
@@ -186,6 +208,8 @@ body.tv-on #tv-mode{display:block}
 <!-- ============== CONTAINER MODO TV (v9.14) ============== -->
 <!-- Só fica visível quando body tem class .tv-on. -->
 <div id="tv-mode" aria-hidden="true"></div>
+<!-- v9.19: Botão Voltar (só aparece em modo TV) -->
+<button id="tv-back-btn" onclick="(function(){document.body.classList.remove('tv-on');document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('on');if(t.textContent.trim().startsWith('OTD'))t.classList.add('on');});Object.values(TABS).forEach(s=>{const el=document.getElementById(s);if(el){el.classList.remove('on');el.style.display='none';}});const otd=document.getElementById('sec-otd');if(otd){otd.classList.add('on');otd.style.display='block';}})()">← Voltar ao painel</button>
 
 <!-- SELO DE VERSÃO (canto inferior direito) — fácil de ver para confirmar que a versão online é a certa -->
 <div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(24,95,165,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Clique para copiar a versão" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
@@ -239,6 +263,7 @@ body.tv-on #tv-mode{display:block}
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
     <div class="tab" onclick="switchTab('leadtime',this)">Lead Time</div>
+    <div class="tab" onclick="switchTab('tv',this)" style="background:linear-gradient(90deg,#1e3a8a,#3b82f6);color:#fff">📡 TV</div>
   </div>
 
   <div class="container">
@@ -976,7 +1001,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime'
+  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', tv:'tv-mode'
 };
 
 function switchTab(id, btn){
@@ -988,6 +1013,15 @@ function switchTab(id, btn){
   btn.classList.add('on');
   const sec = document.getElementById(TABS[id]);
   if(sec){sec.classList.add('on');sec.style.display='block';}
+
+  // v9.18: Modo TV via aba — adiciona/remove class tv-on no body
+  if(id === 'tv'){
+    document.body.classList.add('tv-on');
+    if(typeof window.__renderTV === 'function') window.__renderTV();
+  } else {
+    document.body.classList.remove('tv-on');
+  }
+
   if(id==='transp'){ renderTransp(); }
   if(id==='offtime'){ renderOffTime(); }
   if(id==='atrasos'){ renderAtrasos(); }
@@ -3805,11 +3839,8 @@ function renderLeadTimes_quadros_2_3(){
 // que se atualiza junto com o painel (chamada de dentro de renderOTD).
 // ============================================================
 (function(){
-  const TV_ENABLED = new URLSearchParams(location.search).get('tv') === '1';
-  if(!TV_ENABLED) return;
-
-  // Ativa o modo TV logo de cara — esconde o painel principal
-  document.body.classList.add('tv-on');
+  // v9.18: TV agora é acessível APENAS via aba "📡 TV" no menu.
+  // O ?tv=1 não é mais reconhecido (removido conforme solicitação).
 
   // Helper: descobre o quarter atual a partir do mês de hoje
   function quarterAtual(){
@@ -4308,6 +4339,9 @@ function renderLeadTimes_quadros_2_3(){
     const el = document.getElementById('tv-clock');
     if(el) el.textContent = tvRelogio();
   }, 1000);
+
+  // v9.18: expõe renderTV no escopo global para o switchTab poder chamar
+  window.__renderTV = renderTV;
 
   // Tenta renderizar imediatamente se já tem dados
   setTimeout(renderTV, 100);
