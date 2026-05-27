@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.19-tv-aba-botao-voltar', date: '27/05/2026' };
+window.__BUILD__ = { version: 'v9.20-tv-otd-mensal', date: '27/05/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -3904,6 +3904,32 @@ function renderLeadTimes_quadros_2_3(){
     const finalizadas = status.on + status.off;
     const otdPct = finalizadas > 0 ? (status.on / finalizadas * 100) : null;
 
+    // ====== v9.20: OTD do MÊS CORRENTE + 4 anteriores ======
+    // Hero passa a mostrar o mês corrente em destaque e 4 meses anteriores menores
+    const mesHoje = new Date().getMonth() + 1;  // 1..12
+    function otdDoMes(m){
+      const md = (d.meses||{})[m] || (d.meses||{})[String(m)] || {};
+      const onM  = md.on  || 0;
+      const offM = md.off || 0;
+      const finM = onM + offM;
+      return {
+        mes: m,
+        nome: nomeMes(m),
+        on: onM,
+        off: offM,
+        fin: finM,
+        otd: finM > 0 ? (onM/finM*100) : null
+      };
+    }
+    // Mês corrente
+    const otdMesCorrente = otdDoMes(mesHoje);
+    // 4 meses anteriores (mais antigo → mais recente)
+    const otdMesesAnteriores = [];
+    for(let i = 4; i >= 1; i--){
+      const m = mesHoje - i;
+      if(m >= 1) otdMesesAnteriores.push(otdDoMes(m));
+    }
+
     // ====== v9.15: Lead time do mês corrente ======
     const mesAtual = new Date().getMonth() + 1;
     const ltBR = d.lead_time_brasil || {};
@@ -3991,6 +4017,8 @@ function renderLeadTimes_quadros_2_3(){
       regioes,
       transps,
       leadTime,
+      otdMesCorrente,           // v9.20: mês corrente (em destaque no hero)
+      otdMesesAnteriores,       // v9.20: 4 meses anteriores (menores ao lado)
       quarterLabel: `ACUMULADO · ${ano}`
     };
   }
@@ -4075,52 +4103,60 @@ function renderLeadTimes_quadros_2_3(){
   </g>
   <line x1="60" y1="130" x2="1860" y2="130" stroke="#1e3a8a"/>
 
-  <!-- ===== HERO OTD ===== -->
+  <!-- ===== HERO OTD (v9.20: mês corrente + 4 anteriores) ===== -->
   <g transform="translate(60,175)">
     <rect width="780" height="430" rx="14" fill="#0E2452" stroke="#1e3a8a" stroke-width="1"/>
-    <g transform="translate(390,240)">
-      <circle r="180" fill="url(#tv-radar)"/>
-      <circle r="180" fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
-      <circle r="135" fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
-      <circle r="90"  fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
-      <circle r="45"  fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
-      <line x1="-180" y1="0" x2="180" y2="0" stroke="#1e3a8a" stroke-width="0.5"/>
-      <line x1="0" y1="-180" x2="0" y2="180" stroke="#1e3a8a" stroke-width="0.5"/>
-      <!-- Sweep principal -->
-      <path d="M 0 0 L 180 0 A 180 180 0 0 0 127 -127 Z" fill="url(#tv-sweep)" opacity="0.7">
+    <!-- Radar atrás do mês corrente -->
+    <g transform="translate(220,250)">
+      <circle r="160" fill="url(#tv-radar)"/>
+      <circle r="160" fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle r="120" fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle r="80"  fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle r="40"  fill="none" stroke="#1e3a8a" stroke-width="0.5"/>
+      <line x1="-160" y1="0" x2="160" y2="0" stroke="#1e3a8a" stroke-width="0.5"/>
+      <line x1="0" y1="-160" x2="0" y2="160" stroke="#1e3a8a" stroke-width="0.5"/>
+      <path d="M 0 0 L 160 0 A 160 160 0 0 0 113 -113 Z" fill="url(#tv-sweep)" opacity="0.7">
         <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/>
       </path>
-      <!-- Segundo sweep mais lento e sutil -->
-      <path d="M 0 0 L 180 0 A 180 180 0 0 0 156 -90 Z" fill="url(#tv-sweep2)" opacity="0.5">
+      <path d="M 0 0 L 160 0 A 160 160 0 0 0 139 -80 Z" fill="url(#tv-sweep2)" opacity="0.5">
         <animateTransform attributeName="transform" type="rotate" from="180" to="540" dur="11s" repeatCount="indefinite"/>
       </path>
-      <!-- Blip 1 -->
-      <circle cx="80" cy="-40" r="3" fill="#60a5fa">
+      <circle cx="70" cy="-35" r="3" fill="#60a5fa">
         <animate attributeName="opacity" values="0;1;0" dur="2.4s" begin="0.5s" repeatCount="indefinite"/>
       </circle>
-      <!-- Blip 2 -->
-      <circle cx="-50" cy="70" r="2.5" fill="#93c5fd">
+      <circle cx="-45" cy="60" r="2.5" fill="#93c5fd">
         <animate attributeName="opacity" values="0;1;0" dur="3.1s" begin="1.8s" repeatCount="indefinite"/>
       </circle>
-      <!-- Blip 3 -->
-      <circle cx="-100" cy="-90" r="3" fill="#60a5fa">
+      <circle cx="-90" cy="-80" r="3" fill="#60a5fa">
         <animate attributeName="opacity" values="0;1;0" dur="2.7s" begin="0.2s" repeatCount="indefinite"/>
       </circle>
     </g>
+
     <text x="40" y="60" fill="#60a5fa" font-size="13" letter-spacing="4">OTD · ON-TIME DELIVERY</text>
-    <text x="390" y="295" fill="#fff" font-size="200" font-weight="500" text-anchor="middle">${otdStr}</text>
-    <text x="390" y="345" fill="#bfdbfe" font-size="20" text-anchor="middle">${agg.status.on.toLocaleString('pt-BR')} no prazo · ${agg.status.off.toLocaleString('pt-BR')} em atraso</text>
-    <g transform="translate(80,380)">
-      <rect width="620" height="6" rx="3" fill="#1e3a8a"/>
-      <rect width="${agg.finalizadas > 0 ? Math.min(620, 620*(agg.status.on/agg.finalizadas)).toFixed(0) : 0}" height="6" rx="3" fill="#60a5fa"/>
-      <text x="0" y="28" fill="#60a5fa" font-size="11" letter-spacing="2">META 99%${agg.otdPct >= 99 ? ' ✓' : ''}</text>
-      <text x="620" y="28" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">${agg.finalizadas.toLocaleString('pt-BR')} FINALIZADAS</text>
+
+    <!-- Mês corrente em destaque (centro-esquerda) -->
+    <text x="220" y="170" fill="#bfdbfe" font-size="16" text-anchor="middle" letter-spacing="4">${(agg.otdMesCorrente.nome||'').toUpperCase()} · ${new Date().getFullYear()}</text>
+    <text x="220" y="290" fill="#fff" font-size="140" font-weight="500" text-anchor="middle">${agg.otdMesCorrente.otd != null ? agg.otdMesCorrente.otd.toFixed(1).replace('.',',') + '%' : '—'}</text>
+    <text x="220" y="330" fill="#bfdbfe" font-size="16" text-anchor="middle">${agg.otdMesCorrente.on.toLocaleString('pt-BR')} no prazo · ${agg.otdMesCorrente.off.toLocaleString('pt-BR')} atraso</text>
+
+    <!-- Barra de meta -->
+    <g transform="translate(80,370)">
+      <rect width="280" height="6" rx="3" fill="#1e3a8a"/>
+      <rect width="${agg.otdMesCorrente.fin > 0 ? Math.min(280, 280*(agg.otdMesCorrente.on/agg.otdMesCorrente.fin)).toFixed(0) : 0}" height="6" rx="3" fill="${agg.otdMesCorrente.otd >= 99 ? '#60a5fa' : '#fbbf24'}"/>
+      <text x="0" y="26" fill="#60a5fa" font-size="11" letter-spacing="2">META 99%${agg.otdMesCorrente.otd >= 99 ? ' ✓' : ' ✗'}</text>
+      <text x="280" y="26" fill="#60a5fa" font-size="11" letter-spacing="2" text-anchor="end">${agg.otdMesCorrente.fin.toLocaleString('pt-BR')} FINALIZADAS</text>
+    </g>
+
+    <!-- 4 meses anteriores (lado direito) -->
+    <g transform="translate(450,100)">
+      <text x="0" y="0" fill="#60a5fa" font-size="11" letter-spacing="3">HISTÓRICO</text>
+      ${tvMesesAnteriores(agg.otdMesesAnteriores)}
     </g>
   </g>
 
   <!-- ===== STATUS DAS ENTREGAS ===== -->
   <g transform="translate(880,175)">
-    <text x="0" y="-20" fill="#60a5fa" font-size="13" letter-spacing="4">STATUS DAS ENTREGAS · ${agg.quarterLabel.toUpperCase()}</text>
+    <text x="0" y="-20" fill="#60a5fa" font-size="13" letter-spacing="4">STATUS DAS ENTREGAS · EM TRÂNSITO</text>
     ${tvStatusCard(0,   0, 'CD · AG. EXPEDIÇÃO', agg.status.hub,             agg.status.hub_val,             '#60a5fa')}
     ${tvStatusCard(340, 0, 'EM TRÂNSITO',         agg.status.trs,             agg.status.trs_val,             '#3b82f6')}
     ${tvStatusCard(680, 0, 'EM ATRASO',           agg.status.trs_atr,         agg.status.trs_atr_val,         '#fbbf24', true)}
@@ -4197,6 +4233,26 @@ function renderLeadTimes_quadros_2_3(){
   // ============================================================
   // HELPERS de renderização (templates auxiliares)
   // ============================================================
+  // v9.20: 4 mini-cards de OTD dos meses anteriores (lado direito do hero)
+  function tvMesesAnteriores(meses){
+    if(!meses || meses.length === 0) return '';
+    // Grid 2x2 começando em (0, 14)
+    return meses.map((m, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const x = col * 145;
+      const y = 30 + row * 110;
+      const otdStr = m.otd != null ? m.otd.toFixed(1).replace('.',',') + '%' : '—';
+      const corOTD = m.otd == null ? '#bfdbfe' : m.otd >= 99 ? '#60a5fa' : m.otd >= 95 ? '#93c5fd' : '#fbbf24';
+      return `<g transform="translate(${x},${y})">
+        <rect width="135" height="95" rx="8" fill="#0A1B3A" stroke="#1e3a8a" stroke-width="1"/>
+        <text x="67" y="22" fill="#bfdbfe" font-size="11" text-anchor="middle" letter-spacing="2">${m.nome.toUpperCase()}</text>
+        <text x="67" y="62" fill="${corOTD}" font-size="32" font-weight="500" text-anchor="middle">${otdStr}</text>
+        <text x="67" y="83" fill="#5a7ba8" font-size="10" text-anchor="middle">${m.fin.toLocaleString('pt-BR')} NFs</text>
+      </g>`;
+    }).join('');
+  }
+
   function tvStatusCard(x, y, label, valor, valorRS, cor, isAlerta){
     const fmt = (valor||0).toLocaleString('pt-BR');
     const corValor = isAlerta && valor > 0 ? cor : '#fff';
