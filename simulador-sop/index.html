@@ -133,6 +133,47 @@ tr:hover td{background:var(--bg2)}
 .cell-red{background:#F4C7C3;color:#791F1F;font-weight:600}
 .cell-gray{background:#E8E8E8;color:#595959;font-weight:600}
 
+/* Tabela mensal — separadores entre quarters e estética de grupo */
+.tbl-mensal th.sep-q,
+.tbl-mensal td.sep-q{border-left:3px solid #1F3864 !important}
+.tbl-mensal .hdr-quarters th{font-size:11px;letter-spacing:.06em;padding:8px 6px;border-bottom:2px solid rgba(255,255,255,0.18)}
+.tbl-mensal .hdr-quarters th[rowspan]{background:#1F3864}
+.tbl-mensal .grp-emp{background:#1F3864 !important;color:#fff !important;border-bottom:3px solid #fff}
+.tbl-mensal .grp-start td{border-top:2px solid #1F3864}
+.tbl-mensal .grp-end td{border-bottom:2px solid #1F3864}
+
+/* Barra de filtros das abas com muitas linhas */
+.filtros-bar{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;
+}
+.filtro-busca{
+  flex:1 1 240px;min-width:200px;
+  padding:7px 12px;font-size:12px;border:0.5px solid var(--border2);
+  border-radius:var(--radius);background:var(--bg);color:var(--text);
+  outline:none;font-family:inherit;
+}
+.filtro-busca:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(112,48,160,.12)}
+.filtro-sel{
+  padding:7px 28px 7px 10px;font-size:12px;border:0.5px solid var(--border2);
+  border-radius:var(--radius);background:var(--bg);color:var(--text);
+  cursor:pointer;font-family:inherit;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 4l3 3 3-3' stroke='%23808080' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.btn-sm-filt{
+  padding:6px 12px;font-size:11px;border:0.5px solid var(--border2);
+  background:transparent;color:var(--text2);border-radius:var(--radius);
+  cursor:pointer;font-family:inherit;
+}
+.btn-sm-filt:hover{background:var(--bg3)}
+.filtro-cont{
+  margin-left:auto;font-size:11px;color:var(--text2);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+
 /* LOADING */
 .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--text2);font-size:13px}
 .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px}
@@ -257,7 +298,13 @@ const state = {
   entradas: {},      // {cod_item: {1..12: qty_un}}
   curva: {},         // {empresa: {quarter: [pct_sem1, pct_sem2, ..., pct_sem13]}}
   loading: true,
-  activeTab: 'painel'
+  activeTab: 'painel',
+  // Filtros por aba (compartilhados entre re-renders)
+  filtros: {
+    sop:      {empresa:'', status:'', marca:'', busca:''},
+    forecast: {empresa:'', status:'', marca:'', busca:''},
+    estoque:  {empresa:'', status:'', marca:'', busca:''},
+  }
 };
 
 // ============================================================
@@ -931,30 +978,62 @@ function renderPainel(){
   `;
 
   // Tabela mensal por empresa
+  // Detalhe Mensal — agora com header de Quarter, separadores entre Q e linha GAP
   html += `<div class="panel"><div class="panel-title">Detalhe Mensal</div>
-    <div class="tbl-wrap"><table>
-      <thead><tr>
-        <th>Empresa</th><th>Métrica</th>
-        ${MESES_PT.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${MESES_ABR[i]}</th>`).join('')}
-        <th>Pico</th><th>Mês</th></tr></thead><tbody>`;
+    <div class="tbl-wrap"><table class="tbl-mensal">
+      <thead>
+        <tr class="hdr-quarters">
+          <th rowspan="2">Empresa</th>
+          <th rowspan="2">Métrica</th>
+          <th colspan="3" class="q1">Q1 · 1º Trimestre</th>
+          <th colspan="3" class="q2">Q2 · 2º Trimestre</th>
+          <th colspan="3" class="q3">Q3 · 3º Trimestre</th>
+          <th colspan="3" class="q4">Q4 · 4º Trimestre</th>
+          <th rowspan="2">Pico</th>
+          <th rowspan="2">Mês</th>
+        </tr>
+        <tr>
+          ${MESES_PT.map((m,i)=>{
+            const sep = (i % 3 === 0 && i > 0) ? ' sep-q' : '';
+            return `<th class="q${QUARTER_OF_MES[i]}${sep}">${MESES_ABR[i]}</th>`;
+          }).join('')}
+        </tr>
+      </thead>
+      <tbody>`;
   ['GENOMMA','INOVALAB'].forEach(emp => {
     const cap = emp === 'GENOMMA' ? capG : capI;
     const ppArr = aggM[emp];
     const pctArr = ppArr.map(v => v/cap);
     const stArr = pctArr.map((p,i) => getStatus(p, i < 5));
+    // GAP = só positivo quando falta (zero quando sobra)
+    const gapArr = ppArr.map(v => Math.max(v - cap, 0));
     const pico = Math.max(...ppArr.slice(5));
     const idx = ppArr.indexOf(pico);
-    html += `<tr><td rowspan="3" class="center"><strong>${emp}</strong></td>
-      <td>PP</td>${ppArr.map(v=>`<td class="num"><strong>${fmt(v)}</strong></td>`).join('')}
+
+    // Helper para classe com separador de quarter
+    const sepCls = (i) => (i % 3 === 0 && i > 0) ? ' sep-q' : '';
+
+    // PP
+    html += `<tr class="grp-start"><td rowspan="4" class="center grp-emp"><strong>${emp}</strong></td>
+      <td>PP</td>${ppArr.map((v,i)=>`<td class="num${sepCls(i)}"><strong>${fmt(v)}</strong></td>`).join('')}
       <td class="num"><strong>${fmt(pico)}</strong></td><td class="center"><strong>${MESES_ABR[idx]}</strong></td></tr>`;
+    // % ocupação
     html += `<tr><td>% ocup.</td>${pctArr.map((p,i)=>{
       const cls = i < 5 ? 'cell-gray' : statusClass(stArr[i]);
-      return `<td class="num ${cls}">${pct(p)}</td>`;
+      return `<td class="num ${cls}${sepCls(i)}">${pct(p)}</td>`;
     }).join('')}<td></td><td></td></tr>`;
+    // Status
     html += `<tr><td>Status</td>${stArr.map((s,i)=>{
       const cls = i < 5 ? 'cell-gray' : statusClass(s);
-      return `<td class="center ${cls}">${s}</td>`;
+      return `<td class="center ${cls}${sepCls(i)}">${s}</td>`;
     }).join('')}<td></td><td></td></tr>`;
+    // GAP — necessidade de PP a mais
+    const gapTotal = gapArr.slice(5).reduce((a,b) => Math.max(a, b), 0);  // pior mês
+    html += `<tr class="grp-end"><td>GAP (PP)</td>${gapArr.map((g,i)=>{
+      const isHist = i < 5;
+      const cls = isHist ? 'cell-gray' : (g > 0 ? 'cell-red' : 'cell-green');
+      return `<td class="num ${cls}${sepCls(i)}"><strong>${g > 0 ? '+' + fmt(g) : '0'}</strong></td>`;
+    }).join('')}<td class="num"><strong style="color:#A32D2D">${gapTotal > 0 ? '+' + fmt(gapTotal) : '0'}</strong></td><td></td></tr>`;
   });
   html += `</tbody></table></div></div>`;
 
@@ -968,6 +1047,11 @@ function renderPainel(){
   `;
 
   // Resumo executivo
+  // Calcular GAP máximo (necessidade de PP a mais) e quando ocorre
+  const gapMaxMG = Math.max(0, picoMG - capG);
+  const gapMaxMI = Math.max(0, picoMI - capI);
+  const gapMaxSG = Math.max(0, picoSG - capG);
+  const gapMaxSI = Math.max(0, picoSI - capI);
   html += `<div class="panel"><div class="panel-title">Resumo executivo</div>
     <div class="tbl-wrap"><table>
       <thead><tr><th>Indicador</th><th>Genomma</th><th>Inovalab</th></tr></thead>
@@ -977,6 +1061,12 @@ function renderPainel(){
         <tr><td>Diferença semanal vs mensal</td><td class="num">+${fmt(picoSG-picoMG)}</td><td class="num">+${fmt(picoSI-picoMI)}</td></tr>
         <tr><td>Meses em overflow</td><td class="num">${ovfMG}</td><td class="num">${ovfMI}</td></tr>
         <tr><td>Semanas em overflow</td><td class="num">${ovfSG}</td><td class="num">${ovfSI}</td></tr>
+        <tr style="background:#FCEBEB"><td><strong>GAP máx mensal (PP que faltam)</strong></td>
+          <td class="num"><strong style="color:#A32D2D">${gapMaxMG > 0 ? '+' + fmt(gapMaxMG) : '0'}</strong></td>
+          <td class="num"><strong style="color:#A32D2D">${gapMaxMI > 0 ? '+' + fmt(gapMaxMI) : '0'}</strong></td></tr>
+        <tr style="background:#FCEBEB"><td><strong>GAP máx semanal (PP que faltam)</strong></td>
+          <td class="num"><strong style="color:#A32D2D">${gapMaxSG > 0 ? '+' + fmt(gapMaxSG) : '0'}</strong></td>
+          <td class="num"><strong style="color:#A32D2D">${gapMaxSI > 0 ? '+' + fmt(gapMaxSI) : '0'}</strong></td></tr>
       </tbody>
     </table></div></div>`;
 
@@ -1095,9 +1185,84 @@ function renderCadastro(){
 }
 
 // ============================================================
+// FILTROS — utilitários compartilhados entre S&OP, Forecast e Estoque
+// ============================================================
+
+// Helper: gera lista única ordenada de valores
+function valoresUnicos(arr, key){
+  return Array.from(new Set(arr.map(s => s[key]).filter(v => v != null && v !== '')))
+    .sort((a,b) => String(a).localeCompare(String(b), 'pt-BR'));
+}
+
+// Aplica filtros a state.skus → retorna lista filtrada
+function aplicarFiltros(abaKey){
+  const f = state.filtros[abaKey] || {empresa:'', status:'', marca:'', busca:''};
+  const busca = (f.busca || '').toLowerCase().trim();
+  return state.skus.filter(s => {
+    if(f.empresa && s.empresa !== f.empresa) return false;
+    if(f.status){
+      if(f.status === '__sem_status' && s.status_supply) return false;
+      if(f.status !== '__sem_status' && s.status_supply !== f.status) return false;
+    }
+    if(f.marca && s.marca !== f.marca) return false;
+    if(busca){
+      const cod = (s.cod_item || '').toLowerCase();
+      const desc = (s.descricao || '').toLowerCase();
+      if(!cod.includes(busca) && !desc.includes(busca)) return false;
+    }
+    return true;
+  });
+}
+
+// Atualiza valor do filtro e re-renderiza
+function setFiltro(abaKey, campo, valor){
+  if(!state.filtros[abaKey]) state.filtros[abaKey] = {empresa:'', status:'', marca:'', busca:''};
+  state.filtros[abaKey][campo] = valor;
+  renderActiveTab();
+}
+
+function limparFiltros(abaKey){
+  state.filtros[abaKey] = {empresa:'', status:'', marca:'', busca:''};
+  renderActiveTab();
+}
+
+// Renderiza a barra de filtros padrão
+function renderBarraFiltros(abaKey, totalFiltrado, totalSemFiltro){
+  const f = state.filtros[abaKey] || {empresa:'', status:'', marca:'', busca:''};
+  const empresas = ['GENOMMA', 'INOVALAB'];
+  const statuses = valoresUnicos(state.skus, 'status_supply');
+  const marcas = valoresUnicos(state.skus, 'marca');
+  const temFiltro = f.empresa || f.status || f.marca || f.busca;
+
+  return `
+  <div class="filtros-bar">
+    <input type="text" class="filtro-busca" placeholder="🔎 Buscar por código ou descrição…"
+      value="${f.busca || ''}" oninput="setFiltro('${abaKey}','busca',this.value)">
+    <select class="filtro-sel" onchange="setFiltro('${abaKey}','empresa',this.value)">
+      <option value="">Empresa: todas</option>
+      ${empresas.map(e => `<option value="${e}" ${f.empresa===e?'selected':''}>${e}</option>`).join('')}
+    </select>
+    <select class="filtro-sel" onchange="setFiltro('${abaKey}','status',this.value)">
+      <option value="">Status: todos</option>
+      <option value="__sem_status" ${f.status==='__sem_status'?'selected':''}>(sem status)</option>
+      ${statuses.map(s => `<option value="${s}" ${f.status===s?'selected':''}>${s}</option>`).join('')}
+    </select>
+    <select class="filtro-sel" onchange="setFiltro('${abaKey}','marca',this.value)">
+      <option value="">Marca: todas</option>
+      ${marcas.map(m => `<option value="${m}" ${f.marca===m?'selected':''}>${m}</option>`).join('')}
+    </select>
+    ${temFiltro ? `<button class="btn btn-sm-filt" onclick="limparFiltros('${abaKey}')">✕ Limpar</button>` : ''}
+    <div class="filtro-cont">${totalFiltrado} de ${totalSemFiltro} SKUs</div>
+  </div>`;
+}
+
+// ============================================================
 // RENDER: S&OP / FORECAST (mesma estrutura)
 // ============================================================
 function renderPlano(title, dadosRef, tableKey, abaKey){
+  const skusFiltrados = aplicarFiltros(abaKey);
+  const sepCls = (i) => (i % 3 === 0 && i > 0) ? ' sep-q' : '';
+
   let html = `
     <div class="panel">
       <div class="panel-title">${title}
@@ -1107,14 +1272,26 @@ function renderPlano(title, dadosRef, tableKey, abaKey){
           <input type="file" id="upload-${abaKey}" accept=".xlsx" style="display:none" onchange="uploadAba('${abaKey}', this)">
         </div>
       </div>
-      <div class="tbl-wrap"><table>
-        <thead><tr>
-          <th>Cod Item</th><th>Descrição</th><th>Empresa</th>
-          <th>Status Supply</th><th>UPP Cadastro</th>
-          ${MESES_PT.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${MESES_ABR[i]}</th>`).join('')}
-          <th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Total</th>
-        </tr></thead><tbody>`;
-  state.skus.forEach(s => {
+      ${renderBarraFiltros(abaKey, skusFiltrados.length, state.skus.length)}
+      <div class="tbl-wrap"><table class="tbl-mensal">
+        <thead>
+          <tr class="hdr-quarters">
+            <th rowspan="2">Cod Item</th><th rowspan="2">Descrição</th>
+            <th rowspan="2">Empresa</th><th rowspan="2">Status Supply</th>
+            <th rowspan="2">UPP Cad.</th>
+            <th colspan="3" class="q1">Q1</th>
+            <th colspan="3" class="q2">Q2</th>
+            <th colspan="3" class="q3">Q3</th>
+            <th colspan="3" class="q4">Q4</th>
+            <th rowspan="2">Tot Q1</th><th rowspan="2">Tot Q2</th>
+            <th rowspan="2">Tot Q3</th><th rowspan="2">Tot Q4</th>
+            <th rowspan="2">Total</th>
+          </tr>
+          <tr>
+            ${MESES_PT.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}${sepCls(i)}">${MESES_ABR[i]}</th>`).join('')}
+          </tr>
+        </thead><tbody>`;
+  skusFiltrados.forEach(s => {
     const dados = dadosRef[s.cod_item] || {};
     const vals = MESES_PT.map((_,i) => dados[i+1] || 0);
     const totQ = [0,0,0,0];
@@ -1127,13 +1304,18 @@ function renderPlano(title, dadosRef, tableKey, abaKey){
       <td><span class="badge badge-${s.empresa.toLowerCase()}">${s.empresa}</span></td>
       <td class="center"><span class="${isDesat?'badge badge-desativado':''}">${s.status_supply||'—'}</span></td>
       <td class="num">${fmt(s.upp_cadastro)}</td>
-      ${vals.map((v,i)=>`<td class="num ${isAdmin?'editable':''}">${isAdmin
+      ${vals.map((v,i)=>`<td class="num${sepCls(i)} ${isAdmin?'editable':''}">${isAdmin
         ? `<input type="number" value="${v||''}" placeholder="0" onchange="savePlano('${tableKey}','${s.cod_item}',${i+1},this.value)">`
         : fmt(v)}</td>`).join('')}
       ${totQ.map(t=>`<td class="num"><strong>${fmt(t)}</strong></td>`).join('')}
       <td class="num"><strong>${fmt(totAno)}</strong></td>
     </tr>`;
   });
+  if(skusFiltrados.length === 0){
+    html += `<tr><td colspan="22" style="text-align:center;padding:30px;color:var(--text2)">
+      Nenhum SKU atende aos filtros aplicados.
+    </td></tr>`;
+  }
   html += `</tbody></table></div></div>`;
   document.getElementById('content').innerHTML = html;
 }
@@ -1149,6 +1331,15 @@ function renderForecast(){
 // RENDER: ESTOQUE ATUAL
 // ============================================================
 function renderEstoque(){
+  const skusFiltrados = aplicarFiltros('estoque');
+
+  // Totais consideram TODOS os SKUs (não só os filtrados), para visão fiel da capacidade
+  let totPP = {GENOMMA:0, INOVALAB:0};
+  state.skus.forEach(s => {
+    const est = state.estoque[s.cod_item] || 0;
+    totPP[s.empresa] = (totPP[s.empresa] || 0) + calcularPP(est, s.upp_efetiva);
+  });
+
   let html = `
     <div class="panel">
       <div class="panel-title">Estoque Atual — Foto do dia
@@ -1158,20 +1349,19 @@ function renderEstoque(){
           <input type="file" id="upload-estoque" accept=".xlsx" style="display:none" onchange="uploadAba('estoque', this)">
         </div>
       </div>
+      ${renderBarraFiltros('estoque', skusFiltrados.length, state.skus.length)}
       <div class="tbl-wrap"><table>
         <thead><tr>
           <th>Cod Item</th><th>Descrição</th><th>Empresa</th><th>Status Supply</th>
           <th>Estoque (UN)</th><th>Dem. média mensal</th>
           <th>Dias de cobertura</th><th>UPP</th><th>PP hoje</th>
         </tr></thead><tbody>`;
-  let totPP = {GENOMMA:0, INOVALAB:0};
-  state.skus.forEach(s => {
+  skusFiltrados.forEach(s => {
     const est = state.estoque[s.cod_item] || 0;
     const saidas = state.saidas[s.cod_item] || {};
     const demMedia = Object.values(saidas).reduce((a,b)=>a+b, 0) / 12;
     const dias = demMedia > 0 ? est / (demMedia/30) : 0;
     const pp = calcularPP(est, s.upp_efetiva);
-    totPP[s.empresa] += pp;
     const diasCls = dias < 30 ? 'color:#A32D2D;font-weight:600' : (dias > 180 ? 'color:#633806;font-weight:600' : '');
     const isDesat = s.status_supply === 'Desativado';
     html += `<tr>
@@ -1188,9 +1378,14 @@ function renderEstoque(){
       <td class="num"><strong>${fmt(pp)}</strong></td>
     </tr>`;
   });
+  if(skusFiltrados.length === 0){
+    html += `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text2)">
+      Nenhum SKU atende aos filtros aplicados.
+    </td></tr>`;
+  }
   html += `</tbody><tfoot>
-    <tr style="background:#D9E1F2"><td colspan="8" style="text-align:right"><strong>TOTAL GENOMMA</strong></td><td class="num"><strong>${fmt(totPP.GENOMMA)} PP</strong></td></tr>
-    <tr style="background:#D9E1F2"><td colspan="8" style="text-align:right"><strong>TOTAL INOVALAB</strong></td><td class="num"><strong>${fmt(totPP.INOVALAB)} PP</strong></td></tr>
+    <tr style="background:#D9E1F2"><td colspan="8" style="text-align:right"><strong>TOTAL GERAL GENOMMA</strong></td><td class="num"><strong>${fmt(totPP.GENOMMA)} PP</strong></td></tr>
+    <tr style="background:#D9E1F2"><td colspan="8" style="text-align:right"><strong>TOTAL GERAL INOVALAB</strong></td><td class="num"><strong>${fmt(totPP.INOVALAB)} PP</strong></td></tr>
     </tfoot></table></div></div>`;
   document.getElementById('content').innerHTML = html;
 }
