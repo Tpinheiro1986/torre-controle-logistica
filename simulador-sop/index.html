@@ -496,15 +496,40 @@ async function loadAll(){
   state.loading = true;
   renderActiveTab();
   try{
+    // Helper: faz paginação manual para passar do limite max-rows do PostgREST.
+    // O Supabase tem hard cap de 1000 por request mesmo com .range(0,N) maior.
+    // Solução: chamar várias vezes em lotes de 1000 até esvaziar.
+    async function selectAll(builderFn, batchSize = 1000) {
+      const all = [];
+      let from = 0;
+      let pageNum = 0;
+      while(true){
+        const builder = builderFn();  // reconstrói query a cada lote
+        const {data, error} = await builder.range(from, from + batchSize - 1);
+        if(error){
+          console.error('[selectAll] erro:', error);
+          return {data: all, error};
+        }
+        if(!data || data.length === 0) break;
+        all.push(...data);
+        pageNum++;
+        if(data.length < batchSize) break;  // último lote
+        from += batchSize;
+        if(pageNum > 50){  // proteção contra loop infinito
+          console.warn('[selectAll] interrompido em 50 páginas (50k linhas)');
+          break;
+        }
+      }
+      return {data: all, error: null};
+    }
+
     const [meta, skus, saidas, entradas, estoque, curva] = await Promise.all([
-      sb.from('sop_meta').select('*').range(0, 999),
-      sb.from('sop_sku').select('*').order('empresa').order('marca').order('descricao').range(0, 4999),
-      // ATENÇÃO: range(0,19999) é OBRIGATÓRIO. Supabase/PostgREST limita default em 1000 linhas.
-      // Sem range, sumiriam ~169 pontos Inovalab (que vêm no final alfabético dos codes 5xxx/6xxx).
-      sb.from('sop_plano_saida').select('*').eq('horizonte','2026').range(0, 19999),
-      sb.from('sop_plano_entrada').select('*').eq('horizonte','2026').range(0, 9999),
-      sb.from('sop_estoque').select('*').order('snapshot_date',{ascending:false}).range(0, 4999),
-      sb.from('sop_curva_quarter').select('*').range(0, 999)
+      selectAll(() => sb.from('sop_meta').select('*')),
+      selectAll(() => sb.from('sop_sku').select('*').order('empresa').order('marca').order('descricao')),
+      selectAll(() => sb.from('sop_plano_saida').select('*').eq('horizonte','2026').order('cod_item')),
+      selectAll(() => sb.from('sop_plano_entrada').select('*').eq('horizonte','2026').order('cod_item')),
+      selectAll(() => sb.from('sop_estoque').select('*').order('snapshot_date',{ascending:false})),
+      selectAll(() => sb.from('sop_curva_quarter').select('*'))
     ]);
 
     // Detectar Supabase vazio (qualquer das 3 tabelas centrais)
