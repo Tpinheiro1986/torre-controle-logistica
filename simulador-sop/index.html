@@ -497,12 +497,14 @@ async function loadAll(){
   renderActiveTab();
   try{
     const [meta, skus, saidas, entradas, estoque, curva] = await Promise.all([
-      sb.from('sop_meta').select('*'),
-      sb.from('sop_sku').select('*').order('empresa').order('marca').order('descricao'),
-      sb.from('sop_plano_saida').select('*').eq('horizonte','2026'),
-      sb.from('sop_plano_entrada').select('*').eq('horizonte','2026'),
-      sb.from('sop_estoque').select('*').order('snapshot_date',{ascending:false}).limit(2000),
-      sb.from('sop_curva_quarter').select('*')
+      sb.from('sop_meta').select('*').range(0, 999),
+      sb.from('sop_sku').select('*').order('empresa').order('marca').order('descricao').range(0, 4999),
+      // ATENÇÃO: range(0,19999) é OBRIGATÓRIO. Supabase/PostgREST limita default em 1000 linhas.
+      // Sem range, sumiriam ~169 pontos Inovalab (que vêm no final alfabético dos codes 5xxx/6xxx).
+      sb.from('sop_plano_saida').select('*').eq('horizonte','2026').range(0, 19999),
+      sb.from('sop_plano_entrada').select('*').eq('horizonte','2026').range(0, 9999),
+      sb.from('sop_estoque').select('*').order('snapshot_date',{ascending:false}).range(0, 4999),
+      sb.from('sop_curva_quarter').select('*').range(0, 999)
     ]);
 
     // Detectar Supabase vazio (qualquer das 3 tabelas centrais)
