@@ -1494,28 +1494,99 @@ async function uploadAba(aba, input){
       alert(`✓ ${payload.length} SKUs atualizados.`);
     } else if(aba === 'sop' || aba === 'forecast'){
       const tabela = aba === 'sop' ? 'sop_plano_saida' : 'sop_plano_entrada';
+
+      // Parser numérico brasileiro: aceita "1.234,56", "778,8", "1234.56", número direto
+      const parseNum = (v) => {
+        if(v === null || v === undefined || v === '') return 0;
+        if(typeof v === 'number') return v;
+        // Remove pontos de milhar e troca vírgula por ponto decimal
+        const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      };
+
+      // Coletar todos cod_item presentes no upload + valores > 0
+      const codsNoUpload = new Set();
       const payload = [];
+      const stats = {GENOMMA: {linhas: 0, valor: 0}, INOVALAB: {linhas: 0, valor: 0}, OUTROS: {linhas: 0, valor: 0}};
+
       rows.filter(r => r['Cod Item'] && r['Cod Item'] !== 'TOTAL').forEach(r => {
+        const cod = String(r['Cod Item']).trim();
+        codsNoUpload.add(cod);
+        // Detectar empresa pelo VLOOKUP no state ou direto na linha
+        let emp = r['Empresa'];
+        if(!emp){
+          const sku = state.skus.find(s => s.cod_item === cod);
+          emp = sku?.empresa || 'OUTROS';
+        }
+        if(!stats[emp]) stats[emp] = {linhas: 0, valor: 0};
+
         MESES_PT.forEach((mes, i) => {
-          const v = parseFloat(r[mes]) || 0;
-          if(v > 0) payload.push({
-            cod_item: String(r['Cod Item']),
-            year_month: `2026-${String(i+1).padStart(2,'0')}-01`,
-            qty_un: v, horizonte:'2026'
-          });
+          const v = parseNum(r[mes]);
+          if(v > 0){
+            payload.push({
+              cod_item: cod,
+              year_month: `2026-${String(i+1).padStart(2,'0')}-01`,
+              qty_un: v,
+              horizonte: '2026'
+            });
+            stats[emp].linhas++;
+            stats[emp].valor += v;
+          }
         });
       });
-      await sb.from(tabela).delete().eq('horizonte','2026');
-      await sb.from(tabela).insert(payload);
-      alert(`✓ ${payload.length} linhas inseridas em ${tabela}.`);
+
+      const cods = Array.from(codsNoUpload);
+      console.log(`[upload-${aba}] SKUs no arquivo: ${cods.length}, payload: ${payload.length} linhas com valor > 0`);
+      console.log(`[upload-${aba}] Por empresa:`, stats);
+
+      // Apaga só os cod_item que estão no upload (preserva os outros)
+      // Em lotes de 100 para evitar URL muito longa
+      for(let i = 0; i < cods.length; i += 100){
+        const lote = cods.slice(i, i+100);
+        const {error: dErr} = await sb.from(tabela).delete()
+          .eq('horizonte', '2026').in('cod_item', lote);
+        if(dErr) console.error(`[upload-${aba}] delete lote ${i/100+1}:`, dErr);
+      }
+
+      // Insere em lotes de 500
+      let inseridos = 0;
+      for(let i = 0; i < payload.length; i += 500){
+        const lote = payload.slice(i, i+500);
+        const {error: iErr} = await sb.from(tabela).insert(lote);
+        if(iErr){
+          console.error(`[upload-${aba}] insert lote ${i/500+1}:`, iErr);
+          throw new Error(`Falha ao inserir lote ${i/500+1}: ${iErr.message}`);
+        }
+        inseridos += lote.length;
+      }
+
+      // Resumo amigável
+      const resumoLinhas = Object.entries(stats)
+        .filter(([_, s]) => s.linhas > 0)
+        .map(([emp, s]) => `${emp}: ${s.linhas} pontos (${s.valor.toLocaleString('pt-BR',{maximumFractionDigits:0})} UN)`)
+        .join('\n');
+      alert(`✓ Upload concluído!\n\n` +
+            `Tabela: ${tabela}\n` +
+            `SKUs no arquivo: ${cods.length}\n` +
+            `Pontos inseridos: ${inseridos}\n\n` +
+            `Por empresa:\n${resumoLinhas || '(nenhum valor > 0 no arquivo!)'}`);
     } else if(aba === 'estoque'){
       const today = new Date().toISOString().slice(0,10);
+      const parseNum = (v) => {
+        if(v === null || v === undefined || v === '') return 0;
+        if(typeof v === 'number') return v;
+        const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      };
       const payload = rows.filter(r => r['Cod Item']).map(r => ({
-        cod_item: String(r['Cod Item']),
+        cod_item: String(r['Cod Item']).trim(),
         snapshot_date: today,
-        qty_un: parseFloat(r['Estoque Atual (UN)']) || 0
+        qty_un: parseNum(r['Estoque Atual (UN)'])
       }));
-      await sb.from('sop_estoque').upsert(payload, {onConflict:'cod_item,snapshot_date'});
+      const {error} = await sb.from('sop_estoque').upsert(payload, {onConflict:'cod_item,snapshot_date'});
+      if(error) throw error;
       alert(`✓ ${payload.length} linhas de estoque atualizadas.`);
     } else if(aba === 'curva'){
       const payload = [];
