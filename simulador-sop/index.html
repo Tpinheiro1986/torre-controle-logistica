@@ -376,15 +376,24 @@ function aplicarSeed(seed){
 }
 
 async function gravarSeedNoSupabase(seed){
-  // Apenas admin chama essa função no primeiro carregamento.
-  // Sem RLS isso falharia silenciosamente — checamos no toggle "isAdmin".
-  if(!isAdmin) return false;
+  if(!isAdmin){ console.warn('[seed] não é admin, abortando'); return false; }
+
+  const check = (label, result) => {
+    if(result?.error){
+      console.error(`[seed] ✗ ${label}:`, result.error.message, result.error);
+      throw new Error(`${label}: ${result.error.message}`);
+    }
+    console.log(`[seed] ✓ ${label}`);
+    return result;
+  };
+
   try{
     // 1. Parametros (sop_meta)
     const metaPayload = Object.entries(seed.parametros).map(([chave, valor]) => ({
       chave, valor: String(valor), user_email: currentUser.email
     }));
-    await sb.from('sop_meta').upsert(metaPayload, {onConflict:'chave'});
+    check('parametros (sop_meta)',
+      await sb.from('sop_meta').upsert(metaPayload, {onConflict:'chave'}));
 
     // 2. SKUs
     const skuPayload = seed.skus.map(s => ({
@@ -398,7 +407,8 @@ async function gravarSeedNoSupabase(seed){
       gtin14: s.gtin14 || null,
       status_supply: s.status_supply || null
     }));
-    await sb.from('sop_sku').upsert(skuPayload, {onConflict:'cod_item'});
+    check(`SKUs (${skuPayload.length} linhas)`,
+      await sb.from('sop_sku').upsert(skuPayload, {onConflict:'cod_item'}));
 
     // 3. Plano de saídas
     const saidaPayload = [];
@@ -408,8 +418,16 @@ async function gravarSeedNoSupabase(seed){
         if(v > 0) saidaPayload.push({cod_item: cod, year_month: ym, qty_un: v, horizonte: '2026'});
       });
     });
-    await sb.from('sop_plano_saida').delete().eq('horizonte','2026');
-    if(saidaPayload.length) await sb.from('sop_plano_saida').insert(saidaPayload);
+    check('limpar sop_plano_saida',
+      await sb.from('sop_plano_saida').delete().eq('horizonte','2026'));
+    if(saidaPayload.length){
+      // Inserir em lotes de 500 para evitar payload muito grande
+      for(let i = 0; i < saidaPayload.length; i += 500){
+        const lote = saidaPayload.slice(i, i+500);
+        check(`saídas lote ${i/500+1}/${Math.ceil(saidaPayload.length/500)}`,
+          await sb.from('sop_plano_saida').insert(lote));
+      }
+    }
 
     // 4. Plano de entradas
     const entPayload = [];
@@ -419,15 +437,25 @@ async function gravarSeedNoSupabase(seed){
         if(v > 0) entPayload.push({cod_item: cod, year_month: ym, qty_un: v, horizonte: '2026'});
       });
     });
-    await sb.from('sop_plano_entrada').delete().eq('horizonte','2026');
-    if(entPayload.length) await sb.from('sop_plano_entrada').insert(entPayload);
+    check('limpar sop_plano_entrada',
+      await sb.from('sop_plano_entrada').delete().eq('horizonte','2026'));
+    if(entPayload.length){
+      for(let i = 0; i < entPayload.length; i += 500){
+        const lote = entPayload.slice(i, i+500);
+        check(`entradas lote ${i/500+1}/${Math.ceil(entPayload.length/500)}`,
+          await sb.from('sop_plano_entrada').insert(lote));
+      }
+    }
 
     // 5. Estoque (foto de hoje)
     const today = new Date().toISOString().slice(0,10);
     const estPayload = Object.entries(seed.estoque).map(([cod, v]) => ({
       cod_item: cod, snapshot_date: today, qty_un: v
     }));
-    await sb.from('sop_estoque').upsert(estPayload, {onConflict:'cod_item,snapshot_date'});
+    if(estPayload.length){
+      check(`estoque (${estPayload.length} linhas)`,
+        await sb.from('sop_estoque').upsert(estPayload, {onConflict:'cod_item,snapshot_date'}));
+    }
 
     // 6. Curva
     const curvaPayload = [];
@@ -441,19 +469,25 @@ async function gravarSeedNoSupabase(seed){
         });
       });
     });
-    await sb.from('sop_curva_quarter').delete().gte('quarter', 1);
-    if(curvaPayload.length) await sb.from('sop_curva_quarter').insert(curvaPayload);
+    check('limpar sop_curva_quarter',
+      await sb.from('sop_curva_quarter').delete().gte('quarter', 1));
+    if(curvaPayload.length){
+      check(`curva (${curvaPayload.length} linhas)`,
+        await sb.from('sop_curva_quarter').insert(curvaPayload));
+    }
 
     // 7. Marca seed como carregado
-    await sb.from('sop_meta').upsert({
-      chave: 'seed_loaded_at',
-      valor: new Date().toISOString(),
-      user_email: currentUser.email
-    }, {onConflict:'chave'});
+    check('marcar seed_loaded_at',
+      await sb.from('sop_meta').upsert({
+        chave: 'seed_loaded_at',
+        valor: new Date().toISOString(),
+        user_email: currentUser.email
+      }, {onConflict:'chave'}));
 
+    console.log('[seed] ✅ TUDO GRAVADO COM SUCESSO');
     return true;
   }catch(e){
-    console.error('Falha ao gravar seed:', e);
+    console.error('[seed] ❌ Falha:', e.message);
     return false;
   }
 }
@@ -471,25 +505,44 @@ async function loadAll(){
       sb.from('sop_curva_quarter').select('*')
     ]);
 
-    // Detectar Supabase vazio
-    const skusVazio = !skus.data || skus.data.length === 0;
-    const seedLoaded = (meta.data || []).some(m => m.chave === 'seed_loaded_at');
+    // Detectar Supabase vazio (qualquer das 3 tabelas centrais)
+    const skusVazio    = !skus.data    || skus.data.length    === 0;
+    const saidasVazio  = !saidas.data  || saidas.data.length  === 0;
+    const estoqueVazio = !estoque.data || estoque.data.length === 0;
+    const bancoVazio = skusVazio || saidasVazio || estoqueVazio;
 
-    if(skusVazio && !seedLoaded){
-      // Banco vazio + seed nunca carregado → aplicar seed embutido
+    console.log('[loadAll] SKUs no banco:', skus.data?.length || 0,
+                '| Saídas:', saidas.data?.length || 0,
+                '| Entradas:', entradas.data?.length || 0,
+                '| Estoque:', estoque.data?.length || 0,
+                '| Curva:', curva.data?.length || 0,
+                '| Banco vazio?', bancoVazio);
+
+    if(bancoVazio){
+      // Banco vazio (total ou parcial) → aplicar seed embutido
       const seed = lerSeed();
       if(seed){
+        console.log('[loadAll] ▶ Aplicando seed embutido (banco vazio/incompleto)');
         aplicarSeed(seed);
+        state._usandoSeed = true;
         // Se admin: tentar gravar no Supabase para virar fonte de verdade
         if(isAdmin){
+          console.log('[loadAll] ▶ Admin detectado, gravando seed no Supabase...');
           const gravou = await gravarSeedNoSupabase(seed);
           if(gravou){
-            console.log('✓ Seed inicial gravado no Supabase');
+            console.log('[loadAll] ✓ Seed gravado no Supabase com sucesso');
+            state._usandoSeed = false;
+          } else {
+            console.warn('[loadAll] ⚠ Falha ao gravar seed (RLS? policies?)');
           }
+        } else {
+          console.log('[loadAll] ℹ Não-admin, seed apenas em memória');
         }
         state.loading = false;
         renderActiveTab();
         return;
+      } else {
+        console.warn('[loadAll] ⚠ Banco vazio mas seed não encontrado!');
       }
     }
 
@@ -767,7 +820,39 @@ function renderPainel(){
   const idxPicoSG = aggW.GENOMMA.indexOf(picoSG);
   const idxPicoSI = aggW.INOVALAB.indexOf(picoSI);
 
-  let html = `
+  let html = '';
+
+  // Banner se está usando seed em memória (sem persistência)
+  if(state._usandoSeed){
+    html += `
+    <div class="alert alert-warn" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>⚠ <strong>Dados em memória (seed embutido).</strong> O banco Supabase está vazio ou inacessível.
+      ${isAdmin
+        ? 'Edições não vão persistir até que o seed seja salvo no banco.'
+        : 'Peça ao admin (' + ADMIN_EMAIL + ') para acessar a página — ele gravará os dados no banco automaticamente.'}</div>
+      ${isAdmin ? `<button class="btn btn-primary" onclick="forcarGravarSeed()">📥 Gravar dados no banco agora</button>` : ''}
+    </div>`;
+  }
+
+  // Banner se tem SKUs mas faltam dados de S&OP, Forecast ou Estoque
+  if(!state._usandoSeed && (state.skus.length > 0)){
+    const semSaidas = Object.keys(state.saidas).length === 0;
+    const semEntradas = Object.keys(state.entradas).length === 0;
+    const semEstoque = Object.keys(state.estoque).length === 0;
+    if(semSaidas || semEntradas || semEstoque){
+      html += `
+      <div class="alert alert-warn" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>⚠ <strong>Dados incompletos no banco.</strong>
+        ${semEstoque ? 'Estoque vazio. ' : ''}
+        ${semSaidas ? 'S&OP vazio. ' : ''}
+        ${semEntradas ? 'Forecast vazio. ' : ''}
+        ${isAdmin ? 'Clique no botão ao lado para reaplicar os dados do Excel.' : 'Avise o admin (' + ADMIN_EMAIL + ').'}</div>
+        ${isAdmin ? `<button class="btn btn-primary" onclick="forcarGravarSeed()">📥 Reaplicar dados do Excel</button>` : ''}
+      </div>`;
+    }
+  }
+
+  html += `
     <!-- Capacidades editáveis -->
     <div class="cap-box">
       <div class="cap-item"><strong>Capacidade Genomma:</strong>
@@ -1239,6 +1324,36 @@ function renderSimSemanal(){
 // ============================================================
 // SAVE (Supabase) — só admin
 // ============================================================
+
+// Força reaplicar seed do Excel embutido no HTML (admin only)
+async function forcarGravarSeed(){
+  if(!isAdmin){ alert('Apenas o admin pode reaplicar os dados.'); return; }
+  const seed = lerSeed();
+  if(!seed){ alert('Seed não encontrado no HTML.'); return; }
+  if(!confirm('Isso vai SUBSTITUIR todos os dados de SKU/S&OP/Forecast/Estoque/Curva no banco com os dados do Excel embutido. Continuar?')) return;
+
+  // Mostrar feedback de carregamento
+  const content = document.getElementById('content');
+  const original = content.innerHTML;
+  content.innerHTML = `<div class="loading"><div class="spinner"></div>Gravando dados do Excel no Supabase…</div>`;
+
+  try{
+    const gravou = await gravarSeedNoSupabase(seed);
+    if(gravou){
+      alert('✓ Dados do Excel gravados no banco com sucesso! Recarregando…');
+      state._usandoSeed = false;
+      await loadAll();
+    } else {
+      content.innerHTML = original;
+      alert('✗ Falha ao gravar. Verifique se as tabelas existem no Supabase e se as policies de RLS permitem escrita para ' + ADMIN_EMAIL + '. Veja o console (F12) para detalhes.');
+    }
+  }catch(e){
+    content.innerHTML = original;
+    alert('Erro: ' + e.message);
+    console.error(e);
+  }
+}
+
 async function saveParam(chave, valor){
   if(!isAdmin) return alert('Apenas o admin pode editar.');
   state.parametros[chave] = parseFloat(valor);
