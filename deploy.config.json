@@ -1,14 +1,11 @@
 {
-  "_comentario": "Configuração do deploy.py — edite a lista 'supabase_files' conforme você for adicionando painéis novos",
+  "_comentario": "Configuracao do deploy.py. Os caminhos 'local' sao relativos a pasta onde o deploy.py esta (a RAIZ do repositorio).",
   "supabase_url": "https://ennsbpibfnuwlvtodukg.supabase.co",
   "supabase_bucket": "dashboards",
   "github_pages_url": "https://tpinheiro1986.github.io/torre-controle-logistica/",
-  "default_commit_message": "deploy: atualizacao painel",
+  "default_commit_message": "deploy: atualizacao simulador (campo cliente)",
   "supabase_files": [
-    {
-      "local": "simulador-frete/tabelas.json",
-      "remote": "simulador-frete/tabelas.json",
-      "_comentario": "Tabelas do simulador de frete"
-    }
+    { "local": "simulador-frete/tabelas.json",  "remote": "simulador-frete/tabelas.json" },
+    { "local": "simulador-frete/clientes.json", "remote": "simulador-frete/clientes.json" }
   ]
 }

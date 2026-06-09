@@ -228,9 +228,25 @@ def git_deploy(cfg, msg, dry_run=False):
     info("Push para o remoto...")
     rc, out, e = run(['git', 'push'])
     if rc != 0:
-        err(f"git push falhou: {e}")
-        info("Se for primeira vez: git push -u origin main (ou master)")
-        return 1
+        combined = (out + e)
+        # Recuperação automática quando o remoto está à frente ("fetch first" / rejected / behind)
+        if any(s in combined for s in ('fetch first', 'rejected', 'behind', 'Updates were rejected')):
+            warn("O remoto tem commits que você não tem. Sincronizando (git pull --rebase)...")
+            rc2, o2, e2 = run(['git', 'pull', '--rebase', '--autostash'])
+            if rc2 != 0:
+                err("Não foi possível sincronizar automaticamente (git pull --rebase).")
+                err((e2 or o2).strip()[:300])
+                info("Pode haver conflito a resolver à mão. Depois rode o deploy de novo.")
+                return 1
+            ok("Sincronizado com o remoto. Tentando publicar de novo...")
+            rc3, o3, e3 = run(['git', 'push'])
+            if rc3 != 0:
+                err(f"git push (2ª tentativa) falhou: {(e3 or o3).strip()[:300]}")
+                return 1
+        else:
+            err(f"git push falhou: {e}")
+            info("Se for primeira vez: git push -u origin main (ou master)")
+            return 1
 
     ok("GitHub: commit + push concluídos. GitHub Pages atualiza em ~30s a 2min.")
     pages_url = cfg.get('github_pages_url')
