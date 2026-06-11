@@ -958,7 +958,7 @@ function simular(origem, destino, pesoKg, m3, valorNF){
       veiculo: getCapacidadeVeiculo(tab.nome),
       excedeCapacidade: (function(){
         const cap = getCapacidadeVeiculo(tab.nome);
-        return cap && pesoConsiderado > cap.kg;
+        return !!(cap && pesoConsiderado > cap.kg);
       })()
     });
   });
