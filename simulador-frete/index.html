@@ -830,6 +830,8 @@ function calcularPesoConsiderado(pesoKg, m3){
 //  (b) CARGA FECHADA: "Até 1kg: R$ X" + "Acima de 1kg: × 0" -> valor fixo R$ X independente do peso
 function calcularFretePeso(regras, pesoConsiderado){
   if(!regras || !regras.length) return null;
+  // Faixas "até X kg": podem ser R$ fixo (ATE_KG) OU multiplicador (ATE_KG_MULT)
+  const faixas = regras.filter(r=>r.tipo==='ATE_KG' || r.tipo==='ATE_KG_MULT').sort((a,b)=>a.kg-b.kg);
   const ate = regras.filter(r=>r.tipo==='ATE_KG').sort((a,b)=>a.kg-b.kg);
   const acima = regras.find(r=>r.tipo==='ACIMA_KG_MULT');
 
@@ -841,76 +843,118 @@ function calcularFretePeso(regras, pesoConsiderado){
     return { valor: faixa.valor, modo:`Carga fechada (veículo dedicado): R$ ${fmtBR(faixa.valor)}`, cargaFechada:true };
   }
 
-  // Tabela fracionada: aplicar faixas
-  for(const r of ate){
-    if(pesoConsiderado <= r.kg) return { valor: r.valor, modo:`Faixa "até ${fmtKg(r.kg)}": R$ ${fmtBR(r.valor)} (peso considerado: ${fmtKg(pesoConsiderado)})` };
+  // Tabela fracionada: primeira faixa cujo limite cobre o peso considerado
+  for(const r of faixas){
+    if(pesoConsiderado <= r.kg){
+      if(r.tipo==='ATE_KG'){
+        return { valor: r.valor, modo:`Faixa "até ${fmtKg(r.kg)}": R$ ${fmtBR(r.valor)} (peso considerado: ${fmtKg(pesoConsiderado)})` };
+      }
+      const valor = pesoConsiderado * r.multiplicador;
+      return { valor, modo:`Faixa "até ${fmtKg(r.kg)}": ${fmtKg(pesoConsiderado)} × R$ ${fmtBR(r.multiplicador,4)}/kg = R$ ${fmtBR(valor)}` };
+    }
   }
+  // Peso acima de todas as faixas "até": usa a regra "Acima de X"
   if(acima){
     const valor = pesoConsiderado * acima.multiplicador;
     return { valor, modo:`Acima de ${fmtKg(acima.kg)}: ${fmtKg(pesoConsiderado)} × R$ ${fmtBR(acima.multiplicador,4)}/kg = R$ ${fmtBR(valor)}` };
   }
-  if(ate.length){
-    const ult = ate[ate.length-1];
-    return { valor: ult.valor, modo:`R$ ${fmtBR(ult.valor)} (peso ≤ ${fmtKg(ult.kg)})` };
+  if(faixas.length){
+    const ult = faixas[faixas.length-1];
+    const valor = ult.tipo==='ATE_KG' ? ult.valor : pesoConsiderado * ult.multiplicador;
+    return { valor, modo:`R$ ${fmtBR(valor)} (peso ≤ ${fmtKg(ult.kg)})` };
   }
   return null;
 }
 
-// Calcula taxas aplicáveis: combina taxas_gerais (da tabela) + taxas da rota
+// Calcula taxas aplicáveis: combina taxas_gerais (da tabela) + taxas da rota.
+// Modelo de base (igual ao da transportadora):
+//  base do frete = frete-peso + taxas absolutas (% NF, por documento, por fração)
+//  taxas "% sobre valor do frete" (TRT, TDE...) incidem sobre essa base e NÃO compõem entre si
+//  ADICIONAL FRETE ("marca de cálculo adicional") incide por último, sobre base + demais % frete
 function aplicarTaxas(tab, rota, fretePeso, valorNF, pesoConsiderado, destino){
   const detalhes = [];
-  const restritas = [];   // taxas que podem aplicar mas dependem de CNPJ específico
-  let totalTaxas = 0;
-
-  // Extrair UF do destino (ex: "São Paulo-SP" → "SP")
+  const restritas = [];   // taxas que podem aplicar mas dependem de CNPJ específico do cliente
   const ufDestino = (destino.split('-').pop() || '').trim().toUpperCase();
-
   const taxasCombo = [...(tab.taxas_gerais||[]), ...(rota.taxas||[])];
 
+  // Taxas de cenário (devolução/reentrega/agendamento) — não entram no frete normal
+  const ehCenario = (nome) => nome.includes('DEVOLUC') || nome.includes('REENTREGA') || nome === 'TDA';
+  const ehAdicional = (nome) => nome.includes('ADICIONAL');
+
+  const aplicaveis = [];
   for(const t of taxasCombo){
     const nome = (t.nome||'').toUpperCase();
-    // Devolução/Reentrega NÃO entram no cálculo normal (só se for cenário específico)
-    if(nome.includes('DEVOLUC') || nome.includes('REENTREGA')) continue;
+    if(ehCenario(nome)) continue;
 
-    // Taxas restritas SOMENTE por CNPJ (sem cidade nem UF) → marcar como "depende do cliente"
-    if(t.restrita_cnpj && !t.aplicar_cidades && !t.aplicar_ufs){
-      // Registra como "potencial" mas não soma ao total
-      let valPotencial = 0;
-      if(t.tipo==='PERCENT_NF') valPotencial = Math.max((valorNF||0) * (t.percentual/100), t.minimo||0);
-      else if(t.tipo==='PERCENT_FRETE') valPotencial = Math.max((fretePeso||0) * (t.percentual/100), t.minimo||0);
-      else if(t.tipo==='VALOR_DOC') valPotencial = t.valor||0;
-      restritas.push({ nome: t.nome, valor: valPotencial, motivo:`Aplica apenas a ${t.aplicar_cnpjs_count||'alguns'} CNPJ(s) específico(s)` });
+    // Restrita SOMENTE por CNPJ (sem cidade nem UF) → "pode incidir, depende do cliente"
+    if(t.aplicar_cnpjs_count && !(t.aplicar_cidades && t.aplicar_cidades.length) && !(t.aplicar_ufs && t.aplicar_ufs.length)){
+      restritas.push({ _t:t, nome:t.nome, valor:null, motivo:`Aplica apenas a ${t.aplicar_cnpjs_count} CNPJ(s) específico(s)` });
       continue;
     }
-
-    // Filtrar por cidade aplicável se a taxa tem restrição
+    // Filtro por cidade/UF aplicável
     if(t.aplicar_cidades && t.aplicar_cidades.length){
       const cidadeMatch = t.aplicar_cidades.some(c => norm(c) === norm(destino));
       const ufMatch = t.aplicar_ufs && t.aplicar_ufs.includes(ufDestino);
       if(!cidadeMatch && !ufMatch) continue;
     } else if(t.aplicar_ufs && t.aplicar_ufs.length){
-      // taxa restrita por UF: aplica só se a UF do destino estiver na lista
       if(!t.aplicar_ufs.includes(ufDestino)) continue;
     }
+    aplicaveis.push(t);
+  }
 
-    let val = 0;
+  // FASE A — base do frete (frete-peso + taxas absolutas)
+  let base = fretePeso || 0;
+  const pctFrete = [];
+  let adicional = null;
+  for(const t of aplicaveis){
     if(t.tipo==='PERCENT_NF'){
-      val = (valorNF||0) * (t.percentual/100);
+      let val = (valorNF||0) * (t.percentual/100);
       if(t.minimo && val < t.minimo) val = t.minimo;
-      detalhes.push({nome: t.nome, valor: val, desc:`${fmtBR(t.percentual,4)}% × R$ ${fmtBR(valorNF)}` + (t.minimo && (valorNF*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
-    } else if(t.tipo==='PERCENT_FRETE'){
-      val = (fretePeso||0) * (t.percentual/100);
-      if(t.minimo && val < t.minimo) val = t.minimo;
-      detalhes.push({nome: t.nome, valor: val, desc:`${fmtBR(t.percentual,2)}% × R$ ${fmtBR(fretePeso)}` + (t.minimo && (fretePeso*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
+      detalhes.push({nome:t.nome, valor:val, desc:`${fmtBR(t.percentual,4)}% × R$ ${fmtBR(valorNF)}` + (t.minimo && (valorNF*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
+      base += val;
     } else if(t.tipo==='VALOR_DOC'){
-      val = t.valor||0;
-      detalhes.push({nome: t.nome, valor: val, desc:'R$ por documento'});
+      const val = t.valor||0;
+      detalhes.push({nome:t.nome, valor:val, desc:'R$ por documento'});
+      base += val;
     } else if(t.tipo==='POR_FRACAO'){
       const fracoes = Math.ceil((pesoConsiderado||0) / (t.fracao_kg||100));
-      val = fracoes * (t.valor||0);
-      detalhes.push({nome: t.nome, valor: val, desc:`${fracoes} × R$ ${fmtBR(t.valor)} (fração ${fmtKg(t.fracao_kg)})`});
+      const val = fracoes * (t.valor||0);
+      detalhes.push({nome:t.nome, valor:val, desc:`${fracoes} × R$ ${fmtBR(t.valor)} (fração ${fmtKg(t.fracao_kg)})`});
+      base += val;
+    } else if(t.tipo==='PERCENT_FRETE'){
+      if(ehAdicional((t.nome||'').toUpperCase())) adicional = t; else pctFrete.push(t);
     }
-    totalTaxas += val;
+  }
+
+  // FASE B — "% sobre valor total do frete" sobre a base (não compõem entre si)
+  let somaPct = 0;
+  for(const t of pctFrete){
+    let val = base * (t.percentual/100);
+    if(t.minimo && val < t.minimo) val = t.minimo;
+    detalhes.push({nome:t.nome, valor:val, desc:`${fmtBR(t.percentual,2)}% × R$ ${fmtBR(base)} (valor total do frete)` + (t.minimo && (base*t.percentual/100) < t.minimo ? ` (mínimo R$ ${fmtBR(t.minimo)})` : '')});
+    somaPct += val;
+  }
+
+  // FASE C — ADICIONAL FRETE (marca de cálculo adicional): sobre base + demais % frete
+  let valAdic = 0;
+  if(adicional){
+    const baseAd = base + somaPct;
+    valAdic = baseAd * (adicional.percentual/100);
+    if(adicional.minimo && valAdic < adicional.minimo) valAdic = adicional.minimo;
+    detalhes.push({nome:adicional.nome, valor:valAdic, desc:`${fmtBR(adicional.percentual,2)}% × R$ ${fmtBR(baseAd)} (frete + taxas)`});
+  }
+
+  const totalTaxas = (base - (fretePeso||0)) + somaPct + valAdic;
+
+  // Valor potencial das restritas (agora que a base existe)
+  for(const r of restritas){
+    const t = r._t;
+    if(t.tipo==='PERCENT_NF') r.valor = Math.max((valorNF||0)*(t.percentual/100), t.minimo||0);
+    else if(t.tipo==='PERCENT_FRETE') r.valor = Math.max(base*(t.percentual/100), t.minimo||0);
+    else if(t.tipo==='VALOR_DOC') r.valor = t.valor||0;
+    else if(t.tipo==='POR_FRACAO') r.valor = Math.ceil((pesoConsiderado||0)/(t.fracao_kg||100))*(t.valor||0);
+    else r.valor = 0;
+    delete r._t;
   }
 
   return { detalhes, totalTaxas, restritas };

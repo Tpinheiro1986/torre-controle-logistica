@@ -197,6 +197,7 @@ def parse_taxas_gerais(seg):
 # ---------- parser de rotas ----------
 RE_ROTA = re.compile(r'^Rota\s+(\d+):\s*(.*)$')
 RE_ATE = re.compile(r'At[eé]\s*([\d.,]+)\s*Kg\s*:\s*R\$\s*([\d.,]+)', re.I)
+RE_ATE_MULT = re.compile(r'At[eé]\s*([\d.,]+)\s*Kg\s*:\s*Multiplicar\s*por\s*([\d.,]+)', re.I)
 RE_ACIMA_MULT = re.compile(r'Acima\s*de\s*([\d.,]+)\s*Kg\s*:\s*Multiplicar\s*por\s*([\d.,]+)', re.I)
 
 def parse_lista_cidades(linhas):
@@ -245,9 +246,12 @@ def parse_rotas(seg):
                 buf_d.append(s)
             elif mode == 'regras':
                 ma = RE_ATE.search(s)
+                mam = RE_ATE_MULT.search(s)
                 mm = RE_ACIMA_MULT.search(s)
                 if ma:
                     regras.append({'tipo': 'ATE_KG', 'kg': to_num(ma.group(1)), 'valor': to_num(ma.group(2))})
+                elif mam:
+                    regras.append({'tipo': 'ATE_KG_MULT', 'kg': to_num(mam.group(1)), 'multiplicador': to_num(mam.group(2))})
                 elif mm:
                     regras.append({'tipo': 'ACIMA_KG_MULT', 'kg': to_num(mm.group(1)), 'multiplicador': to_num(mm.group(2))})
                 # "Acima de X Kg: R$ Y" (valor fixo) -> nao emite regra (fiel ao parser original)
