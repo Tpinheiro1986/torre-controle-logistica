@@ -1364,3 +1364,45 @@
 2026-06-09 11:03:53,392 [INFO]   OK cte_dados.json salvo
 2026-06-09 11:03:57,282 [INFO]   OK Publicado no Supabase
 2026-06-09 11:04:01,172 [INFO]   OK ctes_raw.json (3791KB)
+2026-06-10 09:53:10,567 [INFO] Historico: 7,449 CTes | ultima exec: 2026-06-09T11:01:22.291932
+2026-06-10 09:53:10,568 [INFO] Buscando XMLs...
+2026-06-10 09:55:32,156 [INFO]   58,626 CTe | 750 Canc. em 141s
+2026-06-10 09:55:32,157 [INFO]   Novos: 25 CTe | 0 Cancelamento
+2026-06-10 09:55:32,158 [INFO]   Processando com 7 workers...
+2026-06-10 09:55:33,217 [INFO]   23 CTes novos em 1s
+2026-06-10 09:55:33,278 [INFO] Agregando 7,471 CTes...
+2026-06-10 09:55:33,639 [INFO]   OK cte_dados.json salvo
+2026-06-10 09:55:36,308 [INFO]   OK Publicado no Supabase
+2026-06-10 09:55:38,674 [INFO]   OK ctes_raw.json (3805KB)
+2026-06-11 14:38:58,050 [INFO] Historico: 7,472 CTes | ultima exec: 2026-06-10T09:53:10.418756
+2026-06-11 14:38:58,054 [INFO] Buscando XMLs...
+2026-06-11 14:40:41,169 [INFO]   58,664 CTe | 750 Canc. em 103s
+2026-06-11 14:40:41,171 [INFO]   Novos: 38 CTe | 0 Cancelamento
+2026-06-11 14:40:41,172 [INFO]   Processando com 7 workers...
+2026-06-11 14:40:42,525 [INFO]   36 CTes novos em 1s
+2026-06-11 14:40:42,634 [INFO] Agregando 7,507 CTes...
+2026-06-11 14:40:43,791 [INFO]   OK cte_dados.json salvo
+2026-06-11 14:40:47,994 [INFO]   OK Publicado no Supabase
+2026-06-11 14:40:51,767 [INFO]   OK ctes_raw.json (3826KB)
+2026-06-12 15:58:57,210 [INFO] Historico: 7,508 CTes | ultima exec: 2026-06-11T14:38:57.849181
+2026-06-12 15:58:57,212 [INFO] Buscando XMLs...
+2026-06-12 15:59:19,674 [INFO]   58,696 CTe | 751 Canc. em 22s
+2026-06-12 15:59:19,675 [INFO]   Novos: 32 CTe | 1 Cancelamento
+2026-06-12 15:59:19,695 [INFO]   1 cancelamentos novos
+2026-06-12 15:59:19,695 [INFO]   Processando com 7 workers...
+2026-06-12 15:59:20,396 [INFO]   28 CTes novos em 0s
+2026-06-12 15:59:20,420 [INFO] Agregando 7,535 CTes...
+2026-06-12 15:59:20,794 [INFO]   OK cte_dados.json salvo
+2026-06-12 15:59:22,897 [INFO]   OK Publicado no Supabase
+2026-06-12 15:59:26,200 [INFO]   OK ctes_raw.json (3843KB)
+2026-06-15 09:51:19,824 [INFO] Historico: 7,536 CTes | ultima exec: 2026-06-12T15:58:57.139183
+2026-06-15 09:51:19,825 [INFO] Buscando XMLs...
+2026-06-15 09:51:55,435 [INFO]   58,750 CTe | 753 Canc. em 35s
+2026-06-15 09:51:55,436 [INFO]   Novos: 54 CTe | 2 Cancelamento
+2026-06-15 09:51:55,514 [INFO]   2 cancelamentos novos
+2026-06-15 09:51:55,514 [INFO]   Processando com 7 workers...
+2026-06-15 09:51:56,534 [INFO]   49 CTes novos em 1s
+2026-06-15 09:51:56,590 [INFO] Agregando 7,584 CTes...
+2026-06-15 09:51:57,070 [INFO]   OK cte_dados.json salvo
+2026-06-15 09:51:59,655 [INFO]   OK Publicado no Supabase
+2026-06-15 09:52:02,127 [INFO]   OK ctes_raw.json (3872KB)
