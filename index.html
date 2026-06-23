@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>Torre de Controle — Logística</title>
 <script>
-window.__BUILD__ = { version: 'v9.3-leadtimes', date: '13/05/2026' };
+window.__BUILD__ = { version: 'v9.4-scorecard', date: '23/06/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -65,6 +65,7 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .painel-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;cursor:pointer;text-decoration:none;color:var(--text);transition:box-shadow .15s,transform .15s;display:block}
 .painel-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.10);transform:translateY(-2px)}
 .painel-card.disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.painel-card.feature{border:1px solid #185FA5;box-shadow:0 4px 18px rgba(24,95,165,.12)}
 .painel-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
 .painel-icon svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .painel-name{font-size:14px;font-weight:600;margin-bottom:4px}
@@ -157,6 +158,17 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
     <div class="page-sub">Selecione um painel para visualizar os indicadores de logística.</div>
 
     <div class="painel-grid">
+
+      <!-- SCORECARD-CARD -->
+      <a class="painel-card feature" href="scorecard/index.html">
+        <div class="painel-icon" style="background:#0C447C">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div class="painel-name">Scorecard Logístico</div>
+        <div class="painel-sub">Visão gerencial consolidada · 18 indicadores · 6 dimensões · 2021–2026</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
       <a class="painel-card" href="otd/index.html">
         <div class="painel-icon" style="background:#185FA5">
           <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
