@@ -573,7 +573,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
             <span id="atrasos-count" style="font-weight:600;color:#A32D2D;margin-left:6px"></span>
           </p>
           <div style="margin-bottom:10px">
-            <input id="atrasos-search" type="text" placeholder="Buscar cliente, cidade ou UF..."
+            <input id="atrasos-search" type="text" placeholder="Buscar cliente, cidade, UF ou nº da nota/pedido..."
               class="form-input" style="max-width:340px;padding:6px 12px;font-size:12px"
               oninput="atrasosSearch()">
           </div>
@@ -1691,7 +1691,8 @@ async function processOTD(file){
       cliente,cidade,uf,regiao:reg,
       qtd:0,valor:0,dias_sum:0,dias_n:0,dias_max:0,
       transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):'',
-      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Em Trânsito em Atraso'
+      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Em Trânsito em Atraso',
+      nfs:[]
     };
     const c=clienteOffMap[key];
     c.qtd++;
@@ -1701,9 +1702,19 @@ async function processOTD(file){
       c.dias_n++;
       if(diasAtr>c.dias_max) c.dias_max=diasAtr;
     }
+    // detalhe por NF — alimenta a tabela expansível e o Excel por nota
+    c.nfs.push({
+      nf: String(col(r,'Número NF','Numero NF','NF','Nro NF','Nota Fiscal','Chave NF')||'').trim(),
+      pedido: String(getPedido(r)||'').trim(),
+      valor: Math.round(val*100)/100,
+      dias: diasAtr,
+      transp: transp,
+      mes_nome: de?(NOME_MES[mes]||('M'+mes)):''
+    });
   });
   const clientesOff=Object.values(clienteOffMap)
-    .map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null}))
+    .map(c=>({...c,valor:Math.round(c.valor*100)/100,dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null,
+      nfs:(c.nfs||[]).slice().sort((a,b)=>(b.dias||0)-(a.dias||0))}))
     .sort((a,b)=>b.qtd-a.qtd);
   log('Clientes com atraso agregados: '+clientesOff.length,'info');
 
@@ -2345,7 +2356,8 @@ function getAtrasosFiltrado(){
       (c.cliente||'').toLowerCase().includes(search) ||
       (c.cidade||'').toLowerCase().includes(search) ||
       (c.uf||'').toLowerCase().includes(search) ||
-      (c.transp||'').toLowerCase().includes(search)
+      (c.transp||'').toLowerCase().includes(search) ||
+      (c.nfs||[]).some(n=>String(n.nf||'').toLowerCase().includes(search) || String(n.pedido||'').toLowerCase().includes(search))
     )) return false;
     return true;
   });
@@ -2433,8 +2445,10 @@ function renderAtrasosTabelas(){
       const cor=REG_CORES[c.regiao]||'#888';
       const sitColor=(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')?'#A32D2D':'#854F0B';
       const sitBg   =(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')?'#FCEBEB':'#FAEEDA';
-      rows+='<tr>'
-        +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
+      const temNF=Array.isArray(c.nfs)&&c.nfs.length>0;
+      const rid='atr-d-'+i;
+      rows+='<tr'+(temNF?' style="cursor:pointer" onclick="atrasosToggleNF(\''+rid+'\',this)"':'')+'>'
+        +'<td style="color:var(--text3);white-space:nowrap">'+(temNF?'<span class="atr-chev" style="display:inline-block;width:9px;transition:transform .15s">▸</span> ':'')+(start+i+1)+'</td>'
         +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
         +'<td style="color:var(--text2)">'+(c.cidade||'—')+'</td>'
         +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
@@ -2447,6 +2461,22 @@ function renderAtrasosTabelas(){
         +'<td class="r" style="color:#A32D2D;font-weight:600">'+(c.dias_max>0?c.dias_max+'d':'—')+'</td>'
         +'<td class="r" style="color:#A32D2D">'+fmtM(c.valor)+'</td>'
         +'</tr>';
+      if(temNF){
+        rows+='<tr id="'+rid+'" style="display:none"><td colspan="12" style="padding:0;background:var(--bg2)">'
+          +'<div style="padding:8px 14px 12px 28px">'
+          +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:6px">Notas fiscais deste cliente ('+c.nfs.length+')</div>'
+          +'<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
+          +'<thead><tr><th>Nota</th><th>Pedido</th><th>Transportadora</th><th>Mês</th><th class="r">Dias Atraso</th><th class="r">Valor</th></tr></thead><tbody>'
+          +c.nfs.map(n=>'<tr>'
+            +'<td style="font-family:monospace;font-weight:600">'+(n.nf||'—')+'</td>'
+            +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
+            +'<td style="font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
+            +'<td style="color:var(--text2)">'+(n.mes_nome||'—')+'</td>'
+            +'<td class="r" style="color:'+((n.dias||0)>3?'#A32D2D':'#854F0B')+';font-weight:600">'+(n.dias!=null?n.dias+'d':'—')+'</td>'
+            +'<td class="r" style="color:#A32D2D">'+fmtM(n.valor)+'</td>'
+            +'</tr>').join('')
+          +'</tbody></table></div></td></tr>';
+      }
     });
   }
   document.getElementById('atrasos-clientes-tbody').innerHTML=rows;
@@ -2491,6 +2521,15 @@ function atrasosFilter(tipo,val,btn){
 function atrasosSearch(){
   atrasosPage=1;
   renderAtrasosTabelas();
+}
+
+function atrasosToggleNF(rid, rowEl){
+  const d=document.getElementById(rid);
+  if(!d) return;
+  const abrir=d.style.display==='none';
+  d.style.display=abrir?'table-row':'none';
+  const ch=rowEl&&rowEl.querySelector?rowEl.querySelector('.atr-chev'):null;
+  if(ch) ch.style.transform=abrir?'rotate(90deg)':'rotate(0deg)';
 }
 
 // ============================================================
@@ -2660,25 +2699,49 @@ function exportarAtrasosExcel(){
     alert('Nenhum cliente com atraso para exportar nos filtros atuais.');
     return;
   }
-  const rows = filt.map((c,i)=>({
-    '#': i+1,
-    'Cliente': c.cliente,
-    'Cidade': c.cidade||'',
-    'UF': c.uf||'',
-    'Regiao': c.regiao,
-    'Transportadora': c.transp||'',
-    'Mes Embarque': c.mes_nome||'',
-    'Situacao': c.situacao,
-    'Qtd NFs': c.qtd,
-    'Dias Medio Atraso': c.dias_medio!=null?c.dias_medio:'',
-    'Maior Atraso (dias)': c.dias_max||'',
-    'Valor (R$)': c.valor||0
-  }));
+  const rows = [];
+  let seq = 0;
+  filt.forEach(c=>{
+    if(Array.isArray(c.nfs) && c.nfs.length){
+      c.nfs.forEach(n=>{
+        rows.push({
+          '#': ++seq,
+          'Cliente': c.cliente,
+          'Cidade': c.cidade||'',
+          'UF': c.uf||'',
+          'Regiao': c.regiao,
+          'Situacao': c.situacao,
+          'Numero NF': n.nf||'',
+          'Pedido': n.pedido||'',
+          'Transportadora': n.transp||c.transp||'',
+          'Mes Embarque': n.mes_nome||c.mes_nome||'',
+          'Dias Atraso': n.dias!=null?n.dias:'',
+          'Valor (R$)': n.valor||0
+        });
+      });
+    } else {
+      // Fallback: dados.json antigo sem detalhe de NF — exporta a linha agregada
+      rows.push({
+        '#': ++seq,
+        'Cliente': c.cliente,
+        'Cidade': c.cidade||'',
+        'UF': c.uf||'',
+        'Regiao': c.regiao,
+        'Situacao': c.situacao,
+        'Numero NF': '',
+        'Pedido': '',
+        'Transportadora': c.transp||'',
+        'Mes Embarque': c.mes_nome||'',
+        'Dias Atraso': c.dias_medio!=null?c.dias_medio:'',
+        'Valor (R$)': c.valor||0
+      });
+    }
+  });
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:5},{wch:35},{wch:18},{wch:5},{wch:14},{wch:30},{wch:12},{wch:22},{wch:8},{wch:14},{wch:14},{wch:16}];
+  ws['!cols'] = [{wch:5},{wch:35},{wch:18},{wch:5},{wch:14},{wch:22},{wch:14},{wch:14},{wch:30},{wch:12},{wch:11},{wch:16}];
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Clientes em Atraso');
-  let nome = 'atrasos';
+  XLSX.utils.book_append_sheet(wb, ws, 'NFs em Atraso');
+  let nome = 'atrasos_nf';
   if(atrasosFilter_state.sit!=='todas') nome += '_' + atrasosFilter_state.sit.replace(/ /g,'-');
   if(atrasosFilter_state.reg!=='todas') nome += '_' + atrasosFilter_state.reg;
   if(atrasosFilter_state.mes!=='todos') nome += '_' + atrasosFilter_state.mes;
@@ -3102,6 +3165,10 @@ function detectarBaseDesatualizada(payload){
   const algumCliente = (payload.clientesOff||[])[0];
   if(algumCliente && algumCliente.situacao === undefined){
     motivos.push('situacao dos clientes em atraso ausente');
+  }
+  // Verifica: clientesOff tem detalhe por NF (nfs)?
+  if(algumCliente && algumCliente.nfs === undefined){
+    motivos.push('detalhe por NF nos atrasos ausente (reprocesse a base)');
   }
   // Verifica: payload tem Lead Times?
   if(payload.lead_time_brasil === undefined){
