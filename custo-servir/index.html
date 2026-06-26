@@ -423,6 +423,7 @@ function initDash(){
   const fq=document.getElementById('f-qtrs');fq.innerHTML='';allQ.forEach(q=>{fq.appendChild(mkb(q,'qtr',q));});
   const mU=[...new Map(allM.map(m=>[m.ano+'-'+m.mes,m])).values()].sort((a,b)=>a.ano===b.ano?a.mes-b.mes:a.ano-b.ano);
   const fm=document.getElementById('f-meses');fm.innerHTML='';mU.forEach(m=>{fm.appendChild(mkb((m.mes_nome||m.nome||'M'+m.mes)+'/'+String(m.ano).slice(2),'mes',m.ano+'-'+m.mes));});
+  aplicarEstadoSalvo();
   renderAll();
 }
 function mkb(label,g,v){const b=document.createElement('button');b.className='fb';b.textContent=label;b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;}
@@ -437,17 +438,82 @@ function setOp(op,btn){
   document.getElementById('rem-title').textContent=op==='inbound'?'Fornecedores Inbound — custo por remetente':'Clientes devolvendo — custo por remetente';
   if(curTab==='cliente'&&op!=='outbound'){curTab='remetente';document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.getElementById('tab-rem').classList.add('on');['dash','transp','regiao','cliente','remetente','quarter'].forEach(s=>{const el=document.getElementById('sec-'+s);if(el){el.classList.remove('on');el.style.display='none';}});const sr=document.getElementById('sec-remetente');if(sr){sr.classList.add('on');sr.style.display='block';}}
   if(curTab==='remetente'&&op==='outbound'){curTab='cliente';document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.getElementById('tab-cli').classList.add('on');['dash','transp','regiao','cliente','remetente','quarter'].forEach(s=>{const el=document.getElementById('sec-'+s);if(el){el.classList.remove('on');el.style.display='none';}});const sc=document.getElementById('sec-cliente');if(sc){sc.classList.add('on');sc.style.display='block';}}
+  saveState();
   renderAll();
 }
 
 const TIDS=['dash','transp','regiao','cliente','remetente','quarter','fatransp','custo'];
 const F={emp:'all',ano:'all',qtr:'all',mes:'all',tipo:'all',reg:'all'};
 
+// ── PERSISTENCIA DE FILTROS (localStorage) ───────────────────────────
+// Mantem o ultimo filtro/aba/operacao entre sessoes.
+const LS_KEY='torre-controle-state-v1';
+
+function saveState(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      F:{...F}, curOp, curTab
+    }));
+  }catch(e){/* ignora erro de quota/privado */}
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){return null;}
+}
+
+// Aplica estado salvo apos os botoes de filtro existirem (chamado no fim do initDash).
+// Valida cada filtro contra os botoes existentes - se a opcao nao existir mais
+// (ex: o ano salvo nao tem dados), ignora aquele filtro e mantem 'all'.
+function aplicarEstadoSalvo(){
+  const s=loadState(); if(!s) return;
+  const st=s.F||{};
+  // 1) Filtros simples (emp, ano, qtr, mes, tipo, reg) — valida via botoes existentes
+  ['emp','ano','qtr','mes','tipo','reg'].forEach(g=>{
+    const v=st[g]; if(v==null||v==='all') return;
+    const btn=document.querySelector('.fb[data-g="'+g+'"][data-v="'+CSS.escape(v)+'"]');
+    if(!btn) return;  // opcao nao existe mais nos dados atuais
+    // Marca o botao e atualiza F
+    document.querySelectorAll('.fb[data-g="'+g+'"]').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    F[g]=v;
+  });
+  // 2) Operacao (Outbound/Inbound/Reversa)
+  if(s.curOp&&s.curOp!==curOp&&['outbound','inbound','reversa'].includes(s.curOp)){
+    curOp=s.curOp;
+    document.querySelectorAll('.opbtn').forEach(b=>{b.className='opbtn';});
+    const map={outbound:'op-out',inbound:'op-in',reversa:'op-rev'};
+    const opbtn=document.getElementById(map[curOp]);
+    if(opbtn) opbtn.className='opbtn '+OP_CLS[curOp];
+    document.getElementById('tab-cli').style.display=curOp==='outbound'?'block':'none';
+    document.getElementById('tab-rem').style.display=curOp!=='outbound'?'block':'none';
+    document.getElementById('transp-title').textContent='%CTS por transportadora — '+OP_LBL[curOp];
+    document.getElementById('rem-title').textContent=curOp==='inbound'?'Fornecedores Inbound — custo por remetente':'Clientes devolvendo — custo por remetente';
+  }
+  // 3) Aba (curTab) — respeitando que cliente/remetente dependem da operacao
+  if(s.curTab&&TIDS.includes(s.curTab)){
+    let alvo=s.curTab;
+    if(alvo==='cliente'&&curOp!=='outbound') alvo='remetente';
+    if(alvo==='remetente'&&curOp==='outbound') alvo='cliente';
+    curTab=alvo;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    TIDS.forEach(s=>{const el=document.getElementById('sec-'+s);if(el){el.classList.remove('on');el.style.display='none';}});
+    // Acha o botao da aba pelo onclick (poucas tem id proprio)
+    const tabBtn=[...document.querySelectorAll('.tab')].find(t=>(t.getAttribute('onclick')||'').includes("goTab('"+alvo+"'"));
+    if(tabBtn) tabBtn.classList.add('on');
+    const sec=document.getElementById('sec-'+alvo);
+    if(sec){sec.classList.add('on');sec.style.display='block';}
+  }
+}
+
 function goTab(id,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   TIDS.forEach(s=>{const el=document.getElementById('sec-'+s);if(el){el.classList.remove('on');el.style.display='none';}});
   btn.classList.add('on');const sec=document.getElementById('sec-'+id);if(sec){sec.classList.add('on');sec.style.display='block';}
-  curTab=id;renderTab(id);
+  curTab=id;saveState();renderTab(id);
 }
 TIDS.slice(1).forEach(s=>{const el=document.getElementById('sec-'+s);if(el)el.style.display='none';});
 
@@ -477,6 +543,7 @@ function fil(btn){
       document.querySelector('.fb[data-g="qtr"][data-v="all"]').classList.add('on');
     }
   }
+  saveState();
   renderAll();
 }
 
