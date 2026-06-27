@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estrutura de Dados — Módulo Fiscal</title>
+<style>
+  :root{
+    --bg:#020617; --panel:#0b1220; --panel2:#0f1a2e; --line:#1e293b;
+    --txt:#e2e8f0; --muted:#64748b; --cyan:#22d3ee; --violet:#a78bfa;
+    --amber:#fbbf24; --emerald:#34d399; --rose:#fb7185;
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5;
+    padding:32px 20px;}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 4px;font-weight:650}
+  h1 span{color:var(--cyan)}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);margin:36px 0 14px;font-weight:600}
+  .mono{font-family:var(--mono)}
+
+  /* flow */
+  .flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+  .flow .col{flex:1;min-width:150px}
+  .stack{display:flex;flex-direction:column;gap:8px}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:12px}
+  .chip .k{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+  .chip .p{font-family:var(--mono);color:var(--txt);font-size:11px;word-break:break-all}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);
+    font-size:22px;min-width:24px}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:14px;text-align:center}
+  .box .t{font-weight:600;font-size:14px}
+  .box .d{color:var(--muted);font-size:11px;margin-top:2px}
+
+  /* doc cards */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card.full{grid-column:1/-1}
+  .card h3{margin:0 0 2px;font-size:15px;display:flex;align-items:center;gap:8px}
+  .badge{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:600;letter-spacing:.03em}
+  .b-ok{background:rgba(52,211,153,.15);color:var(--emerald)}
+  .b-wait{background:rgba(251,191,36,.15);color:var(--amber)}
+  .tbl{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px}
+  .rows{margin-top:10px;font-size:12.5px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid #131f33}
+  .row:last-child{border:0}
+  .row .f{color:var(--muted)}
+  .row .v{font-family:var(--mono);text-align:right;word-break:break-all}
+  .accent-cyan{border-top:3px solid var(--cyan)}
+  .accent-violet{border-top:3px solid var(--violet)}
+  .accent-amber{border-top:3px solid var(--amber)}
+  .accent-rose{border-top:3px solid var(--rose)}
+
+  /* positional ruler */
+  .ruler{overflow-x:auto;background:#060d1a;border:1px solid var(--line);
+    border-radius:8px;padding:12px;margin-top:10px}
+  .ruler table{border-collapse:collapse;font-family:var(--mono);font-size:11px;white-space:nowrap}
+  .ruler td{padding:3px 6px;border:1px solid #16233b;text-align:center}
+  .seg-rec{background:rgba(100,116,139,.2)}
+  .seg-nf{background:rgba(34,211,238,.16);color:var(--cyan)}
+  .seg-aux{background:rgba(251,191,36,.16);color:var(--amber)}
+  .seg-chave{background:rgba(167,139,250,.16);color:var(--violet)}
+  .leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--muted)}
+  .leg span{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+  .note{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--amber);
+    border-radius:8px;padding:12px 14px;font-size:13px;color:#cbd5e1;margin-top:14px}
+  .link{margin-top:12px;font-size:12.5px;color:var(--muted)}
+  .link b{color:var(--cyan);font-family:var(--mono)}
+  .link .v{color:var(--violet)}
+  footer{color:var(--muted);font-size:11px;margin-top:36px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Estrutura de Dados · <span>Módulo Fiscal</span></h1>
+  <div class="sub">Mapa dos arquivos lidos das pastas do ERP, como são decodificados e onde ficam no banco. Baseado nos arquivos reais de 13–19/06/2026.</div>
+
+  <h2>Fluxo geral</h2>
+  <div class="flow">
+    <div class="col stack">
+      <div class="chip"><div class="k">NF-e</div><div class="p">Y:\ERP-12\ArqXML-MG</div></div>
+      <div class="chip"><div class="k">CT-e</div><div class="p">…TOTVSCOLAB20-PRD\RECEIVED</div></div>
+      <div class="chip"><div class="k">Romaneio</div><div class="p">…TRANSP-PRD\ROMANEIO\Enviados</div></div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="col"><div class="box" style="height:100%"><div class="t">Robô</div><div class="d">lê pastas · filtra 2026+ · decodifica</div></div></div>
+    <div class="arrow">→</div>
+    <div class="col"><div class="box" style="height:100%"><div class="t">Supabase</div><div class="d">5 tabelas</div></div></div>
+    <div class="arrow">→</div>
+    <div class="col"><div class="box" style="height:100%"><div class="t">Painel</div><div class="d">na nuvem (Vercel)</div></div></div>
+  </div>
+
+  <h2>Documentos e onde caem no banco</h2>
+  <div class="grid">
+
+    <!-- NFe -->
+    <div class="card accent-cyan">
+      <h3>NF-e <span class="badge b-ok">LEITOR OK</span></h3>
+      <div class="tbl">XML modelo 55 → tabelas nfe_notas + nfe_itens</div>
+      <div class="rows">
+        <div class="row"><span class="f">Número / série</span><span class="v">64887 / 1</span></div>
+        <div class="row"><span class="f">Emissão</span><span class="v">2026-06-18</span></div>
+        <div class="row"><span class="f">Emitente → Dest.</span><span class="v">GENOMMA(MG) → VALE ACÁCIAS(PR)</span></div>
+        <div class="row"><span class="f">Valor total</span><span class="v">R$ 23.615,29</span></div>
+        <div class="row"><span class="f">Itens</span><span class="v">7</span></div>
+      </div>
+    </div>
+
+    <!-- CTe -->
+    <div class="card accent-violet">
+      <h3>CT-e <span class="badge b-ok">LEITOR OK</span></h3>
+      <div class="tbl">XML modelo 57 → tabela cte_conhecimentos</div>
+      <div class="rows">
+        <div class="row"><span class="f">Número / série</span><span class="v">345 / 1</span></div>
+        <div class="row"><span class="f">Transportadora</span><span class="v">TRANSCUNHA LTDA</span></div>
+        <div class="row"><span class="f">Rota</span><span class="v">MG → PR</span></div>
+        <div class="row"><span class="f">Frete / Carga</span><span class="v">R$ 3.349,80 / R$ 115.777,55</span></div>
+        <div class="row"><span class="f">NF-e vinculadas</span><span class="v">1 (nº 64915)</span></div>
+      </div>
+    </div>
+
+    <!-- Manifesto -->
+    <div class="card full accent-amber">
+      <h3>Manifestação do Destinatário <span class="badge b-ok">LEITOR OK (novo formato)</span></h3>
+      <div class="tbl">arquivo MANIFE…txt (posicional, 60 colunas) → tabela nfe_manifestacoes</div>
+
+      <div class="ruler">
+        <table>
+          <tr>
+            <td class="seg-rec">001</td>
+            <td class="seg-nf">000064540</td>
+            <td class="seg-aux">0207</td>
+            <td class="seg-chave">31260609080907000506550010000645401789866880</td>
+          </tr>
+          <tr style="color:var(--muted);font-size:10px">
+            <td>col 1–3</td><td>col 4–12</td><td>col 13–16</td><td>col 17–60</td>
+          </tr>
+        </table>
+      </div>
+      <div class="leg">
+        <span><i class="dot" style="background:#64748b"></i> registro fixo "001"</span>
+        <span><i class="dot" style="background:var(--cyan)"></i> número da NF-e</span>
+        <span><i class="dot" style="background:var(--amber)"></i> campo de 4 díg. (a confirmar)</span>
+        <span><i class="dot" style="background:var(--violet)"></i> chave da NF-e (44)</span>
+      </div>
+      <div class="note">
+        O cabeçalho traz data, hora e o <b>CNPJ da filial</b> que está manifestando. O sufixo do arquivo
+        identifica a filial: <b>_50</b> = GENOMMA 09080907000506 · <b>_200</b> = 60698771000126.
+        Duas coisas ainda <b>a confirmar com você</b>: (1) o que é o campo de 4 dígitos
+        (0207, 0024, 0010…) e (2) qual evento isso representa — Ciência, Confirmação,
+        Desconhecimento ou Operação não realizada.
+      </div>
+    </div>
+
+    <!-- Romaneio -->
+    <div class="card full accent-rose">
+      <h3>Romaneio <span class="badge b-wait">AGUARDANDO EXEMPLO</span></h3>
+      <div class="tbl">…\ROMANEIO\Enviados\(subpastas) → tabela romaneios</div>
+      <div class="note" style="border-left-color:var(--rose)">
+        Ainda não tenho um arquivo de romaneio, então não sei o formato (XML? TXT? PDF?).
+        Por enquanto o robô <b>registra o arquivo</b> (nome, data, conteúdo bruto) sem extrair campos.
+        Me envie <b>1 exemplo</b> de qualquer subpasta que eu monto a leitura dos campos reais
+        (número do romaneio, peso, volumes, notas vinculadas, transportadora…).
+      </div>
+    </div>
+  </div>
+
+  <h2>Como os documentos se conectam</h2>
+  <div class="card full">
+    <div class="link">A <b>NF-e 64915</b> aparece em três lugares — é o elo entre os módulos:</div>
+    <div class="link" style="margin-top:8px">
+      • o próprio XML da nota &nbsp;→&nbsp; <span class="v">nfe_notas</span><br>
+      • referenciada dentro do <b>CT-e 345</b> (a carga transportada) &nbsp;→&nbsp; <span class="v">cte_conhecimentos.qtd_nfe</span><br>
+      • manifestada nos arquivos <b>MANIFE</b> pela chave de 44 dígitos &nbsp;→&nbsp; <span class="v">nfe_manifestacoes.chave_nfe</span>
+    </div>
+    <div class="note">Como a manifestação agora traz a chave completa, dá pra cruzar tudo: ver quais
+      notas têm CT-e, quais foram manifestadas e em que data — numa visão só.</div>
+  </div>
+
+  <footer>Gerado a partir dos arquivos reais enviados · documentos de 2026 · arquivo de referência do projeto</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+PAINEL DE AUDITORIA - como publicar e atualizar (um clique)
+===========================================================
+
+Rode no PC/servidor que enxerga o drive Y:.
+
+PRIMEIRA VEZ (configurar o GitHub - so uma vez):
+  Abra o "Prompt de Comando" na pasta do projeto e rode:
+    git init
+    git add -A
+    git commit -m "primeiro envio"
+    git branch -M main
+    git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+    git push -u origin main
+  Depois, no GitHub: Settings > Pages > Branch: main / pasta raiz > Save.
+  O painel publico fica em:
+    https://SEU_USUARIO.github.io/SEU_REPOSITORIO/auditoria/
+
+USAR (sempre):
+  1) Abra scripts\auditoria.py no Bloco de Notas e preencha
+     LOGIN_EMAIL e LOGIN_SENHA (o login do painel).
+  2) De dois cliques em  EXECUTAR_AUDITORIA.bat
+     Ele: le as pastas (2026+), grava no Supabase, envia o dados.json,
+     publica no GitHub e abre o painel no navegador.
+  3) No painel, o botao ATUALIZAR reprocessa as pastas de novo
+     (atualiza Supabase + GitHub) sem fechar nada.
+
+AGENDAR sozinho (opcional):
+  Agendador de Tarefas do Windows > Criar Tarefa Basica >
+  programa: EXECUTAR_AUDITORIA.bat > horario desejado.
+
+OBS: o botao Atualizar so reprocessa as PASTAS quando o programa local
+esta rodando (e ele que enxerga o Y:). No painel publicado sozinho, o
+botao apenas recarrega os dados ja enviados para a nuvem.

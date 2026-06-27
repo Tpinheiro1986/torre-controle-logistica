@@ -1,0 +1,30 @@
+COMO RODAR A IMPORTACAO (robo que le o Y: e envia pro painel)
+=============================================================
+
+Rode no PC/servidor que ENXERGA o drive Y:.
+
+1) Instale o Python (uma vez so):
+   - Baixe em https://www.python.org/downloads/
+   - IMPORTANTE: na primeira tela, marque "Add Python to PATH"
+
+2) Abra o arquivo  importar.py  no Bloco de Notas e preencha:
+   - LOGIN_EMAIL = o mesmo e-mail do login do painel
+   - LOGIN_SENHA = a mesma senha
+   (As 3 pastas e o filtro de 2026 ja estao configurados.)
+
+3) De dois cliques em  EXECUTAR_IMPORTACAO.bat
+   Ele instala o necessario, le as pastas e mostra o resultado.
+
+4) Abra o painel -> os documentos de 2026+ aparecem nas abas
+   Notas, CT-e e Romaneios.
+
+PARA RODAR SOZINHO TODO DIA (opcional):
+   Agendador de Tarefas do Windows -> Criar Tarefa Basica ->
+   programa: o EXECUTAR_IMPORTACAO.bat -> defina o horario.
+
+OBSERVACOES
+- CT-e: o leitor segue o padrao nacional 4.00. Se algum campo vier
+  vazio, me envie 1 XML de CT-e que eu ajusto.
+- Romaneio: ainda nao sei o formato do seu arquivo. Por enquanto o robo
+  registra o arquivo (nome, data, conteudo). Envie 1 exemplo que eu
+  monto a leitura dos campos (numero, peso, volumes, notas, etc.).
