@@ -1,26 +1,26 @@
 {
   "outbound": {
     "totais": {
-      "frete": 15100802.82,
-      "v_merc": 507472200.63,
-      "ctes": 6430,
+      "frete": 15117535.92,
+      "v_merc": 507851193.92,
+      "ctes": 6450,
       "pct_cts": 2.98,
-      "genomma_frete": 13436859.25,
-      "inovalab_frete": 1647294.87,
+      "genomma_frete": 13451635.37,
+      "inovalab_frete": 1649251.85,
       "pct_genomma": 2.77,
       "pct_inovalab": 7.69
     },
     "empresas": {
       "GENOMMA": {
-        "frete": 13436859.25,
-        "v_merc": 485835302.41,
-        "ctes": 6011,
+        "frete": 13451635.37,
+        "v_merc": 486204314.06,
+        "ctes": 6029,
         "pct_cts": 2.77
       },
       "INOVALAB": {
-        "frete": 1647294.87,
-        "v_merc": 21427601.05,
-        "ctes": 416,
+        "frete": 1649251.85,
+        "v_merc": 21437582.69,
+        "ctes": 418,
         "pct_cts": 7.69
       },
       "OUTROS": {
@@ -32,9 +32,9 @@
     },
     "tipos": {
       "CIF": {
-        "frete": 15100802.82,
-        "v_merc": 507472200.63,
-        "ctes": 6430,
+        "frete": 15117535.92,
+        "v_merc": 507851193.92,
+        "ctes": 6450,
         "pct_cts": 2.98,
         "pct_genomma": 2.77,
         "pct_inovalab": 7.69
@@ -326,16 +326,16 @@
         "ano": 2026,
         "mes": 6,
         "nome": "Jun",
-        "frete": 1072195.52,
-        "v_merc": 40827010.64,
-        "ctes": 528,
-        "pct_cts": 2.63,
-        "genomma_frete": 757395.76,
-        "genomma_merc": 37160034.13,
-        "inovalab_frete": 314799.76,
-        "inovalab_merc": 3666976.51,
-        "pct_genomma": 2.04,
-        "pct_inovalab": 8.58
+        "frete": 1088928.62,
+        "v_merc": 41206003.93,
+        "ctes": 548,
+        "pct_cts": 2.64,
+        "genomma_frete": 772171.88,
+        "genomma_merc": 37529045.78,
+        "inovalab_frete": 316756.74,
+        "inovalab_merc": 3676958.15,
+        "pct_genomma": 2.06,
+        "pct_inovalab": 8.61
       }
     ],
     "quarters": [
@@ -412,40 +412,40 @@
       {
         "q": "Q2/26",
         "ano": 2026,
-        "frete": 2248525.03,
-        "v_merc": 74816097.34,
-        "ctes": 1219,
+        "frete": 2265258.13,
+        "v_merc": 75195090.63,
+        "ctes": 1239,
         "pct_cts": 3.01,
-        "genomma_frete": 1426215.59,
-        "genomma_merc": 66028612.72,
-        "inovalab_frete": 822309.44,
-        "inovalab_merc": 8787484.62,
-        "pct_genomma": 2.16,
-        "pct_inovalab": 9.36
+        "genomma_frete": 1440991.71,
+        "genomma_merc": 66397624.37,
+        "inovalab_frete": 824266.42,
+        "inovalab_merc": 8797466.26,
+        "pct_genomma": 2.17,
+        "pct_inovalab": 9.37
       }
     ],
     "transportadoras": [
       {
         "nome": "ATIVA DISTR E LOGISTICA LTDA",
         "cnpj": "01125797000701",
-        "frete": 5262483.82,
-        "v_merc": 193614306.54,
-        "ctes": 3740,
+        "frete": 5269397.96,
+        "v_merc": 193831760.64,
+        "ctes": 3747,
         "pct_cts": 2.72,
         "pct_genomma": 2.56,
         "pct_inovalab": 12.03,
-        "genomma_frete": 4884043.45,
-        "inovalab_frete": 378440.37,
+        "genomma_frete": 4889885.18,
+        "inovalab_frete": 379512.78,
         "reentrega_frete": 1834.36,
         "reentrega_ctes": 5,
         "complementar_frete": 0,
         "complementar_ctes": 0,
-        "peso_total": 2566672.89,
+        "peso_total": 2569302.08,
         "regioes": {
           "Sudeste": {
-            "frete": 3378938.74,
-            "peso": 1691781.75,
-            "ctes": 2394,
+            "frete": 3385852.88,
+            "peso": 1694410.94,
+            "ctes": 2401,
             "custo_kg": 2.0
           },
           "Centro-Oeste": {
@@ -492,24 +492,24 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 1688453.27,
-            "v_merc": 59802031.64,
-            "ctes": 1295,
+            "frete": 1695367.41,
+            "v_merc": 60019485.74,
+            "ctes": 1302,
             "pct_cts": 2.82,
             "peso": 0,
-            "genomma_frete": 1310012.9,
-            "inovalab_frete": 378440.37,
+            "genomma_frete": 1315854.63,
+            "inovalab_frete": 379512.78,
             "pct_genomma": 2.31,
             "pct_inovalab": 12.03,
-            "rk_frete": 1688453.27,
+            "rk_frete": 1695367.41,
             "rk_peso": 0,
-            "rk_ctes": 1295,
-            "rk_g_frete": 1310012.9,
+            "rk_ctes": 1302,
+            "rk_g_frete": 1315854.63,
             "rk_g_peso": 0,
-            "rk_g_ctes": 1120,
-            "rk_i_frete": 378440.37,
+            "rk_g_ctes": 1126,
+            "rk_i_frete": 379512.78,
             "rk_i_peso": 0,
-            "rk_i_ctes": 175,
+            "rk_i_ctes": 176,
             "pc_frete": 0,
             "pc_merc": 0,
             "pc_ctes": 0,
@@ -1016,24 +1016,24 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 386711.26,
-            "v_merc": 14664459.9,
-            "ctes": 299,
+            "frete": 393625.4,
+            "v_merc": 14881914.0,
+            "ctes": 306,
             "pct_cts": 2.64,
             "peso": 0,
-            "genomma_frete": 312244.51,
-            "inovalab_frete": 74466.75,
-            "pct_genomma": 2.22,
-            "pct_inovalab": 12.16,
-            "rk_frete": 386711.26,
+            "genomma_frete": 318086.24,
+            "inovalab_frete": 75539.16,
+            "pct_genomma": 2.23,
+            "pct_inovalab": 12.14,
+            "rk_frete": 393625.4,
             "rk_peso": 0,
-            "rk_ctes": 299,
-            "rk_g_frete": 312244.51,
+            "rk_ctes": 306,
+            "rk_g_frete": 318086.24,
             "rk_g_peso": 0,
-            "rk_g_ctes": 257,
-            "rk_i_frete": 74466.75,
+            "rk_g_ctes": 263,
+            "rk_i_frete": 75539.16,
             "rk_i_peso": 0,
-            "rk_i_ctes": 42,
+            "rk_i_ctes": 43,
             "pc_frete": 0,
             "pc_merc": 0,
             "pc_ctes": 0,
@@ -1049,24 +1049,24 @@
       {
         "nome": "FL BRASIL HOLDING LOGISTICA E TRANSPORTE LTDA",
         "cnpj": "18233211007576",
-        "frete": 3894494.18,
-        "v_merc": 76092058.96,
-        "ctes": 1942,
+        "frete": 3903428.57,
+        "v_merc": 76253477.55,
+        "ctes": 1954,
         "pct_cts": 5.12,
         "pct_genomma": 4.68,
         "pct_inovalab": 23.46,
-        "genomma_frete": 3473676.2,
+        "genomma_frete": 3482610.59,
         "inovalab_frete": 420817.98,
         "reentrega_frete": 6509.34,
         "reentrega_ctes": 5,
         "complementar_frete": 0,
         "complementar_ctes": 0,
-        "peso_total": 1077933.64,
+        "peso_total": 1080142.51,
         "regioes": {
           "Nordeste": {
-            "frete": 2453076.66,
-            "peso": 716508.34,
-            "ctes": 1423,
+            "frete": 2460705.63,
+            "peso": 718492.05,
+            "ctes": 1434,
             "custo_kg": 3.42
           },
           "Centro-Oeste": {
@@ -1076,9 +1076,9 @@
             "custo_kg": 2.68
           },
           "Norte": {
-            "frete": 1169863.24,
-            "peso": 260728.23,
-            "ctes": 308,
+            "frete": 1171168.66,
+            "peso": 260953.4,
+            "ctes": 309,
             "custo_kg": 4.49
           },
           "Sul": {
@@ -1125,21 +1125,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 1203241.9,
-            "v_merc": 22494630.89,
-            "ctes": 623,
+            "frete": 1212176.29,
+            "v_merc": 22656049.48,
+            "ctes": 635,
             "pct_cts": 5.35,
             "peso": 0,
-            "genomma_frete": 782423.92,
+            "genomma_frete": 791358.31,
             "inovalab_frete": 420817.98,
-            "pct_genomma": 3.78,
+            "pct_genomma": 3.79,
             "pct_inovalab": 23.46,
-            "rk_frete": 1203241.9,
+            "rk_frete": 1212176.29,
             "rk_peso": 0,
-            "rk_ctes": 623,
-            "rk_g_frete": 782423.92,
+            "rk_ctes": 635,
+            "rk_g_frete": 791358.31,
             "rk_g_peso": 0,
-            "rk_g_ctes": 510,
+            "rk_g_ctes": 522,
             "rk_i_frete": 420817.98,
             "rk_i_peso": 0,
             "rk_i_ctes": 113,
@@ -1649,21 +1649,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 290697.03,
-            "v_merc": 6288680.63,
-            "ctes": 167,
-            "pct_cts": 4.62,
+            "frete": 299631.42,
+            "v_merc": 6450099.22,
+            "ctes": 179,
+            "pct_cts": 4.65,
             "peso": 0,
-            "genomma_frete": 189700.38,
+            "genomma_frete": 198634.77,
             "inovalab_frete": 100996.65,
-            "pct_genomma": 3.24,
+            "pct_genomma": 3.3,
             "pct_inovalab": 23.3,
-            "rk_frete": 290697.03,
+            "rk_frete": 299631.42,
             "rk_peso": 0,
-            "rk_ctes": 167,
-            "rk_g_frete": 189700.38,
+            "rk_ctes": 179,
+            "rk_g_frete": 198634.77,
             "rk_g_peso": 0,
-            "rk_g_ctes": 135,
+            "rk_g_ctes": 147,
             "rk_i_frete": 100996.65,
             "rk_i_peso": 0,
             "rk_i_ctes": 32,
@@ -3273,14 +3273,14 @@
       {
         "nome": "ALA URB TRANSPORTES E LOGISTICA LTDA",
         "cnpj": "20051163000100",
-        "frete": 535599.03,
-        "v_merc": 25345533.48,
-        "ctes": 149,
-        "pct_cts": 2.11,
+        "frete": 536483.6,
+        "v_merc": 25345654.08,
+        "ctes": 150,
+        "pct_cts": 2.12,
         "pct_genomma": 1.85,
-        "pct_inovalab": 3.31,
+        "pct_inovalab": 3.34,
         "genomma_frete": 394821.96,
-        "inovalab_frete": 130643.37,
+        "inovalab_frete": 131527.94,
         "reentrega_frete": 0,
         "reentrega_ctes": 0,
         "complementar_frete": 0,
@@ -3288,9 +3288,9 @@
         "peso_total": 0.0,
         "regioes": {
           "Sudeste": {
-            "frete": 525465.33,
+            "frete": 526349.9,
             "peso": 0.0,
-            "ctes": 148,
+            "ctes": 149,
             "custo_kg": null
           },
           "Sul": {
@@ -3331,15 +3331,15 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 210425.53,
-            "v_merc": 8845284.61,
-            "ctes": 71,
-            "pct_cts": 2.38,
+            "frete": 211310.1,
+            "v_merc": 8845405.21,
+            "ctes": 72,
+            "pct_cts": 2.39,
             "peso": 0,
             "genomma_frete": 79782.16,
-            "inovalab_frete": 130643.37,
+            "inovalab_frete": 131527.94,
             "pct_genomma": 1.63,
-            "pct_inovalab": 3.31,
+            "pct_inovalab": 3.34,
             "rk_frete": 0,
             "rk_peso": 0,
             "rk_ctes": 0,
@@ -3349,15 +3349,15 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 210425.53,
-            "pc_merc": 8845284.61,
-            "pc_ctes": 71,
+            "pc_frete": 211310.1,
+            "pc_merc": 8845405.21,
+            "pc_ctes": 72,
             "pc_g_frete": 79782.16,
             "pc_g_merc": 4903439.06,
             "pc_g_ctes": 35,
-            "pc_i_frete": 130643.37,
-            "pc_i_merc": 3941845.55,
-            "pc_i_ctes": 36
+            "pc_i_frete": 131527.94,
+            "pc_i_merc": 3941966.15,
+            "pc_i_ctes": 37
           }
         },
         "meses": {
@@ -3855,15 +3855,15 @@
             "pc_i_ctes": 7
           },
           "2026-06": {
-            "frete": 44684.2,
-            "v_merc": 1296436.77,
-            "ctes": 15,
-            "pct_cts": 3.45,
+            "frete": 45568.77,
+            "v_merc": 1296557.37,
+            "ctes": 16,
+            "pct_cts": 3.51,
             "peso": 0,
             "genomma_frete": 17751.08,
-            "inovalab_frete": 26933.12,
+            "inovalab_frete": 27817.69,
             "pct_genomma": 3.44,
-            "pct_inovalab": 3.45,
+            "pct_inovalab": 3.56,
             "rk_frete": 0,
             "rk_peso": 0,
             "rk_ctes": 0,
@@ -3873,15 +3873,15 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 44684.2,
-            "pc_merc": 1296436.77,
-            "pc_ctes": 15,
+            "pc_frete": 45568.77,
+            "pc_merc": 1296557.37,
+            "pc_ctes": 16,
             "pc_g_frete": 17751.08,
             "pc_g_merc": 515638.03,
             "pc_g_ctes": 7,
-            "pc_i_frete": 26933.12,
-            "pc_i_merc": 780798.74,
-            "pc_i_ctes": 8
+            "pc_i_frete": 27817.69,
+            "pc_i_merc": 780919.34,
+            "pc_i_ctes": 9
           }
         }
       },
@@ -4748,35 +4748,35 @@
     "regioes": [
       {
         "regiao": "Sudeste",
-        "frete": 6192066.69,
-        "v_merc": 302267938.1,
-        "ctes": 2895,
+        "frete": 6199865.4,
+        "v_merc": 302485512.8,
+        "ctes": 2903,
         "pct_cts": 2.05,
-        "peso": 2057891.42,
-        "genomma_frete": 5620680.48,
-        "genomma_merc": 289147834.73,
-        "inovalab_frete": 564871.21,
-        "inovalab_merc": 12924192.65,
+        "peso": 2060520.61,
+        "genomma_frete": 5626522.21,
+        "genomma_merc": 289355427.79,
+        "inovalab_frete": 566828.19,
+        "inovalab_merc": 12934174.29,
         "pct_genomma": 1.94,
-        "pct_inovalab": 4.37,
-        "rk_frete": 3382255.78,
-        "rk_peso": 1693706.14,
-        "rk_ctes": 2404,
-        "rk_g_frete": 3154874.43,
-        "rk_g_peso": 1537027.08,
-        "rk_g_ctes": 2306,
-        "rk_i_frete": 227381.35,
-        "rk_i_peso": 156679.06,
-        "rk_i_ctes": 98,
-        "pc_frete": 2802997.5,
-        "pc_merc": 167475537.35,
-        "pc_ctes": 483,
+        "pct_inovalab": 4.38,
+        "rk_frete": 3389169.92,
+        "rk_peso": 1696335.33,
+        "rk_ctes": 2411,
+        "rk_g_frete": 3160716.16,
+        "rk_g_peso": 1538957.87,
+        "rk_g_ctes": 2312,
+        "rk_i_frete": 228453.76,
+        "rk_i_peso": 157377.46,
+        "rk_i_ctes": 99,
+        "pc_frete": 2803882.07,
+        "pc_merc": 167475657.95,
+        "pc_ctes": 484,
         "pc_g_frete": 2458992.64,
         "pc_g_merc": 156296982.25,
         "pc_g_ctes": 401,
-        "pc_i_frete": 337489.86,
-        "pc_i_merc": 10982644.38,
-        "pc_i_ctes": 80,
+        "pc_i_frete": 338374.43,
+        "pc_i_merc": 10982764.98,
+        "pc_i_ctes": 81,
         "anos": {
           "2025": {
             "frete": 4181423.59,
@@ -4808,33 +4808,33 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 2010643.1,
-            "v_merc": 95867008.7,
-            "ctes": 999,
+            "frete": 2018441.81,
+            "v_merc": 96084583.4,
+            "ctes": 1007,
             "pct_cts": 2.1,
-            "peso": 512803.49,
-            "genomma_frete": 1445771.89,
-            "inovalab_frete": 564871.21,
-            "pct_genomma": 1.74,
-            "pct_inovalab": 4.37,
-            "rk_frete": 1041381.9,
-            "rk_peso": 444368.95,
-            "rk_ctes": 811,
-            "rk_g_frete": 814000.55,
-            "rk_g_peso": 287689.9,
-            "rk_g_ctes": 713,
-            "rk_i_frete": 227381.35,
-            "rk_i_peso": 156679.06,
-            "rk_i_ctes": 98,
-            "pc_frete": 969261.2,
-            "pc_merc": 56228706.13,
-            "pc_ctes": 188,
+            "peso": 515432.68,
+            "genomma_frete": 1451613.62,
+            "inovalab_frete": 566828.19,
+            "pct_genomma": 1.75,
+            "pct_inovalab": 4.38,
+            "rk_frete": 1048296.04,
+            "rk_peso": 446998.14,
+            "rk_ctes": 818,
+            "rk_g_frete": 819842.28,
+            "rk_g_peso": 289620.69,
+            "rk_g_ctes": 719,
+            "rk_i_frete": 228453.76,
+            "rk_i_peso": 157377.46,
+            "rk_i_ctes": 99,
+            "pc_frete": 970145.77,
+            "pc_merc": 56228826.73,
+            "pc_ctes": 189,
             "pc_g_frete": 631771.34,
             "pc_g_merc": 45246061.75,
             "pc_g_ctes": 108,
-            "pc_i_frete": 337489.86,
-            "pc_i_merc": 10982644.38,
-            "pc_i_ctes": 80
+            "pc_i_frete": 338374.43,
+            "pc_i_merc": 10982764.98,
+            "pc_i_ctes": 81
           }
         },
         "meses": {
@@ -5332,55 +5332,55 @@
             "pc_i_ctes": 11
           },
           "2026-06": {
-            "frete": 500598.75,
-            "v_merc": 26672056.0,
-            "ctes": 230,
-            "pct_cts": 1.88,
-            "peso": 101406.64,
-            "genomma_frete": 398124.45,
-            "inovalab_frete": 102474.3,
-            "pct_genomma": 1.63,
-            "pct_inovalab": 4.55,
-            "rk_frete": 242514.49,
-            "rk_peso": 87626.3,
-            "rk_ctes": 189,
-            "rk_g_frete": 204133.51,
-            "rk_g_peso": 62316.28,
-            "rk_g_ctes": 168,
-            "rk_i_frete": 38380.98,
-            "rk_i_peso": 25310.02,
-            "rk_i_ctes": 21,
-            "pc_frete": 258084.26,
-            "pc_merc": 16916303.87,
-            "pc_ctes": 41,
+            "frete": 508397.46,
+            "v_merc": 26889630.7,
+            "ctes": 238,
+            "pct_cts": 1.89,
+            "peso": 104035.83,
+            "genomma_frete": 403966.18,
+            "inovalab_frete": 104431.28,
+            "pct_genomma": 1.64,
+            "pct_inovalab": 4.62,
+            "rk_frete": 249428.63,
+            "rk_peso": 90255.49,
+            "rk_ctes": 196,
+            "rk_g_frete": 209975.24,
+            "rk_g_peso": 64247.07,
+            "rk_g_ctes": 174,
+            "rk_i_frete": 39453.39,
+            "rk_i_peso": 26008.42,
+            "rk_i_ctes": 22,
+            "pc_frete": 258968.83,
+            "pc_merc": 16916424.47,
+            "pc_ctes": 42,
             "pc_g_frete": 193990.94,
             "pc_g_merc": 14986839.55,
             "pc_g_ctes": 26,
-            "pc_i_frete": 64093.32,
-            "pc_i_merc": 1929464.32,
-            "pc_i_ctes": 15
+            "pc_i_frete": 64977.89,
+            "pc_i_merc": 1929584.92,
+            "pc_i_ctes": 16
           }
         }
       },
       {
         "regiao": "Nordeste",
-        "frete": 3853982.82,
-        "v_merc": 73549329.27,
-        "ctes": 1521,
+        "frete": 3861611.79,
+        "v_merc": 73689813.16,
+        "ctes": 1532,
         "pct_cts": 5.24,
-        "peso": 752499.08,
-        "genomma_frete": 3294436.96,
-        "genomma_merc": 69923680.01,
+        "peso": 754482.79,
+        "genomma_frete": 3302065.93,
+        "genomma_merc": 70064163.9,
         "inovalab_frete": 559545.86,
         "inovalab_merc": 3625649.26,
         "pct_genomma": 4.71,
         "pct_inovalab": 15.43,
-        "rk_frete": 2437869.05,
-        "rk_peso": 716508.34,
-        "rk_ctes": 1384,
-        "rk_g_frete": 2151012.64,
-        "rk_g_peso": 615111.14,
-        "rk_g_ctes": 1299,
+        "rk_frete": 2445498.02,
+        "rk_peso": 718492.05,
+        "rk_ctes": 1395,
+        "rk_g_frete": 2158641.61,
+        "rk_g_peso": 617094.84,
+        "rk_g_ctes": 1310,
         "rk_i_frete": 286856.41,
         "rk_i_peso": 101397.2,
         "rk_i_ctes": 85,
@@ -5424,21 +5424,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 1281479.5,
-            "v_merc": 23013198.47,
-            "ctes": 515,
+            "frete": 1289108.47,
+            "v_merc": 23153682.36,
+            "ctes": 526,
             "pct_cts": 5.57,
-            "peso": 268304.75,
-            "genomma_frete": 721933.64,
+            "peso": 270288.46,
+            "genomma_frete": 729562.61,
             "inovalab_frete": 559545.86,
-            "pct_genomma": 3.72,
+            "pct_genomma": 3.74,
             "pct_inovalab": 15.43,
-            "rk_frete": 847669.96,
-            "rk_peso": 249930.93,
-            "rk_ctes": 478,
-            "rk_g_frete": 560813.55,
-            "rk_g_peso": 148533.72,
-            "rk_g_ctes": 393,
+            "rk_frete": 855298.93,
+            "rk_peso": 251914.64,
+            "rk_ctes": 489,
+            "rk_g_frete": 568442.52,
+            "rk_g_peso": 150517.43,
+            "rk_g_ctes": 404,
             "rk_i_frete": 286856.41,
             "rk_i_peso": 101397.2,
             "rk_i_ctes": 85,
@@ -5948,21 +5948,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 257399.67,
-            "v_merc": 5238112.95,
-            "ctes": 132,
-            "pct_cts": 4.91,
-            "peso": 60452.45,
-            "genomma_frete": 158427.55,
+            "frete": 265028.64,
+            "v_merc": 5378596.84,
+            "ctes": 143,
+            "pct_cts": 4.93,
+            "peso": 62436.16,
+            "genomma_frete": 166056.52,
             "inovalab_frete": 98972.12,
-            "pct_genomma": 3.31,
+            "pct_genomma": 3.37,
             "pct_inovalab": 21.71,
-            "rk_frete": 215890.36,
-            "rk_peso": 60452.45,
-            "rk_ctes": 125,
-            "rk_g_frete": 139503.6,
-            "rk_g_peso": 34618.64,
-            "rk_g_ctes": 104,
+            "rk_frete": 223519.33,
+            "rk_peso": 62436.16,
+            "rk_ctes": 136,
+            "rk_g_frete": 147132.57,
+            "rk_g_peso": 36602.34,
+            "rk_g_ctes": 115,
             "rk_i_frete": 76386.76,
             "rk_i_peso": 25833.82,
             "rk_i_ctes": 21,
@@ -7212,23 +7212,23 @@
       },
       {
         "regiao": "Norte",
-        "frete": 1348231.2,
-        "v_merc": 17987412.23,
-        "ctes": 319,
-        "pct_cts": 7.5,
-        "peso": 260728.23,
-        "genomma_frete": 1171380.86,
-        "genomma_merc": 17250004.07,
+        "frete": 1349536.62,
+        "v_merc": 18008346.93,
+        "ctes": 320,
+        "pct_cts": 7.49,
+        "peso": 260953.4,
+        "genomma_frete": 1172686.28,
+        "genomma_merc": 17270938.77,
         "inovalab_frete": 176850.34,
         "inovalab_merc": 737408.16,
         "pct_genomma": 6.79,
         "pct_inovalab": 23.98,
-        "rk_frete": 1169614.52,
-        "rk_peso": 260728.23,
-        "rk_ctes": 306,
-        "rk_g_frete": 1047280.66,
-        "rk_g_peso": 230539.89,
-        "rk_g_ctes": 285,
+        "rk_frete": 1170919.94,
+        "rk_peso": 260953.4,
+        "rk_ctes": 307,
+        "rk_g_frete": 1048586.08,
+        "rk_g_peso": 230765.06,
+        "rk_g_ctes": 286,
         "rk_i_frete": 122333.86,
         "rk_i_peso": 30188.34,
         "rk_i_ctes": 21,
@@ -7272,21 +7272,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 381597.55,
-            "v_merc": 4995929.82,
-            "ctes": 104,
-            "pct_cts": 7.64,
-            "peso": 64287.69,
-            "genomma_frete": 204747.21,
+            "frete": 382902.97,
+            "v_merc": 5016864.52,
+            "ctes": 105,
+            "pct_cts": 7.63,
+            "peso": 64512.85,
+            "genomma_frete": 206052.63,
             "inovalab_frete": 176850.34,
             "pct_genomma": 4.81,
             "pct_inovalab": 23.98,
-            "rk_frete": 290527.27,
-            "rk_peso": 64287.69,
-            "rk_ctes": 96,
-            "rk_g_frete": 168193.41,
-            "rk_g_peso": 34099.35,
-            "rk_g_ctes": 75,
+            "rk_frete": 291832.69,
+            "rk_peso": 64512.85,
+            "rk_ctes": 97,
+            "rk_g_frete": 169498.83,
+            "rk_g_peso": 34324.51,
+            "rk_g_ctes": 76,
             "rk_i_frete": 122333.86,
             "rk_i_peso": 30188.34,
             "rk_i_ctes": 21,
@@ -7796,21 +7796,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 77686.88,
-            "v_merc": 1213281.89,
-            "ctes": 29,
+            "frete": 78992.3,
+            "v_merc": 1234216.59,
+            "ctes": 30,
             "pct_cts": 6.4,
-            "peso": 9683.24,
-            "genomma_frete": 36562.98,
+            "peso": 9908.4,
+            "genomma_frete": 37868.4,
             "inovalab_frete": 41123.9,
-            "pct_genomma": 3.41,
+            "pct_genomma": 3.46,
             "pct_inovalab": 29.21,
-            "rk_frete": 47353.8,
-            "rk_peso": 9683.24,
-            "rk_ctes": 27,
-            "rk_g_frete": 30520.65,
-            "rk_g_peso": 5108.72,
-            "rk_g_ctes": 20,
+            "rk_frete": 48659.22,
+            "rk_peso": 9908.4,
+            "rk_ctes": 28,
+            "rk_g_frete": 31826.07,
+            "rk_g_peso": 5333.88,
+            "rk_g_ctes": 21,
             "rk_i_frete": 16833.15,
             "rk_i_peso": 4574.52,
             "rk_i_ctes": 7,
@@ -7831,35 +7831,35 @@
       {
         "uf": "SP",
         "regiao": "Sudeste",
-        "frete": 2341767.94,
-        "v_merc": 139161052.92,
-        "ctes": 1200,
+        "frete": 2343344.43,
+        "v_merc": 139177461.46,
+        "ctes": 1202,
         "pct_cts": 1.68,
-        "peso": 688479.76,
-        "genomma_frete": 2095197.72,
-        "genomma_merc": 130742560.02,
-        "inovalab_frete": 240055.22,
-        "inovalab_merc": 8222582.18,
+        "peso": 688744.87,
+        "genomma_frete": 2095889.64,
+        "genomma_merc": 130758847.96,
+        "inovalab_frete": 240939.79,
+        "inovalab_merc": 8222702.78,
         "pct_genomma": 1.6,
-        "pct_inovalab": 2.92,
-        "rk_frete": 1119919.1,
-        "rk_peso": 486674.52,
-        "rk_ctes": 903,
-        "rk_g_frete": 1099536.46,
-        "rk_g_peso": 470544.97,
-        "rk_g_ctes": 886,
+        "pct_inovalab": 2.93,
+        "rk_frete": 1120611.02,
+        "rk_peso": 486939.63,
+        "rk_ctes": 904,
+        "rk_g_frete": 1100228.38,
+        "rk_g_peso": 470810.08,
+        "rk_g_ctes": 887,
         "rk_i_frete": 20382.64,
         "rk_i_peso": 16129.55,
         "rk_i_ctes": 17,
-        "pc_frete": 1215519.3,
-        "pc_merc": 78258673.61,
-        "pc_ctes": 290,
+        "pc_frete": 1216403.87,
+        "pc_merc": 78258794.21,
+        "pc_ctes": 291,
         "pc_g_frete": 989331.72,
         "pc_g_merc": 70062904.24,
         "pc_g_ctes": 232,
-        "pc_i_frete": 219672.58,
-        "pc_i_merc": 7999858.65,
-        "pc_i_ctes": 56,
+        "pc_i_frete": 220557.15,
+        "pc_i_merc": 7999979.25,
+        "pc_i_ctes": 57,
         "anos": {
           "2025": {
             "frete": 1581451.59,
@@ -7891,33 +7891,33 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 760316.35,
-            "v_merc": 41596692.22,
-            "ctes": 413,
+            "frete": 761892.84,
+            "v_merc": 41613100.76,
+            "ctes": 415,
             "pct_cts": 1.83,
-            "peso": 170858.47,
-            "genomma_frete": 520261.13,
-            "inovalab_frete": 240055.22,
+            "peso": 171123.59,
+            "genomma_frete": 520953.05,
+            "inovalab_frete": 240939.79,
             "pct_genomma": 1.56,
-            "pct_inovalab": 2.92,
-            "rk_frete": 340460.05,
-            "rk_peso": 136591.48,
-            "rk_ctes": 299,
-            "rk_g_frete": 320077.41,
-            "rk_g_peso": 120461.93,
-            "rk_g_ctes": 282,
+            "pct_inovalab": 2.93,
+            "rk_frete": 341151.97,
+            "rk_peso": 136856.59,
+            "rk_ctes": 300,
+            "rk_g_frete": 320769.33,
+            "rk_g_peso": 120727.05,
+            "rk_g_ctes": 283,
             "rk_i_frete": 20382.64,
             "rk_i_peso": 16129.55,
             "rk_i_ctes": 17,
-            "pc_frete": 419856.3,
-            "pc_merc": 24747710.22,
-            "pc_ctes": 114,
+            "pc_frete": 420740.87,
+            "pc_merc": 24747830.82,
+            "pc_ctes": 115,
             "pc_g_frete": 200183.72,
             "pc_g_merc": 16747851.57,
             "pc_g_ctes": 58,
-            "pc_i_frete": 219672.58,
-            "pc_i_merc": 7999858.65,
-            "pc_i_ctes": 56
+            "pc_i_frete": 220557.15,
+            "pc_i_merc": 7999979.25,
+            "pc_i_ctes": 57
           }
         },
         "meses": {
@@ -8415,56 +8415,56 @@
             "pc_i_ctes": 9
           },
           "2026-06": {
-            "frete": 143156.05,
-            "v_merc": 7633656.44,
-            "ctes": 86,
-            "pct_cts": 1.88,
-            "peso": 27429.97,
-            "genomma_frete": 99475.88,
-            "inovalab_frete": 43680.17,
-            "pct_genomma": 1.59,
-            "pct_inovalab": 3.16,
-            "rk_frete": 71899.49,
-            "rk_peso": 27429.97,
-            "rk_ctes": 66,
-            "rk_g_frete": 67281.56,
-            "rk_g_peso": 23794.8,
-            "rk_g_ctes": 62,
+            "frete": 144732.54,
+            "v_merc": 7650064.98,
+            "ctes": 88,
+            "pct_cts": 1.89,
+            "peso": 27695.09,
+            "genomma_frete": 100167.8,
+            "inovalab_frete": 44564.74,
+            "pct_genomma": 1.6,
+            "pct_inovalab": 3.22,
+            "rk_frete": 72591.41,
+            "rk_peso": 27695.09,
+            "rk_ctes": 67,
+            "rk_g_frete": 67973.48,
+            "rk_g_peso": 24059.91,
+            "rk_g_ctes": 63,
             "rk_i_frete": 4617.93,
             "rk_i_peso": 3635.17,
             "rk_i_ctes": 4,
-            "pc_frete": 71256.56,
-            "pc_merc": 4472329.35,
-            "pc_ctes": 20,
+            "pc_frete": 72141.13,
+            "pc_merc": 4472449.95,
+            "pc_ctes": 21,
             "pc_g_frete": 32194.32,
             "pc_g_merc": 3137773.53,
             "pc_g_ctes": 10,
-            "pc_i_frete": 39062.24,
-            "pc_i_merc": 1334555.82,
-            "pc_i_ctes": 10
+            "pc_i_frete": 39946.81,
+            "pc_i_merc": 1334676.42,
+            "pc_i_ctes": 11
           }
         }
       },
       {
         "uf": "ES",
         "regiao": "Sudeste",
-        "frete": 2164740.99,
-        "v_merc": 101677153.47,
-        "ctes": 608,
+        "frete": 2167755.09,
+        "v_merc": 101793873.7,
+        "ctes": 610,
         "pct_cts": 2.13,
-        "peso": 438707.4,
-        "genomma_frete": 2024820.74,
-        "genomma_merc": 99388308.75,
+        "peso": 439721.27,
+        "genomma_frete": 2027834.84,
+        "genomma_merc": 99505028.98,
         "inovalab_frete": 139920.25,
         "inovalab_merc": 2288844.72,
         "pct_genomma": 2.04,
         "pct_inovalab": 6.11,
-        "rk_frete": 861437.05,
-        "rk_peso": 403309.35,
-        "rk_ctes": 472,
-        "rk_g_frete": 804552.78,
-        "rk_g_peso": 365194.17,
-        "rk_g_ctes": 454,
+        "rk_frete": 864451.15,
+        "rk_peso": 404323.22,
+        "rk_ctes": 474,
+        "rk_g_frete": 807566.88,
+        "rk_g_peso": 366208.04,
+        "rk_g_ctes": 456,
         "rk_i_frete": 56884.27,
         "rk_i_peso": 38115.18,
         "rk_i_ctes": 18,
@@ -8508,21 +8508,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 738597.86,
-            "v_merc": 37239244.57,
-            "ctes": 228,
-            "pct_cts": 1.98,
-            "peso": 117657.3,
-            "genomma_frete": 598677.61,
+            "frete": 741611.96,
+            "v_merc": 37355964.8,
+            "ctes": 230,
+            "pct_cts": 1.99,
+            "peso": 118671.17,
+            "genomma_frete": 601691.71,
             "inovalab_frete": 139920.25,
-            "pct_genomma": 1.71,
+            "pct_genomma": 1.72,
             "pct_inovalab": 6.11,
-            "rk_frete": 270755.11,
-            "rk_peso": 103876.96,
-            "rk_ctes": 174,
-            "rk_g_frete": 213870.84,
-            "rk_g_peso": 65761.77,
-            "rk_g_ctes": 156,
+            "rk_frete": 273769.21,
+            "rk_peso": 104890.83,
+            "rk_ctes": 176,
+            "rk_g_frete": 216884.94,
+            "rk_g_peso": 66775.65,
+            "rk_g_ctes": 158,
             "rk_i_frete": 56884.27,
             "rk_i_peso": 38115.18,
             "rk_i_ctes": 18,
@@ -9032,21 +9032,21 @@
             "pc_i_ctes": 1
           },
           "2026-06": {
-            "frete": 238211.62,
-            "v_merc": 15209580.8,
-            "ctes": 63,
+            "frete": 241225.72,
+            "v_merc": 15326301.03,
+            "ctes": 65,
             "pct_cts": 1.57,
-            "peso": 33100.94,
-            "genomma_frete": 217220.72,
+            "peso": 34114.81,
+            "genomma_frete": 220234.82,
             "inovalab_frete": 20990.9,
-            "pct_genomma": 1.46,
+            "pct_genomma": 1.47,
             "pct_inovalab": 6.32,
-            "rk_frete": 71154.8,
-            "rk_peso": 19320.6,
-            "rk_ctes": 47,
-            "rk_g_frete": 66915.53,
-            "rk_g_peso": 16788.9,
-            "rk_g_ctes": 44,
+            "rk_frete": 74168.9,
+            "rk_peso": 20334.47,
+            "rk_ctes": 49,
+            "rk_g_frete": 69929.63,
+            "rk_g_peso": 17802.77,
+            "rk_g_ctes": 46,
             "rk_i_frete": 4239.27,
             "rk_i_peso": 2531.7,
             "rk_i_ctes": 3,
@@ -9682,23 +9682,23 @@
       {
         "uf": "CE",
         "regiao": "Nordeste",
-        "frete": 1286266.83,
-        "v_merc": 24118150.22,
-        "ctes": 346,
+        "frete": 1286677.32,
+        "v_merc": 24125687.6,
+        "ctes": 347,
         "pct_cts": 5.33,
-        "peso": 210086.94,
-        "genomma_frete": 1070485.21,
-        "genomma_merc": 22431377.57,
+        "peso": 210182.54,
+        "genomma_frete": 1070895.7,
+        "genomma_merc": 22438914.95,
         "inovalab_frete": 215781.62,
         "inovalab_merc": 1686772.65,
         "pct_genomma": 4.77,
         "pct_inovalab": 12.79,
-        "rk_frete": 707824.15,
-        "rk_peso": 210086.94,
-        "rk_ctes": 312,
-        "rk_g_frete": 610430.19,
-        "rk_g_peso": 175317.09,
-        "rk_g_ctes": 296,
+        "rk_frete": 708234.64,
+        "rk_peso": 210182.54,
+        "rk_ctes": 313,
+        "rk_g_frete": 610840.68,
+        "rk_g_peso": 175412.69,
+        "rk_g_ctes": 297,
         "rk_i_frete": 97393.96,
         "rk_i_peso": 34769.84,
         "rk_i_ctes": 16,
@@ -9742,21 +9742,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 464887.07,
-            "v_merc": 7956177.82,
-            "ctes": 124,
+            "frete": 465297.56,
+            "v_merc": 7963715.2,
+            "ctes": 125,
             "pct_cts": 5.84,
-            "peso": 85258.67,
-            "genomma_frete": 249105.45,
+            "peso": 85354.27,
+            "genomma_frete": 249515.94,
             "inovalab_frete": 215781.62,
-            "pct_genomma": 3.97,
+            "pct_genomma": 3.98,
             "pct_inovalab": 12.79,
-            "rk_frete": 281547.97,
-            "rk_peso": 85258.67,
-            "rk_ctes": 114,
-            "rk_g_frete": 184154.01,
-            "rk_g_peso": 50488.82,
-            "rk_g_ctes": 98,
+            "rk_frete": 281958.46,
+            "rk_peso": 85354.27,
+            "rk_ctes": 115,
+            "rk_g_frete": 184564.5,
+            "rk_g_peso": 50584.42,
+            "rk_g_ctes": 99,
             "rk_i_frete": 97393.96,
             "rk_i_peso": 34769.84,
             "rk_i_ctes": 16,
@@ -10266,21 +10266,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 74202.59,
-            "v_merc": 1172683.62,
-            "ctes": 30,
-            "pct_cts": 6.33,
-            "peso": 21136.1,
-            "genomma_frete": 33936.64,
+            "frete": 74613.08,
+            "v_merc": 1180221.0,
+            "ctes": 31,
+            "pct_cts": 6.32,
+            "peso": 21231.7,
+            "genomma_frete": 34347.13,
             "inovalab_frete": 40265.95,
-            "pct_genomma": 3.51,
+            "pct_genomma": 3.53,
             "pct_inovalab": 19.55,
-            "rk_frete": 74202.59,
-            "rk_peso": 21136.1,
-            "rk_ctes": 30,
-            "rk_g_frete": 33936.64,
-            "rk_g_peso": 7150.64,
-            "rk_g_ctes": 25,
+            "rk_frete": 74613.08,
+            "rk_peso": 21231.7,
+            "rk_ctes": 31,
+            "rk_g_frete": 34347.13,
+            "rk_g_peso": 7246.24,
+            "rk_g_ctes": 26,
             "rk_i_frete": 40265.95,
             "rk_i_peso": 13985.46,
             "rk_i_ctes": 5,
@@ -10299,23 +10299,23 @@
       {
         "uf": "PA",
         "regiao": "Norte",
-        "frete": 1084544.05,
-        "v_merc": 13679705.4,
-        "ctes": 223,
+        "frete": 1085849.47,
+        "v_merc": 13700640.1,
+        "ctes": 224,
         "pct_cts": 7.93,
-        "peso": 186809.64,
-        "genomma_frete": 930380.72,
-        "genomma_merc": 13009995.6,
+        "peso": 187034.8,
+        "genomma_frete": 931686.14,
+        "genomma_merc": 13030930.3,
         "inovalab_frete": 154163.33,
         "inovalab_merc": 669709.8,
         "pct_genomma": 7.15,
         "pct_inovalab": 23.02,
-        "rk_frete": 906051.73,
-        "rk_peso": 186809.64,
-        "rk_ctes": 211,
-        "rk_g_frete": 806404.88,
-        "rk_g_peso": 163975.45,
-        "rk_g_ctes": 199,
+        "rk_frete": 907357.15,
+        "rk_peso": 187034.8,
+        "rk_ctes": 212,
+        "rk_g_frete": 807710.3,
+        "rk_g_peso": 164200.62,
+        "rk_g_ctes": 200,
         "rk_i_frete": 99646.85,
         "rk_i_peso": 22834.19,
         "rk_i_ctes": 12,
@@ -10359,21 +10359,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 319032.78,
-            "v_merc": 4061178.81,
-            "ctes": 79,
-            "pct_cts": 7.86,
-            "peso": 46619.4,
-            "genomma_frete": 164869.45,
+            "frete": 320338.2,
+            "v_merc": 4082113.51,
+            "ctes": 80,
+            "pct_cts": 7.85,
+            "peso": 46844.56,
+            "genomma_frete": 166174.87,
             "inovalab_frete": 154163.33,
-            "pct_genomma": 4.86,
+            "pct_genomma": 4.87,
             "pct_inovalab": 23.02,
-            "rk_frete": 227962.5,
-            "rk_peso": 46619.4,
-            "rk_ctes": 71,
-            "rk_g_frete": 128315.65,
-            "rk_g_peso": 23785.21,
-            "rk_g_ctes": 59,
+            "rk_frete": 229267.92,
+            "rk_peso": 46844.56,
+            "rk_ctes": 72,
+            "rk_g_frete": 129621.07,
+            "rk_g_peso": 24010.38,
+            "rk_g_ctes": 60,
             "rk_i_frete": 99646.85,
             "rk_i_peso": 22834.19,
             "rk_i_ctes": 12,
@@ -10883,21 +10883,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 61068.93,
-            "v_merc": 977758.17,
-            "ctes": 21,
+            "frete": 62374.35,
+            "v_merc": 998692.87,
+            "ctes": 22,
             "pct_cts": 6.25,
-            "peso": 5117.19,
-            "genomma_frete": 29669.46,
+            "peso": 5342.36,
+            "genomma_frete": 30974.88,
             "inovalab_frete": 31399.47,
-            "pct_genomma": 3.43,
+            "pct_genomma": 3.49,
             "pct_inovalab": 27.97,
-            "rk_frete": 30735.85,
-            "rk_peso": 5117.19,
-            "rk_ctes": 19,
-            "rk_g_frete": 23627.13,
-            "rk_g_peso": 3608.65,
-            "rk_g_ctes": 16,
+            "rk_frete": 32041.27,
+            "rk_peso": 5342.36,
+            "rk_ctes": 20,
+            "rk_g_frete": 24932.55,
+            "rk_g_peso": 3833.81,
+            "rk_g_ctes": 17,
             "rk_i_frete": 7108.72,
             "rk_i_peso": 1508.54,
             "rk_i_ctes": 3,
@@ -11533,23 +11533,23 @@
       {
         "uf": "PE",
         "regiao": "Nordeste",
-        "frete": 874067.64,
-        "v_merc": 15677687.4,
-        "ctes": 348,
+        "frete": 875399.35,
+        "v_merc": 15697109.64,
+        "ctes": 350,
         "pct_cts": 5.58,
-        "peso": 188921.27,
-        "genomma_frete": 778997.98,
-        "genomma_merc": 15084144.62,
+        "peso": 189262.67,
+        "genomma_frete": 780329.69,
+        "genomma_merc": 15103566.86,
         "inovalab_frete": 95069.66,
         "inovalab_merc": 593542.78,
-        "pct_genomma": 5.16,
+        "pct_genomma": 5.17,
         "pct_inovalab": 16.02,
-        "rk_frete": 622708.11,
-        "rk_peso": 170175.35,
-        "rk_ctes": 328,
-        "rk_g_frete": 585424.21,
-        "rk_g_peso": 159091.74,
-        "rk_g_ctes": 317,
+        "rk_frete": 624039.82,
+        "rk_peso": 170516.75,
+        "rk_ctes": 330,
+        "rk_g_frete": 586755.92,
+        "rk_g_peso": 159433.15,
+        "rk_g_ctes": 319,
         "rk_i_frete": 37283.9,
         "rk_i_peso": 11083.61,
         "rk_i_ctes": 11,
@@ -11593,21 +11593,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 256273.47,
-            "v_merc": 4497766.94,
-            "ctes": 110,
+            "frete": 257605.18,
+            "v_merc": 4517189.18,
+            "ctes": 112,
             "pct_cts": 5.7,
-            "peso": 62783.51,
-            "genomma_frete": 161203.81,
+            "peso": 63124.92,
+            "genomma_frete": 162535.52,
             "inovalab_frete": 95069.66,
-            "pct_genomma": 4.13,
+            "pct_genomma": 4.14,
             "pct_inovalab": 16.02,
-            "rk_frete": 184504.99,
-            "rk_peso": 48347.95,
-            "rk_ctes": 106,
-            "rk_g_frete": 147221.09,
-            "rk_g_peso": 37264.35,
-            "rk_g_ctes": 95,
+            "rk_frete": 185836.7,
+            "rk_peso": 48689.36,
+            "rk_ctes": 108,
+            "rk_g_frete": 148552.8,
+            "rk_g_peso": 37605.75,
+            "rk_g_ctes": 97,
             "rk_i_frete": 37283.9,
             "rk_i_peso": 11083.61,
             "rk_i_ctes": 11,
@@ -12117,21 +12117,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 52113.15,
-            "v_merc": 1241656.81,
-            "ctes": 28,
-            "pct_cts": 4.2,
-            "peso": 14614.11,
-            "genomma_frete": 43690.62,
+            "frete": 53444.86,
+            "v_merc": 1261079.05,
+            "ctes": 30,
+            "pct_cts": 4.24,
+            "peso": 14955.52,
+            "genomma_frete": 45022.33,
             "inovalab_frete": 8422.53,
-            "pct_genomma": 3.6,
+            "pct_genomma": 3.65,
             "pct_inovalab": 29.02,
-            "rk_frete": 52113.15,
-            "rk_peso": 14614.11,
-            "rk_ctes": 28,
-            "rk_g_frete": 43690.62,
-            "rk_g_peso": 12229.08,
-            "rk_g_ctes": 25,
+            "rk_frete": 53444.86,
+            "rk_peso": 14955.52,
+            "rk_ctes": 30,
+            "rk_g_frete": 45022.33,
+            "rk_g_peso": 12570.48,
+            "rk_g_ctes": 27,
             "rk_i_frete": 8422.53,
             "rk_i_peso": 2385.04,
             "rk_i_ctes": 3,
@@ -12150,26 +12150,26 @@
       {
         "uf": "RJ",
         "regiao": "Sudeste",
-        "frete": 843886.11,
-        "v_merc": 29897002.69,
-        "ctes": 459,
+        "frete": 846369.8,
+        "v_merc": 29965809.41,
+        "ctes": 462,
         "pct_cts": 2.82,
-        "peso": 535847.34,
-        "genomma_frete": 744135.31,
-        "genomma_merc": 28405793.81,
-        "inovalab_frete": 99750.8,
-        "inovalab_merc": 1491208.88,
+        "peso": 536921.85,
+        "genomma_frete": 745546.59,
+        "genomma_merc": 28464739.49,
+        "inovalab_frete": 100823.21,
+        "inovalab_merc": 1501069.92,
         "pct_genomma": 2.62,
-        "pct_inovalab": 6.69,
-        "rk_frete": 741228.4,
-        "rk_peso": 478532.78,
-        "rk_ctes": 441,
-        "rk_g_frete": 666556.6,
-        "rk_g_peso": 423139.19,
-        "rk_g_ctes": 417,
-        "rk_i_frete": 74671.8,
-        "rk_i_peso": 55393.6,
-        "rk_i_ctes": 24,
+        "pct_inovalab": 6.72,
+        "rk_frete": 743712.09,
+        "rk_peso": 479607.29,
+        "rk_ctes": 444,
+        "rk_g_frete": 667967.88,
+        "rk_g_peso": 423515.29,
+        "rk_g_ctes": 419,
+        "rk_i_frete": 75744.21,
+        "rk_i_peso": 56092.0,
+        "rk_i_ctes": 25,
         "pc_frete": 102657.71,
         "pc_merc": 4956634.77,
         "pc_ctes": 18,
@@ -12210,24 +12210,24 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 230554.01,
-            "v_merc": 6862980.76,
-            "ctes": 146,
+            "frete": 233037.7,
+            "v_merc": 6931787.48,
+            "ctes": 149,
             "pct_cts": 3.36,
-            "peso": 100056.31,
-            "genomma_frete": 130803.21,
-            "inovalab_frete": 99750.8,
-            "pct_genomma": 2.44,
-            "pct_inovalab": 6.69,
-            "rk_frete": 189245.16,
-            "rk_peso": 100056.31,
-            "rk_ctes": 138,
-            "rk_g_frete": 114573.36,
-            "rk_g_peso": 44662.71,
-            "rk_g_ctes": 114,
-            "rk_i_frete": 74671.8,
-            "rk_i_peso": 55393.6,
-            "rk_i_ctes": 24,
+            "peso": 101130.81,
+            "genomma_frete": 132214.49,
+            "inovalab_frete": 100823.21,
+            "pct_genomma": 2.43,
+            "pct_inovalab": 6.72,
+            "rk_frete": 191728.85,
+            "rk_peso": 101130.81,
+            "rk_ctes": 141,
+            "rk_g_frete": 115984.64,
+            "rk_g_peso": 45038.82,
+            "rk_g_ctes": 116,
+            "rk_i_frete": 75744.21,
+            "rk_i_peso": 56092.0,
+            "rk_i_ctes": 25,
             "pc_frete": 41308.85,
             "pc_merc": 1088008.1,
             "pc_ctes": 8,
@@ -12734,24 +12734,24 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 55633.66,
-            "v_merc": 1772279.42,
-            "ctes": 28,
-            "pct_cts": 3.14,
-            "peso": 17602.95,
-            "genomma_frete": 37031.05,
-            "inovalab_frete": 18602.61,
-            "pct_genomma": 2.68,
-            "pct_inovalab": 4.79,
-            "rk_frete": 39074.78,
-            "rk_peso": 17602.95,
-            "rk_ctes": 24,
-            "rk_g_frete": 28751.62,
-            "rk_g_peso": 10109.12,
-            "rk_g_ctes": 22,
-            "rk_i_frete": 10323.16,
-            "rk_i_peso": 7493.83,
-            "rk_i_ctes": 2,
+            "frete": 58117.35,
+            "v_merc": 1841086.14,
+            "ctes": 31,
+            "pct_cts": 3.16,
+            "peso": 18677.46,
+            "genomma_frete": 38442.33,
+            "inovalab_frete": 19675.02,
+            "pct_genomma": 2.66,
+            "pct_inovalab": 4.94,
+            "rk_frete": 41558.47,
+            "rk_peso": 18677.46,
+            "rk_ctes": 27,
+            "rk_g_frete": 30162.9,
+            "rk_g_peso": 10485.23,
+            "rk_g_ctes": 24,
+            "rk_i_frete": 11395.57,
+            "rk_i_peso": 8192.23,
+            "rk_i_ctes": 3,
             "pc_frete": 16558.88,
             "pc_merc": 331626.75,
             "pc_ctes": 4,
@@ -12767,23 +12767,23 @@
       {
         "uf": "MG",
         "regiao": "Sudeste",
-        "frete": 841671.65,
-        "v_merc": 31532729.02,
-        "ctes": 628,
+        "frete": 842396.08,
+        "v_merc": 31548368.23,
+        "ctes": 629,
         "pct_cts": 2.67,
-        "peso": 394856.92,
-        "genomma_frete": 756526.71,
-        "genomma_merc": 30611172.15,
+        "peso": 395132.62,
+        "genomma_frete": 757251.14,
+        "genomma_merc": 30626811.36,
         "inovalab_frete": 85144.94,
         "inovalab_merc": 921556.87,
         "pct_genomma": 2.47,
         "pct_inovalab": 9.24,
-        "rk_frete": 659671.23,
-        "rk_peso": 325189.49,
-        "rk_ctes": 588,
-        "rk_g_frete": 584228.59,
-        "rk_g_peso": 278148.76,
-        "rk_g_ctes": 549,
+        "rk_frete": 660395.66,
+        "rk_peso": 325465.19,
+        "rk_ctes": 589,
+        "rk_g_frete": 584953.02,
+        "rk_g_peso": 278424.46,
+        "rk_g_ctes": 550,
         "rk_i_frete": 75442.64,
         "rk_i_peso": 47040.73,
         "rk_i_ctes": 39,
@@ -12827,21 +12827,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 281174.88,
-            "v_merc": 10168091.15,
-            "ctes": 212,
+            "frete": 281899.31,
+            "v_merc": 10183730.36,
+            "ctes": 213,
             "pct_cts": 2.77,
-            "peso": 124231.41,
-            "genomma_frete": 196029.94,
+            "peso": 124507.11,
+            "genomma_frete": 196754.37,
             "inovalab_frete": 85144.94,
             "pct_genomma": 2.12,
             "pct_inovalab": 9.24,
-            "rk_frete": 240921.58,
-            "rk_peso": 103844.21,
-            "rk_ctes": 200,
-            "rk_g_frete": 165478.94,
-            "rk_g_peso": 56803.48,
-            "rk_g_ctes": 161,
+            "rk_frete": 241646.01,
+            "rk_peso": 104119.91,
+            "rk_ctes": 201,
+            "rk_g_frete": 166203.37,
+            "rk_g_peso": 57079.18,
+            "rk_g_ctes": 162,
             "rk_i_frete": 75442.64,
             "rk_i_peso": 47040.73,
             "rk_i_ctes": 39,
@@ -13351,21 +13351,21 @@
             "pc_i_ctes": 1
           },
           "2026-06": {
-            "frete": 63597.42,
-            "v_merc": 2056539.34,
-            "ctes": 53,
-            "pct_cts": 3.09,
-            "peso": 23272.77,
-            "genomma_frete": 44396.8,
+            "frete": 64321.85,
+            "v_merc": 2072178.55,
+            "ctes": 54,
+            "pct_cts": 3.1,
+            "peso": 23548.47,
+            "genomma_frete": 45121.23,
             "inovalab_frete": 19200.62,
-            "pct_genomma": 2.33,
+            "pct_genomma": 2.34,
             "pct_inovalab": 12.97,
-            "rk_frete": 60385.42,
-            "rk_peso": 23272.77,
-            "rk_ctes": 52,
-            "rk_g_frete": 41184.8,
-            "rk_g_peso": 11623.46,
-            "rk_g_ctes": 40,
+            "rk_frete": 61109.85,
+            "rk_peso": 23548.47,
+            "rk_ctes": 53,
+            "rk_g_frete": 41909.23,
+            "rk_g_peso": 11899.16,
+            "rk_g_ctes": 41,
             "rk_i_frete": 19200.62,
             "rk_i_peso": 11649.31,
             "rk_i_ctes": 12,
@@ -13384,23 +13384,23 @@
       {
         "uf": "BA",
         "regiao": "Nordeste",
-        "frete": 833725.77,
-        "v_merc": 16389890.26,
-        "ctes": 333,
+        "frete": 834436.94,
+        "v_merc": 16403217.73,
+        "ctes": 334,
         "pct_cts": 5.09,
-        "peso": 175971.57,
-        "genomma_frete": 718139.55,
-        "genomma_merc": 15680847.17,
+        "peso": 176149.11,
+        "genomma_frete": 718850.72,
+        "genomma_merc": 15694174.64,
         "inovalab_frete": 115586.22,
         "inovalab_merc": 709043.09,
         "pct_genomma": 4.58,
         "pct_inovalab": 16.3,
-        "rk_frete": 533183.56,
-        "rk_peso": 162179.53,
-        "rk_ctes": 302,
-        "rk_g_frete": 472867.2,
-        "rk_g_peso": 141863.07,
-        "rk_g_ctes": 283,
+        "rk_frete": 533894.73,
+        "rk_peso": 162357.06,
+        "rk_ctes": 303,
+        "rk_g_frete": 473578.37,
+        "rk_g_peso": 142040.61,
+        "rk_g_ctes": 284,
         "rk_i_frete": 60316.36,
         "rk_i_peso": 20316.46,
         "rk_i_ctes": 19,
@@ -13444,21 +13444,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 249767.75,
-            "v_merc": 4454781.18,
-            "ctes": 113,
+            "frete": 250478.92,
+            "v_merc": 4468108.65,
+            "ctes": 114,
             "pct_cts": 5.61,
-            "peso": 50955.15,
-            "genomma_frete": 134181.53,
+            "peso": 51132.68,
+            "genomma_frete": 134892.7,
             "inovalab_frete": 115586.22,
-            "pct_genomma": 3.58,
+            "pct_genomma": 3.59,
             "pct_inovalab": 16.3,
-            "rk_frete": 172239.87,
-            "rk_peso": 50469.66,
-            "rk_ctes": 107,
-            "rk_g_frete": 111923.51,
-            "rk_g_peso": 30153.2,
-            "rk_g_ctes": 88,
+            "rk_frete": 172951.04,
+            "rk_peso": 50647.2,
+            "rk_ctes": 108,
+            "rk_g_frete": 112634.68,
+            "rk_g_peso": 30330.74,
+            "rk_g_ctes": 89,
             "rk_i_frete": 60316.36,
             "rk_i_peso": 20316.46,
             "rk_i_ctes": 19,
@@ -13968,21 +13968,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 60025.61,
-            "v_merc": 1162147.95,
-            "ctes": 31,
+            "frete": 60736.78,
+            "v_merc": 1175475.42,
+            "ctes": 32,
             "pct_cts": 5.17,
-            "peso": 13014.23,
-            "genomma_frete": 28145.66,
+            "peso": 13191.77,
+            "genomma_frete": 28856.83,
             "inovalab_frete": 31879.95,
-            "pct_genomma": 2.85,
+            "pct_genomma": 2.88,
             "pct_inovalab": 18.39,
-            "rk_frete": 46299.35,
-            "rk_peso": 13014.23,
-            "rk_ctes": 30,
-            "rk_g_frete": 28145.66,
-            "rk_g_peso": 6952.12,
-            "rk_g_ctes": 24,
+            "rk_frete": 47010.52,
+            "rk_peso": 13191.77,
+            "rk_ctes": 31,
+            "rk_g_frete": 28856.83,
+            "rk_g_peso": 7129.66,
+            "rk_g_ctes": 25,
             "rk_i_frete": 18153.69,
             "rk_i_peso": 6062.11,
             "rk_i_ctes": 6,
@@ -14618,23 +14618,23 @@
       {
         "uf": "MA",
         "regiao": "Nordeste",
-        "frete": 337788.58,
-        "v_merc": 6608192.92,
-        "ctes": 175,
-        "pct_cts": 5.11,
-        "peso": 58084.8,
-        "genomma_frete": 270743.43,
-        "genomma_merc": 6328164.17,
+        "frete": 339284.75,
+        "v_merc": 6633071.91,
+        "ctes": 177,
+        "pct_cts": 5.12,
+        "peso": 58418.98,
+        "genomma_frete": 272239.6,
+        "genomma_merc": 6353043.16,
         "inovalab_frete": 67045.15,
         "inovalab_merc": 280028.75,
-        "pct_genomma": 4.28,
+        "pct_genomma": 4.29,
         "pct_inovalab": 23.94,
-        "rk_frete": 195434.64,
-        "rk_peso": 58084.8,
-        "rk_ctes": 146,
-        "rk_g_frete": 169006.69,
-        "rk_g_peso": 48949.73,
-        "rk_g_ctes": 135,
+        "rk_frete": 196930.81,
+        "rk_peso": 58418.98,
+        "rk_ctes": 148,
+        "rk_g_frete": 170502.86,
+        "rk_g_peso": 49283.91,
+        "rk_g_ctes": 137,
         "rk_i_frete": 26427.95,
         "rk_i_peso": 9135.07,
         "rk_i_ctes": 11,
@@ -14678,21 +14678,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 137662.77,
-            "v_merc": 2248763.25,
-            "ctes": 65,
+            "frete": 139158.94,
+            "v_merc": 2273642.24,
+            "ctes": 67,
             "pct_cts": 6.12,
-            "peso": 15608.05,
-            "genomma_frete": 70617.62,
+            "peso": 15942.23,
+            "genomma_frete": 72113.79,
             "inovalab_frete": 67045.15,
-            "pct_genomma": 3.59,
+            "pct_genomma": 3.62,
             "pct_inovalab": 23.94,
-            "rk_frete": 55163.41,
-            "rk_peso": 15608.05,
-            "rk_ctes": 50,
-            "rk_g_frete": 28735.46,
-            "rk_g_peso": 6472.98,
-            "rk_g_ctes": 39,
+            "rk_frete": 56659.58,
+            "rk_peso": 15942.23,
+            "rk_ctes": 52,
+            "rk_g_frete": 30231.63,
+            "rk_g_peso": 6807.16,
+            "rk_g_ctes": 41,
             "rk_i_frete": 26427.95,
             "rk_i_peso": 9135.07,
             "rk_i_ctes": 11,
@@ -15202,21 +15202,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 37210.68,
-            "v_merc": 723399.86,
-            "ctes": 20,
-            "pct_cts": 5.14,
-            "peso": 1875.46,
-            "genomma_frete": 27504.22,
+            "frete": 38706.85,
+            "v_merc": 748278.85,
+            "ctes": 22,
+            "pct_cts": 5.17,
+            "peso": 2209.64,
+            "genomma_frete": 29000.39,
             "inovalab_frete": 9706.46,
-            "pct_genomma": 3.86,
+            "pct_genomma": 3.94,
             "pct_inovalab": 85.15,
-            "rk_frete": 9427.63,
-            "rk_peso": 1875.46,
-            "rk_ctes": 14,
-            "rk_g_frete": 8580.27,
-            "rk_g_peso": 1683.4,
-            "rk_g_ctes": 12,
+            "rk_frete": 10923.8,
+            "rk_peso": 2209.64,
+            "rk_ctes": 16,
+            "rk_g_frete": 10076.44,
+            "rk_g_peso": 2017.58,
+            "rk_g_ctes": 14,
             "rk_i_frete": 847.36,
             "rk_i_peso": 192.06,
             "rk_i_ctes": 2,
@@ -15852,23 +15852,23 @@
       {
         "uf": "PB",
         "regiao": "Nordeste",
-        "frete": 236814.25,
-        "v_merc": 4637305.5,
-        "ctes": 109,
+        "frete": 237685.62,
+        "v_merc": 4652736.37,
+        "ctes": 110,
         "pct_cts": 5.11,
-        "peso": 43213.51,
-        "genomma_frete": 218571.76,
-        "genomma_merc": 4560223.82,
+        "peso": 43401.56,
+        "genomma_frete": 219443.13,
+        "genomma_merc": 4575654.69,
         "inovalab_frete": 18242.49,
         "inovalab_merc": 77081.68,
-        "pct_genomma": 4.79,
+        "pct_genomma": 4.8,
         "pct_inovalab": 23.67,
-        "rk_frete": 149513.21,
-        "rk_peso": 39760.74,
-        "rk_ctes": 96,
-        "rk_g_frete": 131899.69,
-        "rk_g_peso": 33338.95,
-        "rk_g_ctes": 86,
+        "rk_frete": 150384.58,
+        "rk_peso": 39948.79,
+        "rk_ctes": 97,
+        "rk_g_frete": 132771.06,
+        "rk_g_peso": 33527.0,
+        "rk_g_ctes": 87,
         "rk_i_frete": 17613.52,
         "rk_i_peso": 6421.79,
         "rk_i_ctes": 10,
@@ -15912,21 +15912,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 81626.25,
-            "v_merc": 1981862.57,
-            "ctes": 39,
-            "pct_cts": 4.12,
-            "peso": 22099.41,
-            "genomma_frete": 63383.76,
+            "frete": 82497.62,
+            "v_merc": 1997293.44,
+            "ctes": 40,
+            "pct_cts": 4.13,
+            "peso": 22287.46,
+            "genomma_frete": 64255.13,
             "inovalab_frete": 18242.49,
-            "pct_genomma": 3.33,
+            "pct_genomma": 3.35,
             "pct_inovalab": 23.67,
-            "rk_frete": 62951.53,
-            "rk_peso": 18646.64,
-            "rk_ctes": 37,
-            "rk_g_frete": 45338.01,
-            "rk_g_peso": 12224.85,
-            "rk_g_ctes": 27,
+            "rk_frete": 63822.9,
+            "rk_peso": 18834.68,
+            "rk_ctes": 38,
+            "rk_g_frete": 46209.38,
+            "rk_g_peso": 12412.9,
+            "rk_g_ctes": 28,
             "rk_i_frete": 17613.52,
             "rk_i_peso": 6421.79,
             "rk_i_ctes": 10,
@@ -16436,21 +16436,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 27946.07,
-            "v_merc": 775233.12,
-            "ctes": 14,
-            "pct_cts": 3.6,
-            "peso": 8170.06,
-            "genomma_frete": 21720.06,
+            "frete": 28817.44,
+            "v_merc": 790663.99,
+            "ctes": 15,
+            "pct_cts": 3.64,
+            "peso": 8358.11,
+            "genomma_frete": 22591.43,
             "inovalab_frete": 6226.01,
-            "pct_genomma": 2.89,
+            "pct_genomma": 2.94,
             "pct_inovalab": 27.62,
-            "rk_frete": 27946.07,
-            "rk_peso": 8170.06,
-            "rk_ctes": 14,
-            "rk_g_frete": 21720.06,
-            "rk_g_peso": 5889.78,
-            "rk_g_ctes": 11,
+            "rk_frete": 28817.44,
+            "rk_peso": 8358.11,
+            "rk_ctes": 15,
+            "rk_g_frete": 22591.43,
+            "rk_g_peso": 6077.83,
+            "rk_g_ctes": 12,
             "rk_i_frete": 6226.01,
             "rk_i_peso": 2280.28,
             "rk_i_ctes": 3,
@@ -17703,23 +17703,23 @@
       {
         "uf": "PI",
         "regiao": "Nordeste",
-        "frete": 157429.83,
-        "v_merc": 3110247.05,
-        "ctes": 78,
-        "pct_cts": 5.06,
-        "peso": 36234.34,
-        "genomma_frete": 134905.55,
-        "genomma_merc": 2973696.6,
+        "frete": 159456.97,
+        "v_merc": 3155562.66,
+        "ctes": 80,
+        "pct_cts": 5.05,
+        "peso": 36889.91,
+        "genomma_frete": 136932.69,
+        "genomma_merc": 3019012.21,
         "inovalab_frete": 22524.28,
         "inovalab_merc": 136550.45,
         "pct_genomma": 4.54,
         "pct_inovalab": 16.5,
-        "rk_frete": 101999.44,
-        "rk_peso": 36234.34,
-        "rk_ctes": 71,
-        "rk_g_frete": 79475.16,
-        "rk_g_peso": 26488.17,
-        "rk_g_ctes": 65,
+        "rk_frete": 104026.58,
+        "rk_peso": 36889.91,
+        "rk_ctes": 73,
+        "rk_g_frete": 81502.3,
+        "rk_g_peso": 27143.74,
+        "rk_g_ctes": 67,
         "rk_i_frete": 22524.28,
         "rk_i_peso": 9746.17,
         "rk_i_ctes": 6,
@@ -17763,21 +17763,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 46290.5,
-            "v_merc": 1053299.89,
-            "ctes": 26,
-            "pct_cts": 4.39,
-            "peso": 16580.81,
-            "genomma_frete": 23766.22,
+            "frete": 48317.64,
+            "v_merc": 1098615.5,
+            "ctes": 28,
+            "pct_cts": 4.4,
+            "peso": 17236.38,
+            "genomma_frete": 25793.36,
             "inovalab_frete": 22524.28,
-            "pct_genomma": 2.59,
+            "pct_genomma": 2.68,
             "pct_inovalab": 16.5,
-            "rk_frete": 46290.5,
-            "rk_peso": 16580.81,
-            "rk_ctes": 26,
-            "rk_g_frete": 23766.22,
-            "rk_g_peso": 6834.64,
-            "rk_g_ctes": 20,
+            "rk_frete": 48317.64,
+            "rk_peso": 17236.38,
+            "rk_ctes": 28,
+            "rk_g_frete": 25793.36,
+            "rk_g_peso": 7490.2,
+            "rk_g_ctes": 22,
             "rk_i_frete": 22524.28,
             "rk_i_peso": 9746.17,
             "rk_i_ctes": 6,
@@ -18287,21 +18287,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 1833.35,
-            "v_merc": 79005.09,
-            "ctes": 3,
-            "pct_cts": 2.32,
-            "peso": 416.36,
-            "genomma_frete": 1833.35,
+            "frete": 3860.49,
+            "v_merc": 124320.7,
+            "ctes": 5,
+            "pct_cts": 3.11,
+            "peso": 1071.93,
+            "genomma_frete": 3860.49,
             "inovalab_frete": 0,
-            "pct_genomma": 2.32,
+            "pct_genomma": 3.11,
             "pct_inovalab": null,
-            "rk_frete": 1833.35,
-            "rk_peso": 416.36,
-            "rk_ctes": 3,
-            "rk_g_frete": 1833.35,
-            "rk_g_peso": 416.36,
-            "rk_g_ctes": 3,
+            "rk_frete": 3860.49,
+            "rk_peso": 1071.93,
+            "rk_ctes": 5,
+            "rk_g_frete": 3860.49,
+            "rk_g_peso": 1071.93,
+            "rk_g_ctes": 5,
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
@@ -18937,23 +18937,23 @@
       {
         "uf": "RN",
         "regiao": "Nordeste",
-        "frete": 65359.17,
-        "v_merc": 1616536.03,
-        "ctes": 64,
-        "pct_cts": 4.04,
-        "peso": 19061.76,
-        "genomma_frete": 56329.2,
-        "genomma_merc": 1564636.11,
+        "frete": 65757.39,
+        "v_merc": 1623306.75,
+        "ctes": 65,
+        "pct_cts": 4.05,
+        "peso": 19150.52,
+        "genomma_frete": 56727.42,
+        "genomma_merc": 1571406.83,
         "inovalab_frete": 9029.97,
         "inovalab_merc": 51899.92,
-        "pct_genomma": 3.6,
+        "pct_genomma": 3.61,
         "pct_inovalab": 17.4,
-        "rk_frete": 64861.73,
-        "rk_peso": 19061.76,
-        "rk_ctes": 63,
-        "rk_g_frete": 55831.76,
-        "rk_g_peso": 15318.34,
-        "rk_g_ctes": 57,
+        "rk_frete": 65259.95,
+        "rk_peso": 19150.52,
+        "rk_ctes": 64,
+        "rk_g_frete": 56229.98,
+        "rk_g_peso": 15407.1,
+        "rk_g_ctes": 58,
         "rk_i_frete": 9029.97,
         "rk_i_peso": 3743.42,
         "rk_i_ctes": 6,
@@ -18997,21 +18997,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 17991.47,
-            "v_merc": 428365.91,
-            "ctes": 16,
-            "pct_cts": 4.2,
-            "peso": 5972.21,
-            "genomma_frete": 8961.5,
+            "frete": 18389.69,
+            "v_merc": 435136.63,
+            "ctes": 17,
+            "pct_cts": 4.23,
+            "peso": 6060.97,
+            "genomma_frete": 9359.72,
             "inovalab_frete": 9029.97,
-            "pct_genomma": 2.38,
+            "pct_genomma": 2.44,
             "pct_inovalab": 17.4,
-            "rk_frete": 17991.47,
-            "rk_peso": 5972.21,
-            "rk_ctes": 16,
-            "rk_g_frete": 8961.5,
-            "rk_g_peso": 2228.78,
-            "rk_g_ctes": 10,
+            "rk_frete": 18389.69,
+            "rk_peso": 6060.97,
+            "rk_ctes": 17,
+            "rk_g_frete": 9359.72,
+            "rk_g_peso": 2317.54,
+            "rk_g_ctes": 11,
             "rk_i_frete": 9029.97,
             "rk_i_peso": 3743.42,
             "rk_i_ctes": 6,
@@ -19521,21 +19521,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 1472.77,
-            "v_merc": 45972.2,
-            "ctes": 3,
-            "pct_cts": 3.2,
-            "peso": 364.4,
-            "genomma_frete": 944.56,
+            "frete": 1870.99,
+            "v_merc": 52742.92,
+            "ctes": 4,
+            "pct_cts": 3.55,
+            "peso": 453.16,
+            "genomma_frete": 1342.78,
             "inovalab_frete": 528.21,
-            "pct_genomma": 2.19,
+            "pct_genomma": 2.69,
             "pct_inovalab": 18.33,
-            "rk_frete": 1472.77,
-            "rk_peso": 364.4,
-            "rk_ctes": 3,
-            "rk_g_frete": 944.56,
-            "rk_g_peso": 172.34,
-            "rk_g_ctes": 2,
+            "rk_frete": 1870.99,
+            "rk_peso": 453.16,
+            "rk_ctes": 4,
+            "rk_g_frete": 1342.78,
+            "rk_g_peso": 261.1,
+            "rk_g_ctes": 3,
             "rk_i_frete": 528.21,
             "rk_i_peso": 192.06,
             "rk_i_ctes": 1,
@@ -19554,23 +19554,23 @@
       {
         "uf": "AL",
         "regiao": "Nordeste",
-        "frete": 62530.75,
-        "v_merc": 1391319.89,
-        "ctes": 68,
-        "pct_cts": 4.49,
-        "peso": 20924.89,
-        "genomma_frete": 46264.28,
-        "genomma_merc": 1300589.95,
+        "frete": 62913.45,
+        "v_merc": 1399120.5,
+        "ctes": 69,
+        "pct_cts": 4.5,
+        "peso": 21027.5,
+        "genomma_frete": 46646.98,
+        "genomma_merc": 1308390.56,
         "inovalab_frete": 16266.47,
         "inovalab_merc": 90729.94,
-        "pct_genomma": 3.56,
+        "pct_genomma": 3.57,
         "pct_inovalab": 17.93,
-        "rk_frete": 62344.21,
-        "rk_peso": 20924.89,
-        "rk_ctes": 66,
-        "rk_g_frete": 46077.74,
-        "rk_g_peso": 14744.05,
-        "rk_g_ctes": 60,
+        "rk_frete": 62726.91,
+        "rk_peso": 21027.5,
+        "rk_ctes": 67,
+        "rk_g_frete": 46460.44,
+        "rk_g_peso": 14846.66,
+        "rk_g_ctes": 61,
         "rk_i_frete": 16266.47,
         "rk_i_peso": 6180.84,
         "rk_i_ctes": 6,
@@ -19614,21 +19614,21 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 26980.22,
-            "v_merc": 392180.91,
-            "ctes": 22,
-            "pct_cts": 6.88,
-            "peso": 9046.94,
-            "genomma_frete": 10713.75,
+            "frete": 27362.92,
+            "v_merc": 399981.52,
+            "ctes": 23,
+            "pct_cts": 6.84,
+            "peso": 9149.55,
+            "genomma_frete": 11096.45,
             "inovalab_frete": 16266.47,
-            "pct_genomma": 3.55,
+            "pct_genomma": 3.59,
             "pct_inovalab": 17.93,
-            "rk_frete": 26980.22,
-            "rk_peso": 9046.94,
-            "rk_ctes": 22,
-            "rk_g_frete": 10713.75,
-            "rk_g_peso": 2866.1,
-            "rk_g_ctes": 16,
+            "rk_frete": 27362.92,
+            "rk_peso": 9149.55,
+            "rk_ctes": 23,
+            "rk_g_frete": 11096.45,
+            "rk_g_peso": 2968.71,
+            "rk_g_ctes": 17,
             "rk_i_frete": 16266.47,
             "rk_i_peso": 6180.84,
             "rk_i_ctes": 6,
@@ -20109,21 +20109,21 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 2595.45,
-            "v_merc": 38014.3,
-            "ctes": 3,
-            "pct_cts": 6.83,
-            "peso": 861.73,
-            "genomma_frete": 652.44,
+            "frete": 2978.15,
+            "v_merc": 45814.91,
+            "ctes": 4,
+            "pct_cts": 6.5,
+            "peso": 964.34,
+            "genomma_frete": 1035.14,
             "inovalab_frete": 1943.01,
-            "pct_genomma": 2.4,
+            "pct_genomma": 2.95,
             "pct_inovalab": 18.03,
-            "rk_frete": 2595.45,
-            "rk_peso": 861.73,
-            "rk_ctes": 3,
-            "rk_g_frete": 652.44,
-            "rk_g_peso": 124.92,
-            "rk_g_ctes": 2,
+            "rk_frete": 2978.15,
+            "rk_peso": 964.34,
+            "rk_ctes": 4,
+            "rk_g_frete": 1035.14,
+            "rk_g_peso": 227.53,
+            "rk_g_ctes": 3,
             "rk_i_frete": 1943.01,
             "rk_i_peso": 736.81,
             "rk_i_ctes": 1,
@@ -21348,10 +21348,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "ES",
-        "frete": 480254.78,
-        "v_merc": 24826229.62,
-        "ctes": 62,
-        "pct_cts": 1.93,
+        "frete": 482167.75,
+        "v_merc": 24885557.49,
+        "ctes": 63,
+        "pct_cts": 1.94,
         "anos": {
           "2025": {
             "frete": 362173.91,
@@ -21360,10 +21360,10 @@
             "pct_cts": 2.06
           },
           "2026": {
-            "frete": 118080.87,
-            "v_merc": 7242060.62,
-            "ctes": 17,
-            "pct_cts": 1.63
+            "frete": 119993.84,
+            "v_merc": 7301388.49,
+            "ctes": 18,
+            "pct_cts": 1.64
           }
         },
         "meses": {
@@ -21464,10 +21464,10 @@
             "pct_cts": 4.88
           },
           "2026-06": {
-            "frete": 31392.29,
-            "v_merc": 2906000.52,
-            "ctes": 5,
-            "pct_cts": 1.08
+            "frete": 33305.26,
+            "v_merc": 2965328.39,
+            "ctes": 6,
+            "pct_cts": 1.12
           }
         }
       },
@@ -22116,9 +22116,9 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "ES",
-        "frete": 230928.38,
-        "v_merc": 11418900.04,
-        "ctes": 68,
+        "frete": 232029.51,
+        "v_merc": 11476292.4,
+        "ctes": 69,
         "pct_cts": 2.02,
         "anos": {
           "2025": {
@@ -22128,9 +22128,9 @@
             "pct_cts": 2.23
           },
           "2026": {
-            "frete": 66388.08,
-            "v_merc": 4026561.89,
-            "ctes": 19,
+            "frete": 67489.21,
+            "v_merc": 4083954.25,
+            "ctes": 20,
             "pct_cts": 1.65
           }
         },
@@ -22232,9 +22232,9 @@
             "pct_cts": 1.36
           },
           "2026-06": {
-            "frete": 18744.36,
-            "v_merc": 977625.7,
-            "ctes": 5,
+            "frete": 19845.49,
+            "v_merc": 1035018.06,
+            "ctes": 6,
             "pct_cts": 1.92
           }
         }
@@ -23605,6 +23605,141 @@
         }
       },
       {
+        "nome": "VENANCIO PROD FARMACE LTDA",
+        "cnpj": "00285753002568",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "RJ",
+        "frete": 186325.55,
+        "v_merc": 5936163.58,
+        "ctes": 106,
+        "pct_cts": 3.14,
+        "anos": {
+          "2025": {
+            "frete": 133117.79,
+            "v_merc": 4539285.02,
+            "ctes": 74,
+            "pct_cts": 2.93
+          },
+          "2026": {
+            "frete": 53207.76,
+            "v_merc": 1396878.56,
+            "ctes": 32,
+            "pct_cts": 3.81
+          }
+        },
+        "meses": {
+          "2025-01": {
+            "frete": 549.27,
+            "v_merc": 40638.66,
+            "ctes": 1,
+            "pct_cts": 1.35
+          },
+          "2025-02": {
+            "frete": 14624.9,
+            "v_merc": 485460.9,
+            "ctes": 4,
+            "pct_cts": 3.01
+          },
+          "2025-03": {
+            "frete": 10868.83,
+            "v_merc": 396782.54,
+            "ctes": 8,
+            "pct_cts": 2.74
+          },
+          "2025-04": {
+            "frete": 12171.58,
+            "v_merc": 511569.4,
+            "ctes": 7,
+            "pct_cts": 2.38
+          },
+          "2025-05": {
+            "frete": 10474.09,
+            "v_merc": 175495.71,
+            "ctes": 6,
+            "pct_cts": 5.97
+          },
+          "2025-06": {
+            "frete": 14479.01,
+            "v_merc": 537571.17,
+            "ctes": 10,
+            "pct_cts": 2.69
+          },
+          "2025-07": {
+            "frete": 3371.09,
+            "v_merc": 195293.15,
+            "ctes": 5,
+            "pct_cts": 1.73
+          },
+          "2025-08": {
+            "frete": 20860.86,
+            "v_merc": 701836.58,
+            "ctes": 6,
+            "pct_cts": 2.97
+          },
+          "2025-09": {
+            "frete": 12842.18,
+            "v_merc": 444648.0,
+            "ctes": 11,
+            "pct_cts": 2.89
+          },
+          "2025-10": {
+            "frete": 2745.64,
+            "v_merc": 125533.25,
+            "ctes": 4,
+            "pct_cts": 2.19
+          },
+          "2025-11": {
+            "frete": 11760.22,
+            "v_merc": 359804.21,
+            "ctes": 6,
+            "pct_cts": 3.27
+          },
+          "2025-12": {
+            "frete": 18370.12,
+            "v_merc": 564651.45,
+            "ctes": 6,
+            "pct_cts": 3.25
+          },
+          "2026-01": {
+            "frete": 8719.44,
+            "v_merc": 174261.79,
+            "ctes": 6,
+            "pct_cts": 5.0
+          },
+          "2026-02": {
+            "frete": 4319.59,
+            "v_merc": 225394.32,
+            "ctes": 3,
+            "pct_cts": 1.92
+          },
+          "2026-03": {
+            "frete": 14737.37,
+            "v_merc": 332698.45,
+            "ctes": 5,
+            "pct_cts": 4.43
+          },
+          "2026-04": {
+            "frete": 7846.59,
+            "v_merc": 152550.18,
+            "ctes": 7,
+            "pct_cts": 5.14
+          },
+          "2026-05": {
+            "frete": 3279.1,
+            "v_merc": 127934.98,
+            "ctes": 3,
+            "pct_cts": 2.56
+          },
+          "2026-06": {
+            "frete": 14305.67,
+            "v_merc": 384038.84,
+            "ctes": 8,
+            "pct_cts": 3.73
+          }
+        }
+      },
+      {
         "nome": "GENESIO A MENDES  CIA LTDA",
         "cnpj": "82873068000573",
         "empresa": "GENOMMA",
@@ -23712,141 +23847,6 @@
             "v_merc": 300331.42,
             "ctes": 3,
             "pct_cts": 2.41
-          }
-        }
-      },
-      {
-        "nome": "VENANCIO PROD FARMACE LTDA",
-        "cnpj": "00285753002568",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "RJ",
-        "frete": 184262.67,
-        "v_merc": 5875635.35,
-        "ctes": 104,
-        "pct_cts": 3.14,
-        "anos": {
-          "2025": {
-            "frete": 133117.79,
-            "v_merc": 4539285.02,
-            "ctes": 74,
-            "pct_cts": 2.93
-          },
-          "2026": {
-            "frete": 51144.88,
-            "v_merc": 1336350.33,
-            "ctes": 30,
-            "pct_cts": 3.83
-          }
-        },
-        "meses": {
-          "2025-01": {
-            "frete": 549.27,
-            "v_merc": 40638.66,
-            "ctes": 1,
-            "pct_cts": 1.35
-          },
-          "2025-02": {
-            "frete": 14624.9,
-            "v_merc": 485460.9,
-            "ctes": 4,
-            "pct_cts": 3.01
-          },
-          "2025-03": {
-            "frete": 10868.83,
-            "v_merc": 396782.54,
-            "ctes": 8,
-            "pct_cts": 2.74
-          },
-          "2025-04": {
-            "frete": 12171.58,
-            "v_merc": 511569.4,
-            "ctes": 7,
-            "pct_cts": 2.38
-          },
-          "2025-05": {
-            "frete": 10474.09,
-            "v_merc": 175495.71,
-            "ctes": 6,
-            "pct_cts": 5.97
-          },
-          "2025-06": {
-            "frete": 14479.01,
-            "v_merc": 537571.17,
-            "ctes": 10,
-            "pct_cts": 2.69
-          },
-          "2025-07": {
-            "frete": 3371.09,
-            "v_merc": 195293.15,
-            "ctes": 5,
-            "pct_cts": 1.73
-          },
-          "2025-08": {
-            "frete": 20860.86,
-            "v_merc": 701836.58,
-            "ctes": 6,
-            "pct_cts": 2.97
-          },
-          "2025-09": {
-            "frete": 12842.18,
-            "v_merc": 444648.0,
-            "ctes": 11,
-            "pct_cts": 2.89
-          },
-          "2025-10": {
-            "frete": 2745.64,
-            "v_merc": 125533.25,
-            "ctes": 4,
-            "pct_cts": 2.19
-          },
-          "2025-11": {
-            "frete": 11760.22,
-            "v_merc": 359804.21,
-            "ctes": 6,
-            "pct_cts": 3.27
-          },
-          "2025-12": {
-            "frete": 18370.12,
-            "v_merc": 564651.45,
-            "ctes": 6,
-            "pct_cts": 3.25
-          },
-          "2026-01": {
-            "frete": 8719.44,
-            "v_merc": 174261.79,
-            "ctes": 6,
-            "pct_cts": 5.0
-          },
-          "2026-02": {
-            "frete": 4319.59,
-            "v_merc": 225394.32,
-            "ctes": 3,
-            "pct_cts": 1.92
-          },
-          "2026-03": {
-            "frete": 14737.37,
-            "v_merc": 332698.45,
-            "ctes": 5,
-            "pct_cts": 4.43
-          },
-          "2026-04": {
-            "frete": 7846.59,
-            "v_merc": 152550.18,
-            "ctes": 7,
-            "pct_cts": 5.14
-          },
-          "2026-05": {
-            "frete": 3279.1,
-            "v_merc": 127934.98,
-            "ctes": 3,
-            "pct_cts": 2.56
-          },
-          "2026-06": {
-            "frete": 12242.79,
-            "v_merc": 323510.61,
-            "ctes": 6,
-            "pct_cts": 3.78
           }
         }
       },
@@ -24435,10 +24435,10 @@
         "empresa": "GENOMMA",
         "regiao": "Norte",
         "uf": "PA",
-        "frete": 346489.43,
-        "v_merc": 4867440.39,
-        "ctes": 38,
-        "pct_cts": 7.12,
+        "frete": 347794.85,
+        "v_merc": 4888375.09,
+        "ctes": 39,
+        "pct_cts": 7.11,
         "anos": {
           "2025": {
             "frete": 243253.12,
@@ -24447,10 +24447,10 @@
             "pct_cts": 7.78
           },
           "2026": {
-            "frete": 103236.31,
-            "v_merc": 1739677.2,
-            "ctes": 18,
-            "pct_cts": 5.93
+            "frete": 104541.73,
+            "v_merc": 1760611.9,
+            "ctes": 19,
+            "pct_cts": 5.94
           }
         },
         "meses": {
@@ -24551,10 +24551,10 @@
             "pct_cts": 9.94
           },
           "2026-06": {
-            "frete": 36253.37,
-            "v_merc": 540144.47,
-            "ctes": 5,
-            "pct_cts": 6.71
+            "frete": 37558.79,
+            "v_merc": 561079.17,
+            "ctes": 6,
+            "pct_cts": 6.69
           }
         }
       },
@@ -24564,10 +24564,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PE",
-        "frete": 203796.12,
-        "v_merc": 4389310.8,
-        "ctes": 45,
-        "pct_cts": 4.64,
+        "frete": 204473.48,
+        "v_merc": 4399904.33,
+        "ctes": 46,
+        "pct_cts": 4.65,
         "anos": {
           "2025": {
             "frete": 161906.51,
@@ -24576,10 +24576,10 @@
             "pct_cts": 4.96
           },
           "2026": {
-            "frete": 41889.61,
-            "v_merc": 1126981.9,
-            "ctes": 15,
-            "pct_cts": 3.72
+            "frete": 42566.97,
+            "v_merc": 1137575.43,
+            "ctes": 16,
+            "pct_cts": 3.74
           }
         },
         "meses": {
@@ -24674,10 +24674,10 @@
             "pct_cts": 3.91
           },
           "2026-06": {
-            "frete": 18999.56,
-            "v_merc": 538095.94,
-            "ctes": 5,
-            "pct_cts": 3.53
+            "frete": 19676.92,
+            "v_merc": 548689.47,
+            "ctes": 6,
+            "pct_cts": 3.59
           }
         }
       },
@@ -25809,10 +25809,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 70407.64,
-        "v_merc": 3380267.99,
-        "ctes": 34,
-        "pct_cts": 2.08,
+        "frete": 71132.07,
+        "v_merc": 3395907.2,
+        "ctes": 35,
+        "pct_cts": 2.09,
         "anos": {
           "2025": {
             "frete": 46222.85,
@@ -25821,10 +25821,10 @@
             "pct_cts": 1.97
           },
           "2026": {
-            "frete": 24184.79,
-            "v_merc": 1028515.61,
-            "ctes": 11,
-            "pct_cts": 2.35
+            "frete": 24909.22,
+            "v_merc": 1044154.82,
+            "ctes": 12,
+            "pct_cts": 2.39
           }
         },
         "meses": {
@@ -25919,10 +25919,10 @@
             "pct_cts": 3.69
           },
           "2026-06": {
-            "frete": 2704.32,
-            "v_merc": 98794.09,
-            "ctes": 2,
-            "pct_cts": 2.74
+            "frete": 3428.75,
+            "v_merc": 114433.3,
+            "ctes": 3,
+            "pct_cts": 3.0
           }
         }
       },
@@ -27057,9 +27057,9 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "BA",
-        "frete": 117428.77,
-        "v_merc": 2363089.96,
-        "ctes": 35,
+        "frete": 118139.94,
+        "v_merc": 2376417.43,
+        "ctes": 36,
         "pct_cts": 4.97,
         "anos": {
           "2025": {
@@ -27069,10 +27069,10 @@
             "pct_cts": 5.06
           },
           "2026": {
-            "frete": 38197.99,
-            "v_merc": 798603.35,
-            "ctes": 15,
-            "pct_cts": 4.78
+            "frete": 38909.16,
+            "v_merc": 811930.82,
+            "ctes": 16,
+            "pct_cts": 4.79
           }
         },
         "meses": {
@@ -27173,10 +27173,10 @@
             "pct_cts": 2.94
           },
           "2026-06": {
-            "frete": 2950.43,
-            "v_merc": 62631.44,
-            "ctes": 3,
-            "pct_cts": 4.71
+            "frete": 3661.6,
+            "v_merc": 75958.91,
+            "ctes": 4,
+            "pct_cts": 4.82
           }
         }
       },
@@ -27186,10 +27186,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "RJ",
-        "frete": 63602.53,
-        "v_merc": 2289028.27,
-        "ctes": 31,
-        "pct_cts": 2.78,
+        "frete": 64023.34,
+        "v_merc": 2297306.76,
+        "ctes": 32,
+        "pct_cts": 2.79,
         "anos": {
           "2025": {
             "frete": 55813.29,
@@ -27198,10 +27198,10 @@
             "pct_cts": 2.69
           },
           "2026": {
-            "frete": 7789.24,
-            "v_merc": 215890.37,
-            "ctes": 9,
-            "pct_cts": 3.61
+            "frete": 8210.05,
+            "v_merc": 224168.86,
+            "ctes": 10,
+            "pct_cts": 3.66
           }
         },
         "meses": {
@@ -27296,10 +27296,10 @@
             "pct_cts": 4.48
           },
           "2026-06": {
-            "frete": 944.91,
-            "v_merc": 24977.62,
-            "ctes": 1,
-            "pct_cts": 3.78
+            "frete": 1365.72,
+            "v_merc": 33256.11,
+            "ctes": 2,
+            "pct_cts": 4.11
           }
         }
       },
@@ -27309,10 +27309,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PB",
-        "frete": 108118.95,
-        "v_merc": 2261326.42,
-        "ctes": 35,
-        "pct_cts": 4.78,
+        "frete": 108990.32,
+        "v_merc": 2276757.29,
+        "ctes": 36,
+        "pct_cts": 4.79,
         "anos": {
           "2025": {
             "frete": 74537.14,
@@ -27321,10 +27321,10 @@
             "pct_cts": 5.02
           },
           "2026": {
-            "frete": 33581.81,
-            "v_merc": 775377.62,
-            "ctes": 15,
-            "pct_cts": 4.33
+            "frete": 34453.18,
+            "v_merc": 790808.49,
+            "ctes": 16,
+            "pct_cts": 4.36
           }
         },
         "meses": {
@@ -27425,10 +27425,10 @@
             "pct_cts": 3.45
           },
           "2026-06": {
-            "frete": 5871.79,
-            "v_merc": 203912.48,
-            "ctes": 3,
-            "pct_cts": 2.88
+            "frete": 6743.16,
+            "v_merc": 219343.35,
+            "ctes": 4,
+            "pct_cts": 3.07
           }
         }
       },
@@ -27864,9 +27864,9 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "CE",
-        "frete": 88743.5,
-        "v_merc": 2008763.24,
-        "ctes": 34,
+        "frete": 89153.99,
+        "v_merc": 2016300.62,
+        "ctes": 35,
         "pct_cts": 4.42,
         "anos": {
           "2025": {
@@ -27876,9 +27876,9 @@
             "pct_cts": 3.98
           },
           "2026": {
-            "frete": 38015.98,
-            "v_merc": 733690.45,
-            "ctes": 15,
+            "frete": 38426.47,
+            "v_merc": 741227.83,
+            "ctes": 16,
             "pct_cts": 5.18
           }
         },
@@ -27980,10 +27980,10 @@
             "pct_cts": 6.64
           },
           "2026-06": {
-            "frete": 1191.34,
-            "v_merc": 23199.91,
-            "ctes": 3,
-            "pct_cts": 5.14
+            "frete": 1601.83,
+            "v_merc": 30737.29,
+            "ctes": 4,
+            "pct_cts": 5.21
           }
         }
       },
@@ -29110,6 +29110,135 @@
         }
       },
       {
+        "nome": "NAZARIA DISTRIB PROD FARMACEUTICO LTDA",
+        "cnpj": "07224991002189",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 75073.52,
+        "v_merc": 1341976.71,
+        "ctes": 28,
+        "pct_cts": 5.59,
+        "anos": {
+          "2025": {
+            "frete": 61361.92,
+            "v_merc": 893266.52,
+            "ctes": 19,
+            "pct_cts": 6.87
+          },
+          "2026": {
+            "frete": 13711.6,
+            "v_merc": 448710.19,
+            "ctes": 9,
+            "pct_cts": 3.06
+          }
+        },
+        "meses": {
+          "2025-01": {
+            "frete": 343.45,
+            "v_merc": 4592.65,
+            "ctes": 2,
+            "pct_cts": 7.48
+          },
+          "2025-02": {
+            "frete": 1115.77,
+            "v_merc": 27980.51,
+            "ctes": 1,
+            "pct_cts": 3.99
+          },
+          "2025-03": {
+            "frete": 8255.7,
+            "v_merc": 61790.34,
+            "ctes": 2,
+            "pct_cts": 13.36
+          },
+          "2025-05": {
+            "frete": 2212.5,
+            "v_merc": 58509.59,
+            "ctes": 1,
+            "pct_cts": 3.78
+          },
+          "2025-06": {
+            "frete": 28457.38,
+            "v_merc": 278051.02,
+            "ctes": 2,
+            "pct_cts": 10.23
+          },
+          "2025-07": {
+            "frete": 1594.93,
+            "v_merc": 48329.22,
+            "ctes": 1,
+            "pct_cts": 3.3
+          },
+          "2025-08": {
+            "frete": 11343.88,
+            "v_merc": 206389.75,
+            "ctes": 3,
+            "pct_cts": 5.5
+          },
+          "2025-09": {
+            "frete": 2215.8,
+            "v_merc": 49154.34,
+            "ctes": 1,
+            "pct_cts": 4.51
+          },
+          "2025-10": {
+            "frete": 1199.38,
+            "v_merc": 27565.45,
+            "ctes": 2,
+            "pct_cts": 4.35
+          },
+          "2025-11": {
+            "frete": 2740.95,
+            "v_merc": 66860.25,
+            "ctes": 3,
+            "pct_cts": 4.1
+          },
+          "2025-12": {
+            "frete": 1882.18,
+            "v_merc": 64043.4,
+            "ctes": 1,
+            "pct_cts": 2.94
+          },
+          "2026-01": {
+            "frete": 800.66,
+            "v_merc": 23962.22,
+            "ctes": 1,
+            "pct_cts": 3.34
+          },
+          "2026-02": {
+            "frete": 615.65,
+            "v_merc": 17099.68,
+            "ctes": 1,
+            "pct_cts": 3.6
+          },
+          "2026-03": {
+            "frete": 4371.2,
+            "v_merc": 159454.92,
+            "ctes": 1,
+            "pct_cts": 2.74
+          },
+          "2026-04": {
+            "frete": 1282.23,
+            "v_merc": 18815.75,
+            "ctes": 1,
+            "pct_cts": 6.81
+          },
+          "2026-05": {
+            "frete": 4483.86,
+            "v_merc": 141837.66,
+            "ctes": 2,
+            "pct_cts": 3.16
+          },
+          "2026-06": {
+            "frete": 2158.0,
+            "v_merc": 87539.96,
+            "ctes": 3,
+            "pct_cts": 2.47
+          }
+        }
+      },
+      {
         "nome": "PROFARMA DISTR DE PROD FARMACE SA",
         "cnpj": "45453214002448",
         "empresa": "GENOMMA",
@@ -29211,135 +29340,6 @@
             "v_merc": 221555.42,
             "ctes": 4,
             "pct_cts": 3.39
-          }
-        }
-      },
-      {
-        "nome": "NAZARIA DISTRIB PROD FARMACEUTICO LTDA",
-        "cnpj": "07224991002189",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PI",
-        "frete": 74436.81,
-        "v_merc": 1327765.22,
-        "ctes": 27,
-        "pct_cts": 5.61,
-        "anos": {
-          "2025": {
-            "frete": 61361.92,
-            "v_merc": 893266.52,
-            "ctes": 19,
-            "pct_cts": 6.87
-          },
-          "2026": {
-            "frete": 13074.89,
-            "v_merc": 434498.7,
-            "ctes": 8,
-            "pct_cts": 3.01
-          }
-        },
-        "meses": {
-          "2025-01": {
-            "frete": 343.45,
-            "v_merc": 4592.65,
-            "ctes": 2,
-            "pct_cts": 7.48
-          },
-          "2025-02": {
-            "frete": 1115.77,
-            "v_merc": 27980.51,
-            "ctes": 1,
-            "pct_cts": 3.99
-          },
-          "2025-03": {
-            "frete": 8255.7,
-            "v_merc": 61790.34,
-            "ctes": 2,
-            "pct_cts": 13.36
-          },
-          "2025-05": {
-            "frete": 2212.5,
-            "v_merc": 58509.59,
-            "ctes": 1,
-            "pct_cts": 3.78
-          },
-          "2025-06": {
-            "frete": 28457.38,
-            "v_merc": 278051.02,
-            "ctes": 2,
-            "pct_cts": 10.23
-          },
-          "2025-07": {
-            "frete": 1594.93,
-            "v_merc": 48329.22,
-            "ctes": 1,
-            "pct_cts": 3.3
-          },
-          "2025-08": {
-            "frete": 11343.88,
-            "v_merc": 206389.75,
-            "ctes": 3,
-            "pct_cts": 5.5
-          },
-          "2025-09": {
-            "frete": 2215.8,
-            "v_merc": 49154.34,
-            "ctes": 1,
-            "pct_cts": 4.51
-          },
-          "2025-10": {
-            "frete": 1199.38,
-            "v_merc": 27565.45,
-            "ctes": 2,
-            "pct_cts": 4.35
-          },
-          "2025-11": {
-            "frete": 2740.95,
-            "v_merc": 66860.25,
-            "ctes": 3,
-            "pct_cts": 4.1
-          },
-          "2025-12": {
-            "frete": 1882.18,
-            "v_merc": 64043.4,
-            "ctes": 1,
-            "pct_cts": 2.94
-          },
-          "2026-01": {
-            "frete": 800.66,
-            "v_merc": 23962.22,
-            "ctes": 1,
-            "pct_cts": 3.34
-          },
-          "2026-02": {
-            "frete": 615.65,
-            "v_merc": 17099.68,
-            "ctes": 1,
-            "pct_cts": 3.6
-          },
-          "2026-03": {
-            "frete": 4371.2,
-            "v_merc": 159454.92,
-            "ctes": 1,
-            "pct_cts": 2.74
-          },
-          "2026-04": {
-            "frete": 1282.23,
-            "v_merc": 18815.75,
-            "ctes": 1,
-            "pct_cts": 6.81
-          },
-          "2026-05": {
-            "frete": 4483.86,
-            "v_merc": 141837.66,
-            "ctes": 2,
-            "pct_cts": 3.16
-          },
-          "2026-06": {
-            "frete": 1521.29,
-            "v_merc": 73328.47,
-            "ctes": 2,
-            "pct_cts": 2.07
           }
         }
       },
@@ -30013,6 +30013,45 @@
         }
       },
       {
+        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
+        "cnpj": "15436940001258",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "SP",
+        "frete": 19487.43,
+        "v_merc": 1156086.29,
+        "ctes": 8,
+        "pct_cts": 1.69,
+        "anos": {
+          "2026": {
+            "frete": 19487.43,
+            "v_merc": 1156086.29,
+            "ctes": 8,
+            "pct_cts": 1.69
+          }
+        },
+        "meses": {
+          "2026-04": {
+            "frete": 4246.16,
+            "v_merc": 178441.87,
+            "ctes": 1,
+            "pct_cts": 2.38
+          },
+          "2026-05": {
+            "frete": 4432.73,
+            "v_merc": 300342.41,
+            "ctes": 2,
+            "pct_cts": 1.48
+          },
+          "2026-06": {
+            "frete": 10808.54,
+            "v_merc": 677302.01,
+            "ctes": 5,
+            "pct_cts": 1.6
+          }
+        }
+      },
+      {
         "nome": "DIST MEDIC SANTA CRUZ LTDA",
         "cnpj": "61940292005520",
         "empresa": "GENOMMA",
@@ -30063,10 +30102,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "RN",
-        "frete": 44174.61,
-        "v_merc": 1146675.98,
-        "ctes": 35,
-        "pct_cts": 3.85,
+        "frete": 44572.83,
+        "v_merc": 1153446.7,
+        "ctes": 36,
+        "pct_cts": 3.86,
         "anos": {
           "2025": {
             "frete": 27107.94,
@@ -30075,10 +30114,10 @@
             "pct_cts": 3.63
           },
           "2026": {
-            "frete": 17066.67,
-            "v_merc": 400302.69,
-            "ctes": 14,
-            "pct_cts": 4.26
+            "frete": 17464.89,
+            "v_merc": 407073.41,
+            "ctes": 15,
+            "pct_cts": 4.29
           }
         },
         "meses": {
@@ -30179,49 +30218,10 @@
             "pct_cts": 5.3
           },
           "2026-06": {
-            "frete": 1472.77,
-            "v_merc": 45972.2,
-            "ctes": 3,
-            "pct_cts": 3.2
-          }
-        }
-      },
-      {
-        "nome": "AMAZON SERV DE VAREJO DO BR LTDA",
-        "cnpj": "15436940001258",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "SP",
-        "frete": 18795.51,
-        "v_merc": 1139798.35,
-        "ctes": 7,
-        "pct_cts": 1.65,
-        "anos": {
-          "2026": {
-            "frete": 18795.51,
-            "v_merc": 1139798.35,
-            "ctes": 7,
-            "pct_cts": 1.65
-          }
-        },
-        "meses": {
-          "2026-04": {
-            "frete": 4246.16,
-            "v_merc": 178441.87,
-            "ctes": 1,
-            "pct_cts": 2.38
-          },
-          "2026-05": {
-            "frete": 4432.73,
-            "v_merc": 300342.41,
-            "ctes": 2,
-            "pct_cts": 1.48
-          },
-          "2026-06": {
-            "frete": 10116.62,
-            "v_merc": 661014.07,
+            "frete": 1870.99,
+            "v_merc": 52742.92,
             "ctes": 4,
-            "pct_cts": 1.53
+            "pct_cts": 3.55
           }
         }
       },
@@ -31308,10 +31308,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "PE",
-        "frete": 69884.11,
-        "v_merc": 845446.17,
-        "ctes": 32,
-        "pct_cts": 8.27,
+        "frete": 70538.46,
+        "v_merc": 854274.88,
+        "ctes": 33,
+        "pct_cts": 8.26,
         "anos": {
           "2025": {
             "frete": 38042.96,
@@ -31320,10 +31320,10 @@
             "pct_cts": 7.93
           },
           "2026": {
-            "frete": 31841.15,
-            "v_merc": 365444.43,
-            "ctes": 16,
-            "pct_cts": 8.71
+            "frete": 32495.5,
+            "v_merc": 374273.14,
+            "ctes": 17,
+            "pct_cts": 8.68
           }
         },
         "meses": {
@@ -31418,10 +31418,10 @@
             "pct_cts": 10.93
           },
           "2026-06": {
-            "frete": 3569.05,
-            "v_merc": 43693.82,
-            "ctes": 3,
-            "pct_cts": 8.17
+            "frete": 4223.4,
+            "v_merc": 52522.53,
+            "ctes": 4,
+            "pct_cts": 8.04
           }
         }
       },
@@ -31708,42 +31708,15 @@
         }
       },
       {
-        "nome": "DMA DISTR SA",
-        "cnpj": "01928075013501",
-        "empresa": "GENOMMA",
-        "regiao": "Sudeste",
-        "uf": "MG",
-        "frete": 16240.64,
-        "v_merc": 757848.92,
-        "ctes": 4,
-        "pct_cts": 2.14,
-        "anos": {
-          "2025": {
-            "frete": 16240.64,
-            "v_merc": 757848.92,
-            "ctes": 4,
-            "pct_cts": 2.14
-          }
-        },
-        "meses": {
-          "2025-11": {
-            "frete": 16240.64,
-            "v_merc": 757848.92,
-            "ctes": 4,
-            "pct_cts": 2.14
-          }
-        }
-      },
-      {
         "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
         "cnpj": "07224991002006",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "MA",
-        "frete": 38176.53,
-        "v_merc": 747362.41,
-        "ctes": 23,
-        "pct_cts": 5.11,
+        "frete": 38991.88,
+        "v_merc": 761892.51,
+        "ctes": 24,
+        "pct_cts": 5.12,
         "anos": {
           "2025": {
             "frete": 26317.59,
@@ -31752,10 +31725,10 @@
             "pct_cts": 6.3
           },
           "2026": {
-            "frete": 11858.94,
-            "v_merc": 329834.61,
-            "ctes": 7,
-            "pct_cts": 3.6
+            "frete": 12674.29,
+            "v_merc": 344364.71,
+            "ctes": 8,
+            "pct_cts": 3.68
           }
         },
         "meses": {
@@ -31844,10 +31817,37 @@
             "pct_cts": 5.05
           },
           "2026-06": {
-            "frete": 5422.04,
-            "v_merc": 156799.1,
-            "ctes": 2,
-            "pct_cts": 3.46
+            "frete": 6237.39,
+            "v_merc": 171329.2,
+            "ctes": 3,
+            "pct_cts": 3.64
+          }
+        }
+      },
+      {
+        "nome": "DMA DISTR SA",
+        "cnpj": "01928075013501",
+        "empresa": "GENOMMA",
+        "regiao": "Sudeste",
+        "uf": "MG",
+        "frete": 16240.64,
+        "v_merc": 757848.92,
+        "ctes": 4,
+        "pct_cts": 2.14,
+        "anos": {
+          "2025": {
+            "frete": 16240.64,
+            "v_merc": 757848.92,
+            "ctes": 4,
+            "pct_cts": 2.14
+          }
+        },
+        "meses": {
+          "2025-11": {
+            "frete": 16240.64,
+            "v_merc": 757848.92,
+            "ctes": 4,
+            "pct_cts": 2.14
           }
         }
       },
@@ -32392,6 +32392,117 @@
         }
       },
       {
+        "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LT",
+        "cnpj": "22417427000122",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PI",
+        "frete": 28764.35,
+        "v_merc": 685349.67,
+        "ctes": 15,
+        "pct_cts": 4.2,
+        "anos": {
+          "2025": {
+            "frete": 21635.64,
+            "v_merc": 518162.64,
+            "ctes": 9,
+            "pct_cts": 4.18
+          },
+          "2026": {
+            "frete": 7128.71,
+            "v_merc": 167187.03,
+            "ctes": 6,
+            "pct_cts": 4.26
+          }
+        },
+        "meses": {
+          "2025-01": {
+            "frete": 3185.75,
+            "v_merc": 81199.36,
+            "ctes": 1,
+            "pct_cts": 3.92
+          },
+          "2025-03": {
+            "frete": 1871.79,
+            "v_merc": 50525.18,
+            "ctes": 1,
+            "pct_cts": 3.7
+          },
+          "2025-04": {
+            "frete": 1630.12,
+            "v_merc": 41676.73,
+            "ctes": 1,
+            "pct_cts": 3.91
+          },
+          "2025-06": {
+            "frete": 2841.34,
+            "v_merc": 59849.26,
+            "ctes": 1,
+            "pct_cts": 4.75
+          },
+          "2025-07": {
+            "frete": 2644.56,
+            "v_merc": 53587.11,
+            "ctes": 1,
+            "pct_cts": 4.94
+          },
+          "2025-08": {
+            "frete": 2250.67,
+            "v_merc": 53587.11,
+            "ctes": 1,
+            "pct_cts": 4.2
+          },
+          "2025-09": {
+            "frete": 2908.76,
+            "v_merc": 76382.34,
+            "ctes": 1,
+            "pct_cts": 3.81
+          },
+          "2025-11": {
+            "frete": 2344.65,
+            "v_merc": 54629.52,
+            "ctes": 1,
+            "pct_cts": 4.29
+          },
+          "2025-12": {
+            "frete": 1958.0,
+            "v_merc": 46726.03,
+            "ctes": 1,
+            "pct_cts": 4.19
+          },
+          "2026-01": {
+            "frete": 1620.11,
+            "v_merc": 40797.89,
+            "ctes": 1,
+            "pct_cts": 3.97
+          },
+          "2026-02": {
+            "frete": 538.1,
+            "v_merc": 10583.57,
+            "ctes": 1,
+            "pct_cts": 5.08
+          },
+          "2026-04": {
+            "frete": 2154.82,
+            "v_merc": 49023.57,
+            "ctes": 2,
+            "pct_cts": 4.4
+          },
+          "2026-05": {
+            "frete": 1425.25,
+            "v_merc": 35677.88,
+            "ctes": 1,
+            "pct_cts": 3.99
+          },
+          "2026-06": {
+            "frete": 1390.43,
+            "v_merc": 31104.12,
+            "ctes": 1,
+            "pct_cts": 4.47
+          }
+        }
+      },
+      {
         "nome": "PROFARMA DISTR DE PROD FARMACE SA",
         "cnpj": "45453214002014",
         "empresa": "GENOMMA",
@@ -32481,111 +32592,6 @@
             "v_merc": 94617.42,
             "ctes": 3,
             "pct_cts": 3.05
-          }
-        }
-      },
-      {
-        "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LT",
-        "cnpj": "22417427000122",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PI",
-        "frete": 27373.92,
-        "v_merc": 654245.55,
-        "ctes": 14,
-        "pct_cts": 4.18,
-        "anos": {
-          "2025": {
-            "frete": 21635.64,
-            "v_merc": 518162.64,
-            "ctes": 9,
-            "pct_cts": 4.18
-          },
-          "2026": {
-            "frete": 5738.28,
-            "v_merc": 136082.91,
-            "ctes": 5,
-            "pct_cts": 4.22
-          }
-        },
-        "meses": {
-          "2025-01": {
-            "frete": 3185.75,
-            "v_merc": 81199.36,
-            "ctes": 1,
-            "pct_cts": 3.92
-          },
-          "2025-03": {
-            "frete": 1871.79,
-            "v_merc": 50525.18,
-            "ctes": 1,
-            "pct_cts": 3.7
-          },
-          "2025-04": {
-            "frete": 1630.12,
-            "v_merc": 41676.73,
-            "ctes": 1,
-            "pct_cts": 3.91
-          },
-          "2025-06": {
-            "frete": 2841.34,
-            "v_merc": 59849.26,
-            "ctes": 1,
-            "pct_cts": 4.75
-          },
-          "2025-07": {
-            "frete": 2644.56,
-            "v_merc": 53587.11,
-            "ctes": 1,
-            "pct_cts": 4.94
-          },
-          "2025-08": {
-            "frete": 2250.67,
-            "v_merc": 53587.11,
-            "ctes": 1,
-            "pct_cts": 4.2
-          },
-          "2025-09": {
-            "frete": 2908.76,
-            "v_merc": 76382.34,
-            "ctes": 1,
-            "pct_cts": 3.81
-          },
-          "2025-11": {
-            "frete": 2344.65,
-            "v_merc": 54629.52,
-            "ctes": 1,
-            "pct_cts": 4.29
-          },
-          "2025-12": {
-            "frete": 1958.0,
-            "v_merc": 46726.03,
-            "ctes": 1,
-            "pct_cts": 4.19
-          },
-          "2026-01": {
-            "frete": 1620.11,
-            "v_merc": 40797.89,
-            "ctes": 1,
-            "pct_cts": 3.97
-          },
-          "2026-02": {
-            "frete": 538.1,
-            "v_merc": 10583.57,
-            "ctes": 1,
-            "pct_cts": 5.08
-          },
-          "2026-04": {
-            "frete": 2154.82,
-            "v_merc": 49023.57,
-            "ctes": 2,
-            "pct_cts": 4.4
-          },
-          "2026-05": {
-            "frete": 1425.25,
-            "v_merc": 35677.88,
-            "ctes": 1,
-            "pct_cts": 3.99
           }
         }
       },
@@ -33496,60 +33502,15 @@
         }
       },
       {
-        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAME LTDA",
-        "cnpj": "01206820001179",
-        "empresa": "GENOMMA",
-        "regiao": "Nordeste",
-        "uf": "PE",
-        "frete": 18499.97,
-        "v_merc": 517434.12,
-        "ctes": 15,
-        "pct_cts": 3.58,
-        "anos": {
-          "2025": {
-            "frete": 18499.97,
-            "v_merc": 517434.12,
-            "ctes": 15,
-            "pct_cts": 3.58
-          }
-        },
-        "meses": {
-          "2025-01": {
-            "frete": 1150.18,
-            "v_merc": 26262.53,
-            "ctes": 2,
-            "pct_cts": 4.38
-          },
-          "2025-02": {
-            "frete": 4669.7,
-            "v_merc": 149163.08,
-            "ctes": 4,
-            "pct_cts": 3.13
-          },
-          "2025-03": {
-            "frete": 7265.67,
-            "v_merc": 256415.65,
-            "ctes": 7,
-            "pct_cts": 2.83
-          },
-          "2025-04": {
-            "frete": 5414.42,
-            "v_merc": 85592.86,
-            "ctes": 2,
-            "pct_cts": 6.33
-          }
-        }
-      },
-      {
         "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMAC",
         "cnpj": "07224991001964",
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "MA",
-        "frete": 40271.76,
-        "v_merc": 507131.52,
-        "ctes": 22,
-        "pct_cts": 7.94,
+        "frete": 40952.58,
+        "v_merc": 517480.41,
+        "ctes": 23,
+        "pct_cts": 7.91,
         "anos": {
           "2025": {
             "frete": 29016.93,
@@ -33558,10 +33519,10 @@
             "pct_cts": 8.34
           },
           "2026": {
-            "frete": 11254.83,
-            "v_merc": 159317.78,
-            "ctes": 7,
-            "pct_cts": 7.06
+            "frete": 11935.65,
+            "v_merc": 169666.67,
+            "ctes": 8,
+            "pct_cts": 7.03
           }
         },
         "meses": {
@@ -33650,10 +33611,55 @@
             "pct_cts": 4.52
           },
           "2026-06": {
-            "frete": 5679.53,
-            "v_merc": 77134.58,
-            "ctes": 3,
-            "pct_cts": 7.36
+            "frete": 6360.35,
+            "v_merc": 87483.47,
+            "ctes": 4,
+            "pct_cts": 7.27
+          }
+        }
+      },
+      {
+        "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAME LTDA",
+        "cnpj": "01206820001179",
+        "empresa": "GENOMMA",
+        "regiao": "Nordeste",
+        "uf": "PE",
+        "frete": 18499.97,
+        "v_merc": 517434.12,
+        "ctes": 15,
+        "pct_cts": 3.58,
+        "anos": {
+          "2025": {
+            "frete": 18499.97,
+            "v_merc": 517434.12,
+            "ctes": 15,
+            "pct_cts": 3.58
+          }
+        },
+        "meses": {
+          "2025-01": {
+            "frete": 1150.18,
+            "v_merc": 26262.53,
+            "ctes": 2,
+            "pct_cts": 4.38
+          },
+          "2025-02": {
+            "frete": 4669.7,
+            "v_merc": 149163.08,
+            "ctes": 4,
+            "pct_cts": 3.13
+          },
+          "2025-03": {
+            "frete": 7265.67,
+            "v_merc": 256415.65,
+            "ctes": 7,
+            "pct_cts": 2.83
+          },
+          "2025-04": {
+            "frete": 5414.42,
+            "v_merc": 85592.86,
+            "ctes": 2,
+            "pct_cts": 6.33
           }
         }
       },
@@ -34089,10 +34095,10 @@
         "empresa": "GENOMMA",
         "regiao": "Nordeste",
         "uf": "AL",
-        "frete": 13587.21,
-        "v_merc": 388407.62,
-        "ctes": 17,
-        "pct_cts": 3.5,
+        "frete": 13969.91,
+        "v_merc": 396208.23,
+        "ctes": 18,
+        "pct_cts": 3.53,
         "anos": {
           "2025": {
             "frete": 6670.8,
@@ -34101,10 +34107,10 @@
             "pct_cts": 3.49
           },
           "2026": {
-            "frete": 6916.41,
-            "v_merc": 197242.02,
-            "ctes": 9,
-            "pct_cts": 3.51
+            "frete": 7299.11,
+            "v_merc": 205042.63,
+            "ctes": 10,
+            "pct_cts": 3.56
           }
         },
         "meses": {
@@ -34169,10 +34175,10 @@
             "pct_cts": 3.42
           },
           "2026-06": {
-            "frete": 652.44,
-            "v_merc": 27239.48,
-            "ctes": 2,
-            "pct_cts": 2.4
+            "frete": 1035.14,
+            "v_merc": 35040.09,
+            "ctes": 3,
+            "pct_cts": 2.95
           }
         }
       },
@@ -37655,9 +37661,9 @@
       {
         "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
         "cnpj": "09080907000506",
-        "frete": 13435402.52,
-        "v_merc": 485831425.51,
-        "ctes": 6010,
+        "frete": 13450178.64,
+        "v_merc": 486200437.16,
+        "ctes": 6028,
         "pct_cts": 2.77,
         "anos": {
           "2025": {
@@ -37667,10 +37673,10 @@
             "pct_cts": 2.94
           },
           "2026": {
-            "frete": 3112250.85,
-            "v_merc": 134449927.24,
-            "ctes": 1785,
-            "pct_cts": 2.31
+            "frete": 3127026.97,
+            "v_merc": 134818938.89,
+            "ctes": 1803,
+            "pct_cts": 2.32
           }
         },
         "meses": {
@@ -37777,25 +37783,25 @@
             "pct_cts": 2.37
           },
           "2026-06": {
-            "frete": 757395.76,
-            "v_merc": 37160034.13,
-            "ctes": 429,
-            "pct_cts": 2.04
+            "frete": 772171.88,
+            "v_merc": 37529045.78,
+            "ctes": 447,
+            "pct_cts": 2.06
           }
         }
       },
       {
         "nome": "INOVALAB DO BRASIL LTDA.",
         "cnpj": "60698771000126",
-        "frete": 1647294.87,
-        "v_merc": 21427601.05,
-        "ctes": 416,
+        "frete": 1649251.85,
+        "v_merc": 21437582.69,
+        "ctes": 418,
         "pct_cts": 7.69,
         "anos": {
           "2026": {
-            "frete": 1647294.87,
-            "v_merc": 21427601.05,
-            "ctes": 416,
+            "frete": 1649251.85,
+            "v_merc": 21437582.69,
+            "ctes": 418,
             "pct_cts": 7.69
           }
         },
@@ -37825,10 +37831,10 @@
             "pct_cts": 8.99
           },
           "2026-06": {
-            "frete": 314799.76,
-            "v_merc": 3666976.51,
-            "ctes": 99,
-            "pct_cts": 8.58
+            "frete": 316756.74,
+            "v_merc": 3676958.15,
+            "ctes": 101,
+            "pct_cts": 8.61
           }
         }
       },
@@ -37914,21 +37920,21 @@
   },
   "inbound": {
     "totais": {
-      "frete": 2116142.48,
-      "v_merc": 116366440.28,
-      "ctes": 599,
-      "pct_cts": 1.82,
-      "genomma_frete": 1871842.12,
+      "frete": 2125314.54,
+      "v_merc": 117239496.28,
+      "ctes": 601,
+      "pct_cts": 1.81,
+      "genomma_frete": 1881014.18,
       "inovalab_frete": 244300.36,
-      "pct_genomma": 1.65,
+      "pct_genomma": 1.64,
       "pct_inovalab": 8.59
     },
     "empresas": {
       "GENOMMA": {
-        "frete": 1871842.12,
-        "v_merc": 113522565.47,
-        "ctes": 504,
-        "pct_cts": 1.65
+        "frete": 1881014.18,
+        "v_merc": 114395621.47,
+        "ctes": 506,
+        "pct_cts": 1.64
       },
       "INOVALAB": {
         "frete": 244300.36,
@@ -37945,11 +37951,11 @@
     },
     "tipos": {
       "CIF": {
-        "frete": 2116142.48,
-        "v_merc": 116366440.28,
-        "ctes": 599,
-        "pct_cts": 1.82,
-        "pct_genomma": 1.65,
+        "frete": 2125314.54,
+        "v_merc": 117239496.28,
+        "ctes": 601,
+        "pct_cts": 1.81,
+        "pct_genomma": 1.64,
         "pct_inovalab": 8.59
       },
       "FOB": {
@@ -38239,15 +38245,15 @@
         "ano": 2026,
         "mes": 6,
         "nome": "Jun",
-        "frete": 103782.82,
-        "v_merc": 9405755.1,
-        "ctes": 26,
+        "frete": 112954.88,
+        "v_merc": 10278811.1,
+        "ctes": 28,
         "pct_cts": 1.1,
-        "genomma_frete": 81282.82,
-        "genomma_merc": 9118462.8,
+        "genomma_frete": 90454.88,
+        "genomma_merc": 9991518.8,
         "inovalab_frete": 22500.0,
         "inovalab_merc": 287292.3,
-        "pct_genomma": 0.89,
+        "pct_genomma": 0.91,
         "pct_inovalab": 7.83
       }
     ],
@@ -38325,15 +38331,15 @@
       {
         "q": "Q2/26",
         "ano": 2026,
-        "frete": 332930.15,
-        "v_merc": 17951553.4,
-        "ctes": 82,
-        "pct_cts": 1.85,
-        "genomma_frete": 222930.15,
-        "genomma_merc": 16668530.54,
+        "frete": 342102.21,
+        "v_merc": 18824609.4,
+        "ctes": 84,
+        "pct_cts": 1.82,
+        "genomma_frete": 232102.21,
+        "genomma_merc": 17541586.54,
         "inovalab_frete": 110000.0,
         "inovalab_merc": 1283022.86,
-        "pct_genomma": 1.34,
+        "pct_genomma": 1.32,
         "pct_inovalab": 8.57
       }
     ],
@@ -38341,13 +38347,13 @@
       {
         "nome": "TRANSCUNHA LTDA",
         "cnpj": "00850928000246",
-        "frete": 1049540.75,
-        "v_merc": 76946973.54,
-        "ctes": 200,
+        "frete": 1053796.51,
+        "v_merc": 77247928.56,
+        "ctes": 201,
         "pct_cts": 1.36,
         "pct_genomma": 1.36,
         "pct_inovalab": 4.25,
-        "genomma_frete": 1045590.75,
+        "genomma_frete": 1049846.51,
         "inovalab_frete": 3950.0,
         "reentrega_frete": 0,
         "reentrega_ctes": 0,
@@ -38356,9 +38362,9 @@
         "peso_total": 0.0,
         "regioes": {
           "Sudeste": {
-            "frete": 1049540.75,
+            "frete": 1053796.51,
             "peso": 0.0,
-            "ctes": 200,
+            "ctes": 201,
             "custo_kg": null
           }
         },
@@ -38393,12 +38399,12 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 350902.97,
-            "v_merc": 27505761.52,
-            "ctes": 62,
+            "frete": 355158.73,
+            "v_merc": 27806716.54,
+            "ctes": 63,
             "pct_cts": 1.28,
             "peso": 0,
-            "genomma_frete": 346952.97,
+            "genomma_frete": 351208.73,
             "inovalab_frete": 3950.0,
             "pct_genomma": 1.27,
             "pct_inovalab": 4.25,
@@ -38411,12 +38417,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 350902.97,
-            "pc_merc": 27505761.52,
-            "pc_ctes": 62,
-            "pc_g_frete": 346952.97,
-            "pc_g_merc": 27412725.21,
-            "pc_g_ctes": 61,
+            "pc_frete": 355158.73,
+            "pc_merc": 27806716.54,
+            "pc_ctes": 63,
+            "pc_g_frete": 351208.73,
+            "pc_g_merc": 27713680.23,
+            "pc_g_ctes": 62,
             "pc_i_frete": 3950.0,
             "pc_i_merc": 93036.31,
             "pc_i_ctes": 1
@@ -38917,14 +38923,14 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 63769.23,
-            "v_merc": 6994002.84,
-            "ctes": 13,
-            "pct_cts": 0.91,
+            "frete": 68024.99,
+            "v_merc": 7294957.86,
+            "ctes": 14,
+            "pct_cts": 0.93,
             "peso": 0,
-            "genomma_frete": 63769.23,
+            "genomma_frete": 68024.99,
             "inovalab_frete": 0,
-            "pct_genomma": 0.91,
+            "pct_genomma": 0.93,
             "pct_inovalab": null,
             "rk_frete": 0,
             "rk_peso": 0,
@@ -38935,12 +38941,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 63769.23,
-            "pc_merc": 6994002.84,
-            "pc_ctes": 13,
-            "pc_g_frete": 63769.23,
-            "pc_g_merc": 6994002.84,
-            "pc_g_ctes": 13,
+            "pc_frete": 68024.99,
+            "pc_merc": 7294957.86,
+            "pc_ctes": 14,
+            "pc_g_frete": 68024.99,
+            "pc_g_merc": 7294957.86,
+            "pc_g_ctes": 14,
             "pc_i_frete": 0,
             "pc_i_merc": 0,
             "pc_i_ctes": 0
@@ -39559,13 +39565,13 @@
       {
         "nome": "LD CARGO - SOLUCOES LOGISTICAS LTDA",
         "cnpj": "36321523000187",
-        "frete": 65522.88,
-        "v_merc": 5674325.07,
-        "ctes": 13,
-        "pct_cts": 1.15,
-        "pct_genomma": 1.15,
+        "frete": 70439.18,
+        "v_merc": 6246426.05,
+        "ctes": 14,
+        "pct_cts": 1.13,
+        "pct_genomma": 1.13,
         "pct_inovalab": null,
-        "genomma_frete": 65522.88,
+        "genomma_frete": 70439.18,
         "inovalab_frete": 0,
         "reentrega_frete": 0,
         "reentrega_ctes": 0,
@@ -39574,9 +39580,9 @@
         "peso_total": 0.0,
         "regioes": {
           "Sudeste": {
-            "frete": 65522.88,
+            "frete": 70439.18,
             "peso": 0.0,
-            "ctes": 13,
+            "ctes": 14,
             "custo_kg": null
           }
         },
@@ -39611,14 +39617,14 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 45399.01,
-            "v_merc": 3833030.55,
-            "ctes": 9,
-            "pct_cts": 1.18,
+            "frete": 50315.31,
+            "v_merc": 4405131.53,
+            "ctes": 10,
+            "pct_cts": 1.14,
             "peso": 0,
-            "genomma_frete": 45399.01,
+            "genomma_frete": 50315.31,
             "inovalab_frete": 0,
-            "pct_genomma": 1.18,
+            "pct_genomma": 1.14,
             "pct_inovalab": null,
             "rk_frete": 0,
             "rk_peso": 0,
@@ -39629,12 +39635,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 45399.01,
-            "pc_merc": 3833030.55,
-            "pc_ctes": 9,
-            "pc_g_frete": 45399.01,
-            "pc_g_merc": 3833030.55,
-            "pc_g_ctes": 9,
+            "pc_frete": 50315.31,
+            "pc_merc": 4405131.53,
+            "pc_ctes": 10,
+            "pc_g_frete": 50315.31,
+            "pc_g_merc": 4405131.53,
+            "pc_g_ctes": 10,
             "pc_i_frete": 0,
             "pc_i_merc": 0,
             "pc_i_ctes": 0
@@ -39816,14 +39822,14 @@
             "pc_i_ctes": 0
           },
           "2026-06": {
-            "frete": 15149.58,
-            "v_merc": 1916543.49,
-            "ctes": 3,
-            "pct_cts": 0.79,
+            "frete": 20065.88,
+            "v_merc": 2488644.47,
+            "ctes": 4,
+            "pct_cts": 0.81,
             "peso": 0,
-            "genomma_frete": 15149.58,
+            "genomma_frete": 20065.88,
             "inovalab_frete": 0,
-            "pct_genomma": 0.79,
+            "pct_genomma": 0.81,
             "pct_inovalab": null,
             "rk_frete": 0,
             "rk_peso": 0,
@@ -39834,12 +39840,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 15149.58,
-            "pc_merc": 1916543.49,
-            "pc_ctes": 3,
-            "pc_g_frete": 15149.58,
-            "pc_g_merc": 1916543.49,
-            "pc_g_ctes": 3,
+            "pc_frete": 20065.88,
+            "pc_merc": 2488644.47,
+            "pc_ctes": 4,
+            "pc_g_frete": 20065.88,
+            "pc_g_merc": 2488644.47,
+            "pc_g_ctes": 4,
             "pc_i_frete": 0,
             "pc_i_merc": 0,
             "pc_i_ctes": 0
@@ -40691,16 +40697,16 @@
     "regioes": [
       {
         "regiao": "Sudeste",
-        "frete": 2116142.48,
-        "v_merc": 116366440.28,
-        "ctes": 599,
-        "pct_cts": 1.82,
+        "frete": 2125314.54,
+        "v_merc": 117239496.28,
+        "ctes": 601,
+        "pct_cts": 1.81,
         "peso": 8016555.76,
-        "genomma_frete": 1871842.12,
-        "genomma_merc": 113522565.47,
+        "genomma_frete": 1881014.18,
+        "genomma_merc": 114395621.47,
         "inovalab_frete": 244300.36,
         "inovalab_merc": 2843874.81,
-        "pct_genomma": 1.65,
+        "pct_genomma": 1.64,
         "pct_inovalab": 8.59,
         "rk_frete": 799.84,
         "rk_peso": 75.6,
@@ -40711,12 +40717,12 @@
         "rk_i_frete": 0,
         "rk_i_peso": 0,
         "rk_i_ctes": 0,
-        "pc_frete": 2115342.64,
-        "pc_merc": 116294909.08,
-        "pc_ctes": 596,
-        "pc_g_frete": 1871042.28,
-        "pc_g_merc": 113451034.27,
-        "pc_g_ctes": 501,
+        "pc_frete": 2124514.7,
+        "pc_merc": 117167965.08,
+        "pc_ctes": 598,
+        "pc_g_frete": 1880214.34,
+        "pc_g_merc": 114324090.27,
+        "pc_g_ctes": 503,
         "pc_i_frete": 244300.36,
         "pc_i_merc": 2843874.81,
         "pc_i_ctes": 95,
@@ -40751,14 +40757,14 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 720502.26,
-            "v_merc": 38182146.96,
-            "ctes": 196,
-            "pct_cts": 1.89,
+            "frete": 729674.32,
+            "v_merc": 39055202.96,
+            "ctes": 198,
+            "pct_cts": 1.87,
             "peso": 2482527.38,
-            "genomma_frete": 476201.9,
+            "genomma_frete": 485373.96,
             "inovalab_frete": 244300.36,
-            "pct_genomma": 1.35,
+            "pct_genomma": 1.34,
             "pct_inovalab": 8.59,
             "rk_frete": 116.47,
             "rk_peso": 7.5,
@@ -40769,12 +40775,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 720385.79,
-            "pc_merc": 38180796.96,
-            "pc_ctes": 195,
-            "pc_g_frete": 476085.43,
-            "pc_g_merc": 35336922.15,
-            "pc_g_ctes": 100,
+            "pc_frete": 729557.85,
+            "pc_merc": 39053852.96,
+            "pc_ctes": 197,
+            "pc_g_frete": 485257.49,
+            "pc_g_merc": 36209978.15,
+            "pc_g_ctes": 102,
             "pc_i_frete": 244300.36,
             "pc_i_merc": 2843874.81,
             "pc_i_ctes": 95
@@ -41275,14 +41281,14 @@
             "pc_i_ctes": 10
           },
           "2026-06": {
-            "frete": 103782.82,
-            "v_merc": 9405755.1,
-            "ctes": 26,
+            "frete": 112954.88,
+            "v_merc": 10278811.1,
+            "ctes": 28,
             "pct_cts": 1.1,
             "peso": 194220.0,
-            "genomma_frete": 81282.82,
+            "genomma_frete": 90454.88,
             "inovalab_frete": 22500.0,
-            "pct_genomma": 0.89,
+            "pct_genomma": 0.91,
             "pct_inovalab": 7.83,
             "rk_frete": 0,
             "rk_peso": 0,
@@ -41293,12 +41299,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 103782.82,
-            "pc_merc": 9405755.1,
-            "pc_ctes": 26,
-            "pc_g_frete": 81282.82,
-            "pc_g_merc": 9118462.8,
-            "pc_g_ctes": 17,
+            "pc_frete": 112954.88,
+            "pc_merc": 10278811.1,
+            "pc_ctes": 28,
+            "pc_g_frete": 90454.88,
+            "pc_g_merc": 9991518.8,
+            "pc_g_ctes": 19,
             "pc_i_frete": 22500.0,
             "pc_i_merc": 287292.3,
             "pc_i_ctes": 9
@@ -41310,16 +41316,16 @@
       {
         "uf": "MG",
         "regiao": "Sudeste",
-        "frete": 2115084.16,
-        "v_merc": 116327696.38,
-        "ctes": 598,
-        "pct_cts": 1.82,
+        "frete": 2124256.22,
+        "v_merc": 117200752.38,
+        "ctes": 600,
+        "pct_cts": 1.81,
         "peso": 8016555.76,
-        "genomma_frete": 1870783.8,
-        "genomma_merc": 113483821.57,
+        "genomma_frete": 1879955.86,
+        "genomma_merc": 114356877.57,
         "inovalab_frete": 244300.36,
         "inovalab_merc": 2843874.81,
-        "pct_genomma": 1.65,
+        "pct_genomma": 1.64,
         "pct_inovalab": 8.59,
         "rk_frete": 799.84,
         "rk_peso": 75.6,
@@ -41330,12 +41336,12 @@
         "rk_i_frete": 0,
         "rk_i_peso": 0,
         "rk_i_ctes": 0,
-        "pc_frete": 2114284.32,
-        "pc_merc": 116256165.18,
-        "pc_ctes": 595,
-        "pc_g_frete": 1869983.96,
-        "pc_g_merc": 113412290.37,
-        "pc_g_ctes": 500,
+        "pc_frete": 2123456.38,
+        "pc_merc": 117129221.18,
+        "pc_ctes": 597,
+        "pc_g_frete": 1879156.02,
+        "pc_g_merc": 114285346.37,
+        "pc_g_ctes": 502,
         "pc_i_frete": 244300.36,
         "pc_i_merc": 2843874.81,
         "pc_i_ctes": 95,
@@ -41370,14 +41376,14 @@
             "pc_i_ctes": 0
           },
           "2026": {
-            "frete": 720502.26,
-            "v_merc": 38182146.96,
-            "ctes": 196,
-            "pct_cts": 1.89,
+            "frete": 729674.32,
+            "v_merc": 39055202.96,
+            "ctes": 198,
+            "pct_cts": 1.87,
             "peso": 2482527.38,
-            "genomma_frete": 476201.9,
+            "genomma_frete": 485373.96,
             "inovalab_frete": 244300.36,
-            "pct_genomma": 1.35,
+            "pct_genomma": 1.34,
             "pct_inovalab": 8.59,
             "rk_frete": 116.47,
             "rk_peso": 7.5,
@@ -41388,12 +41394,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 720385.79,
-            "pc_merc": 38180796.96,
-            "pc_ctes": 195,
-            "pc_g_frete": 476085.43,
-            "pc_g_merc": 35336922.15,
-            "pc_g_ctes": 100,
+            "pc_frete": 729557.85,
+            "pc_merc": 39053852.96,
+            "pc_ctes": 197,
+            "pc_g_frete": 485257.49,
+            "pc_g_merc": 36209978.15,
+            "pc_g_ctes": 102,
             "pc_i_frete": 244300.36,
             "pc_i_merc": 2843874.81,
             "pc_i_ctes": 95
@@ -41894,14 +41900,14 @@
             "pc_i_ctes": 10
           },
           "2026-06": {
-            "frete": 103782.82,
-            "v_merc": 9405755.1,
-            "ctes": 26,
+            "frete": 112954.88,
+            "v_merc": 10278811.1,
+            "ctes": 28,
             "pct_cts": 1.1,
             "peso": 194220.0,
-            "genomma_frete": 81282.82,
+            "genomma_frete": 90454.88,
             "inovalab_frete": 22500.0,
-            "pct_genomma": 0.89,
+            "pct_genomma": 0.91,
             "pct_inovalab": 7.83,
             "rk_frete": 0,
             "rk_peso": 0,
@@ -41912,12 +41918,12 @@
             "rk_i_frete": 0,
             "rk_i_peso": 0,
             "rk_i_ctes": 0,
-            "pc_frete": 103782.82,
-            "pc_merc": 9405755.1,
-            "pc_ctes": 26,
-            "pc_g_frete": 81282.82,
-            "pc_g_merc": 9118462.8,
-            "pc_g_ctes": 17,
+            "pc_frete": 112954.88,
+            "pc_merc": 10278811.1,
+            "pc_ctes": 28,
+            "pc_g_frete": 90454.88,
+            "pc_g_merc": 9991518.8,
+            "pc_g_ctes": 19,
             "pc_i_frete": 22500.0,
             "pc_i_merc": 287292.3,
             "pc_i_ctes": 9
@@ -42027,10 +42033,10 @@
         "empresa": "GENOMMA",
         "regiao": "Sudeste",
         "uf": "MG",
-        "frete": 1870783.8,
-        "v_merc": 113483821.57,
-        "ctes": 503,
-        "pct_cts": 1.65,
+        "frete": 1879955.86,
+        "v_merc": 114356877.57,
+        "ctes": 505,
+        "pct_cts": 1.64,
         "anos": {
           "2025": {
             "frete": 1394581.9,
@@ -42039,10 +42045,10 @@
             "pct_cts": 1.78
           },
           "2026": {
-            "frete": 476201.9,
-            "v_merc": 35338272.15,
-            "ctes": 101,
-            "pct_cts": 1.35
+            "frete": 485373.96,
+            "v_merc": 36211328.15,
+            "ctes": 103,
+            "pct_cts": 1.34
           }
         },
         "meses": {
@@ -42149,10 +42155,10 @@
             "pct_cts": 1.94
           },
           "2026-06": {
-            "frete": 81282.82,
-            "v_merc": 9118462.8,
-            "ctes": 17,
-            "pct_cts": 0.89
+            "frete": 90454.88,
+            "v_merc": 9991518.8,
+            "ctes": 19,
+            "pct_cts": 0.91
           }
         }
       },
@@ -42833,10 +42839,10 @@
       {
         "nome": "INDUSTRIAL E COMERCIAL BELLA PLUS LTDA",
         "cnpj": "02029746000315",
-        "frete": 81152.08,
-        "v_merc": 4904818.41,
-        "ctes": 22,
-        "pct_cts": 1.65,
+        "frete": 90324.14,
+        "v_merc": 5777874.41,
+        "ctes": 24,
+        "pct_cts": 1.56,
         "anos": {
           "2025": {
             "frete": 59637.73,
@@ -42845,10 +42851,10 @@
             "pct_cts": 1.77
           },
           "2026": {
-            "frete": 21514.35,
-            "v_merc": 1531938.86,
-            "ctes": 6,
-            "pct_cts": 1.4
+            "frete": 30686.41,
+            "v_merc": 2404994.86,
+            "ctes": 8,
+            "pct_cts": 1.28
           }
         },
         "meses": {
@@ -42907,10 +42913,10 @@
             "pct_cts": 1.36
           },
           "2026-06": {
-            "frete": 6696.58,
-            "v_merc": 604878.51,
-            "ctes": 2,
-            "pct_cts": 1.11
+            "frete": 15868.64,
+            "v_merc": 1477934.51,
+            "ctes": 4,
+            "pct_cts": 1.07
           }
         }
       },
@@ -53817,21 +53823,21 @@
     ]
   },
   "resumo": {
-    "outbound_ctes": 6430,
-    "inbound_ctes": 599,
+    "outbound_ctes": 6450,
+    "inbound_ctes": 601,
     "reversa_ctes": 856,
-    "total_ctes": 7885,
-    "outbound_frete": 15100802.82,
-    "inbound_frete": 2116142.48,
+    "total_ctes": 7907,
+    "outbound_frete": 15117535.92,
+    "inbound_frete": 2125314.54,
     "reversa_frete": 101134.74,
-    "total_frete": 17318080.04
+    "total_frete": 17343985.2
   },
-  "atualizado": "26/06/2026 17:22",
+  "atualizado": "29/06/2026 10:11",
   "pasta_origem": "Y:\\ERP-12\\TOTVSCOLAB20-PRD\\RECEIVED",
   "anos_filtro": [
     2025,
     2026
   ],
-  "novos_nesta_execucao": 4,
-  "cancelamentos": 2
+  "novos_nesta_execucao": 22,
+  "cancelamentos": 1
 }

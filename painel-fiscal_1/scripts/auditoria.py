@@ -274,7 +274,7 @@ def montar_dados(sb):
     notas = buscar_tudo(sb, "nfe_notas",
         "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,nome_destinatario,uf_destinatario,valor_total",
         ordem="data_emissao")
-    ctes = buscar_tudo(sb, "cte_conhecimentos", "id,chave,numero,serie")
+    ctes = buscar_tudo(sb, "cte_conhecimentos", "id,chave,numero,serie,nome_emitente,uf_inicio,uf_fim,valor_total,data_emissao")
     refs = buscar_tudo(sb, "cte_nfe_ref", "cte_id,chave_nfe,numero_nf")
     manifs = buscar_tudo(sb, "nfe_manifestacoes", "numero_nf,chave_nfe,cnpj_empresa,data_arquivo")
     cte_chave = {c["id"]: c["chave"] for c in ctes}
@@ -340,7 +340,12 @@ def servir():
 if __name__ == "__main__":
     if "SEU_EMAIL" in LOGIN_EMAIL:
         print("Configure LOGIN_EMAIL e LOGIN_SENHA no topo do arquivo."); sys.exit(1)
-    SB_GLOBAL=conectar()
-    reprocessar(SB_GLOBAL)
+    so_painel = len(sys.argv) > 1 and sys.argv[1].lower() in ("painel", "--painel", "-p")
+    SB_GLOBAL = conectar()
+    if so_painel:
+        print("\n== Modo painel: sem varrer pastas, so atualiza a tela com o que ja esta no banco ==")
+        salvar_e_subir(SB_GLOBAL, montar_dados(SB_GLOBAL))
+    else:
+        reprocessar(SB_GLOBAL)
     publicar_github()
     servir()

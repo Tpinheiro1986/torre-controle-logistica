@@ -4,93 +4,114 @@
 <meta http-equiv="Cache-Control" content="no-store">
 <title>Torre de Controle — Auditoria Fiscal</title>
 <style>
-:root{--bg:#020617;--panel:#0b1220;--panel2:#0f1a2e;--line:#1e293b;--txt:#e2e8f0;--muted:#64748b;
---cyan:#22d3ee;--violet:#a78bfa;--amber:#fbbf24;--emerald:#34d399;--rose:#fb7185;
---mono:ui-monospace,Menlo,Consolas,monospace;}
+:root{
+  --bg:#070b14;--surface:#0d1424;--surface2:#111a2e;--line:#1f2b44;--line2:#2a3a5c;
+  --txt:#e6edf7;--muted:#7c8aa5;--faint:#5b6b86;
+  --cyan:#2dd4ee;--violet:#a78bfa;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;padding:24px 16px}
-.wrap{max-width:1080px;margin:0 auto}
-header{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px;flex-wrap:wrap}
-.logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#06b6d4,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
-h1{font-size:18px;margin:0;font-weight:650}h1 span{color:var(--cyan)}
-.sub{font-size:12px;color:var(--muted)}
-.upd{margin-left:auto;display:flex;align-items:center;gap:10px}
-.btn-upd{background:var(--cyan);border:0;color:#04222b;font-weight:600;border-radius:8px;padding:9px 16px;font-size:13px;cursor:pointer}
-.btn-upd:disabled{opacity:.5;cursor:default}
+body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#0e1730 0%,var(--bg) 55%);
+  color:var(--txt);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:14px;padding:22px 18px 40px}
+.wrap{max-width:1280px;margin:0 auto}
+header{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#22d3ee,#3b82f6);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#04222b;font-size:18px}
+h1{font-size:18px;margin:0;font-weight:680;letter-spacing:-.01em}
+h1 span{color:var(--cyan)}
+.sub{font-size:12px;color:var(--muted);margin-top:1px}
+.head-right{margin-left:auto;display:flex;align-items:center;gap:12px}
 .status{font-size:12px;color:var(--muted)}
-.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:16px}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-select{background:#020617;border:1px solid var(--line);color:var(--txt);border-radius:7px;padding:7px 10px;font-size:13px;min-width:150px;outline:none}
+.btn{background:var(--cyan);border:0;color:#04222b;font-weight:650;border-radius:9px;padding:9px 17px;font-size:13px;cursor:pointer;transition:.15s}
+.btn:hover{filter:brightness(1.08)}.btn:disabled{opacity:.5;cursor:default}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+@media(max-width:880px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);
+  border-radius:13px;padding:15px 16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--cyan))}
+.kpi .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.kpi .v{font-size:23px;font-weight:700;margin-top:5px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:11px;color:var(--faint);margin-top:2px;min-height:13px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:var(--surface);border:1px solid var(--line);
+  border-radius:13px;padding:13px 15px;margin-bottom:16px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+select{background:#0a1120;border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:8px 11px;font-size:13px;min-width:165px;outline:none}
 select:focus{border-color:var(--cyan)}
-.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.seg button{background:none;border:0;color:var(--muted);padding:7px 12px;font-size:12px;cursor:pointer}
-.seg button.on{background:#1e293b;color:var(--cyan)}
-.btn-clear{margin-left:auto;background:none;border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:7px 12px;font-size:12px;cursor:pointer;align-self:flex-end}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-@media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
-.kpi .k{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-.kpi .v{font-size:22px;font-weight:600;margin-top:4px}
-.natgroup{margin-bottom:18px}
-.nathead{display:flex;justify-content:space-between;align-items:baseline;padding:8px 4px;border-bottom:2px solid var(--cyan)}
-.natname{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--cyan)}
-.natsub{font-size:12px;color:var(--muted)}
-.card{background:rgba(15,23,42,.4);border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);font-weight:600}
-td{padding:12px;border-bottom:1px solid #131f33;vertical-align:middle}
-tr:last-child td{border-bottom:0}
-.cliente{font-size:16px;font-weight:600;color:#f1f5f9;line-height:1.2}
-.cliente .uf{font-size:11px;color:var(--muted);font-weight:400}
-.origem{font-size:11px;color:var(--muted);margin-top:3px}
-.notatag{font-family:var(--mono);font-size:11px;color:var(--cyan)}
-.mono{font-family:var(--mono)}.tiny{font-size:10px;color:var(--muted)}
-.r{text-align:right}.c{text-align:center}
-.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;white-space:nowrap}
-.p-ok{background:rgba(52,211,153,.15);color:var(--emerald)}
-.p-no{background:rgba(100,116,139,.18);color:#64748b}
-.p-pend{background:#1e293b;color:#64748b}
-.qcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
-.qhead{background:var(--panel2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
-.qtitle{font-size:15px;font-weight:600}.qtot{font-size:18px;font-weight:700;color:var(--emerald)}
-.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}
-.foot{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
+.seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.seg button{background:none;border:0;color:var(--muted);padding:8px 13px;font-size:12px;cursor:pointer}
+.seg button.on{background:#1c2840;color:var(--cyan)}
+.btn-clear{margin-left:auto;background:none;border:1px solid var(--line2);color:var(--muted);border-radius:8px;padding:8px 13px;font-size:12px;cursor:pointer;align-self:flex-end}
+.btn-clear:hover{color:var(--txt)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.panel-top{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+.tbl-scroll{overflow:auto;max-height:68vh}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+thead th{position:sticky;top:0;z-index:2;background:#0c1322;text-align:left;font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--muted);padding:11px 14px;border-bottom:1px solid var(--line2);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--txt)}
+thead th.r{text-align:right}
+th .ar{color:var(--cyan);font-size:9px;margin-left:3px}
+tbody td{padding:11px 14px;border-bottom:1px solid #131c30;vertical-align:middle;white-space:nowrap}
+tbody tr:hover{background:#0f1830}
+.b1{font-weight:600;color:#f3f7fd}
+.b2{font-size:11px;color:var(--muted);margin-top:2px}
+.transp{font-weight:600;color:var(--violet)}
+.cli{font-weight:600;color:#eaf2fd}
+.nf{font-family:var(--mono);color:var(--cyan);font-weight:600}
+.tag{display:inline-block;max-width:240px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;
+  background:#16213a;border:1px solid var(--line2);color:#c3cee0;border-radius:6px;padding:2px 8px;font-size:11px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.r{text-align:right}.val{font-weight:700;font-variant-numeric:tabular-nums;color:#eef4fd}
+.dash{color:var(--faint)}
+.empty{padding:34px;text-align:center;color:var(--muted)}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:14px}
+.qhead{background:var(--surface2);padding:13px 17px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.qtitle{font-size:15px;font-weight:680}.qtot{font-size:18px;font-weight:760;color:var(--emerald);font-variant-numeric:tabular-nums}
+.foot{font-size:11px;color:var(--faint);text-align:center;margin-top:18px}
 </style></head><body><div class="wrap">
-<header><div class="logo">F</div><div>
-<h1>Torre de Controle <span>&middot; Auditoria Fiscal</span></h1>
-<div class="sub">Notas por natureza de operacao &middot; vinculos NF / CT-e / confirmacao</div></div>
-<div class="upd">
-  <span class="status" id="status"></span>
-  <button class="btn-upd" id="btnUpd" onclick="atualizar()">Atualizar</button>
-</div></header>
 
-<div class="filters">
-  <div class="fg"><label>Emitente</label><select id="fEmit"></select></div>
-  <div class="fg"><label>Destinatario (cliente)</label><select id="fDest"></select></div>
-  <div class="fg"><label>Mes</label><select id="fMes"></select></div>
+<header>
+  <div class="logo">F</div>
+  <div>
+    <h1>Torre de Controle <span>· Auditoria Fiscal</span></h1>
+    <div class="sub">NF-e &middot; CT-e &middot; transporte e faturamento</div>
+  </div>
+  <div class="head-right">
+    <span class="status" id="status"></span>
+    <button class="btn" id="btnUpd" onclick="atualizar()">Atualizar</button>
+  </div>
+</header>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="bar">
+  <div class="fg"><label>Emissor</label><select id="fEmit"></select></div>
+  <div class="fg"><label>Cliente</label><select id="fDest"></select></div>
+  <div class="fg"><label>Transportador</label><select id="fTransp"></select></div>
+  <div class="fg"><label>Mes (emissao NF)</label><select id="fMes"></select></div>
   <div class="fg"><label>Visao</label><div class="seg" id="segVisao">
-    <button data-v="nota" class="on">Por nota</button>
+    <button data-v="nota" class="on">Notas</button>
     <button data-v="quarter">Acumulado / quarter</button></div></div>
   <button class="btn-clear" onclick="limpar()">Limpar filtros</button>
 </div>
 
-<div class="kpis" id="kpis"></div>
-<div id="view"><div class="empty">Carregando dados...</div></div>
-<div class="foot">Dados do Supabase (dashboards/auditoria/dados.json). O botao Atualizar reprocessa as pastas quando rodado pelo programa local.</div>
+<div id="view"><div class="panel"><div class="empty">Carregando dados…</div></div></div>
+<div class="foot">Dados do Supabase (dashboards/auditoria/dados.json). Atualizar reprocessa as pastas quando rodado pelo programa local.</div>
 </div>
+
 <script>
 const SUPA='https://ennsbpibfnuwlvtodukg.supabase.co';
 const STORAGE=SUPA+'/storage/v1/object/public/dashboards/auditoria/dados.json';
+const LIMITE=800;
 let DATA={notas:[],ctes:[],refs:[],manifs:[]};
 
 const brl=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const ck=c=>(c||'').replace(/(\d{4})(?=\d)/g,'$1 ');
-const d10=s=>(s||'').slice(0,10);
-const mesDe=s=>(s||'').slice(0,7);
-const MESES=['','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-const mesLabel=ym=>{const[a,m]=ym.split('-');return MESES[+m]+'/'+a};
-const quarterDe=s=>{const m=+(s||'0-0').slice(5,7);const a=(s||'').slice(0,4);return a+'-Q'+(Math.ceil(m/3))};
+const dBR=s=>{if(!s)return '';const p=(''+s).slice(0,10).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s};
+const mesDe=s=>(''+s).slice(0,7);
+const MES=['','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const mesLabel=ym=>{const[a,m]=ym.split('-');return MES[+m]+'/'+a};
+const quarterDe=s=>{const m=+(''+s).slice(5,7),a=(''+s).slice(0,4);return a+'-Q'+(Math.ceil(m/3))};
 function st(t){document.getElementById('status').textContent=t||''}
 
 async function carregarDados(){
@@ -99,63 +120,95 @@ async function carregarDados(){
   }
   return {notas:[],ctes:[],refs:[],manifs:[]};
 }
-
 async function atualizar(){
-  const b=document.getElementById('btnUpd');b.disabled=true;st('Reprocessando pastas...');
-  try{
-    const r=await fetch('/atualizar');
-    if(r.ok){DATA=await carregarDados();montarFiltros();render();st('Atualizado agora.');b.disabled=false;return;}
-  }catch(e){}
+  const b=document.getElementById('btnUpd');b.disabled=true;st('Reprocessando…');
+  try{const r=await fetch('/atualizar');if(r.ok){DATA=await carregarDados();montarFiltros();render();st('Atualizado agora.');b.disabled=false;return;}}catch(e){}
   DATA=await carregarDados();montarFiltros();render();
-  st('Dados recarregados da nuvem. Para reprocessar as pastas, rode o programa local (auditoria.py).');
-  b.disabled=false;
+  st('Dados recarregados da nuvem.');b.disabled=false;
 }
 
-let state={emit:'',dest:'',mes:'',visao:'nota'};
-const refByNota={},confByNota={};
-function indexar(){for(const k in refByNota)delete refByNota[k];for(const k in confByNota)delete confByNota[k];
-  DATA.refs.forEach(r=>{const c=DATA.ctes.find(x=>x.chave===r.chave_cte);(refByNota[r.chave_nfe]=refByNota[r.chave_nfe]||[]).push(c?c.numero:'?')});
-  DATA.manifs.forEach(mf=>{confByNota[mf.chave_nfe]=mf.data_arquivo})}
+const transpByNota={};
+function indexar(){for(const k in transpByNota)delete transpByNota[k];
+  DATA.refs.forEach(r=>{const c=DATA.ctes.find(x=>x.chave===r.chave_cte);
+    if(c)transpByNota[r.chave_nfe]={nome:c.nome_emitente||'',num:c.numero,rota:(c.uf_inicio||'')+'→'+(c.uf_fim||''),frete:c.valor_total,data:c.data_emissao};});
+}
+const T=ch=>transpByNota[ch]||null;
 
-function opts(sel,vals,label){const el=document.getElementById(sel);const cur=el.value;
+let state={emit:'',dest:'',transp:'',mes:'',visao:'nota'};
+let sort={col:'dataNF',dir:-1};
+
+function opts(sel,vals,label){const el=document.getElementById(sel),cur=el.value;
   el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${v}">${label?label(v):v}</option>`).join('');el.value=cur}
 function montarFiltros(){indexar();
-  opts('fEmit',[...new Set(DATA.notas.map(n=>n.nome_emitente))].sort());
-  opts('fDest',[...new Set(DATA.notas.map(n=>n.nome_destinatario))].sort());
-  opts('fMes',[...new Set(DATA.notas.map(n=>mesDe(n.data_emissao)))].sort(),mesLabel)}
-
-['fEmit','fDest','fMes'].forEach((id,i)=>document.getElementById(id).onchange=e=>{state[['emit','dest','mes'][i]]=e.target.value;render()});
+  opts('fEmit',[...new Set(DATA.notas.map(n=>n.nome_emitente))].filter(Boolean).sort());
+  opts('fDest',[...new Set(DATA.notas.map(n=>n.nome_destinatario))].filter(Boolean).sort());
+  opts('fTransp',[...new Set(DATA.ctes.map(c=>c.nome_emitente))].filter(Boolean).sort());
+  opts('fMes',[...new Set(DATA.notas.map(n=>mesDe(n.data_emissao)))].filter(Boolean).sort(),mesLabel)}
+['fEmit','fDest','fTransp','fMes'].forEach((id,i)=>document.getElementById(id).onchange=e=>{state[['emit','dest','transp','mes'][i]]=e.target.value;render()});
 document.querySelectorAll('#segVisao button').forEach(b=>b.onclick=()=>{state.visao=b.dataset.v;document.querySelectorAll('#segVisao button').forEach(x=>x.classList.toggle('on',x===b));render()});
-function limpar(){state.emit=state.dest=state.mes='';document.getElementById('fEmit').value='';document.getElementById('fDest').value='';document.getElementById('fMes').value='';render()}
+function limpar(){state.emit=state.dest=state.transp=state.mes='';['fEmit','fDest','fTransp','fMes'].forEach(id=>document.getElementById(id).value='');render()}
 
-function filtradas(){return DATA.notas.filter(n=>(!state.emit||n.nome_emitente===state.emit)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes))}
-function pill(on,label,pend){if(pend)return '<span class="pill p-pend">pendente</span>';return on?`<span class="pill p-ok">${label||'sim'}</span>`:'<span class="pill p-no">&mdash;</span>'}
-function kpis(fn){const tot=fn.reduce((s,n)=>s+ +n.valor_total,0),cte=fn.filter(n=>refByNota[n.chave]).length,conf=fn.filter(n=>confByNota[n.chave]).length;
-  document.getElementById('kpis').innerHTML=[['Notas',fn.length,'cyan'],['Valor total',brl(tot),''],['Com CT-e',cte,'violet'],['Confirmadas (saida)',conf,'emerald']].map(k=>`<div class="kpi"><div class="k">${k[0]}</div><div class="v" style="color:var(--${k[2]||'txt'},#e2e8f0)">${k[1]}</div></div>`).join('')}
+function filtradas(){return DATA.notas.filter(n=>(!state.emit||n.nome_emitente===state.emit)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp)))}
 
-function render(){const fn=filtradas();kpis(fn);const v=document.getElementById('view');
- if(!fn.length){v.innerHTML='<div class="qcard"><div class="empty">Nenhuma nota para os filtros selecionados.</div></div>';return}
+function valSort(n,col){const t=T(n.chave);switch(col){
+  case'transp':return (t?t.nome:'').toLowerCase();
+  case'emissor':return (n.nome_emitente||'').toLowerCase();
+  case'cliente':return (n.nome_destinatario||'').toLowerCase();
+  case'nf':return +n.numero||0;
+  case'nat':return (n.natureza_operacao||'').toLowerCase();
+  case'dataNF':return n.data_emissao||'';
+  case'dataCT':return t?(t.data||''):'';
+  case'valor':return +n.valor_total||0;default:return ''}}
+function ordenar(arr){const{col,dir}=sort;return arr.sort((a,b)=>{const x=valSort(a,col),y=valSort(b,col);return x<y?-dir:x>y?dir:0})}
+function thSort(col){return sort.col===col?`<span class="ar">${sort.dir>0?'▲':'▼'}</span>`:''}
+window.setSort=c=>{if(sort.col===c)sort.dir*=-1;else{sort.col=c;sort.dir=1}render()};
+
+function kpis(fn){const tot=fn.reduce((s,n)=>s+ +n.valor_total,0);
+  const comcte=fn.filter(n=>T(n.chave)).length;
+  const transps=new Set(fn.map(n=>T(n.chave)&&T(n.chave).nome).filter(Boolean)).size;
+  const cli=new Set(fn.map(n=>n.nome_destinatario).filter(Boolean)).size;
+  const K=[['Notas',fn.length.toLocaleString('pt-BR'),'','var(--cyan)'],
+    ['Valor total NF',brl(tot),'','var(--emerald)'],
+    ['Com CT-e',comcte.toLocaleString('pt-BR'),fn.length?Math.round(comcte/fn.length*100)+'% das notas':'','var(--violet)'],
+    ['Transportadoras',transps,'','var(--amber)'],
+    ['Clientes',cli,'','#60a5fa']];
+  document.getElementById('kpis').innerHTML=K.map(k=>`<div class="kpi" style="--accent:${k[3]}"><div class="k">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]||''}</div></div>`).join('')}
+
+function render(){const fnAll=filtradas();kpis(fnAll);const v=document.getElementById('view');
+ if(!fnAll.length){v.innerHTML='<div class="panel"><div class="empty">Nenhuma nota para os filtros selecionados.</div></div>';return}
+
  if(state.visao==='nota'){
-   const g={};fn.forEach(n=>{(g[n.natureza_operacao]=g[n.natureza_operacao]||[]).push(n)});
-   v.innerHTML=Object.keys(g).sort().map(nat=>{const ns=g[nat],sub=ns.reduce((s,n)=>s+ +n.valor_total,0);
-     return `<div class="natgroup"><div class="nathead"><span class="natname">${nat}</span><span class="natsub">${ns.length} nota(s) &middot; ${brl(sub)}</span></div>
-       <div class="card"><table><thead><tr><th>Cliente (destinatario)</th><th>Nota / emissao</th><th class="r">Valor</th><th class="c">Romaneio</th><th class="c">CT-e</th><th class="c">Confirmacao</th></tr></thead><tbody>`+
-       ns.map(n=>`<tr><td><div class="cliente">${n.nome_destinatario} <span class="uf">(${n.uf_destinatario})</span></div><div class="origem">de ${n.nome_emitente} &middot; ${n.uf_emitente}</div></td>
-         <td><span class="notatag">${n.numero}/${n.serie}</span><div class="tiny">${d10(n.data_emissao)}</div></td>
-         <td class="r"><b>${brl(n.valor_total)}</b></td>
-         <td class="c">${pill(false,null,true)}</td>
-         <td class="c">${pill(!!refByNota[n.chave],refByNota[n.chave]?'CT-e '+refByNota[n.chave].join(', '):null)}</td>
-         <td class="c">${pill(!!confByNota[n.chave],confByNota[n.chave]?d10(confByNota[n.chave]):null)}</td></tr>`).join('')+
-       '</tbody></table></div></div>'}).join('')}
+   const fn=ordenar(fnAll.slice());const vis=fn.slice(0,LIMITE);
+   const H=(c,t,cls)=>`<th class="${cls||''}" onclick="setSort('${c}')">${t}${thSort(c)}</th>`;
+   v.innerHTML=`<div class="panel">
+     <div class="panel-top"><span>${fnAll.length.toLocaleString('pt-BR')} nota(s)${fn.length>LIMITE?` — mostrando ${LIMITE} (refine os filtros)`:''}</span>
+       <span>clique no titulo para ordenar</span></div>
+     <div class="tbl-scroll"><table><thead><tr>
+       ${H('transp','Transportador')}${H('emissor','Emissor')}${H('cliente','Cliente')}
+       ${H('nf','NF nº')}${H('nat','Natureza operacao')}${H('dataNF','Emissao NF')}
+       ${H('dataCT','Emissao CT-e')}${H('valor','Valor NF','r')}
+     </tr></thead><tbody>`+
+     vis.map(n=>{const t=T(n.chave);return `<tr>
+       <td>${t?`<div class="transp">${t.nome}</div><div class="b2">CT-e ${t.num} · ${t.rota}</div>`:'<span class="dash">— sem CT-e</span>'}</td>
+       <td><div class="b1">${n.nome_emitente||''}</div><div class="b2">${n.uf_emitente||''}</div></td>
+       <td><div class="cli">${n.nome_destinatario||''}</div><div class="b2">${n.uf_destinatario||''}</div></td>
+       <td><span class="nf">${n.numero}</span><div class="b2">série ${n.serie}</div></td>
+       <td><span class="tag" title="${n.natureza_operacao||''}">${n.natureza_operacao||''}</span></td>
+       <td class="mono">${dBR(n.data_emissao)}</td>
+       <td class="mono">${t&&t.data?dBR(t.data):'<span class="dash">—</span>'}</td>
+       <td class="r val">${brl(n.valor_total)}</td></tr>`}).join('')+
+     `</tbody></table></div></div>`}
  else{
-   const qs={};fn.forEach(n=>{const q=quarterDe(n.data_emissao);qs[q]=qs[q]||{nat:{},count:0,total:0};qs[q].count++;qs[q].total+= +n.valor_total;
-     qs[q].nat[n.natureza_operacao]=qs[q].nat[n.natureza_operacao]||{count:0,total:0};qs[q].nat[n.natureza_operacao].count++;qs[q].nat[n.natureza_operacao].total+= +n.valor_total});
+   const qs={};fnAll.forEach(n=>{const q=quarterDe(n.data_emissao);qs[q]=qs[q]||{nat:{},count:0,total:0};
+     qs[q].count++;qs[q].total+= +n.valor_total;
+     const k=n.natureza_operacao||'(sem natureza)';qs[q].nat[k]=qs[q].nat[k]||{count:0,total:0};
+     qs[q].nat[k].count++;qs[q].nat[k].total+= +n.valor_total});
    v.innerHTML=Object.keys(qs).sort().map(q=>{const d=qs[q];
-     return `<div class="qcard"><div class="qhead"><span class="qtitle">${q} <span class="tiny">&middot; ${d.count} notas</span></span><span class="qtot">${brl(d.total)}</span></div>
-       <table><thead><tr><th>Natureza de operacao</th><th class="r">Notas</th><th class="r">Valor acumulado</th></tr></thead><tbody>`+
-       Object.keys(d.nat).sort().map(nat=>`<tr><td>${nat}</td><td class="r mono">${d.nat[nat].count}</td><td class="r"><b>${brl(d.nat[nat].total)}</b></td></tr>`).join('')+
-       '</tbody></table></div>'}).join('')}
+     return `<div class="qcard"><div class="qhead"><span class="qtitle">${q} <span class="b2">· ${d.count} notas</span></span><span class="qtot">${brl(d.total)}</span></div>
+       <div class="tbl-scroll"><table><thead><tr><th>Natureza de operacao</th><th class="r">Notas</th><th class="r">Valor acumulado</th></tr></thead><tbody>`+
+       Object.keys(d.nat).sort((a,b)=>d.nat[b].total-d.nat[a].total).map(nat=>`<tr><td>${nat}</td><td class="r mono">${d.nat[nat].count}</td><td class="r val">${brl(d.nat[nat].total)}</td></tr>`).join('')+
+       '</tbody></table></div></div>'}).join('')}
 }
 
-(async()=>{st('Carregando...');DATA=await carregarDados();montarFiltros();render();st('Pronto. '+DATA.notas.length+' notas.')})();
+(async()=>{st('Carregando…');DATA=await carregarDados();montarFiltros();render();st(DATA.notas.length.toLocaleString('pt-BR')+' notas.')})();
 </script></body></html>
