@@ -24,8 +24,8 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 # ============================================================
 SUPABASE_URL  = "https://ennsbpibfnuwlvtodukg.supabase.co"
 SUPABASE_ANON = "sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5"
-LOGIN_EMAIL   = "SEU_EMAIL_AQUI"     # mesmo login do painel
-LOGIN_SENHA   = "SUA_SENHA_AQUI"
+LOGIN_EMAIL   = "thiago_balao@yahoo.com.br"     # mesmo login do painel
+LOGIN_SENHA   = "Genomma@2026"
 
 PASTA_NFE       = r"Y:\ERP-12\ArqXML-MG"
 PASTA_CTE       = r"Y:\ERP-12\TOTVSCOLAB20-PRD\RECEIVED"
@@ -35,9 +35,17 @@ PASTA_MANIFESTO = r"Y:\ERP-12\ArqXML-MG"
 ANO_MINIMO   = 2026
 PORTA        = 8000
 PUBLICAR_GIT = True      # False = nao tenta git push
-PASTA_SAIDA  = "auditoria"
+DIAS_OVERLAP = 2                 # margem de seguranca na atualizacao incremental
 BUCKET       = "dashboards"
 CAMINHO_JSON = "auditoria/dados.json"   # dentro do bucket
+
+# Caminhos calculados a partir da pasta do proprio script (robusto, independe de onde rodar)
+# Estrutura esperada:  <repo>/painel-fiscal_1/scripts/auditoria.py
+_AQUI        = os.path.dirname(os.path.abspath(__file__))                 # .../painel-fiscal_1/scripts
+REPO_DIR     = os.path.abspath(os.path.join(_AQUI, "..", ".."))           # raiz do repositorio
+PASTA_SAIDA  = os.path.join(REPO_DIR, "auditoria")                        # raiz/auditoria (publicado)
+PAINEL_FONTE = os.path.join(_AQUI, "..", "auditoria", "index.html")       # modelo do painel
+MARCADOR     = os.path.join(_AQUI, ".ultima_sync")                        # data da ultima atualizacao
 # ============================================================
 
 try:
@@ -130,10 +138,13 @@ def conectar():
 def chunk(lst, n):
     for i in range(0, len(lst), n): yield lst[i:i+n]
 
-def coletar(pasta, exts=None, prefixo=None, recursivo=True):
-    """Varre a pasta com os.scandir (rapido), mostrando progresso, e ja descarta
-       pela DATA DO ARQUIVO o que for anterior a ANO_MINIMO - sem abrir o arquivo."""
-    print(f"  varrendo {pasta}  (apenas {ANO_MINIMO}+ pela data do arquivo) ...", flush=True)
+def coletar(pasta, exts=None, prefixo=None, recursivo=True, desde=None):
+    """Varre a pasta com os.scandir (rapido), mostrando progresso. Descarta pela
+       DATA DO ARQUIVO o que for anterior a ANO_MINIMO. Se 'desde' for informado,
+       pega so o que foi alterado a partir dessa data (atualizacao incremental)."""
+    desde_ts = desde.timestamp() if desde else None
+    alvo = f"a partir de {desde:%d/%m/%Y}" if desde else f"{ANO_MINIMO}+"
+    print(f"  varrendo {pasta}  ({alvo}) ...", flush=True)
     res, vistos, pilha = [], 0, [pasta]
     while pilha:
         d = pilha.pop()
@@ -151,16 +162,18 @@ def coletar(pasta, exts=None, prefixo=None, recursivo=True):
                     continue
                 vistos += 1
                 if vistos % 3000 == 0:
-                    print(f"    {vistos} arquivos vistos, {len(res)} de {ANO_MINIMO}+ ...", flush=True)
+                    print(f"    {vistos} arquivos vistos, {len(res)} selecionados ...", flush=True)
                 nm = e.name
                 if exts and not nm.lower().endswith(exts): continue
                 if prefixo and not nm.upper().startswith(prefixo): continue
                 try:
-                    if datetime.fromtimestamp(e.stat().st_mtime).year < ANO_MINIMO: continue
+                    m = e.stat().st_mtime
                 except OSError:
                     continue
+                if datetime.fromtimestamp(m).year < ANO_MINIMO: continue
+                if desde_ts and m < desde_ts: continue
                 res.append(e.path)
-    print(f"    -> {len(res)} arquivo(s) de {ANO_MINIMO}+ (de {vistos} no total).", flush=True)
+    print(f"    -> {len(res)} arquivo(s) selecionado(s) (de {vistos} no total).", flush=True)
     return res
 
 def chaves_existentes(sb, tabela, coluna="chave"):
@@ -175,11 +188,11 @@ def chaves_existentes(sb, tabela, coluna="chave"):
         ini += passo
     return achadas
 
-def reprocessar(sb):
+def reprocessar(sb, desde=None):
     print("\n== Reprocessando pastas (somente %d+) ==" % ANO_MINIMO, flush=True)
 
     # ---------- NF-e ----------
-    arquivos = coletar(PASTA_NFE, exts=(".xml",))
+    arquivos = coletar(PASTA_NFE, exts=(".xml",), desde=desde)
     print("  conferindo o que ja esta no banco ...", flush=True)
     ja = chaves_existentes(sb, "nfe_notas")
     novas = []
@@ -210,7 +223,7 @@ def reprocessar(sb):
     nf = len(novas)
 
     # ---------- CT-e ----------
-    arquivos = coletar(PASTA_CTE, exts=(".xml",))
+    arquivos = coletar(PASTA_CTE, exts=(".xml",), desde=desde)
     jac = chaves_existentes(sb, "cte_conhecimentos")
     novosc = []
     for i, xml in enumerate(arquivos, 1):
@@ -237,7 +250,7 @@ def reprocessar(sb):
     ct = len(novosc)
 
     # ---------- Manifestos (confirmacao de saida) ----------
-    arquivos = coletar(PASTA_MANIFESTO, exts=(".txt",), prefixo="MANIFE")
+    arquivos = coletar(PASTA_MANIFESTO, exts=(".txt",), prefixo="MANIFE", desde=desde)
     regs = []
     for txt in arquivos:
         try:
@@ -284,6 +297,14 @@ def montar_dados(sb):
 
 def salvar_e_subir(sb,dados):
     os.makedirs(PASTA_SAIDA,exist_ok=True)
+    # garante que o painel (index.html) esteja na pasta publicada (raiz/auditoria)
+    try:
+        import shutil
+        destino = os.path.join(PASTA_SAIDA, "index.html")
+        if os.path.exists(PAINEL_FONTE) and os.path.abspath(PAINEL_FONTE) != os.path.abspath(destino):
+            shutil.copyfile(PAINEL_FONTE, destino)
+    except Exception as e:
+        print("  Aviso ao copiar o painel:", e)
     raw=json.dumps(dados,ensure_ascii=False,default=str).encode("utf-8")
     with open(os.path.join(PASTA_SAIDA,"dados.json"),"wb") as f: f.write(raw)
     try:
@@ -298,18 +319,50 @@ def salvar_e_subir(sb,dados):
         except Exception as e:
             print("  Aviso: nao consegui enviar ao Storage:",e)
 
+def ler_marcador():
+    try:
+        with open(MARCADOR) as f:
+            return datetime.fromisoformat(f.read().strip())
+    except Exception:
+        return None
+
+def escrever_marcador(dt):
+    try:
+        with open(MARCADOR, "w") as f: f.write(dt.isoformat(timespec="seconds"))
+    except Exception as e:
+        print("  Aviso ao gravar marcador:", e)
+
 def publicar_github():
     if not PUBLICAR_GIT: return
     print("\n== Publicando no GitHub ==")
     try:
-        subprocess.run(["git","add","-A"],check=True)
-        r=subprocess.run(["git","commit","-m","auditoria: atualiza painel e dados"],capture_output=True,text=True)
+        subprocess.run(["git","add","-A"], cwd=REPO_DIR, check=True)
+        r=subprocess.run(["git","commit","-m","auditoria: atualiza painel e dados"], cwd=REPO_DIR, capture_output=True,text=True)
         if "nothing to commit" in (r.stdout+r.stderr): print("  Nada novo para commitar.")
-        subprocess.run(["git","push"],check=True)
+        subprocess.run(["git","push"], cwd=REPO_DIR, check=True)
         print("  Enviado para o GitHub.")
     except Exception as e:
-        print("  Git nao configurado ou sem remote. Detalhe:",e)
-        print("  (Configure uma vez: git init / git remote add origin <url> / git push -u origin main)")
+        print("  Aviso no git:", e)
+        print("  (Rode na raiz do repositorio uma vez: git pull origin main --no-rebase / git push)")
+
+def atualizar(sb, completo=False):
+    """completo=False: so arquivos novos desde a ultima execucao (rapido).
+       completo=True: reprocessa tudo de ANO_MINIMO+ ."""
+    from datetime import timedelta
+    desde = None
+    if not completo:
+        ult = ler_marcador()
+        if ult:
+            desde = ult - timedelta(days=DIAS_OVERLAP)
+            print(f"\n== Atualizacao incremental: arquivos alterados desde {desde:%d/%m/%Y} ==", flush=True)
+        else:
+            print("\n== Primeira execucao: carga completa de %d+ ==" % ANO_MINIMO, flush=True)
+    else:
+        print("\n== Carga completa de %d+ ==" % ANO_MINIMO, flush=True)
+    inicio = datetime.now()
+    res = reprocessar(sb, desde)
+    escrever_marcador(inicio)
+    return res
 
 # ---------- Servidor local ----------
 SB_GLOBAL=None
@@ -319,7 +372,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/atualizar"):
             try:
-                reprocessar(SB_GLOBAL); publicar_github()
+                atualizar(SB_GLOBAL, completo=False); publicar_github()
                 self.send_response(200); self.send_header("Content-Type","application/json")
                 self.end_headers(); self.wfile.write(b'{"ok":true}')
             except Exception as e:
@@ -340,12 +393,27 @@ def servir():
 if __name__ == "__main__":
     if "SEU_EMAIL" in LOGIN_EMAIL:
         print("Configure LOGIN_EMAIL e LOGIN_SENHA no topo do arquivo."); sys.exit(1)
-    so_painel = len(sys.argv) > 1 and sys.argv[1].lower() in ("painel", "--painel", "-p")
+    modo = sys.argv[1].lower() if len(sys.argv) > 1 else ""
     SB_GLOBAL = conectar()
-    if so_painel:
-        print("\n== Modo painel: sem varrer pastas, so atualiza a tela com o que ja esta no banco ==")
+
+    if modo in ("painel", "-p", "--painel"):
+        print("\n== Modo painel: sem varrer pastas, so atualiza a tela ==")
         salvar_e_subir(SB_GLOBAL, montar_dados(SB_GLOBAL))
+        if not ler_marcador():
+            escrever_marcador(datetime.now())  # marca o ponto de partida do incremental
+        publicar_github()
+        servir()
+    elif modo in ("sync", "diario"):
+        # Atualizacao diaria: so arquivos novos, publica e SAI (sem abrir o painel)
+        atualizar(SB_GLOBAL, completo=False)
+        publicar_github()
+        print("\nConcluido. (modo diario - sem abrir o painel)")
+    elif modo in ("full", "completo"):
+        atualizar(SB_GLOBAL, completo=True)
+        publicar_github()
+        servir()
     else:
-        reprocessar(SB_GLOBAL)
-    publicar_github()
-    servir()
+        # padrao interativo: incremental + abre o painel
+        atualizar(SB_GLOBAL, completo=False)
+        publicar_github()
+        servir()

@@ -1,33 +1,27 @@
-PAINEL DE AUDITORIA - como publicar e atualizar (um clique)
-===========================================================
+PAINEL DE AUDITORIA - como usar
+===============================
+Rode na maquina que enxerga o drive Y:. Sempre preencha LOGIN_EMAIL e
+LOGIN_SENHA no topo de auditoria.py (entre aspas).
 
-Rode no PC/servidor que enxerga o drive Y:.
+BOTOES (dois cliques):
+  ATUALIZAR_DIARIO.bat  -> uso do dia a dia. Le SO os arquivos novos
+                           (alterados desde a ultima vez), envia ao
+                           Supabase, publica no GitHub e fecha. Rapido.
+  EXECUTAR_AUDITORIA.bat-> carga COMPLETA (reprocessa tudo de 2026+).
+                           Use so na 1a vez ou se precisar refazer do zero.
+  ATUALIZAR_PAINEL.bat  -> so atualiza a tela com o que ja esta no banco
+                           (sem varrer pastas). Util para ver mudancas de
+                           layout e para consertar o link da capa.
 
-PRIMEIRA VEZ (configurar o GitHub - so uma vez):
-  Abra o "Prompt de Comando" na pasta do projeto e rode:
-    git init
-    git add -A
-    git commit -m "primeiro envio"
-    git branch -M main
-    git remote add origin https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-    git push -u origin main
-  Depois, no GitHub: Settings > Pages > Branch: main / pasta raiz > Save.
-  O painel publico fica em:
-    https://SEU_USUARIO.github.io/SEU_REPOSITORIO/auditoria/
+AGENDAR TODO DIA (sem clicar):
+  Agendador de Tarefas do Windows -> Criar Tarefa Basica ->
+  Acao: Iniciar um programa -> Programa: o caminho do ATUALIZAR_DIARIO.bat
+  -> defina o horario (ex.: 07:00). Pronto: atualiza sozinho todo dia.
 
-USAR (sempre):
-  1) Abra scripts\auditoria.py no Bloco de Notas e preencha
-     LOGIN_EMAIL e LOGIN_SENHA (o login do painel).
-  2) De dois cliques em  EXECUTAR_AUDITORIA.bat
-     Ele: le as pastas (2026+), grava no Supabase, envia o dados.json,
-     publica no GitHub e abre o painel no navegador.
-  3) No painel, o botao ATUALIZAR reprocessa as pastas de novo
-     (atualiza Supabase + GitHub) sem fechar nada.
+COMO FUNCIONA O INCREMENTAL:
+  O programa guarda a data da ultima execucao no arquivo .ultima_sync.
+  Na vez seguinte, so olha os arquivos alterados a partir dali (com 2 dias
+  de margem). Assim nao reprocessa tudo - so o que entrou de novo.
 
-AGENDAR sozinho (opcional):
-  Agendador de Tarefas do Windows > Criar Tarefa Basica >
-  programa: EXECUTAR_AUDITORIA.bat > horario desejado.
-
-OBS: o botao Atualizar so reprocessa as PASTAS quando o programa local
-esta rodando (e ele que enxerga o Y:). No painel publicado sozinho, o
-botao apenas recarrega os dados ja enviados para a nuvem.
+OBS: o painel publicado fica em auditoria/ na RAIZ do repositorio (mesmo
+nivel de otd/, scorecard/). O programa copia o painel pra la sozinho.
