@@ -317,6 +317,30 @@ const vizByKey={};
 Object.keys(DATA).forEach(k=>vizByKey[k]=RECO[k]?RECO[k][0]:'lines');
 const charts={};
 
+/* === Preferência de anos (salva no navegador) ===
+   1ª vez: mostra só o ano corrente. Depois: lembra o que ficou setado. */
+const PREF_KEY='scorecard-anos-pref-v1';
+function savePref(){
+  try{ localStorage.setItem(PREF_KEY, JSON.stringify({refYear, hidden:[...hiddenYears]})); }catch(e){}
+}
+function loadPref(){
+  try{
+    const raw=localStorage.getItem(PREF_KEY); if(!raw) return false;
+    const p=JSON.parse(raw);
+    if(p && YEARS.includes(p.refYear)) refYear=p.refYear;
+    if(p && Array.isArray(p.hidden)) hiddenYears=new Set(p.hidden.filter(y=>YEARS.includes(y)));
+    return true;
+  }catch(e){ return false; }
+}
+function initAnos(){
+  if(!loadPref()){
+    const cur=YEARS[YEARS.length-1];           // ano corrente (mais recente)
+    refYear=cur;
+    hiddenYears=new Set(YEARS.filter(y=>y!==cur)); // oculta todos menos o corrente
+  }
+  hiddenYears.delete(refYear);                  // o ano de referência sempre visível
+}
+
 function fmtVal(ind,v){
   if(v==null) return '—';
   if(ind.unit==='d') return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' d';
@@ -346,7 +370,7 @@ function groupStat(g){let ok=0,warn=0,bad=0;groupKeys(g).forEach(k=>{const v=per
 function buildPeriod(){
   const el=document.getElementById('period');
   el.innerHTML=YEARS.map(y=>`<button data-y="${y}" class="${y===refYear?'on':''}">${y==='2026'?'YTD 26':y}</button>`).join('');
-  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{refYear=b.dataset.y;hiddenYears.delete(refYear);render();});
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{refYear=b.dataset.y;hiddenYears.delete(refYear);savePref();render();});
 }
 function buildYearBar(){
   const el=document.getElementById('ybar');
@@ -356,7 +380,7 @@ function buildYearBar(){
     +`<span style="flex:1"></span><span class="lab" style="margin:0">clique p/ mostrar/ocultar</span>`;
   el.querySelectorAll('.yl').forEach(s=>s.onclick=()=>{
     const y=s.dataset.y;hiddenYears.has(y)?hiddenYears.delete(y):hiddenYears.add(y);
-    buildYearBar();renderCharts();});
+    savePref();buildYearBar();renderCharts();});
 }
 function buildHealth(){
   const keys=Object.keys(DATA);let ok=0,warn=0,bad=0,n=0;
@@ -816,6 +840,7 @@ window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeEditor(); });
 document.getElementById('ed-modal').addEventListener('click',e=>{ if(e.target.id==='ed-modal') closeEditor(); });
 
 /* ---- render inicial (após todas as definições) + bootstrap ---- */
+initAnos();
 render();
 (async function(){
   await initAuth();
