@@ -283,10 +283,37 @@ def buscar_tudo(sb, tabela, colunas="*", ordem=None, desc=True):
         ini += passo
     return linhas
 
+def carregar_matriz():
+    """Le clientes_matriz.csv (ao lado do script): CNPJs a ignorar e classificacao FOB/CIF."""
+    import csv, re
+    caminho = os.path.join(_AQUI, "clientes_matriz.csv")
+    excluir, classif = set(), {}
+    try:
+        with open(caminho, encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                cnpj = re.sub(r"\D", "", row.get("cnpj", "") or "")
+                if len(cnpj) != 14: continue
+                c = (row.get("classificacao") or "").strip().upper()
+                if c == "NAO_CONSIDERAR": excluir.add(cnpj)
+                elif c in ("FOB", "CIF"): classif[cnpj] = c
+        print(f"  matriz de clientes: {len(excluir)} a ignorar, {len(classif)} com FOB/CIF")
+    except FileNotFoundError:
+        print("  (clientes_matriz.csv nao encontrado - sem exclusoes/FOB-CIF)")
+    return excluir, classif
+
 def montar_dados(sb):
-    notas = buscar_tudo(sb, "nfe_notas",
-        "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,nome_destinatario,uf_destinatario,valor_total",
+    import re
+    excluir, classif = carregar_matriz()
+    notas_raw = buscar_tudo(sb, "nfe_notas",
+        "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,nome_destinatario,uf_destinatario,cnpj_destinatario,valor_total",
         ordem="data_emissao")
+    notas = []
+    for n in notas_raw:
+        cnpj = re.sub(r"\D", "", n.get("cnpj_destinatario") or "")
+        if cnpj in excluir:          # cliente marcado "Nao Considerar"
+            continue
+        n["fob_cif"] = classif.get(cnpj, "")
+        notas.append(n)
     ctes = buscar_tudo(sb, "cte_conhecimentos", "id,chave,numero,serie,nome_emitente,uf_inicio,uf_fim,valor_total,data_emissao")
     refs = buscar_tudo(sb, "cte_nfe_ref", "cte_id,chave_nfe,numero_nf")
     manifs = buscar_tudo(sb, "nfe_manifestacoes", "numero_nf,chave_nfe,cnpj_empresa,data_arquivo")

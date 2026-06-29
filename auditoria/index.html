@@ -58,6 +58,9 @@ tbody tr:hover{background:#0f1830}
 .b2{font-size:11px;color:var(--muted);margin-top:2px}
 .transp{font-weight:600;color:var(--violet)}
 .cli{font-weight:600;color:#eaf2fd}
+.fobcif{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;vertical-align:middle}
+.f-CIF{background:rgba(45,212,238,.16);color:var(--cyan)}
+.f-FOB{background:rgba(251,191,36,.18);color:var(--amber)}
 .nf{font-family:var(--mono);color:var(--cyan);font-weight:600}
 .tag{display:inline-block;max-width:240px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;
   background:#16213a;border:1px solid var(--line2);color:#c3cee0;border-radius:6px;padding:2px 8px;font-size:11px}
@@ -89,6 +92,9 @@ tbody tr:hover{background:#0f1830}
   <div class="fg"><label>Emissor</label><select id="fEmit"></select></div>
   <div class="fg"><label>Cliente</label><select id="fDest"></select></div>
   <div class="fg"><label>Transportador</label><select id="fTransp"></select></div>
+  <div class="fg"><label>FOB / CIF</label><select id="fFob"></select></div>
+  <div class="fg"><label>Vinculo CT-e</label><select id="fVinc">
+    <option value="">Todos</option><option value="sem">Sem CT-e</option><option value="com">Com CT-e</option></select></div>
   <div class="fg"><label>Mes (emissao NF)</label><select id="fMes"></select></div>
   <div class="fg"><label>Visao</label><div class="seg" id="segVisao">
     <button data-v="nota" class="on">Notas</button>
@@ -134,7 +140,7 @@ function indexar(){for(const k in transpByNota)delete transpByNota[k];
 }
 const T=ch=>transpByNota[ch]||null;
 
-let state={emit:'',dest:'',transp:'',mes:'',visao:'nota'};
+let state={emit:'',dest:'',transp:'',fob:'',vinc:'',mes:'',visao:'nota'};
 let sort={col:'dataNF',dir:-1};
 
 function opts(sel,vals,label){const el=document.getElementById(sel),cur=el.value;
@@ -143,12 +149,13 @@ function montarFiltros(){indexar();
   opts('fEmit',[...new Set(DATA.notas.map(n=>n.nome_emitente))].filter(Boolean).sort());
   opts('fDest',[...new Set(DATA.notas.map(n=>n.nome_destinatario))].filter(Boolean).sort());
   opts('fTransp',[...new Set(DATA.ctes.map(c=>c.nome_emitente))].filter(Boolean).sort());
+  opts('fFob',[...new Set(DATA.notas.map(n=>n.fob_cif))].filter(Boolean).sort());
   opts('fMes',[...new Set(DATA.notas.map(n=>mesDe(n.data_emissao)))].filter(Boolean).sort(),mesLabel)}
-['fEmit','fDest','fTransp','fMes'].forEach((id,i)=>document.getElementById(id).onchange=e=>{state[['emit','dest','transp','mes'][i]]=e.target.value;render()});
+['fEmit','fDest','fTransp','fFob','fVinc','fMes'].forEach((id,i)=>document.getElementById(id).onchange=e=>{state[['emit','dest','transp','fob','vinc','mes'][i]]=e.target.value;render()});
 document.querySelectorAll('#segVisao button').forEach(b=>b.onclick=()=>{state.visao=b.dataset.v;document.querySelectorAll('#segVisao button').forEach(x=>x.classList.toggle('on',x===b));render()});
-function limpar(){state.emit=state.dest=state.transp=state.mes='';['fEmit','fDest','fTransp','fMes'].forEach(id=>document.getElementById(id).value='');render()}
+function limpar(){state.emit=state.dest=state.transp=state.fob=state.vinc=state.mes='';['fEmit','fDest','fTransp','fFob','fVinc','fMes'].forEach(id=>document.getElementById(id).value='');render()}
 
-function filtradas(){return DATA.notas.filter(n=>(!state.emit||n.nome_emitente===state.emit)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp)))}
+function filtradas(){return DATA.notas.filter(n=>(!state.emit||n.nome_emitente===state.emit)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp))&&(!state.fob||n.fob_cif===state.fob)&&(!state.vinc||(state.vinc==='com'?!!T(n.chave):!T(n.chave))))}
 
 function valSort(n,col){const t=T(n.chave);switch(col){
   case'transp':return (t?t.nome:'').toLowerCase();
@@ -191,7 +198,7 @@ function render(){const fnAll=filtradas();kpis(fnAll);const v=document.getElemen
      vis.map(n=>{const t=T(n.chave);return `<tr>
        <td>${t?`<div class="transp">${t.nome}</div><div class="b2">CT-e ${t.num} · ${t.rota}</div>`:'<span class="dash">— sem CT-e</span>'}</td>
        <td><div class="b1">${n.nome_emitente||''}</div><div class="b2">${n.uf_emitente||''}</div></td>
-       <td><div class="cli">${n.nome_destinatario||''}</div><div class="b2">${n.uf_destinatario||''}</div></td>
+       <td><div class="cli">${n.nome_destinatario||''}${n.fob_cif?` <span class="fobcif f-${n.fob_cif}">${n.fob_cif}</span>`:''}</div><div class="b2">${n.uf_destinatario||''}</div></td>
        <td><span class="nf">${n.numero}</span><div class="b2">série ${n.serie}</div></td>
        <td><span class="tag" title="${n.natureza_operacao||''}">${n.natureza_operacao||''}</span></td>
        <td class="mono">${dBR(n.data_emissao)}</td>
