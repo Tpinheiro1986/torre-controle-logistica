@@ -35,7 +35,8 @@ PASTA_MANIFESTO = r"Y:\ERP-12\ArqXML-MG"
 ANO_MINIMO   = 2026
 PORTA        = 8000
 PUBLICAR_GIT = True      # False = nao tenta git push
-PASTA_SAIDA  = "auditoria"
+PASTA_SAIDA  = r"..\auditoria"   # grava o painel na pasta auditoria da RAIZ do repositorio
+REPO_DIR     = r".."             # raiz do repositorio (onde ficam otd/, scorecard/, etc.)
 BUCKET       = "dashboards"
 CAMINHO_JSON = "auditoria/dados.json"   # dentro do bucket
 # ============================================================
@@ -302,14 +303,14 @@ def publicar_github():
     if not PUBLICAR_GIT: return
     print("\n== Publicando no GitHub ==")
     try:
-        subprocess.run(["git","add","-A"],check=True)
-        r=subprocess.run(["git","commit","-m","auditoria: atualiza painel e dados"],capture_output=True,text=True)
+        subprocess.run(["git","add","-A"], cwd=REPO_DIR, check=True)
+        r=subprocess.run(["git","commit","-m","auditoria: atualiza painel e dados"], cwd=REPO_DIR, capture_output=True,text=True)
         if "nothing to commit" in (r.stdout+r.stderr): print("  Nada novo para commitar.")
-        subprocess.run(["git","push"],check=True)
+        subprocess.run(["git","push"], cwd=REPO_DIR, check=True)
         print("  Enviado para o GitHub.")
     except Exception as e:
-        print("  Git nao configurado ou sem remote. Detalhe:",e)
-        print("  (Configure uma vez: git init / git remote add origin <url> / git push -u origin main)")
+        print("  Aviso no git:", e)
+        print("  (Rode na raiz do repositorio uma vez: git pull origin main --no-rebase / git push)")
 
 # ---------- Servidor local ----------
 SB_GLOBAL=None
