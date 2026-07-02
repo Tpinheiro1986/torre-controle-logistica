@@ -308,9 +308,23 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
           </table></div>
         </div>
 
+        <!-- Tabela 3: % participação de cada região no frete total do mês (Outbound + Reversa) -->
+        <div class="card" style="margin-bottom:10px">
+          <div class="slbl"><span class="sn">3</span><span id="custo-par-title">% de participação da região no frete total do mês — Outbound + Reversa (FTL + LTL)</span>
+            <span id="custo-par-cob" style="font-weight:400;font-size:10px;color:var(--text2);margin-left:8px"></span>
+          </div>
+          <div style="overflow-x:auto"><table class="dt" id="tb-custo-par">
+            <thead id="th-custo-par"></thead>
+            <tbody id="tb-custo-par-body"></tbody>
+          </table></div>
+          <div style="font-size:10px;color:var(--text2);margin-top:8px;line-height:1.5">
+            <strong>Cálculo:</strong> em cada mês, o frete total (Outbound + Reversa, todas as transportadoras) é rateado entre as regiões. Cada coluna soma 100%. Inbound é excluído porque é entrada de fornecedor, não custo de servir.
+          </div>
+        </div>
+
         <!-- Resumo lado a lado por região -->
         <div class="card" style="margin-bottom:10px">
-          <div class="slbl"><span class="sn">3</span>Resumo por Região — perspectiva final</div>
+          <div class="slbl"><span class="sn">4</span>Resumo por Região — perspectiva final</div>
           <div style="overflow-x:auto"><table class="dt">
             <thead>
               <tr>
@@ -335,12 +349,12 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
         <!-- Gráficos -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div class="card">
-            <div class="slbl"><span class="sn">4</span>R$/kg ao longo dos meses</div>
+            <div class="slbl"><span class="sn">5</span>R$/kg ao longo dos meses</div>
             <div id="leg-custo-rkg" style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--text2);flex-wrap:wrap"></div>
             <div style="position:relative;height:260px"><canvas id="c-custo-rkg-line"></canvas></div>
           </div>
           <div class="card">
-            <div class="slbl"><span class="sn">5</span>% mercadoria ao longo dos meses</div>
+            <div class="slbl"><span class="sn">6</span>% mercadoria ao longo dos meses</div>
             <div id="leg-custo-pct" style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--text2);flex-wrap:wrap"></div>
             <div style="position:relative;height:260px"><canvas id="c-custo-pct-line"></canvas></div>
           </div>
@@ -1272,6 +1286,81 @@ function rCusto(){
   document.getElementById('tb-custo-pct-body').innerHTML=body;
   document.getElementById('custo-pct-cob').textContent=
     '· '+gP.n.toLocaleString('pt-BR')+' CTes · '+fM(gP.f)+' frete · '+fM(gP.m)+' mercadoria'+(F.emp!=='all'?' · só '+empTag:'');
+
+  // ── Tabela 3: Participação % da região no frete mensal (Outbound + Reversa)
+  // FTL + LTL = todas as transportadoras. Inbound excluido (fornecedor -> CD).
+  // Filtros F.emp, F.reg respeitados. Meses respeitam F.ano/F.qtr/F.mes.
+  //
+  // Fonte: soma direta de D.outbound.regioes[].meses[].frete + D.reversa.regioes[].meses[].frete
+  // Se F.emp!=='all', usa genomma_frete ou inovalab_frete.
+  const empField = (F.emp==='GENOMMA')?'genomma_frete':(F.emp==='INOVALAB')?'inovalab_frete':'frete';
+  const opsPar = [D.outbound, D.reversa];  // Inbound de fora
+
+  // Coleta frete[regiao][mesChave] somando outbound + reversa
+  const parCel = {};
+  regs.forEach(r=>{parCel[r.regiao]={};});
+  opsPar.forEach(op=>{
+    if(!op||!op.regioes) return;
+    op.regioes.forEach(rOp=>{
+      // Se F.reg!=='all', restringe. Caso contrario, todas regioes.
+      if(F.reg!=='all'&&rOp.regiao!==F.reg) return;
+      if(!parCel[rOp.regiao]) return;  // regiao nao esta no escopo atual
+      meses.forEach(mItem=>{
+        const md=rOp.meses&&rOp.meses[mItem.chave];
+        if(!md) return;
+        const v=md[empField]||0;
+        parCel[rOp.regiao][mItem.chave]=(parCel[rOp.regiao][mItem.chave]||0)+v;
+      });
+    });
+  });
+
+  // Totais por mês (denominador do rateio) e totais por regiao (linha resumo)
+  const parTotMes={}; const parTotReg={};
+  regs.forEach(r=>{parTotReg[r.regiao]=0;});
+  meses.forEach(m=>{
+    parTotMes[m.chave]=0;
+    regs.forEach(r=>{
+      const v=parCel[r.regiao][m.chave]||0;
+      parTotMes[m.chave]+=v; parTotReg[r.regiao]+=v;
+    });
+  });
+  const parTotGeral=Object.values(parTotReg).reduce((s,v)=>s+v,0);
+
+  // Cabeçalho (mesmo padrao)
+  document.getElementById('th-custo-par').innerHTML=thHTML;
+
+  // Corpo: percentuais por celula, linha Total (100% por coluna)
+  body='';
+  regs.forEach(l=>{
+    body+='<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+(RC[l.regiao]||'#888')+'"></span><strong>'+l.regiao+'</strong></span></td>';
+    meses.forEach(m=>{
+      const v=parCel[l.regiao][m.chave]||0;
+      const tot=parTotMes[m.chave]||0;
+      const pct=tot>0?v/tot:null;
+      body+='<td class="r">'+
+        (pct!=null?'<div style="font-weight:600">'+(pct*100).toFixed(2).replace('.',',')+'%</div>'+
+                   '<div style="font-size:9px;color:var(--text2);margin-top:1px">'+fM(v)+'</div>'
+                  :'<span style="color:var(--text2)">—</span>')+
+        '</td>';
+    });
+    // Média da região sobre o total do escopo
+    const med=parTotGeral>0?parTotReg[l.regiao]/parTotGeral:null;
+    body+='<td class="r" style="color:var(--purple,#7F77DD);font-weight:700">'+
+          (med!=null?(med*100).toFixed(2).replace('.',',')+'%':'—')+
+          '<div style="font-size:9px;color:var(--text2);font-weight:400;margin-top:1px">'+fM(parTotReg[l.regiao])+'</div></td></tr>';
+  });
+  // Linha Total (deve dar 100% em cada mês)
+  body+='<tr class="tr-tot"><td><strong>TOTAL</strong></td>';
+  meses.forEach(m=>{
+    const t=parTotMes[m.chave]||0;
+    body+='<td class="r"><strong>'+(t>0?'100,00%':'—')+'</strong>'+
+          (t>0?'<div style="font-size:9px;font-weight:400;color:var(--text2)">'+fM(t)+'</div>':'')+'</td>';
+  });
+  body+='<td class="r" style="color:var(--purple,#7F77DD)"><strong>'+(parTotGeral>0?'100,00%':'—')+'</strong>'+
+        (parTotGeral>0?'<div style="font-size:9px;font-weight:400;color:var(--text2)">'+fM(parTotGeral)+'</div>':'')+'</td></tr>';
+  document.getElementById('tb-custo-par-body').innerHTML=body;
+  document.getElementById('custo-par-cob').textContent=
+    '· Outbound + Reversa · '+fM(parTotGeral)+' frete total no escopo'+(F.emp!=='all'?' · só '+empTag:'');
 
   // ── Resumo por região (perspectiva final lado a lado)
   body='';
