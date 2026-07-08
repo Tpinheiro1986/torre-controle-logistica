@@ -267,7 +267,7 @@ Object.assign(DATA,{
  dev_rs:{label:'Devolução (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
  fatliq_rs:{label:'Faturamento Líquido (R$)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{},calc:'Faturamento − Devolução'},
  devpct:{label:'% Devolução (Dev ÷ Fat)',group:'Custo Logístico',dir:'down',unit:'%',target:0.01,series:{},yearly:{},calc:'Devolução R$ ÷ Faturamento R$'},
- custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
+ custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},acc:true,calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
 });
 /* Devolução em barras mostra os totais por trimestre */
 DATA.dev_rs.showQuarters=true;
@@ -282,6 +282,7 @@ DATA.custo_op.label='Custo Operacional %TW';
 DATA.custo_op.target=0.055;
 DATA.custo_op.calc='Custo T&W ÷ Faturamento (2025+) · manual até 2024';
 DATA.custo_tr_ac.calc='Σ Transporte ÷ Σ Faturamento (2025+) · manual até 2024';
+DATA.custo_tr_ac.acc=true;
 
 const GROUPS = {
   'Entregas & Atendimento':'--blue',
@@ -418,6 +419,7 @@ const tipFmt=ind=>{
 /* R$: valor do período é a SOMA (acumulado); % e dias continuam pela média */
 function periodValue(ind,yr){const ms=Object.keys(ind.series).filter(k=>k.startsWith(yr));
   if(!ms.length) return null;
+  if(ind.acc){ ms.sort(); return ind.series[ms[ms.length-1]]; } /* acumulado: usa o último mês */
   const tot=ms.reduce((a,k)=>a+ind.series[k],0);
   return ind.unit==='rs'? tot : tot/ms.length;}
 /* soma YTD considerando apenas os meses informados (p/ comparar mesmo período) */
@@ -977,12 +979,19 @@ function recomputeCalc(){
 }
 const CALC_BASES=['fat_rs','ctransp_rs','ctw_rs','dev_rs'];
 function recomputeDerived(k){
-  const ind=DATA[k], ser=ind.series, byY={};
-  Object.keys(ser).forEach(key=>{ if(ser[key]==null) return; (byY[key.slice(0,4)]=byY[key.slice(0,4)]||[]).push(ser[key]); });
-  ind.yearly={};
-  Object.keys(byY).forEach(y=>{ const a=byY[y]; const t=a.reduce((s,v)=>s+v,0);
-    ind.yearly[y]= ind.unit==='rs' ? +t.toFixed(2) : +(t/a.length).toFixed(4); });
+  const ind=DATA[k], ser=ind.series;
   const ks=Object.keys(ser).filter(key=>ser[key]!=null).sort();
+  ind.yearly={};
+  if(ind.acc){ /* acumulado: o valor do ano é o do último mês informado */
+    const lastByY={};
+    ks.forEach(key=>{ lastByY[key.slice(0,4)]=ser[key]; });
+    Object.keys(lastByY).forEach(y=>{ ind.yearly[y]=+lastByY[y].toFixed(4); });
+  } else {
+    const byY={};
+    ks.forEach(key=>{ (byY[key.slice(0,4)]=byY[key.slice(0,4)]||[]).push(ser[key]); });
+    Object.keys(byY).forEach(y=>{ const a=byY[y]; const t=a.reduce((s,v)=>s+v,0);
+      ind.yearly[y]= ind.unit==='rs' ? +t.toFixed(2) : +(t/a.length).toFixed(4); });
+  }
   if(ks.length){ ind.last_month=ks[ks.length-1]; ind.last_val=ser[ind.last_month]; }
 }
 function openEditor(){
