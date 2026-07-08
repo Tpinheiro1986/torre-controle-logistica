@@ -258,7 +258,7 @@ const DATA = {"otif":{"label":"OTIF Entrega","group":"Entregas & Atendimento","d
 /* =====================================================================
    INDICADORES FINANCEIROS (R$) · Custo Logístico
    Base (lançamento manual): fat_rs, ctransp_rs, ctw_rs, dev_rs
-   Calculados automaticamente: fatliq_rs, devpct, ptw_ac
+   Calculados automaticamente: fatliq_rs, devpct, custo_op, custo_tr_ac, custo_op_ac
    ===================================================================== */
 Object.assign(DATA,{
  fat_rs:{label:'Faturamento (R$)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{}},
@@ -267,8 +267,21 @@ Object.assign(DATA,{
  dev_rs:{label:'Devolução (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
  fatliq_rs:{label:'Faturamento Líquido (R$)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{},calc:'Faturamento − Devolução'},
  devpct:{label:'% Devolução (Dev ÷ Fat)',group:'Custo Logístico',dir:'down',unit:'%',target:0.01,series:{},yearly:{},calc:'Devolução R$ ÷ Faturamento R$'},
- ptw_ac:{label:'%T&W Acumulado (Custo ÷ Fat)',group:'Custo Logístico',dir:'down',unit:'%',target:0.051,series:{},yearly:{},calc:'Custo T&W acumulado ÷ Faturamento acumulado'}
+ custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
 });
+/* Devolução em barras mostra os totais por trimestre */
+DATA.dev_rs.showQuarters=true;
+/* custo_op e custo_tr_ac passam a ser CALCULADOS a partir dos R$ (2025 em diante),
+   mantendo o histórico manual (embarcado) até 2024. */
+const CALC_FROM='2025';
+const MANUAL={
+  custo_op:    Object.assign({}, DATA.custo_op.series),
+  custo_tr_ac: Object.assign({}, DATA.custo_tr_ac.series)
+};
+DATA.custo_op.label='Custo Operacional %TW';
+DATA.custo_op.target=0.055;
+DATA.custo_op.calc='Custo T&W ÷ Faturamento (2025+) · manual até 2024';
+DATA.custo_tr_ac.calc='Σ Transporte ÷ Σ Faturamento (2025+) · manual até 2024';
 
 const GROUPS = {
   'Entregas & Atendimento':'--blue',
@@ -331,7 +344,7 @@ const RECO={
   dev_rs:['bars','barras mostram a devolução mês a mês; use Acumulado para o total do ano'],
   fatliq_rs:['acum','acumulado mostra a receita líquida consolidada ano contra ano'],
   devpct:['lines','linhas mostram o % de devolução mensal comparado à meta'],
-  ptw_ac:['lines','curva já acumulada do custo T&W em % do faturamento'],
+  custo_op_ac:['lines','curva já acumulada do custo T&W em % do faturamento'],
 };
 
 /* modos de visualização disponíveis por tipo de indicador */
@@ -381,9 +394,26 @@ function fmtMeta(ind){if(ind.unit==='rs'||ind.target==null)return '—';
 const sv=(ind,key)=>{const v=ind.series[key];if(v==null)return null;
   return ind.unit==='rs'?+(v/1e6).toFixed(2):(ind.unit==='d'?+v.toFixed(2):+(v*100).toFixed(2));};
 const metaPlot=ind=>ind.unit==='d'?ind.target:ind.target*100;
-const axFmt=ind=>(v=>ind.unit==='rs'?'R$'+v.toFixed(0)+'M':(ind.unit==='d'?v.toFixed(0)+'d':v.toFixed(0)+'%'));
-const tipFmt=ind=>(v=>v==null?'—':(ind.unit==='rs'?'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' M'
-  :(ind.unit==='d'?v.toFixed(1)+' d':v.toFixed((ind.target!=null&&ind.target<0.2)?2:1)+'%')));
+/* escala automática para R$: usa M (milhões) ou mil conforme a grandeza da série
+   (evita eixo "R$0M" quando os valores são pequenos, ex.: Devolução) */
+function rsScale(ind){
+  let mx=0; for(const key in ind.series){ const v=ind.series[key]; if(v!=null&&Math.abs(v)>mx) mx=Math.abs(v); }
+  mx/=1e6; /* sv() entrega o valor já em milhões */
+  if(mx>=1)     return {mul:1,   suf:' M',  dax:mx<10?1:0, dt:2};
+  if(mx>=0.001) return {mul:1000,suf:' mil',dax:0,          dt:0};
+  return {mul:1e6, suf:'', dax:0, dt:0};
+}
+const axFmt=ind=>{
+  if(ind.unit==='d') return v=>v.toFixed(0)+'d';
+  if(ind.unit!=='rs') return v=>v.toFixed(0)+'%';
+  const s=rsScale(ind);
+  return v=>v==null?'':'R$'+(v*s.mul).toLocaleString('pt-BR',{maximumFractionDigits:s.dax})+s.suf;
+};
+const tipFmt=ind=>{
+  if(ind.unit==='rs'){ const s=rsScale(ind);
+    return v=>v==null?'—':'R$ '+(v*s.mul).toLocaleString('pt-BR',{minimumFractionDigits:s.dt,maximumFractionDigits:s.dt})+s.suf; }
+  return v=>v==null?'—':(ind.unit==='d'?v.toFixed(1)+' d':v.toFixed((ind.target!=null&&ind.target<0.2)?2:1)+'%');
+};
 
 /* R$: valor do período é a SOMA (acumulado); % e dias continuam pela média */
 function periodValue(ind,yr){const ms=Object.keys(ind.series).filter(k=>k.startsWith(yr));
@@ -415,7 +445,9 @@ const STLABEL={ok:'No alvo',warn:'Atenção',bad:'Fora',na:''};
 const statusColor=s=>s==='ok'?COL.green:s==='warn'?COL.amber:s==='na'?COL.text3:COL.red;
 const groupColor=g=>{const v=GROUPS[g];return v.startsWith('--')?cssvar(v):v;};
 const visibleYears=()=>YEARS.filter(y=>!hiddenYears.has(y));
-const groupKeys=g=>Object.keys(DATA).filter(k=>DATA[k].group===g);
+const KPI_ORDER={fat_rs:1,ctransp_rs:2,dev_rs:3,custo_op:4,custo_tr_ac:5,devpct:6,fatliq_rs:7,custo_op_ac:8,ctw_rs:9};
+const groupKeys=g=>Object.keys(DATA).filter(k=>DATA[k].group===g)
+  .sort((a,b)=>(KPI_ORDER[a]||99)-(KPI_ORDER[b]||99));
 function groupStat(g){let ok=0,warn=0,bad=0;groupKeys(g).forEach(k=>{const v=periodValue(DATA[k],refYear);
   const s=status(DATA[k],v);if(s==='na')return;s==='ok'?ok++:s==='warn'?warn++:bad++;});return{ok,warn,bad};}
 
@@ -595,11 +627,19 @@ function linesOpt(ind){const yrs=visibleYears();
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
     annotations:Object.assign(metaAnno(ind),{points:endPoints(ind,yrs)})},baseXY(ind));}
 function barsOpt(ind){const yrs=visibleYears();
-  return Object.assign({chart:{type:'bar',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
+  const opt=Object.assign({chart:{type:'bar',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
     series:yearSeries(ind,yrs),colors:yrs.map(y=>YEAR_COL[y]),
     plotOptions:{bar:{borderRadius:2,columnWidth:'85%'}},dataLabels:{enabled:false},
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:metaAnno(ind)},baseXY(ind));}
+    annotations:metaAnno(ind)},baseXY(ind));
+  if(ind.showQuarters){
+    const s=rsScale(ind), q=[0,0,0,0];
+    MONTHS_idx().forEach((mm,i)=>{const v=ind.series[`${refYear}-${mm}`]; if(v!=null) q[Math.floor(i/3)]+=v;});
+    const f=x=>'R$'+((x/1e6)*s.mul).toLocaleString('pt-BR',{maximumFractionDigits:s.dt})+s.suf;
+    opt.subtitle={text:`Trimestres ${refYear==='2026'?'YTD 26':refYear} — Q1 ${f(q[0])} · Q2 ${f(q[1])} · Q3 ${f(q[2])} · Q4 ${f(q[3])}`,
+      align:'left',offsetY:2,style:{fontSize:'11px',color:COL.text2,fontWeight:600}};
+  }
+  return opt;}
 function areaOpt(ind){
   const prevYr=String(+refYear-1);
   const ref={name:refYear+(refYear==='2026'?' (YTD)':''),type:'area',data:MONTHS_idx().map(mi=>sv(ind,`${refYear}-${mi}`))};
@@ -641,15 +681,24 @@ function cumSeries(ind,yrs){
     })};
   });
 }
-function endPointsSeries(series){
+function endPointsSeries(series,yoy){
   const pts=[];const n=series.length;
+  const byName={}; series.forEach(s=>byName[s.name]=s.data);
   series.forEach((s,i)=>{
     const arr=s.data;let idx=-1;
     for(let j=arr.length-1;j>=0;j--){if(arr[j]!=null){idx=j;break;}}
     if(idx<0)return;
+    let txt="’"+s.name.slice(2);
+    if(yoy){ /* crescimento ano-a-ano no mesmo ponto (base YTD comparável) */
+      const prev=byName[String(+s.name-1)];
+      if(prev && prev[idx]!=null && prev[idx]!==0){
+        const g=(arr[idx]/prev[idx]-1)*100;
+        txt+=` ${g>=0?'+':''}${g.toFixed(0)}%`;
+      }
+    }
     pts.push({x:MONTH_LABELS[idx],y:arr[idx],
       marker:{size:4.5,fillColor:YEAR_COL[s.name],strokeColor:COL.bg,strokeWidth:2},
-      label:{text:"’"+s.name.slice(2),borderWidth:0,offsetX:14,offsetY:(i-(n-1)/2)*15,
+      label:{text:txt,borderWidth:0,offsetX:16,offsetY:(i-(n-1)/2)*15,
         style:{background:YEAR_COL[s.name],color:'#fff',fontSize:'10px',fontWeight:700,padding:{left:5,right:5,top:2,bottom:2}}}});
   });
   return pts;
@@ -660,7 +709,7 @@ function acumOpt(ind){
     series,colors:yrs.map(y=>YEAR_COL[y]),
     stroke:{width:yrs.map(y=>y===refYear?3.6:2),curve:'straight'},markers:{size:0,hover:{size:5}},
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:Object.assign(metaAnno(ind),{points:endPointsSeries(series)})},baseXY(ind));
+    annotations:Object.assign(metaAnno(ind),{points:endPointsSeries(series, ind.unit==='rs')})},baseXY(ind));
 }
 
 function gaugeOpt(ind){
@@ -705,12 +754,12 @@ const INFO={
         calc:'Quantidade (ou linhas) atendida ÷ quantidade pedida.',
         ler:'Mede a capacidade de atender com o que se tem em estoque, item a item.',
         importa:'Fill rate baixo equivale a venda perdida e ruptura no ponto de venda.'},
-  custo_op:{mede:'Custo operacional logístico (armazenagem, movimentação e mão de obra do CD) como % do faturamento.',
-        calc:'Custo operacional ÷ faturamento do período.',
-        ler:'Quanto menor, melhor: alta sem crescimento proporcional de volume indica perda de eficiência.',
+  custo_op:{mede:'Custo logístico total (T&W) mensal como % do faturamento.',
+        calc:'Calculado: Custo Total T&W ÷ Faturamento do mês (2025 em diante). Até 2024 usa o histórico manual.',
+        ler:'Quanto menor, melhor (meta ≤ 5,5%): alta sem crescimento proporcional de volume indica perda de eficiência.',
         importa:'Pressiona diretamente a margem; é uma alavanca clara de resultado financeiro.'},
-  custo_tr_ac:{mede:'Custo de frete acumulado no ano como % do faturamento.',
-        calc:'Frete acumulado no ano ÷ faturamento acumulado.',
+  custo_tr_ac:{mede:'Custo de frete acumulado no ano como % do faturamento acumulado.',
+        calc:'Calculado: Σ Custo de Transporte ÷ Σ Faturamento, acumulados no ano (2025 em diante). Até 2024 usa o histórico manual.',
         ler:'Por ser acumulado, suaviza picos mensais e revela a tendência consolidada do ano.',
         importa:'Maior componente do custo logístico e principal alvo de negociação com transportadoras.'},
   qualidade:{mede:'Percentual de pedidos/entregas com ocorrência de qualidade (avaria, troca, erro).',
@@ -771,8 +820,8 @@ const INFO={
         importa:'Maior componente do custo logístico; alvo direto de negociação e otimização de malha.'},
   ctw_rs:{mede:'Custo logístico total (Transporte + Warehouse) mensal em reais (R$).',
         calc:'Lançamento manual do custo total T&W do mês.',
-        ler:'Comparado ao faturamento gera o %T&W Acumulado; a curva acumulada revela a trajetória do gasto no ano.',
-        importa:'Consolida todo o gasto logístico e alimenta o principal indicador de eficiência (%T&W).'},
+        ler:'Comparado ao faturamento gera o Custo %TW (mensal e acumulado); a curva acumulada revela a trajetória do gasto no ano.',
+        importa:'Consolida todo o gasto logístico e alimenta o principal indicador de eficiência (Custo %TW).'},
   dev_rs:{mede:'Valor devolvido pelos clientes no mês, em reais (R$).',
         calc:'Lançamento manual do valor de devolução do mês.',
         ler:'Em barras vê-se o pico mensal; em Acumulado, o total do ano contra anos anteriores.',
@@ -785,9 +834,9 @@ const INFO={
         calc:'Calculado automaticamente: Devolução R$ ÷ Faturamento R$ do mês.',
         ler:'Quanto menor, melhor; picos indicam problema comercial, de qualidade ou excesso de pedido.',
         importa:'Normaliza a devolução pela receita, permitindo comparar meses e anos de tamanhos diferentes.'},
-  ptw_ac:{mede:'Custo logístico total (T&W) acumulado no ano como % do faturamento acumulado.',
+  custo_op_ac:{mede:'Custo logístico total (T&W) acumulado no ano como % do faturamento acumulado.',
         calc:'Calculado automaticamente: Σ Custo T&W ÷ Σ Faturamento, acumulados mês a mês dentro de cada ano.',
-        ler:'A curva já é acumulada: suaviza picos e revela a eficiência consolidada do ano.',
+        ler:'A curva já é acumulada: suaviza picos e revela a eficiência consolidada do ano (meta ≤ 5,5%).',
         importa:'É o principal termômetro de eficiência logística sobre a receita.'}
 };
 function dirMeta(ind){
@@ -881,7 +930,8 @@ function fromDisplay(ind,str){
 
 /* recalcula os indicadores derivados a partir das bases em R$ */
 function recomputeCalc(){
-  const fat=DATA.fat_rs.series, dev=DATA.dev_rs.series, ctw=DATA.ctw_rs.series;
+  const fat=DATA.fat_rs.series, dev=DATA.dev_rs.series,
+        ctw=DATA.ctw_rs.series, ctr=DATA.ctransp_rs.series;
   /* Fat Líquido = Faturamento − Devolução */
   const fl={};
   Object.keys(fat).forEach(k=>{ if(fat[k]!=null) fl[k]=+(fat[k]-(dev[k]||0)).toFixed(2); });
@@ -890,17 +940,40 @@ function recomputeCalc(){
   const dp={};
   Object.keys(fat).forEach(k=>{ if(fat[k]>0 && dev[k]!=null) dp[k]=+(dev[k]/fat[k]).toFixed(4); });
   DATA.devpct.series=dp;
-  /* %T&W Acumulado = Σ Custo T&W ÷ Σ Faturamento (dentro do ano) */
-  const pw={};
+  /* Custo Operacional %TW (mensal) = Custo T&W ÷ Faturamento.
+     Histórico manual até 2024; de 2025 calcula pelos R$ (fallback: manual). */
+  const op={};
+  Object.keys(MANUAL.custo_op).forEach(k=>{ if(k.slice(0,4)<CALC_FROM) op[k]=MANUAL.custo_op[k]; });
+  YEARS.filter(y=>y>=CALC_FROM).forEach(y=>MONTHS_idx().forEach(mm=>{
+    const k=`${y}-${mm}`;
+    if(fat[k]>0 && ctw[k]!=null) op[k]=+(ctw[k]/fat[k]).toFixed(4);
+    else if(MANUAL.custo_op[k]!=null) op[k]=MANUAL.custo_op[k];
+  }));
+  DATA.custo_op.series=op;
+  /* Custo de Transporte %T (Acum.) = Σ Transporte ÷ Σ Faturamento (dentro do ano).
+     Histórico manual até 2024; de 2025 calcula pelos R$. */
+  const tr={};
+  Object.keys(MANUAL.custo_tr_ac).forEach(k=>{ if(k.slice(0,4)<CALC_FROM) tr[k]=MANUAL.custo_tr_ac[k]; });
+  YEARS.filter(y=>y>=CALC_FROM).forEach(y=>{
+    let cf=0, cc=0;
+    MONTHS_idx().forEach(mm=>{
+      const k=`${y}-${mm}`;
+      if(fat[k]!=null && ctr[k]!=null){ cf+=fat[k]; cc+=ctr[k]; if(cf>0) tr[k]=+(cc/cf).toFixed(4); }
+      else if(MANUAL.custo_tr_ac[k]!=null) tr[k]=MANUAL.custo_tr_ac[k];
+    });
+  });
+  DATA.custo_tr_ac.series=tr;
+  /* Custo %TW Acumulado = Σ Custo T&W ÷ Σ Faturamento (dentro do ano) */
+  const ac={};
   YEARS.forEach(y=>{
     let cf=0, cc=0;
     MONTHS_idx().forEach(mm=>{
       const k=`${y}-${mm}`;
-      if(fat[k]!=null && ctw[k]!=null){ cf+=fat[k]; cc+=ctw[k]; if(cf>0) pw[k]=+(cc/cf).toFixed(4); }
+      if(fat[k]!=null && ctw[k]!=null){ cf+=fat[k]; cc+=ctw[k]; if(cf>0) ac[k]=+(cc/cf).toFixed(4); }
     });
   });
-  DATA.ptw_ac.series=pw;
-  ['fatliq_rs','devpct','ptw_ac'].forEach(recomputeDerived);
+  DATA.custo_op_ac.series=ac;
+  ['fatliq_rs','devpct','custo_op','custo_tr_ac','custo_op_ac'].forEach(recomputeDerived);
 }
 const CALC_BASES=['fat_rs','ctransp_rs','ctw_rs','dev_rs'];
 function recomputeDerived(k){
@@ -944,7 +1017,7 @@ function buildGrid(){
   gridEl.classList.toggle('rs', ind.unit==='rs');
   gridEl.innerHTML=head+rows;
   document.getElementById('ed-hint').innerHTML =
-    ind.unit==='rs' ? 'Informe os valores em <b>reais</b> (ex.: 12.500.000,50 ou 12500000,50). Deixe em branco para remover o mês. Ao salvar, <b>Faturamento Líquido</b>, <b>% Devolução</b> e <b>%T&W Acumulado</b> são recalculados automaticamente.'
+    ind.unit==='rs' ? 'Informe os valores em <b>reais</b> (ex.: 12.500.000,50 ou 12500000,50). Deixe em branco para remover o mês. Ao salvar, <b>Custo Operacional %TW</b>, <b>Custo %TW Acumulado</b>, <b>Custo de Transporte %T</b>, <b>Faturamento Líquido</b> e <b>% Devolução</b> são recalculados automaticamente (2025 em diante; histórico até 2024 é preservado).'
     : ind.unit==='d' ? 'Informe os valores em <b>dias</b> (ex.: 9,6). Deixe em branco para remover o mês.'
                      : 'Informe os valores em <b>percentual</b> (ex.: 95,5 = 95,5%). Deixe em branco para remover o mês.';
   setStatus('');
