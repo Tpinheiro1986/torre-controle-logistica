@@ -267,7 +267,7 @@ Object.assign(DATA,{
  dev_rs:{label:'Devolução (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
  fatliq_rs:{label:'Faturamento Líquido (R$)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{},calc:'Faturamento − Devolução'},
  devpct:{label:'% Devolução (Dev ÷ Fat)',group:'Custo Logístico',dir:'down',unit:'%',target:0.01,series:{},yearly:{},calc:'Devolução R$ ÷ Faturamento R$'},
- custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},acc:true,calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
+ custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},acc:true,qAccFrom:'custo_op_ac',calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
 });
 /* Devolução em barras mostra os totais por trimestre */
 DATA.dev_rs.showQuarters=true;
@@ -281,6 +281,8 @@ const MANUAL={
 DATA.custo_op.label='Custo Operacional %TW';
 DATA.custo_op.target=0.055;
 DATA.custo_op.calc='Custo T&W ÷ Faturamento (2025+) · manual até 2024';
+DATA.custo_op.headFrom='custo_op_ac';   /* card mostra o acumulado final do ano */
+DATA.custo_op.qAccFrom='custo_op_ac';   /* marcação de quarter (acumulado) no gráfico */
 DATA.custo_tr_ac.calc='Σ Transporte ÷ Σ Faturamento (2025+) · manual até 2024';
 DATA.custo_tr_ac.acc=true;
 
@@ -317,6 +319,8 @@ const VIZ={
   bars:{name:'Barras',icon:'<line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="9"/>'},
   area:{name:'Área',icon:'<path d="M3 17l5-6 4 3 6-7v10z"/>'},
   acum:{name:'Acumulado',icon:'<path d="M3 20h18"/><path d="M4 18c3-.8 5-4.5 8-7.5S17.5 6 20 5"/>'},
+  acumbar:{name:'Acum. barras',icon:'<line x1="5" y1="20" x2="5" y2="15"/><line x1="10" y1="20" x2="10" y2="11"/><line x1="15" y1="20" x2="15" y2="7"/><line x1="20" y1="20" x2="20" y2="4"/>'},
+  yoy:{name:'Comparativo',icon:'<line x1="7" y1="20" x2="7" y2="8"/><line x1="17" y1="20" x2="17" y2="5"/><path d="M9 6l3-2 3 2"/>'},
   heat:{name:'Heatmap',icon:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'},
   gauge:{name:'Medidor',icon:'<path d="M4 16a8 8 0 1116 0"/><line x1="12" y1="16" x2="15" y2="11"/>'}
 };
@@ -343,13 +347,13 @@ const RECO={
   ctransp_rs:['acum','acumulado compara o crescimento do custo de frete ano contra ano'],
   ctw_rs:['acum','acumulado compara o crescimento do custo total T&W ano contra ano'],
   dev_rs:['bars','barras mostram a devolução mês a mês; use Acumulado para o total do ano'],
-  fatliq_rs:['acum','acumulado mostra a receita líquida consolidada ano contra ano'],
+  fatliq_rs:['yoy','comparativo ano contra ano com a variação % em destaque (caixinhas)'],
   devpct:['lines','linhas mostram o % de devolução mensal comparado à meta'],
   custo_op_ac:['lines','curva já acumulada do custo T&W em % do faturamento'],
 };
 
 /* modos de visualização disponíveis por tipo de indicador */
-const vizModes = ind => ind.unit==='rs' ? ['acum','lines','bars','area'] : ['lines','bars','area','heat','gauge'];
+const vizModes = ind => ind.unit==='rs' ? ['acum','acumbar','yoy','lines','bars','area'] : ['lines','bars','area','heat','gauge'];
 
 let refYear='2026';
 let hiddenYears=new Set();
@@ -417,7 +421,9 @@ const tipFmt=ind=>{
 };
 
 /* R$: valor do período é a SOMA (acumulado); % e dias continuam pela média */
-function periodValue(ind,yr){const ms=Object.keys(ind.series).filter(k=>k.startsWith(yr));
+function periodValue(ind,yr){
+  if(ind.headFrom && DATA[ind.headFrom]){ const hv=periodValue(DATA[ind.headFrom],yr); if(hv!=null) return hv; } /* usa o acumulado final */
+  const ms=Object.keys(ind.series).filter(k=>k.startsWith(yr));
   if(!ms.length) return null;
   if(ind.acc){ ms.sort(); return ind.series[ms[ms.length-1]]; } /* acumulado: usa o último mês */
   const tot=ms.reduce((a,k)=>a+ind.series[k],0);
@@ -597,7 +603,7 @@ function drawOne(k){
   const ind=DATA[k];const el=document.getElementById('pc-'+k);if(!el)return;
   if(charts[k])charts[k].destroy();
   const t=vizByKey[k];
-  const opt=t==='lines'?linesOpt(ind):t==='bars'?barsOpt(ind):t==='area'?areaOpt(ind):t==='heat'?heatOpt(ind):t==='acum'?acumOpt(ind):gaugeOpt(ind);
+  const opt=t==='lines'?linesOpt(ind):t==='bars'?barsOpt(ind):t==='area'?areaOpt(ind):t==='heat'?heatOpt(ind):t==='acum'?acumOpt(ind):t==='acumbar'?acumBarOpt(ind):t==='yoy'?yoyOpt(ind):gaugeOpt(ind);
   charts[k]=new ApexCharts(el,opt);charts[k].render();
 }
 
@@ -627,13 +633,13 @@ function linesOpt(ind){const yrs=visibleYears();
     series:yearSeries(ind,yrs),colors:yrs.map(y=>YEAR_COL[y]),
     stroke:{width:yrs.map(y=>y===refYear?3.6:2),curve:'smooth'},markers:{size:0,hover:{size:5}},
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:Object.assign(metaAnno(ind),{points:endPoints(ind,yrs)})},baseXY(ind));}
+    annotations:Object.assign({},metaAnno(ind),quarterAnno(ind),{points:endPoints(ind,yrs)})},baseXY(ind));}
 function barsOpt(ind){const yrs=visibleYears();
   const opt=Object.assign({chart:{type:'bar',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
     series:yearSeries(ind,yrs),colors:yrs.map(y=>YEAR_COL[y]),
     plotOptions:{bar:{borderRadius:2,columnWidth:'85%'}},dataLabels:{enabled:false},
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:metaAnno(ind)},baseXY(ind));
+    annotations:Object.assign({},metaAnno(ind),quarterAnno(ind))},baseXY(ind));
   if(ind.showQuarters){
     const s=rsScale(ind), q=[0,0,0,0];
     MONTHS_idx().forEach((mm,i)=>{const v=ind.series[`${refYear}-${mm}`]; if(v!=null) q[Math.floor(i/3)]+=v;});
@@ -651,7 +657,7 @@ function areaOpt(ind){
     stroke:{width:[3,1.6],curve:'smooth',dashArray:[0,4]},
     fill:{type:['gradient','solid'],gradient:{opacityFrom:.35,opacityTo:.03}},markers:{size:0,hover:{size:5}},
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:metaAnno(ind)},baseXY(ind));}
+    annotations:Object.assign({},metaAnno(ind),quarterAnno(ind))},baseXY(ind));}
 function heatOpt(ind){
   const yrs=visibleYears().slice().reverse();
   const dec=ind.unit==='d'?1:(ind.target<0.2?2:1);
@@ -712,6 +718,62 @@ function acumOpt(ind){
     stroke:{width:yrs.map(y=>y===refYear?3.6:2),curve:'straight'},markers:{size:0,hover:{size:5}},
     legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
     annotations:Object.assign(metaAnno(ind),{points:endPointsSeries(series, ind.unit==='rs')})},baseXY(ind));
+}
+
+/* marcação de quarter (linhas verticais em Mar/Jun/Set/Dez) com o valor
+   ACUMULADO do ano naquele ponto — usado em Custo %TW e Custo %TW Acumulado */
+function quarterAnno(ind){
+  if(!ind.qAccFrom || !DATA[ind.qAccFrom]) return {};
+  const src=DATA[ind.qAccFrom], qEnds=['03','06','09','12'], xa=[];
+  qEnds.forEach((mm,qi)=>{
+    const v=src.series[`${refYear}-${mm}`];
+    if(v==null) return;
+    xa.push({x:MONTH_LABELS[+mm-1],strokeDashArray:4,borderColor:COL.text3,opacity:0.45,
+      label:{text:`Q${qi+1} · ${(v*100).toFixed(1).replace('.',',')}%`,orientation:'horizontal',position:'top',
+        borderColor:COL.text3,style:{background:COL.text3,color:'#fff',fontSize:'9px',fontWeight:700,padding:{left:4,right:4,top:2,bottom:2}}}});
+  });
+  return xa.length?{xaxis:xa}:{};
+}
+
+/* Acumulado em BARRAS (soma progressiva por ano) */
+function acumBarOpt(ind){
+  const yrs=visibleYears();const series=cumSeries(ind,yrs);
+  return Object.assign({chart:{type:'bar',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
+    series,colors:yrs.map(y=>YEAR_COL[y]),
+    plotOptions:{bar:{borderRadius:2,columnWidth:'88%'}},dataLabels:{enabled:false},
+    legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
+    annotations:metaAnno(ind)},baseXY(ind));
+}
+
+/* Comparativo ano-a-ano: 1 barra por ano + "caixinhas" com a variação % (mesmo período) */
+function yoyOpt(ind){
+  const yrs=visibleYears();
+  const s=ind.unit==='rs'?rsScale(ind):null;
+  const disp=v=>v==null?null:(ind.unit==='rs'?+(v/1e6).toFixed(2):(ind.unit==='d'?+v.toFixed(2):+(v*100).toFixed(2)));
+  const vals=yrs.map(y=>disp(ind.yearly[y]));
+  const cats=yrs.map(y=>y==='2026'?'YTD 26':y);
+  const points=[];
+  for(let i=1;i<yrs.length;i++){
+    const yc=yrs[i], yp=yrs[i-1]; let a,b;
+    if(ind.unit==='rs'){ const ms=monthsFilled(ind,yc); b=ytdSum(ind,yc,ms); a=ytdSum(ind,yp,ms); }
+    else { a=ind.yearly[yp]; b=ind.yearly[yc]; }
+    if(a!=null&&b!=null&&a!==0&&vals[i]!=null){
+      const g=((b/a)-1)*100, up=(ind.dir==='down')?g<0:g>0;
+      points.push({x:cats[i],y:vals[i],marker:{size:0},
+        label:{text:`${g>=0?'+':''}${g.toFixed(1).replace('.',',')}%`,offsetY:-6,borderWidth:0,
+          style:{background:up?COL.green:COL.red,color:'#fff',fontSize:'10px',fontWeight:700,padding:{left:6,right:6,top:3,bottom:3}}}});
+    }
+  }
+  const lblFmt=v=>v==null?'':(ind.unit==='rs'?'R$'+(v*(s?s.mul:1)).toLocaleString('pt-BR',{maximumFractionDigits:s?s.dax:0})+(s?s.suf:''):v.toFixed(1)+(ind.unit==='d'?'d':'%'));
+  return {chart:{type:'bar',height:320,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
+    series:[{name:ind.label,data:vals}],colors:yrs.map(y=>YEAR_COL[y]),
+    plotOptions:{bar:{borderRadius:4,columnWidth:'55%',distributed:true,dataLabels:{position:'top'}}},
+    dataLabels:{enabled:true,offsetY:-22,style:{fontSize:'11px',fontWeight:700,colors:[COL.text2]},formatter:lblFmt},
+    xaxis:{categories:cats,labels:{style:{colors:COL.text2,fontSize:'12px',fontWeight:600}},axisTicks:{show:false},axisBorder:{color:COL.grid}},
+    yaxis:{labels:{show:false}},legend:{show:false},
+    grid:{borderColor:COL.grid,padding:{top:26,left:6,right:6},yaxis:{lines:{show:false}}},
+    annotations:{points},
+    tooltip:{theme:dark?'dark':'light',y:{formatter:tipFmt(ind)}}};
 }
 
 function gaugeOpt(ind){
