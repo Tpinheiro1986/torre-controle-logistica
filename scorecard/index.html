@@ -366,7 +366,7 @@ const charts={};
    1ª vez: mostra só o ano corrente. Depois: lembra o que ficou setado. */
 const PREF_KEY='scorecard-anos-pref-v1';
 function savePref(){
-  try{ localStorage.setItem(PREF_KEY, JSON.stringify({refYear, hidden:[...hiddenYears]})); }catch(e){}
+  try{ localStorage.setItem(PREF_KEY, JSON.stringify({refYear, hidden:[...hiddenYears], tab:activeTab, viz:vizByKey})); }catch(e){}
 }
 function loadPref(){
   try{
@@ -374,6 +374,12 @@ function loadPref(){
     const p=JSON.parse(raw);
     if(p && YEARS.includes(p.refYear)) refYear=p.refYear;
     if(p && Array.isArray(p.hidden)) hiddenYears=new Set(p.hidden.filter(y=>YEARS.includes(y)));
+    if(p && p.tab && GROUPS[p.tab]) activeTab=p.tab;                 // última aba
+    if(p && p.viz && typeof p.viz==='object'){                       // último tipo de gráfico por indicador
+      Object.keys(p.viz).forEach(k=>{
+        if(DATA[k] && vizModes(DATA[k]).includes(p.viz[k])) vizByKey[k]=p.viz[k];
+      });
+    }
     return true;
   }catch(e){ return false; }
 }
@@ -410,7 +416,7 @@ function rsScale(ind){
 }
 const axFmt=ind=>{
   if(ind.unit==='d') return v=>v.toFixed(0)+'d';
-  if(ind.unit!=='rs') return v=>v.toFixed(0)+'%';
+  if(ind.unit!=='rs') return v=>(Math.abs(v)<10?v.toFixed(1).replace('.',','):v.toFixed(0))+'%';
   const s=rsScale(ind);
   return v=>v==null?'':'R$'+(v*s.mul).toLocaleString('pt-BR',{maximumFractionDigits:s.dax})+s.suf;
 };
@@ -512,7 +518,7 @@ function buildTabs(){
       <span class="ticon" style="color:${groupColor(g)}"><svg viewBox="0 0 24 24">${groupIcon(g)}</svg></span>${g}
       <span class="tcount">${groupKeys(g).length}</span></button>`;
   }).join('');
-  el.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activeTab=b.dataset.g;showTab();});
+  el.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activeTab=b.dataset.g;savePref();showTab();});
 }
 function destroyPanelCharts(){Object.keys(DATA).forEach(k=>{if(charts[k]){charts[k].destroy();delete charts[k];}});}
 function showTab(){
@@ -592,7 +598,7 @@ function panel(k){
     ${infoBox(k)}
     <div class="p-chart" id="pc-${k}"></div>`;
   div.querySelectorAll('.vchip').forEach(b=>b.onclick=()=>{
-    vizByKey[k]=b.dataset.v;
+    vizByKey[k]=b.dataset.v;savePref();
     div.querySelectorAll('.vchip').forEach(x=>x.classList.toggle('on',x.dataset.v===b.dataset.v));
     drawOne(k);});
   return div;
