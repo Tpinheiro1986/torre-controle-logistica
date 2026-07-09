@@ -261,11 +261,11 @@ const DATA = {"otif":{"label":"OTIF Entrega","group":"Entregas & Atendimento","d
    Calculados automaticamente: fatliq_rs, devpct, custo_op, custo_tr_ac, custo_op_ac
    ===================================================================== */
 Object.assign(DATA,{
- fat_rs:{label:'Faturamento (R$)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{}},
+ fat_rs:{label:'Faturamento (R$) Líquido',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{}},
  ctransp_rs:{label:'Custo de Transporte (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
  ctw_rs:{label:'Custo Total T&W (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
  dev_rs:{label:'Devolução (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
- fatliq_rs:{label:'Faturamento Líquido (R$)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{},calc:'Faturamento − Devolução'},
+ fatliq_rs:{label:'Faturamento Líquido (R$) - (devolução)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{},calc:'Faturamento − Devolução'},
  devpct:{label:'% Devolução (Dev ÷ Fat)',group:'Custo Logístico',dir:'down',unit:'%',target:0.01,series:{},yearly:{},calc:'Devolução R$ ÷ Faturamento R$'},
  custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},acc:true,qAccFrom:'custo_op_ac',calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
 });
@@ -278,13 +278,15 @@ const MANUAL={
   custo_op:    Object.assign({}, DATA.custo_op.series),
   custo_tr_ac: Object.assign({}, DATA.custo_tr_ac.series)
 };
-DATA.custo_op.label='Custo Operacional %TW';
+DATA.custo_op.label='Custo Operacional %TW Mensal';
 DATA.custo_op.target=0.055;
 DATA.custo_op.calc='Custo T&W ÷ Faturamento (2025+) · manual até 2024';
 DATA.custo_op.headFrom='custo_op_ac';   /* card mostra o acumulado final do ano */
 DATA.custo_op.qAccFrom='custo_op_ac';   /* marcação de quarter (acumulado) no gráfico */
 DATA.custo_tr_ac.calc='Σ Transporte ÷ Σ Faturamento (2025+) · manual até 2024';
 DATA.custo_tr_ac.acc=true;
+DATA.custo_tr_ac.label='Custo de Transporte %T (Acumulado)';
+DATA.custo_tr_ac.target=0.04;   /* meta abaixo de 4% · quanto menor melhor */
 
 const GROUPS = {
   'Entregas & Atendimento':'--blue',
@@ -880,7 +882,7 @@ const INFO={
         calc:'Desligamentos ÷ headcount médio.',
         ler:'Quanto menor, melhor; alto turnover aumenta a curva de aprendizado e os erros.',
         importa:'Afeta acuracidade, produtividade e custo de treinamento.'},
-  fat_rs:{mede:'Faturamento bruto mensal em reais (R$).',
+  fat_rs:{mede:'Faturamento líquido mensal em reais (R$).',
         calc:'Lançamento manual do valor faturado no mês.',
         ler:'Use o modo Acumulado para comparar o ritmo do ano contra anos anteriores; o CAGR resume o crescimento médio anual composto.',
         importa:'É a base de todos os indicadores relativos (%T&W, % devolução) e da leitura de escala da operação.'},
