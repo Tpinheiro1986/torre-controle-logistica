@@ -1031,7 +1031,7 @@ function recomputeCalc(){
     MONTHS_idx().forEach(mm=>{
       const k=`${y}-${mm}`;
       if(fat[k]!=null && ctr[k]!=null){ cf+=fat[k]; cc+=ctr[k]; if(cf>0) tr[k]=+(cc/cf).toFixed(4); }
-      else if(MANUAL.custo_tr_ac[k]!=null) tr[k]=MANUAL.custo_tr_ac[k];
+      /* sem dados de transporte em 2025+ → fica vazio (corrige ao lançar) */
     });
   });
   DATA.custo_tr_ac.series=tr;
