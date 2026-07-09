@@ -459,7 +459,7 @@ const STLABEL={ok:'No alvo',warn:'Atenção',bad:'Fora',na:''};
 const statusColor=s=>s==='ok'?COL.green:s==='warn'?COL.amber:s==='na'?COL.text3:COL.red;
 const groupColor=g=>{const v=GROUPS[g];return v.startsWith('--')?cssvar(v):v;};
 const visibleYears=()=>YEARS.filter(y=>!hiddenYears.has(y));
-const KPI_ORDER={fat_rs:1,ctransp_rs:2,dev_rs:3,custo_op:4,custo_tr_ac:5,devpct:6,fatliq_rs:7,custo_op_ac:8,ctw_rs:9};
+const KPI_ORDER={fat_rs:1,fatliq_rs:2,ctw_rs:3,custo_op:4,custo_op_ac:5,ctransp_rs:6,custo_tr_ac:7,dev_rs:8,devpct:9};
 const groupKeys=g=>Object.keys(DATA).filter(k=>DATA[k].group===g)
   .sort((a,b)=>(KPI_ORDER[a]||99)-(KPI_ORDER[b]||99));
 function groupStat(g){let ok=0,warn=0,bad=0;groupKeys(g).forEach(k=>{const v=periodValue(DATA[k],refYear);
