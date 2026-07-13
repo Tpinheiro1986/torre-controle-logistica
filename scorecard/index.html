@@ -641,7 +641,7 @@ function panelHalf(k){
       </div>
       <span class="p-status" style="background:var(--blue-l);color:var(--blue)">Anual · H1/H2</span>
     </div>
-    <div class="p-meta">Ajustes apurados nos inventários, por semestre (H1/H2) · histórico ${years[0]}–${ly} · <b style="color:var(--red)">vermelho</b> = ajuste positivo · <b style="color:var(--green)">verde</b> = ajuste negativo</div>
+    <div class="p-meta">Ajustes apurados nos inventários, por semestre (H1/H2) · histórico ${years[0]}–${ly} · <b style="color:#5B9BD5">azul</b> = ajuste positivo · <b style="color:var(--red)">vermelho</b> = ajuste negativo</div>
     ${infoBox(k)}
     <div class="p-chart" id="pc-${k}"></div>`;
   return div;
@@ -650,16 +650,28 @@ function inventarioOpt(ind){
   const keys=Object.keys(ind.series).sort();
   const cats=keys.map(x=>x.replace('-',' '));
   const vals=keys.map(x=>+(ind.series[x]/1000).toFixed(2)); /* em mil */
-  return {chart:{type:'bar',height:320,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
+  /* rótulo compacto e legível acima de cada barra (valores em mil) */
+  const lbl=v=>{
+    if(v==null) return '';
+    if(v===0) return '0';
+    const a=Math.abs(v), sg=v<0?'\u2212':'';
+    if(a>=100) return sg+a.toLocaleString('pt-BR',{maximumFractionDigits:0})+' mil';
+    if(a>=1)   return sg+a.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mil';
+    return sg+'R$ '+Math.round(a*1000).toLocaleString('pt-BR');
+  };
+  return {chart:{type:'bar',height:360,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
     series:[{name:'Ajustes',data:vals}],
-    colors:[({value})=>value>=0?COL.red:COL.green],
-    plotOptions:{bar:{borderRadius:2,columnWidth:'70%'}},
-    dataLabels:{enabled:true,offsetY:-16,style:{fontSize:'9px',fontWeight:600,colors:[COL.text2]},
-      formatter:v=>(v==null||v===0)?'':v.toLocaleString('pt-BR',{maximumFractionDigits:Math.abs(v)<10?1:0})},
-    xaxis:{categories:cats,labels:{rotate:-45,rotateAlways:true,style:{colors:COL.text2,fontSize:'10px'}},axisTicks:{show:false},axisBorder:{color:COL.grid}},
-    yaxis:{labels:{style:{colors:COL.text2,fontSize:'10px'},formatter:v=>'R$ '+v.toLocaleString('pt-BR',{maximumFractionDigits:0})+' mil'},forceNiceScale:true},
-    annotations:{yaxis:[{y:0,borderColor:COL.text3,strokeDashArray:0}]},
-    grid:{borderColor:COL.grid,xaxis:{lines:{show:false}},padding:{left:6,right:16,top:14}},
+    colors:[({value})=>value>=0?'#7EB6E3':COL.red],
+    plotOptions:{bar:{borderRadius:3,columnWidth:'62%',dataLabels:{position:'top'}}},
+    dataLabels:{enabled:true,offsetY:-20,
+      style:{fontSize:'10.5px',fontWeight:700,colors:[({value})=>value>=0?'#5B9BD5':COL.red]},
+      background:{enabled:true,foreColor:'#fff',borderRadius:4,padding:4,opacity:0.92,borderWidth:0.5,borderColor:COL.grid,dropShadow:{enabled:false}},
+      formatter:lbl},
+    xaxis:{categories:cats,labels:{rotate:-45,rotateAlways:true,style:{colors:COL.text2,fontSize:'10px',fontWeight:600}},axisTicks:{show:false},axisBorder:{color:COL.grid}},
+    yaxis:{min:-400,max:700,tickAmount:11,
+      labels:{style:{colors:COL.text2,fontSize:'10.5px'},formatter:v=>(v<0?'\u2212':'')+'R$ '+Math.abs(v).toLocaleString('pt-BR')+' mil'}},
+    annotations:{yaxis:[{y:0,borderColor:COL.text2,strokeDashArray:0,opacity:.7}]},
+    grid:{borderColor:COL.grid,xaxis:{lines:{show:false}},padding:{left:8,right:16,top:26}},
     legend:{show:false},
     tooltip:{theme:dark?'dark':'light',y:{formatter:v=>fmtRSfull(v*1000)}}};
 }
