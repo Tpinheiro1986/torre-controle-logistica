@@ -612,7 +612,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
         <!-- Tabela principal de transportadoras -->
         <div class="card" style="margin-bottom:10px">
           <div class="slabel"><span class="slabel-num">1</span>Performance por transportadora — Entregas finalizadas</div>
-          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Apenas entregas finalizadas (On Time + Off Time). Prazo médio = dias entre emissão e entrega efetiva.</p>
+          <p id="transp-q1-nota" style="font-size:11px;color:var(--text2);margin-bottom:10px">Apenas entregas finalizadas (On Time + Off Time). Prazo médio = dias entre emissão e entrega efetiva.</p>
           <div style="overflow-x:auto">
           <table class="dt">
             <thead><tr>
@@ -1473,7 +1473,7 @@ async function processOTD(file){
       hub:0, trs:0, trs_atr:0,
       hub_val:0, trs_val:0, trs_atr_val:0, nao_val:0,
       dias_sum:0, dias_n:0,
-      uf_map:{}, reg_map:{}
+      uf_map:{}, reg_map:{}, nfs_pend:[]
     };
     if(tipo==='on_time'||tipo==='off_time'){
       transpMap[t].fin++;
@@ -1505,7 +1505,24 @@ async function processOTD(file){
     else if(tipo==='hub'){transpMap[t].hub++;transpMap[t].hub_val+=val;transpMap[t].nao_val+=val;}
     else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].trs_val+=val;transpMap[t].nao_val+=val;}
     else if(tipo==='transito_atr'){transpMap[t].trs_atr++;transpMap[t].trs_atr_val+=val;transpMap[t].nao_val+=val;}
+    // Drill-down do quadro 1: detalhe por NF da carteira pendente (não entregue)
+    if(tipo==='hub'||tipo==='transito'||tipo==='transito_atr'){
+      const deP=getDataEmissao(r), prevP=getPrevisao(r);
+      const fmtD=d=>d?String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear():'';
+      transpMap[t].nfs_pend.push({
+        nf: String(col(r,'Número NF','Numero NF','NF','Nro NF','Nota Fiscal','Chave NF')||'').trim(),
+        pedido: String(getPedido(r)||'').trim(),
+        cliente: getCliente(r),
+        regiao: reg,
+        uf: uf,
+        dt_fat: fmtD(deP),
+        dt_prev: fmtD(prevP),
+        valor: Math.round(val*100)/100,
+        tipo: tipo
+      });
+    }
   });
+  const ORDEM_TIPO_PEND={hub:0,transito:1,transito_atr:2,tratativa:3,ag_cte:4,transito_agenda:5};
   const transpList=Object.values(transpMap)
     .map(t=>({
       ...t,
@@ -1515,6 +1532,8 @@ async function processOTD(file){
       trs_val:Math.round(t.trs_val*100)/100,
       trs_atr_val:Math.round(t.trs_atr_val*100)/100,
       nao_val:Math.round(t.nao_val*100)/100,
+      nfs_pend:(t.nfs_pend||[]).slice().sort((a,b)=>
+        (ORDEM_TIPO_PEND[a.tipo]??9)-(ORDEM_TIPO_PEND[b.tipo]??9) || String(a.dt_prev||'9').localeCompare(String(b.dt_prev||'9'))),
       ufs:Object.values(t.uf_map).map(u=>({
         ...u,
         otd:u.fin>0?Math.round(u.on/u.fin*1000)/10:null,
@@ -1931,6 +1950,25 @@ function renderTransp(){
   document.getElementById('transp-content').style.display = fin.length ? 'block' : 'none';
   if(!fin.length) return;
 
+  // Nota do quadro 1: avisa explicitamente quando o drill-down por NF não está
+  // disponível (dados.json gerado antes do processar_otd.py com nfs_pend).
+  // Sem isso a feature sumia em silêncio e parecia bug no painel.
+  const notaQ1 = document.getElementById('transp-q1-nota');
+  if(notaQ1){
+    const temDrill = fin.some(t => Array.isArray(t.nfs_pend) && t.nfs_pend.length > 0);
+    const pendGeral = fin.reduce((s,t)=>s+(t.hub||0)+(t.trs||0)+(t.trs_atr||0)
+                       +(t.tratativa||0)+(t.ag_cte||0)+(t.transito_agenda||0), 0);
+    const base = 'Apenas entregas finalizadas (On Time + Off Time). Prazo médio = dias entre emissão e entrega efetiva.';
+    if(temDrill){
+      notaQ1.innerHTML = base + ' <span style="color:#185FA5;font-weight:600">Clique na transportadora para abrir as NFs pendentes.</span>';
+    } else if(pendGeral > 0){
+      notaQ1.innerHTML = base + ' <span style="color:#854F0B;font-weight:600">⚠ Detalhe por NF indisponível nesta base — rode o atualizar.bat com o processar_otd.py novo para habilitar o drill-down.</span>';
+      console.warn('[Transportadoras] dados.json sem o campo nfs_pend — drill-down desabilitado. Reprocesse a base (atualizar.bat).');
+    } else {
+      notaQ1.innerHTML = base;
+    }
+  }
+
   // KPIs
   const totFin = fin.reduce((s,t)=>s+t.fin,0);
   const totOn  = fin.reduce((s,t)=>s+t.on,0);
@@ -1967,14 +2005,19 @@ function renderTransp(){
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
   const maxFin = fin[0]?.fin || 1;
 
-  document.getElementById('transp-tbody').innerHTML = fin.map(t => {
+  const totalNFsGeral = (list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0)+(x.tratativa||0)+(x.ag_cte||0)+(x.transito_agenda||0),0)||1);
+  window.__transpNFs = {};
+  document.getElementById('transp-tbody').innerHTML = fin.map((t, ti) => {
     // v9.13: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
     // Recalculado no JS para funcionar com JSON de qualquer versão.
     const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
                        + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
+    const nfsP = Array.isArray(t.nfs_pend) ? t.nfs_pend : [];
+    window.__transpNFs[ti] = nfsP;
+    const temNF = nfsP.length > 0;
     return `
-    <tr style="cursor:pointer" onclick="showTranspDetalhe('${t.n.replace(/'/g,"\'")}')">
-      <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis">${t.n}</td>
+    <tr style="cursor:pointer" onclick="transpToggleNF(${ti}, this, '${t.n.replace(/'/g,"\\'")}')">
+      <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${temNF?'<span class="tr-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':''}${t.n}</td>
       <td class="r">${t.fin}</td>
       <td class="r" style="color:#3B6D11">${t.on}</td>
       <td class="r" style="color:#A32D2D">${t.off}</td>
@@ -1992,9 +2035,10 @@ function renderTransp(){
         <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
           <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#0C447C':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
         </div>
-        <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${(list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0)+(x.tratativa||0)+(x.ag_cte||0)+(x.transito_agenda||0),0)||1)} NFs</div>
+        <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${totalNFsGeral} NFs</div>
       </td>
-    </tr>`;
+    </tr>
+    ${temNF?`<tr id="trp-d-${ti}" style="display:none"><td colspan="15" style="padding:0;background:var(--bg2)"></td></tr>`:''}`;
   }).join('');
 
   // Rankings
@@ -2018,8 +2062,73 @@ function renderTransp(){
     </div>`).join('');
 }
 
-function showTranspDetalhe(nome){
-  if(!otdData) return;
+// Drill-down do quadro 1 (Transportadoras) — carteira pendente por NF,
+// separada e colorida por status. Renderizado sob demanda (lazy) ao expandir.
+const TRANSP_STATUS = [
+  {k:'hub',             lbl:'CD — Ag. Expedição',   cor:'#854F0B', bg:'#FAEEDA'},
+  {k:'transito',        lbl:'Em Trânsito',          cor:'#185FA5', bg:'#E6F1FB'},
+  {k:'transito_atr',    lbl:'Em Trânsito em Atraso',cor:'#A32D2D', bg:'#FCEBEB'},
+  {k:'tratativa',       lbl:'Tratativa',            cor:'#7A4FBF', bg:'#EFE6FB'},
+  {k:'ag_cte',          lbl:'Ag. CTE',              cor:'#3787C7', bg:'#E6F0FB'},
+  {k:'transito_agenda', lbl:'Trânsito Agenda',      cor:'#C76137', bg:'#FBEEE3'}
+];
+
+function transpToggleNF(ti, rowEl, nome){
+  // Mantém o comportamento antigo: seleciona a transportadora nos quadros 2 e 3
+  if(typeof showTranspDetalhe==='function' && nome) showTranspDetalhe(nome, true);
+  const d = document.getElementById('trp-d-'+ti);
+  if(!d) return;
+  const abrir = d.style.display==='none';
+  d.style.display = abrir ? 'table-row' : 'none';
+  const ch = rowEl && rowEl.querySelector ? rowEl.querySelector('.tr-chev') : null;
+  if(ch) ch.style.transform = abrir ? 'rotate(90deg)' : 'rotate(0deg)';
+  if(!abrir) return;
+  const cell = d.firstElementChild;
+  if(cell.dataset.done === '1') return;   // já renderizado
+
+  const nfs = (window.__transpNFs && window.__transpNFs[ti]) || [];
+  const mapS = {}; TRANSP_STATUS.forEach(s => mapS[s.k] = s);
+  let html = '<div style="padding:10px 14px 14px 26px">';
+  if(!nfs.length){
+    html += '<div style="padding:12px;color:var(--text3);font-size:12px">Nenhuma NF pendente para esta transportadora.</div></div>';
+    cell.innerHTML = html; cell.dataset.done = '1'; return;
+  }
+  // Linha de resumo: total + contagem por situação (mesma sequência do quadro)
+  const totalVal = nfs.reduce((a,n)=>a+(n.valor||0),0);
+  let resumo = '<span style="font-weight:600;color:#A32D2D">'+nfs.length+' NF(s) pendente(s)</span>'
+             + '<span style="margin:0 8px;color:var(--border2)">|</span>'
+             + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>';
+  TRANSP_STATUS.forEach(s => {
+    const q = nfs.filter(n => n.tipo === s.k).length;
+    if(!q) return;
+    resumo += '<span style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:600">'+s.lbl+': '+q+'</span>';
+  });
+  html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
+  html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
+    + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Cliente</th><th>Região</th><th>UF</th>'
+    + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th class="r">Valor NF</th></tr></thead><tbody>'
+    + nfs.map((n,i)=>{
+        const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888', bg:'var(--bg2)'};
+        const corReg = REG_CORES[n.regiao] || '#888';
+        return '<tr>'
+          + '<td style="color:var(--text3)">'+(i+1)+'</td>'
+          + '<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
+          + '<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
+          + '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
+          + '<td style="font-weight:600">'+(n.uf||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
+          + '<td style="color:var(--text2)">'+(n.dt_fat||'—')+'</td>'
+          + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
+          + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>';
+  cell.innerHTML = html;
+  cell.dataset.done = '1';
+}
+
+function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
   const t = (otdData.otd||[]).find(x=>x.n===nome);
   if(!t) return;
   document.getElementById('transp-detalhe').style.display='block';
@@ -2052,7 +2161,8 @@ function showTranspDetalhe(nome){
     </tr>`).join('');
 
   // Scroll to detalhe
-  document.getElementById('transp-detalhe').scrollIntoView({behavior:'smooth'});
+  // Scroll só quando a chamada não vem do drill-down (evita a página pular ao expandir)
+  if(!semScroll) document.getElementById('transp-detalhe').scrollIntoView({behavior:'smooth'});
 }
 
 // ============================================================
