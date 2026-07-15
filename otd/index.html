@@ -292,7 +292,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 <!-- Só fica visível quando body tem class .tv-on. -->
 <div id="tv-mode" aria-hidden="true"></div>
 <!-- v9.19: Botão Voltar (só aparece em modo TV) -->
-<button id="tv-back-btn" onclick="(function(){document.body.classList.remove('tv-on');document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('on');if(t.textContent.trim().startsWith('OTD'))t.classList.add('on');});Object.values(TABS).forEach(s=>{const el=document.getElementById(s);if(el){el.classList.remove('on');el.style.display='none';}});const otd=document.getElementById('sec-otd');if(otd){otd.classList.add('on');otd.style.display='block';}})()">← Voltar ao painel</button>
+<button id="tv-back-btn" onclick="(function(){document.body.classList.remove('tv-on');if(typeof tvAutoRefreshStop==='function')tvAutoRefreshStop();document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('on');if(t.textContent.trim().startsWith('OTD'))t.classList.add('on');});Object.values(TABS).forEach(s=>{const el=document.getElementById(s);if(el){el.classList.remove('on');el.style.display='none';}});const otd=document.getElementById('sec-otd');if(otd){otd.classList.add('on');otd.style.display='block';}})()">← Voltar ao painel</button>
 
 <!-- SELO DE VERSÃO (canto inferior direito) — fácil de ver para confirmar que a versão online é a certa -->
 <div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(24,95,165,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Clique para copiar a versão" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
@@ -343,6 +343,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
     <div class="tab on" onclick="switchTab('otd',this)">OTD</div>
     <div class="tab" onclick="switchTab('atrasos',this)">Atrasos</div>
     <div class="tab" onclick="switchTab('transp',this)">Transportadoras</div>
+    <div class="tab" onclick="switchTab('clientes',this)">Clientes</div>
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
     <div class="tab" onclick="switchTab('leadtime',this)">Lead Time</div>
@@ -684,6 +685,72 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
             <div class="slabel"><span class="slabel-num">5</span>Ranking Prazo Médio — Menor para Maior (Melhor → Pior)</div>
             <div id="transp-ranking-prazo"></div>
           </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="dash-section" id="sec-clientes" style="display:none">
+      <div id="clientes-empty" class="empty-state" style="display:none">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+        <p style="font-size:11px">Se a base já está carregada, rode o <strong>atualizar.bat</strong> com o <strong>processar_otd.py</strong> novo para gerar os dados de clientes.</p>
+      </div>
+      <div id="clientes-content" style="display:none">
+
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px" id="clientes-kpis"></div>
+
+        <!-- Filtros -->
+        <div class="fbar" id="clientes-fbar">
+          <span class="fl">NFs</span>
+          <button class="fbtn on" id="clientes-f-todas" onclick="clientesFilter('todas',this)">Todas</button>
+          <button class="fbtn" id="clientes-f-aberto" onclick="clientesFilter('aberto',this)">Somente em aberto</button>
+          <div class="fdiv"></div>
+          <span class="fl">Região</span>
+          <button class="fbtn on" id="clientes-r-todas" onclick="clientesFilterReg('todas',this)">Todas</button>
+          <span id="clientes-reg-btns"></span>
+          <div class="fdiv"></div>
+          <input id="clientes-search" type="text" placeholder="Buscar cliente, UF, nº da nota ou pedido..."
+            class="form-input" style="max-width:300px;padding:5px 12px;font-size:12px" oninput="clientesSearch()">
+        </div>
+
+        <!-- Quadro 1: performance por cliente -->
+        <div class="card">
+          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">1</span>Performance por Cliente
+            <button onclick="exportarClientesExcel(event)" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar NFs (Excel)
+            </button>
+          </div>
+          <p id="clientes-q1-nota" style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            OTD e Prazo Médio consideram só entregas finalizadas. Valor Pendente = tudo que ainda não foi entregue.
+          </p>
+          <div style="overflow-x:auto">
+            <table class="dt">
+              <thead><tr>
+                <th>Cliente</th>
+                <th>UF</th>
+                <th class="r">Finalizadas</th>
+                <th class="r" style="color:#3B6D11">On Time</th>
+                <th class="r" style="color:#A32D2D">Off Time</th>
+                <th class="r">OTD%</th>
+                <th class="r">Prazo Médio</th>
+                <th class="r" style="color:#185FA5">Receita Finalizada</th>
+                <th class="r" style="color:#854F0B">CD</th>
+                <th class="r" style="color:#185FA5">Trânsito</th>
+                <th class="r" style="color:#A32D2D">Pend. Atraso</th>
+                <th class="r" style="color:#7A4FBF">Tratativa</th>
+                <th class="r" style="color:#3787C7">Ag. CTE</th>
+                <th class="r" style="color:#C76137">Trânsito Agenda</th>
+                <th class="r" style="color:#A32D2D">Valor Pendente</th>
+                <th style="min-width:80px">OTD Perf.</th>
+              </tr></thead>
+              <tbody id="clientes-tbody"></tbody>
+            </table>
+          </div>
+          <div id="clientes-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2)"></div>
         </div>
 
       </div>
@@ -1084,7 +1151,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', tv:'tv-mode'
+  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', clientes:'sec-clientes', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', tv:'tv-mode'
 };
 
 function switchTab(id, btn){
@@ -1101,11 +1168,14 @@ function switchTab(id, btn){
   if(id === 'tv'){
     document.body.classList.add('tv-on');
     if(typeof window.__renderTV === 'function') window.__renderTV();
+    tvAutoRefreshStart();
   } else {
     document.body.classList.remove('tv-on');
+    tvAutoRefreshStop();
   }
 
   if(id==='transp'){ renderTransp(); }
+  if(id==='clientes'){ renderClientes(); }
   if(id==='offtime'){ renderOffTime(); }
   if(id==='atrasos'){ renderAtrasos(); }
   if(id==='infull'){ renderInFull(); }
@@ -1133,6 +1203,69 @@ const REGIOES_MAP = window.REGIOES_MAP = {
 function log(msg,type=''){
   // log only to console (upload removido desta tela)
   console.log('['+type+'] '+msg);
+}
+
+// ============================================================
+// PERSISTÊNCIA DOS FILTROS (v9.21)
+// Guarda no navegador o último filtro usado em cada aba, para o painel
+// voltar como você deixou em vez de zerar a cada F5/reabertura.
+// Guardado por navegador/usuário — não vai para o Supabase.
+// Se o navegador bloquear o storage, degrada em silêncio (volta ao padrão).
+// ============================================================
+const FILTROS_KEY = 'torre-otd-filtros-v1';
+
+function filtrosSalvar(){
+  try{
+    localStorage.setItem(FILTROS_KEY, JSON.stringify({
+      otd:      otdFilter_state,
+      atrasos:  atrasosFilter_state,
+      offtime:  offTimeFilter_state,
+      leadtime: leadTime_state,
+      infull:   inFullFilter_state
+    }));
+  }catch(e){ /* storage indisponível — segue sem persistir */ }
+}
+
+function filtrosLer(){
+  try{ return JSON.parse(localStorage.getItem(FILTROS_KEY) || '{}') || {}; }
+  catch(e){ return {}; }
+}
+
+// Limpa os filtros salvos e recarrega (útil se algo ficar "preso")
+function filtrosResetar(){
+  try{ localStorage.removeItem(FILTROS_KEY); }catch(e){}
+  location.reload();
+}
+
+// ============================================================
+// MODO TV — ATUALIZAÇÃO AUTOMÁTICA (v9.21)
+// A TV fica ligada o dia inteiro e o pipeline sobe base nova durante o dia.
+// Sem isso, alguém precisa ir até a TV e dar F5 para ver os dados novos.
+// Enquanto a aba TV estiver aberta, o painel rebusca o dados.json de hora
+// em hora e re-renderiza sozinho (sem recarregar a página, sem novo login).
+// Só roda no modo TV — nas outras abas o timer fica desligado.
+// ============================================================
+const TV_REFRESH_MS = 60 * 60 * 1000;   // 1 hora
+let tvRefreshTimer = null;
+
+function tvAutoRefreshStart(){
+  tvAutoRefreshStop();
+  tvRefreshTimer = setInterval(async function(){
+    // Se saiu do modo TV por qualquer caminho, desliga o timer
+    if(!document.body.classList.contains('tv-on')){ tvAutoRefreshStop(); return; }
+    try{
+      console.log('[TV] Atualização automática — ' + new Date().toLocaleString('pt-BR'));
+      await loadOTDFromStorage();   // rebusca dados.json (cache-bust) e re-renderiza a TV
+    }catch(e){
+      // Falha de rede não pode derrubar a TV: mantém os dados atuais e tenta de novo na próxima hora
+      console.warn('[TV] Falha na atualização automática (mantendo dados atuais):', e);
+    }
+  }, TV_REFRESH_MS);
+  console.log('[TV] Atualização automática ligada (a cada 1h).');
+}
+
+function tvAutoRefreshStop(){
+  if(tvRefreshTimer){ clearInterval(tvRefreshTimer); tvRefreshTimer = null; }
 }
 
 function readExcel(file){
@@ -1894,6 +2027,7 @@ async function processOTD(file){
 
   renderOTD(payload);
   if(typeof renderTransp==='function') renderTransp();
+  if(typeof renderClientes==='function') renderClientes();
   if(typeof renderOffTime==='function') renderOffTime();
   if(typeof renderAtrasos==='function') renderAtrasos();
   if(typeof renderInFull==='function') renderInFull();
@@ -2128,6 +2262,297 @@ function transpToggleNF(ti, rowEl, nome){
   cell.dataset.done = '1';
 }
 
+// ============================================================
+// RENDER CLIENTES (v9.22)
+// Mesmo perfil do quadro 1 de Transportadoras, mas por cliente.
+// Drill-down leva TODAS as NFs (entregues + em aberto) — por isso tem
+// Data de Entrega e o filtro "Somente em aberto".
+// ============================================================
+let clientesFilter_state = {nfs:'todas', reg:'todas'};
+let clientesPage = 1;
+const CLIENTES_PER_PAGE = 50;
+
+// Situações: as 6 pendentes (mesma paleta do painel) + as 2 finalizadas
+const CLI_STATUS = TRANSP_STATUS.concat([
+  {k:'off_time', lbl:'Entregue em Atraso', cor:'#854F0B', bg:'#FAEEDA'},
+  {k:'on_time',  lbl:'Entregue no Prazo',  cor:'#3B6D11', bg:'#EAF3DE'}
+]);
+const CLI_ABERTO = ['hub','transito','transito_atr','tratativa','ag_cte','transito_agenda'];
+
+function renderClientes(){
+  const lista = (otdData && otdData.clientes) || [];
+  const temDados = lista.length > 0;
+  document.getElementById('clientes-empty').style.display   = temDados ? 'none' : 'block';
+  document.getElementById('clientes-content').style.display = temDados ? 'block' : 'none';
+  if(!temDados){
+    if(otdData) console.warn('[Clientes] dados.json sem o campo "clientes" — rode o atualizar.bat com o processar_otd.py novo.');
+    return;
+  }
+
+  // Botões de região (a partir dos dados)
+  const regs = [...new Set(lista.map(c=>c.regiao).filter(Boolean))].sort();
+  const regBtns = document.getElementById('clientes-reg-btns');
+  if(regBtns && !regBtns.dataset.done){
+    regBtns.innerHTML = '';
+    regs.forEach(r=>{
+      const b=document.createElement('button'); b.className='fbtn'; b.textContent=r;
+      b.onclick=function(){ clientesFilterReg(r,this); };
+      regBtns.appendChild(b);
+    });
+    regBtns.dataset.done = '1';
+  }
+
+  clientesPage = 1;
+  renderClientesTabela();
+}
+
+function clientesFilter(val, btn){
+  clientesFilter_state.nfs = val;
+  document.getElementById('clientes-f-todas').classList.toggle('on', val==='todas');
+  document.getElementById('clientes-f-aberto').classList.toggle('on', val==='aberto');
+  clientesPage = 1;
+  renderClientesTabela();
+}
+
+function clientesFilterReg(val, btn){
+  clientesFilter_state.reg = val;
+  document.querySelectorAll('#clientes-reg-btns .fbtn').forEach(b=>b.classList.remove('on'));
+  const todas = document.getElementById('clientes-r-todas');
+  if(val==='todas'){ if(todas) todas.classList.add('on'); }
+  else { if(todas) todas.classList.remove('on'); if(btn) btn.classList.add('on'); }
+  clientesPage = 1;
+  renderClientesTabela();
+}
+
+function clientesSearch(){
+  clientesPage = 1;
+  renderClientesTabela();
+}
+
+// Aplica os filtros e devolve os clientes já com as NFs filtradas.
+// Com "Somente em aberto", as métricas de finalizadas continuam visíveis
+// (são o histórico do cliente) — o filtro age sobre a lista de NFs e
+// esconde quem não tem nada em aberto.
+function getClientesFiltrados(){
+  const busca = (document.getElementById('clientes-search')?.value || '').trim().toLowerCase();
+  const soAberto = clientesFilter_state.nfs === 'aberto';
+  const out = [];
+  ((otdData && otdData.clientes) || []).forEach(c => {
+    if(clientesFilter_state.reg !== 'todas' && c.regiao !== clientesFilter_state.reg) return;
+    let nfs = Array.isArray(c.nfs) ? c.nfs : [];
+    if(soAberto) nfs = nfs.filter(n => CLI_ABERTO.includes(n.tipo));
+    if(busca){
+      const achouCli = (c.n||'').toLowerCase().includes(busca) || (c.uf||'').toLowerCase().includes(busca);
+      if(!achouCli){
+        // busca também casa por número de nota / pedido dentro do cliente
+        const nfsBusca = nfs.filter(n => String(n.nf||'').toLowerCase().includes(busca)
+                                      || String(n.pedido||'').toLowerCase().includes(busca));
+        if(!nfsBusca.length) return;
+        nfs = nfsBusca;
+      }
+    }
+    if(soAberto && !nfs.length) return;   // sem nada em aberto → some da lista
+    out.push({...c, _nfs: nfs});
+  });
+  return out;
+}
+
+function renderClientesTabela(){
+  const lista = getClientesFiltrados();
+  const total = lista.length;
+  const pages = Math.ceil(total/CLIENTES_PER_PAGE) || 1;
+  if(clientesPage > pages) clientesPage = pages;
+  const slice = lista.slice((clientesPage-1)*CLIENTES_PER_PAGE, clientesPage*CLIENTES_PER_PAGE);
+
+  // KPIs (respeitam os filtros)
+  const tFin  = lista.reduce((s,c)=>s+(c.fin||0),0);
+  const tOn   = lista.reduce((s,c)=>s+(c.on||0),0);
+  const tPend = lista.reduce((s,c)=>s+(c.hub||0)+(c.trs||0)+(c.trs_atr||0)+(c.tratativa||0)+(c.ag_cte||0)+(c.transito_agenda||0),0);
+  const tAtr  = lista.reduce((s,c)=>s+(c.trs_atr||0),0);
+  const tPendVal = lista.reduce((s,c)=>s+(c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
+                     +(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0),0);
+  const otdGeral = tFin>0 ? (tOn/tFin*100) : null;
+  const corOTD = v => v==null?'var(--text2)':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
+  document.getElementById('clientes-kpis').innerHTML =
+     kpiBox('Clientes', total.toLocaleString('pt-BR'), 'na seleção atual', 'var(--text)')
+    +kpiBox('OTD Geral', otdGeral!=null?otdGeral.toFixed(1)+'%':'—', tOn.toLocaleString('pt-BR')+' de '+tFin.toLocaleString('pt-BR')+' finalizadas', corOTD(otdGeral))
+    +kpiBox('NFs em Aberto', tPend.toLocaleString('pt-BR'), 'ainda não entregues', '#854F0B')
+    +kpiBox('Em Trânsito em Atraso', tAtr.toLocaleString('pt-BR'), 'atenção imediata', '#A32D2D')
+    +kpiBox('Valor Pendente', fmtM(tPendVal), 'a entregar', '#A32D2D');
+
+  const otdC   = v => v==null?'color:var(--text2)':v>=99?'color:#0C447C;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
+  const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
+
+  window.__clientesNFs = {};
+  let rows = '';
+  if(!slice.length){
+    rows = '<tr><td colspan="16" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+  } else {
+    slice.forEach((c, ci) => {
+      window.__clientesNFs[ci] = c._nfs || [];
+      const temNF = (c._nfs||[]).length > 0;
+      const valPend = (c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
+                    +(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0);
+      const corReg = REG_CORES[c.regiao] || '#888';
+      rows += '<tr'+(temNF?' style="cursor:pointer" onclick="clientesToggleNF('+ci+',this)"':'')+'>'
+        +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.n||'')+'">'
+          +(temNF?'<span class="cli-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':'')+(c.n||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:600;white-space:nowrap" title="'+(c.regiao||'')+'">'
+          +(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</span></td>'
+        +'<td class="r">'+(c.fin||0)+'</td>'
+        +'<td class="r" style="color:#3B6D11">'+(c.on||0)+'</td>'
+        +'<td class="r" style="color:'+((c.off||0)>0?'#A32D2D':'var(--text2)')+'">'+(c.off||0)+'</td>'
+        +'<td class="r" style="'+otdC(c.otd)+'">'+(c.otd!=null?c.otd.toFixed(1)+'%':'—')+'</td>'
+        +'<td class="r" style="'+prazoC(c.prazo_medio)+'">'+(c.prazo_medio!=null?c.prazo_medio.toFixed(1)+' dias':'—')+'</td>'
+        +'<td class="r" style="color:#185FA5;font-weight:500">'+((c.fin_val||0)>0?fmtM(c.fin_val):'—')+'</td>'
+        +'<td class="r" style="color:#854F0B">'+((c.hub||0)>0?c.hub:'—')+'</td>'
+        +'<td class="r" style="color:#185FA5">'+((c.trs||0)>0?c.trs:'—')+'</td>'
+        +'<td class="r" style="color:#A32D2D;font-weight:600">'+((c.trs_atr||0)>0?c.trs_atr:'—')+'</td>'
+        +'<td class="r" style="color:#7A4FBF">'+((c.tratativa||0)>0?c.tratativa:'—')+'</td>'
+        +'<td class="r" style="color:#3787C7">'+((c.ag_cte||0)>0?c.ag_cte:'—')+'</td>'
+        +'<td class="r" style="color:#C76137">'+((c.transito_agenda||0)>0?c.transito_agenda:'—')+'</td>'
+        +'<td class="r" style="color:#A32D2D;font-weight:500">'+(valPend>0?fmtM(valPend):'—')+'</td>'
+        +'<td style="min-width:80px;padding-right:10px">'
+          +'<div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">'
+          +'<div style="height:100%;width:'+(c.otd||0)+'%;background:'+((c.otd||0)>=99?'#0C447C':(c.otd||0)>=80?'#378ADD':'#E24B4A')+';border-radius:3px"></div></div>'
+          +'<div style="font-size:9px;color:var(--text2);margin-top:2px">'+(c._nfs||[]).length+' NF(s) na lista</div>'
+        +'</td>'
+        +'</tr>';
+      if(temNF) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="16" style="padding:0;background:var(--bg2)"></td></tr>';
+    });
+  }
+  document.getElementById('clientes-tbody').innerHTML = rows;
+
+  // Nota do quadro
+  const nota = document.getElementById('clientes-q1-nota');
+  if(nota){
+    nota.innerHTML = 'OTD e Prazo Médio consideram só entregas finalizadas. Valor Pendente = tudo que ainda não foi entregue.'
+      + ' <span style="color:#185FA5;font-weight:600">Clique no cliente para abrir as NFs.</span>'
+      + (clientesFilter_state.nfs==='aberto' ? ' <span style="color:#854F0B;font-weight:600">Filtro ativo: só NFs em aberto.</span>' : '');
+  }
+
+  // Paginação
+  let pag = '<span>'+total.toLocaleString('pt-BR')+' cliente(s)</span><span style="margin:0 8px">|</span>';
+  if(pages > 1){
+    pag += '<button class="btn-sm" onclick="clientesPaginar(-1)" '+(clientesPage<=1?'disabled':'')+'>← Ant</button>';
+    pag += '<span style="margin:0 6px">Pág '+clientesPage+' de '+pages+'</span>';
+    pag += '<button class="btn-sm" onclick="clientesPaginar(1)" '+(clientesPage>=pages?'disabled':'')+'>Próx →</button>';
+  }
+  document.getElementById('clientes-paginacao').innerHTML = pag;
+}
+
+function kpiBox(lbl, val, sub, cor){
+  return '<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:11px 13px">'
+    +'<div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+lbl+'</div>'
+    +'<div style="font-size:18px;font-weight:700;color:'+cor+'">'+val+'</div>'
+    +'<div style="font-size:10px;color:var(--text2);margin-top:3px">'+sub+'</div></div>';
+}
+
+function clientesPaginar(dir){
+  clientesPage += dir;
+  renderClientesTabela();
+  document.getElementById('clientes-tbody')?.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Drill-down do cliente: tabela única, situação em badge colorido,
+// renderizada sob demanda (lazy) para não pesar a aba.
+function clientesToggleNF(ci, rowEl){
+  const d = document.getElementById('cli-d-'+ci);
+  if(!d) return;
+  const abrir = d.style.display === 'none';
+  d.style.display = abrir ? 'table-row' : 'none';
+  const ch = rowEl && rowEl.querySelector ? rowEl.querySelector('.cli-chev') : null;
+  if(ch) ch.style.transform = abrir ? 'rotate(90deg)' : 'rotate(0deg)';
+  if(!abrir) return;
+  const cell = d.firstElementChild;
+  if(cell.dataset.done === '1') return;
+
+  const nfs = (window.__clientesNFs && window.__clientesNFs[ci]) || [];
+  const mapS = {}; CLI_STATUS.forEach(s => mapS[s.k] = s);
+  let html = '<div style="padding:10px 14px 14px 26px">';
+  if(!nfs.length){
+    html += '<div style="padding:12px;color:var(--text3);font-size:12px">Nenhuma NF para os filtros atuais.</div></div>';
+    cell.innerHTML = html; cell.dataset.done = '1'; return;
+  }
+  const totalVal = nfs.reduce((a,n)=>a+(n.valor||0),0);
+  let resumo = '<span style="font-weight:600">'+nfs.length+' NF(s)</span>'
+             + '<span style="margin:0 8px;color:var(--border2)">|</span>'
+             + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>';
+  CLI_STATUS.forEach(s=>{
+    const q = nfs.filter(n=>n.tipo===s.k).length;
+    if(!q) return;
+    resumo += '<span style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:600">'+s.lbl+': '+q+'</span>';
+  });
+  html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
+  html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
+    + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Transportadora</th><th>Região</th><th>UF</th>'
+    + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th>Data Entrega</th><th class="r">Valor NF</th></tr></thead><tbody>'
+    + nfs.map((n,i)=>{
+        const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888'};
+        const corReg = REG_CORES[n.regiao] || '#888';
+        return '<tr>'
+          + '<td style="color:var(--text3)">'+(i+1)+'</td>'
+          + '<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
+          + '<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
+          + '<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
+          + '<td style="font-weight:600">'+(n.uf||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
+          + '<td style="color:var(--text2)">'+(n.dt_fat||'—')+'</td>'
+          + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
+          + '<td style="color:'+(n.dt_ent?'var(--text)':'var(--text3)')+';font-weight:'+(n.dt_ent?'500':'400')+'">'+(n.dt_ent||'—')+'</td>'
+          + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>';
+  cell.innerHTML = html;
+  cell.dataset.done = '1';
+}
+
+// Excel: 1 linha por NF, respeitando os filtros da tela
+function exportarClientesExcel(ev){
+  const btn = ev && ev.target ? ev.target.closest('button') : null;
+  const txt = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = 'Gerando...'; }
+  try{
+    const lista = getClientesFiltrados();
+    const mapS = {}; CLI_STATUS.forEach(s => mapS[s.k] = s);
+    const rows = [];
+    let seq = 0;
+    lista.forEach(c => (c._nfs||[]).forEach(n => {
+      rows.push({
+        '#': ++seq,
+        'Cliente': c.n,
+        'Numero NF': n.nf||'',
+        'Pedido': n.pedido||'',
+        'Transportadora': n.transp||'',
+        'Regiao': n.regiao||'',
+        'UF': n.uf||'',
+        'Situacao': (mapS[n.tipo]||{}).lbl || n.tipo || '',
+        'Data Faturamento': n.dt_fat||'',
+        'Prev. Entrega': n.dt_prev||'',
+        'Data Entrega': n.dt_ent||'',
+        'Valor (R$)': n.valor||0
+      });
+    }));
+    if(!rows.length){ alert('Nenhuma NF para exportar nos filtros atuais.'); return; }
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{wch:5},{wch:38},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'NFs por Cliente');
+    let nome = 'clientes_nfs';
+    if(clientesFilter_state.nfs==='aberto') nome += '_em-aberto';
+    if(clientesFilter_state.reg!=='todas')  nome += '_' + clientesFilter_state.reg;
+    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    XLSX.writeFile(wb, nome + '_' + stamp + '.xlsx');
+  } catch(e){
+    alert('Erro ao exportar: ' + e.message);
+    console.error(e);
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = txt; }
+  }
+}
+
 function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
   const t = (otdData.otd||[]).find(x=>x.n===nome);
   if(!t) return;
@@ -2253,6 +2678,14 @@ function renderOffTime(){
     b.onclick=function(){offTimeFilter('mes',m,this);};mesBtns.appendChild(b);
   });
 
+  // Restaura o último filtro usado, validando contra os dados atuais
+  const sOff = filtrosLer().offtime;
+  if(sOff){
+    offTimeFilter_state.regiao = regioes.includes(sOff.regiao) ? sOff.regiao : 'todas';
+    offTimeFilter_state.mes    = mesesDisp.includes(sOff.mes)  ? sOff.mes    : 'todos';
+  }
+  offTimeSyncBotoes();
+
   // Tabela por mês — vendas + bonificações
   let rMes='';
   ms.forEach(m=>{
@@ -2318,19 +2751,28 @@ function renderOffTime(){
 }
 
 function offTimeFilter(tipo,val,btn){
-  if(tipo==='regiao'){
-    offTimeFilter_state.regiao=val;
-    document.querySelectorAll('#offtime-reg-btns .fbtn').forEach(b=>b.classList.remove('on'));
-    if(val==='todas') document.querySelector('#offtime-fbar .fbtn').classList.add('on');
-    else btn.classList.add('on');
-  } else {
-    offTimeFilter_state.mes=val;
-    document.querySelectorAll('#offtime-mes-btns .fbtn').forEach(b=>b.classList.remove('on'));
-    if(val==='todos') document.getElementById('offtime-m-all').classList.add('on');
-    else btn.classList.add('on');
-  }
+  if(tipo==='regiao') offTimeFilter_state.regiao = val;
+  else                offTimeFilter_state.mes    = val;
+  offTimeSyncBotoes();
+  filtrosSalvar();
   offTimePage=1;
   renderOffTimeClientes();
+}
+
+// Marca no fbar do Off Time os botões do filtro ativo (região e mês independentes)
+function offTimeSyncBotoes(){
+  const dir = document.querySelectorAll('#offtime-fbar > .fbtn');  // 0 região "Todas", 1 mês "Todos"
+  dir.forEach(b=>b.classList.remove('on'));
+
+  const regBs = document.querySelectorAll('#offtime-reg-btns .fbtn');
+  regBs.forEach(b=>b.classList.remove('on'));
+  if(offTimeFilter_state.regiao==='todas'){ if(dir[0]) dir[0].classList.add('on'); }
+  else regBs.forEach(b=>{ if(b.textContent===offTimeFilter_state.regiao) b.classList.add('on'); });
+
+  const mesBs = document.querySelectorAll('#offtime-mes-btns .fbtn');
+  mesBs.forEach(b=>b.classList.remove('on'));
+  if(offTimeFilter_state.mes==='todos'){ if(dir[1]) dir[1].classList.add('on'); }
+  else mesBs.forEach(b=>{ if(b.textContent===offTimeFilter_state.mes) b.classList.add('on'); });
 }
 
 function offTimeSearch(){
@@ -2452,8 +2894,38 @@ function renderAtrasos(){
     b.onclick=function(){atrasosFilter('mes',m,this);};mesBtns.appendChild(b);
   });
 
+  // Restaura o último filtro usado, validando contra os dados atuais
+  // (região/mês que sumiram da base voltam para "Todas"/"Todos").
+  const sAtr = filtrosLer().atrasos;
+  if(sAtr){
+    atrasosFilter_state.sit = ['Em Trânsito em Atraso','Entregue em Atraso'].includes(sAtr.sit) ? sAtr.sit : 'todas';
+    atrasosFilter_state.reg = regs.includes(sAtr.reg) ? sAtr.reg : 'todas';
+    atrasosFilter_state.mes = meses.includes(sAtr.mes) ? sAtr.mes : 'todos';
+  }
+  atrasosSyncBotoes();
+
   atrasosPage=1;
   renderAtrasosTabelas();
+}
+
+// Marca no fbar dos Atrasos os botões do filtro ativo (situação, região e mês
+// são independentes — cada grupo tem seu próprio destaque).
+function atrasosSyncBotoes(){
+  const dir = document.querySelectorAll('#atrasos-fbar > .fbtn');  // 0-2 situação, 3 região "Todas", 4 mês "Todos"
+  dir.forEach(b=>b.classList.remove('on'));
+  const iSit = atrasosFilter_state.sit==='Em Trânsito em Atraso' ? 1
+             : atrasosFilter_state.sit==='Entregue em Atraso'    ? 2 : 0;
+  if(dir[iSit]) dir[iSit].classList.add('on');
+
+  const regBs = document.querySelectorAll('#atrasos-reg-btns .fbtn');
+  regBs.forEach(b=>b.classList.remove('on'));
+  if(atrasosFilter_state.reg==='todas'){ if(dir[3]) dir[3].classList.add('on'); }
+  else regBs.forEach(b=>{ if(b.textContent===atrasosFilter_state.reg) b.classList.add('on'); });
+
+  const mesBs = document.querySelectorAll('#atrasos-mes-btns .fbtn');
+  mesBs.forEach(b=>b.classList.remove('on'));
+  if(atrasosFilter_state.mes==='todos'){ if(dir[4]) dir[4].classList.add('on'); }
+  else mesBs.forEach(b=>{ if(b.textContent===atrasosFilter_state.mes) b.classList.add('on'); });
 }
 
 function getAtrasosFiltrado(){
@@ -2602,28 +3074,14 @@ function renderAtrasosTabelas(){
 }
 
 function atrasosFilter(tipo,val,btn){
-  if(tipo==='sit'){
-    atrasosFilter_state.sit=val;
-    document.querySelectorAll('#atrasos-fbar .fbtn').forEach(b=>{
-      // limpa só os 3 primeiros (situacao)
-    });
-    // limpa todos os botões da linha sit (3 primeiros)
-    const all=document.querySelectorAll('#atrasos-fbar > .fbtn');
-    all.forEach(b=>b.classList.remove('on'));
-    btn.classList.add('on');
-  } else if(tipo==='reg'){
-    atrasosFilter_state.reg=val;
-    document.querySelectorAll('#atrasos-reg-btns .fbtn').forEach(b=>b.classList.remove('on'));
-    if(val==='todas'){
-      // primeiro botão "Todas" da seção região
-      document.querySelectorAll('#atrasos-fbar .fbtn')[3]?.classList.add('on');
-    } else btn.classList.add('on');
-  } else if(tipo==='mes'){
-    atrasosFilter_state.mes=val;
-    document.querySelectorAll('#atrasos-mes-btns .fbtn').forEach(b=>b.classList.remove('on'));
-    if(val==='todos') document.getElementById('atrasos-m-all').classList.add('on');
-    else btn.classList.add('on');
-  }
+  // Cada grupo (situação/região/mês) é independente: só atualiza o estado e
+  // deixa o atrasosSyncBotoes redesenhar o destaque dos três grupos.
+  // (Antes, clicar numa Situação apagava o destaque de Região e Mês.)
+  if(tipo==='sit')      atrasosFilter_state.sit = val;
+  else if(tipo==='reg') atrasosFilter_state.reg = val;
+  else if(tipo==='mes') atrasosFilter_state.mes = val;
+  atrasosSyncBotoes();
+  filtrosSalvar();
   atrasosPage=1;
   renderAtrasosTabelas();
 }
@@ -2983,6 +3441,10 @@ function renderInFull(){
 
   inFullPageCli = 1;
   inFullPagePed = 1;
+  // Restaura o último filtro de pedidos usado
+  const sIF = filtrosLer().infull;
+  if(sIF && ['todos','in_full','fracionados'].includes(sIF.ped)) inFullFilter_state.ped = sIF.ped;
+  inFullSyncBotoesPed();
   renderInFullClientes();
   renderInFullPedidos();
 }
@@ -3006,16 +3468,18 @@ function inFullFilter(tipo, val, btn){
 
 function inFullFilterPed(val, btn){
   inFullFilter_state.ped = val;
-  document.querySelectorAll('#infull-content .fbtn').forEach(b => {
-    if(b.textContent === 'Todos' || b.textContent.includes('In Full') || b.textContent.includes('Fracionados')) {
-      // só os botões de pedido — vou ser mais especifico
-    }
-  });
-  // Recoloca o "on" certo
-  document.querySelectorAll('#infull-content .card:last-child .fbtn').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
+  inFullSyncBotoesPed();
+  filtrosSalvar();
   inFullPagePed = 1;
   renderInFullPedidos();
+}
+
+// Marca o botão ativo do filtro de pedidos (Todos / In Full / Fracionados)
+function inFullSyncBotoesPed(){
+  const bs = document.querySelectorAll('#infull-content .card:last-child .fbtn');
+  bs.forEach(b => b.classList.remove('on'));
+  const idx = {todos:0, in_full:1, fracionados:2}[inFullFilter_state.ped];
+  if(bs[idx==null?0:idx]) bs[idx==null?0:idx].classList.add('on');
 }
 
 function getInFullClientesFiltrados(){
@@ -3249,6 +3713,7 @@ async function loadOTDFromStorage(){
 
     renderOTD(payload);
     if(typeof renderTransp==='function') renderTransp();
+    if(typeof renderClientes==='function') renderClientes();
     if(typeof renderOffTime==='function') renderOffTime();
     if(typeof renderAtrasos==='function') renderAtrasos();
     if(typeof renderInFull==='function') renderInFull();
@@ -3364,8 +3829,42 @@ function renderOTD(payload){
   const mc=document.getElementById('otd-m-btns'); mc.innerHTML='';
   MK.forEach(m=>{const b=document.createElement('button');b.className='fbtn';b.textContent=payload.meses[m].nome;b.onclick=function(){otdFilter(m,this,'m');};mc.appendChild(b);});
 
-  otdFilter_state={type:'all',val:'all'};
+  // Restaura o último filtro usado, se ainda fizer sentido nesta base.
+  // (Se o mês/quarter salvo não existe mais nos dados, volta para Acumulado.)
+  const fSalvo = filtrosLer().otd;
+  otdFilter_state = {type:'all', val:'all'};
+  if(fSalvo && fSalvo.type==='q' && QS.includes(fSalvo.val)){
+    otdFilter_state = {type:'q', val:fSalvo.val};
+  } else if(fSalvo && fSalvo.type==='m' && MK.includes(parseInt(fSalvo.val))){
+    otdFilter_state = {type:'m', val:parseInt(fSalvo.val)};
+  }
+  otdSyncBotoes();
   renderOTDChart(payload);
+}
+
+// Marca no fbar os botões correspondentes ao filtro ativo (usado na
+// restauração; espelha exatamente o comportamento do otdFilter).
+function otdSyncBotoes(){
+  const todos = document.querySelectorAll('#otd-fbar .fbtn');
+  todos.forEach(b=>b.classList.remove('on'));
+  const acumulado = todos[0];                            // "Acumulado" (quarter)
+  const mAll = document.getElementById('otd-m-all');     // "Todos" (mês)
+  if(otdFilter_state.type==='q'){
+    if(mAll) mAll.classList.add('on');
+    document.querySelectorAll('#otd-q-btns .fbtn').forEach(b=>{
+      if(b.textContent===otdFilter_state.val) b.classList.add('on');
+    });
+  } else if(otdFilter_state.type==='m'){
+    if(acumulado) acumulado.classList.add('on');
+    const nome = (otdData && otdData.meses[otdFilter_state.val])
+      ? otdData.meses[otdFilter_state.val].nome : null;
+    document.querySelectorAll('#otd-m-btns .fbtn').forEach(b=>{
+      if(nome && b.textContent===nome) b.classList.add('on');
+    });
+  } else {
+    if(acumulado) acumulado.classList.add('on');
+    if(mAll) mAll.classList.add('on');
+  }
 }
 
 function otdFilter(v,btn,type){
@@ -3396,6 +3895,7 @@ function otdFilter(v,btn,type){
     document.getElementById('otd-m-all').classList.add('on');
   }
   btn.classList.add('on');
+  filtrosSalvar();
   renderOTDChart(otdData);
   // Re-renderiza abas dependentes para refletir o filtro
   if(typeof renderOffTime==='function') renderOffTime();
@@ -3877,6 +4377,7 @@ function leadTimeFilter(mes, btn){
   // Botões: tirar 'on' de todos e marcar o clicado
   document.querySelectorAll('#leadtime-fbar .fbtn').forEach(b => b.classList.remove('on'));
   if(btn) btn.classList.add('on');
+  filtrosSalvar();
   // Re-renderizar quadros 2 e 3 (o 1 não muda)
   renderLeadTimes_quadros_2_3();
 }
@@ -3902,6 +4403,12 @@ function renderLeadTimes(){
   // Fallback: se não tem por_mes (base antiga), tira filtro e segue
   const temFiltro = mesesDisponiveis.size > 0;
   const mesesArrFiltro = [...mesesDisponiveis].sort((a,b) => a-b);
+
+  // Restaura o último mês usado, se ainda existir nesta base
+  const sLT = filtrosLer().leadtime;
+  if(sLT && sLT.mes != null && String(sLT.mes) !== 'todos'){
+    leadTime_state.mes = mesesArrFiltro.includes(parseInt(sLT.mes)) ? String(sLT.mes) : 'todos';
+  }
 
   if(temFiltro){
     document.getElementById('leadtime-fbar').style.display = '';
