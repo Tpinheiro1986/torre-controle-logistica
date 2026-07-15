@@ -712,7 +712,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
           <button class="fbtn on" id="clientes-r-todas" onclick="clientesFilterReg('todas',this)">Todas</button>
           <span id="clientes-reg-btns"></span>
           <div class="fdiv"></div>
-          <input id="clientes-search" type="text" placeholder="Buscar cliente, UF, nº da nota ou pedido..."
+          <input id="clientes-search" type="text" placeholder="Buscar cliente, cidade, UF, nº da nota ou pedido..."
             class="form-input" style="max-width:300px;padding:5px 12px;font-size:12px" oninput="clientesSearch()">
         </div>
 
@@ -732,6 +732,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
               <thead><tr>
                 <th>Cliente</th>
                 <th>UF</th>
+                <th>Cidade</th>
                 <th class="r">Finalizadas</th>
                 <th class="r" style="color:#3B6D11">On Time</th>
                 <th class="r" style="color:#A32D2D">Off Time</th>
@@ -2342,7 +2343,8 @@ function getClientesFiltrados(){
     let nfs = Array.isArray(c.nfs) ? c.nfs : [];
     if(soAberto) nfs = nfs.filter(n => CLI_ABERTO.includes(n.tipo));
     if(busca){
-      const achouCli = (c.n||'').toLowerCase().includes(busca) || (c.uf||'').toLowerCase().includes(busca);
+      const achouCli = (c.n||'').toLowerCase().includes(busca) || (c.uf||'').toLowerCase().includes(busca)
+                    || (c.cidade||'').toLowerCase().includes(busca);
       if(!achouCli){
         // busca também casa por número de nota / pedido dentro do cliente
         const nfsBusca = nfs.filter(n => String(n.nf||'').toLowerCase().includes(busca)
@@ -2386,7 +2388,7 @@ function renderClientesTabela(){
   window.__clientesNFs = {};
   let rows = '';
   if(!slice.length){
-    rows = '<tr><td colspan="16" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+    rows = '<tr><td colspan="17" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
   } else {
     slice.forEach((c, ci) => {
       window.__clientesNFs[ci] = c._nfs || [];
@@ -2399,6 +2401,8 @@ function renderClientesTabela(){
           +(temNF?'<span class="cli-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':'')+(c.n||'—')+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:600;white-space:nowrap" title="'+(c.regiao||'')+'">'
           +(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</span></td>'
+        +'<td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.cidade||'')+((c.cidade_extra||0)>0?' (+'+c.cidade_extra+' outras cidades)':'')+'">'
+          +(c.cidade||'—')+((c.cidade_extra||0)>0?' <span style="color:var(--text3)">+'+c.cidade_extra+'</span>':'')+'</td>'
         +'<td class="r">'+(c.fin||0)+'</td>'
         +'<td class="r" style="color:#3B6D11">'+(c.on||0)+'</td>'
         +'<td class="r" style="color:'+((c.off||0)>0?'#A32D2D':'var(--text2)')+'">'+(c.off||0)+'</td>'
@@ -2418,7 +2422,7 @@ function renderClientesTabela(){
           +'<div style="font-size:9px;color:var(--text2);margin-top:2px">'+(c._nfs||[]).length+' NF(s) na lista</div>'
         +'</td>'
         +'</tr>';
-      if(temNF) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="16" style="padding:0;background:var(--bg2)"></td></tr>';
+      if(temNF) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="17" style="padding:0;background:var(--bg2)"></td></tr>';
     });
   }
   document.getElementById('clientes-tbody').innerHTML = rows;
@@ -2485,7 +2489,7 @@ function clientesToggleNF(ci, rowEl){
   });
   html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
   html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
-    + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Transportadora</th><th>Região</th><th>UF</th>'
+    + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Transportadora</th><th>Região</th><th>UF</th><th>Cidade</th>'
     + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th>Data Entrega</th><th class="r">Valor NF</th></tr></thead><tbody>'
     + nfs.map((n,i)=>{
         const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888'};
@@ -2497,6 +2501,7 @@ function clientesToggleNF(ci, rowEl){
           + '<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
           + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
           + '<td style="font-weight:600">'+(n.uf||'—')+'</td>'
+          + '<td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cidade||'')+'">'+(n.cidade||'—')+'</td>'
           + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
           + '<td style="color:var(--text2)">'+(n.dt_fat||'—')+'</td>'
           + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
@@ -2528,6 +2533,7 @@ function exportarClientesExcel(ev){
         'Transportadora': n.transp||'',
         'Regiao': n.regiao||'',
         'UF': n.uf||'',
+        'Cidade': n.cidade||'',
         'Situacao': (mapS[n.tipo]||{}).lbl || n.tipo || '',
         'Data Faturamento': n.dt_fat||'',
         'Prev. Entrega': n.dt_prev||'',
@@ -2537,7 +2543,7 @@ function exportarClientesExcel(ev){
     }));
     if(!rows.length){ alert('Nenhuma NF para exportar nos filtros atuais.'); return; }
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{wch:5},{wch:38},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14}];
+    ws['!cols'] = [{wch:5},{wch:38},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:20},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'NFs por Cliente');
     let nome = 'clientes_nfs';
