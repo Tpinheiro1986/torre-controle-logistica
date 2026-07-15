@@ -732,7 +732,6 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
               <thead><tr>
                 <th>Cliente</th>
                 <th>UF</th>
-                <th>Cidade</th>
                 <th class="r">Finalizadas</th>
                 <th class="r" style="color:#3B6D11">On Time</th>
                 <th class="r" style="color:#A32D2D">Off Time</th>
@@ -2388,7 +2387,7 @@ function renderClientesTabela(){
   window.__clientesNFs = {};
   let rows = '';
   if(!slice.length){
-    rows = '<tr><td colspan="17" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+    rows = '<tr><td colspan="16" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
   } else {
     slice.forEach((c, ci) => {
       window.__clientesNFs[ci] = c._nfs || [];
@@ -2401,8 +2400,6 @@ function renderClientesTabela(){
           +(temNF?'<span class="cli-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':'')+(c.n||'—')+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:600;white-space:nowrap" title="'+(c.regiao||'')+'">'
           +(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</span></td>'
-        +'<td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.cidade||'')+((c.cidade_extra||0)>0?' (+'+c.cidade_extra+' outras cidades)':'')+'">'
-          +(c.cidade||'—')+((c.cidade_extra||0)>0?' <span style="color:var(--text3)">+'+c.cidade_extra+'</span>':'')+'</td>'
         +'<td class="r">'+(c.fin||0)+'</td>'
         +'<td class="r" style="color:#3B6D11">'+(c.on||0)+'</td>'
         +'<td class="r" style="color:'+((c.off||0)>0?'#A32D2D':'var(--text2)')+'">'+(c.off||0)+'</td>'
@@ -2422,7 +2419,7 @@ function renderClientesTabela(){
           +'<div style="font-size:9px;color:var(--text2);margin-top:2px">'+(c._nfs||[]).length+' NF(s) na lista</div>'
         +'</td>'
         +'</tr>';
-      if(temNF) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="17" style="padding:0;background:var(--bg2)"></td></tr>';
+      if(temNF) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="16" style="padding:0;background:var(--bg2)"></td></tr>';
     });
   }
   document.getElementById('clientes-tbody').innerHTML = rows;
