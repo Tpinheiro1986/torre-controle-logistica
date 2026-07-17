@@ -4,7 +4,7 @@
 AUDITORIA FISCAL - Publicar e atualizar (tudo em um)
 ====================================================
 O que este programa faz quando voce roda:
-  1) Le as 3 pastas (NF-e, CT-e, manifesto) - apenas 2026+
+  1) Le as pastas de NF-e e CT-e (apenas 2026+), incluindo cancelamentos
   2) Grava tudo no Supabase (tabelas) e gera o dados.json
   3) Envia o dados.json para o Supabase Storage: dashboards/auditoria/dados.json
   4) Publica a pasta auditoria/ no GitHub (git push)
@@ -29,8 +29,7 @@ LOGIN_SENHA   = "Genomma@2026"
 
 PASTA_NFE       = r"Y:\ERP-12\ArqXML-MG"
 PASTA_CTE       = r"Y:\ERP-12\TOTVSCOLAB20-PRD\RECEIVED"
-PASTA_ROMANEIO  = r"Y:\ERP-12\TRANSP-PRD\ROMANEIO\Enviados"
-PASTA_MANIFESTO = r"Y:\ERP-12\ArqXML-MG"
+PARALELO        = 16     # leitores simultaneos (rede aguenta bem; reduza se der erro)
 
 ANO_MINIMO   = 2026
 PORTA        = 8000
@@ -69,12 +68,17 @@ def ano_doc(dh, caminho):
     if dh and len(dh) >= 4 and dh[:4].isdigit(): return int(dh[:4])
     return datetime.fromtimestamp(os.path.getmtime(caminho)).year
 
+MOD_FRETE = {"0":"CIF","1":"FOB","2":"Terceiros","3":"Proprio remetente","4":"Proprio destinatario","9":"Sem frete"}
+
 def parse_nfe(path):
-    inf = ET.parse(path).getroot().find(".//{*}infNFe")
+    root = ET.parse(path).getroot()        # UMA leitura so (antes lia o arquivo 2x)
+    inf = root.find(".//{*}infNFe")
     if inf is None: return None, None
     ide,emit,dest = gd(inf,"ide"),gd(inf,"emit"),gd(inf,"dest")
     ee,ed = gd(emit,"enderEmit"),gd(dest,"enderDest")
-    tot = inf.find(".//{*}ICMSTot"); prot = ET.parse(path).getroot().find(".//{*}infProt"); adic = gd(inf,"infAdic")
+    tot = inf.find(".//{*}ICMSTot"); prot = root.find(".//{*}infProt"); adic = gd(inf,"infAdic")
+    transp = gd(inf,"transp"); transporta = gd(transp,"transporta"); vol = gd(transp,"vol")
+    mf = g(transp,"modFrete")
     nota = {"chave":(inf.get("Id") or "").replace("NFe",""),"numero":g(ide,"nNF"),"serie":g(ide,"serie"),
         "modelo":g(ide,"mod"),"natureza_operacao":g(ide,"natOp"),
         "tipo_operacao":"Saida" if g(ide,"tpNF")=="1" else "Entrada","finalidade":g(ide,"finNFe"),
@@ -83,6 +87,8 @@ def parse_nfe(path):
         "cnpj_destinatario":g(dest,"CNPJ"),"nome_destinatario":g(dest,"xNome"),"uf_destinatario":g(ed,"UF"),
         "municipio_destinatario":g(ed,"xMun"),"valor_produtos":num(g(tot,"vProd")),"valor_total":num(g(tot,"vNF")),
         "valor_icms":num(g(tot,"vICMS")),"valor_frete":num(g(tot,"vFrete")),"valor_desconto":num(g(tot,"vDesc")),
+        "mod_frete":MOD_FRETE.get(mf, mf),"nome_transportadora":g(transporta,"xNome"),
+        "qtd_volumes":num(g(vol,"qVol")),"peso_bruto":num(g(vol,"pesoB")),
         "protocolo":g(prot,"nProt"),"status_codigo":g(prot,"cStat"),"status_motivo":g(prot,"xMotivo"),
         "data_autorizacao":g(prot,"dhRecbto"),"info_complementar":(g(adic,"infCpl") or "")[:200],
         "arquivo_origem":os.path.basename(path)}
@@ -115,19 +121,15 @@ def parse_cte(path):
         "status_motivo":g(prot,"xMotivo"),"data_autorizacao":g(prot,"dhRecbto"),"arquivo_origem":os.path.basename(path)}
     return cte, refs
 
-def parse_manifesto(path):
-    with open(path,encoding="latin-1") as f: linhas=[l.rstrip("\r\n") for l in f if l.strip()]
-    nome=os.path.basename(path); regs=[]
-    if linhas and len(linhas[0])==60 and linhas[0][0]=="0":   # formato posicional
-        h=linhas[0]; d=h[13:21]
-        data=f"{d[4:8]}-{d[2:4]}-{d[0:2]}" if len(d)==8 else None
-        cnpj=h[25:39]; serie=nome.replace(".txt","").split("_")[-1]
-        for l in linhas[1:]:
-            if len(l)<60 or not l.startswith("001"): continue
-            regs.append({"sequencia":l[3:12],"numero_nf":str(int(l[3:12])),"campo_aux":l[12:16],
-                "chave_nfe":l[16:60],"cnpj_empresa":cnpj,"serie":serie,"data_arquivo":data,
-                "arquivo_origem":nome,"codigo_evento":"210200","evento":"Confirmacao da Operacao (saida)"})
-    return regs
+def parse_cancelamento(path):
+    """Le XML de evento de cancelamento (*_Cancel.xml, tpEvento 110111)."""
+    root = ET.parse(path).getroot()
+    ev = root.find(".//{*}infEvento")
+    if ev is None or g(ev,"tpEvento") != "110111": return None
+    det = gd(ev,"detEvento")
+    return {"chave_nfe":g(ev,"chNFe"),"data_evento":g(ev,"dhEvento"),
+            "justificativa":(g(det,"xJust") or "")[:300],"protocolo":g(det,"nProt"),
+            "arquivo_origem":os.path.basename(path)}
 
 # ---------- Supabase ----------
 def conectar():
@@ -188,24 +190,49 @@ def chaves_existentes(sb, tabela, coluna="chave"):
         ini += passo
     return achadas
 
+def _ler_lote(paths, fn, rotulo):
+    """Le varios arquivos em paralelo (a lentidao esta na rede, nao no processador)."""
+    from concurrent.futures import ThreadPoolExecutor
+    out, feitos = [], 0
+    def um(p):
+        try: return fn(p)
+        except Exception as e:
+            print(f"    {rotulo} erro", os.path.basename(p), e); return None
+    with ThreadPoolExecutor(max_workers=PARALELO) as ex:
+        for r in ex.map(um, paths):
+            feitos += 1
+            if feitos % 1000 == 0: print(f"    lidos {feitos}/{len(paths)} ...", flush=True)
+            if r is not None: out.append(r)
+    return out
+
 def reprocessar(sb, desde=None):
     print("\n== Reprocessando pastas (somente %d+) ==" % ANO_MINIMO, flush=True)
 
-    # ---------- NF-e ----------
+    # ---------- NF-e (inclui eventos de cancelamento *_Cancel.xml) ----------
     arquivos = coletar(PASTA_NFE, exts=(".xml",), desde=desde)
+    arq_cancel = [p for p in arquivos if os.path.basename(p).upper().endswith("_CANCEL.XML")]
+    arq_skip   = tuple(("_CCE.XML", "_INUT.XML"))
+    arq_nfe    = [p for p in arquivos
+                  if not os.path.basename(p).upper().endswith(("_CANCEL.XML",) + arq_skip)]
     print("  conferindo o que ja esta no banco ...", flush=True)
     ja = chaves_existentes(sb, "nfe_notas")
     novas = []
-    for i, xml in enumerate(arquivos, 1):
-        if i % 500 == 0: print(f"    lidos {i}/{len(arquivos)} ...", flush=True)
-        try:
-            nota, itens = parse_nfe(xml)
-            if not nota: continue
-            if nota["chave"] in ja: continue
-            ja.add(nota["chave"]); novas.append((nota, itens))
-        except Exception as e:
-            print("    NF erro", os.path.basename(xml), e)
+    for r in _ler_lote(arq_nfe, parse_nfe, "NF"):
+        nota, itens = r
+        if not nota or nota["chave"] in ja: continue
+        ja.add(nota["chave"]); novas.append((nota, itens))
     print(f"  NF-e novas para enviar: {len(novas)}", flush=True)
+
+    # cancelamentos
+    cancels = [c for c in _ler_lote(arq_cancel, parse_cancelamento, "CANCEL") if c]
+    canc = 0
+    for lote in chunk(cancels, 400):
+        try:
+            sb.table("nfe_cancelamentos").upsert(lote, on_conflict="chave_nfe").execute()
+            canc += len(lote)
+        except Exception as e:
+            print("    CANCEL lote erro:", e)
+    if canc: print(f"  cancelamentos registrados: {canc}", flush=True)
     idmap = {}
     for lote in chunk([n for n, _ in novas], 400):
         res = sb.table("nfe_notas").upsert(lote, on_conflict="chave").execute()
@@ -226,15 +253,10 @@ def reprocessar(sb, desde=None):
     arquivos = coletar(PASTA_CTE, exts=(".xml",), desde=desde)
     jac = chaves_existentes(sb, "cte_conhecimentos")
     novosc = []
-    for i, xml in enumerate(arquivos, 1):
-        if i % 500 == 0: print(f"    lidos {i}/{len(arquivos)} ...", flush=True)
-        try:
-            cte, refs = parse_cte(xml)
-            if not cte: continue
-            if cte["chave"] in jac: continue
-            jac.add(cte["chave"]); novosc.append((cte, refs))
-        except Exception as e:
-            print("    CT erro", os.path.basename(xml), e)
+    for r in _ler_lote(arquivos, parse_cte, "CT"):
+        cte, refs = r
+        if not cte or cte["chave"] in jac: continue
+        jac.add(cte["chave"]); novosc.append((cte, refs))
     print(f"  CT-e novos para enviar: {len(novosc)}", flush=True)
     cmap = {}
     for lote in chunk([c for c, _ in novosc], 400):
@@ -249,27 +271,12 @@ def reprocessar(sb, desde=None):
         sb.table("cte_nfe_ref").upsert(lote, on_conflict="cte_id,chave_nfe").execute()
     ct = len(novosc)
 
-    # ---------- Manifestos (confirmacao de saida) ----------
-    arquivos = coletar(PASTA_MANIFESTO, exts=(".txt",), prefixo="MANIFE", desde=desde)
-    regs = []
-    for txt in arquivos:
-        try:
-            regs += parse_manifesto(txt)
-        except Exception as e:
-            print("    MANIFE erro", os.path.basename(txt), e)
-    mf = 0
-    for lote in chunk(regs, 500):
-        try:
-            sb.table("nfe_manifestacoes").upsert(lote, on_conflict="chave_nfe,arquivo_origem").execute()
-            mf += len(lote)
-        except Exception as e:
-            print("    MANIFE lote erro:", e)
-    print(f"\n  RESUMO -> NF-e novas {nf} | CT-e novos {ct} | confirmacoes {mf}", flush=True)
+    print(f"\n  RESUMO -> NF-e novas {nf} | CT-e novos {ct} | cancelamentos {canc}", flush=True)
 
     print("  montando dados do painel ...", flush=True)
     dados = montar_dados(sb)
     salvar_e_subir(sb, dados)
-    return {"nf": nf, "ct": ct, "mf": mf, "notas": len(dados["notas"])}
+    return {"nf": nf, "ct": ct, "cancel": canc, "notas": len(dados["notas"])}
 
 def buscar_tudo(sb, tabela, colunas="*", ordem=None, desc=True):
     linhas, passo, ini = [], 1000, 0
@@ -305,21 +312,28 @@ def montar_dados(sb):
     import re
     excluir, classif = carregar_matriz()
     notas_raw = buscar_tudo(sb, "nfe_notas",
-        "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,nome_destinatario,uf_destinatario,cnpj_destinatario,valor_total",
+        "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,"
+        "nome_destinatario,uf_destinatario,municipio_destinatario,cnpj_destinatario,"
+        "mod_frete,nome_transportadora,qtd_volumes,peso_bruto,valor_total",
         ordem="data_emissao")
+    cancels = buscar_tudo(sb, "nfe_cancelamentos", "chave_nfe,data_evento")
+    cmap = {c["chave_nfe"]: c.get("data_evento") for c in cancels}
     notas = []
     for n in notas_raw:
         cnpj = re.sub(r"\D", "", n.get("cnpj_destinatario") or "")
         if cnpj in excluir:          # cliente marcado "Nao Considerar"
             continue
         n["fob_cif"] = classif.get(cnpj, "")
+        if n["chave"] in cmap:
+            n["situacao"] = "Cancelada"; n["data_cancelamento"] = cmap[n["chave"]]
+        else:
+            n["situacao"] = "Autorizada"; n["data_cancelamento"] = None
         notas.append(n)
     ctes = buscar_tudo(sb, "cte_conhecimentos", "id,chave,numero,serie,nome_emitente,uf_inicio,uf_fim,valor_total,data_emissao")
     refs = buscar_tudo(sb, "cte_nfe_ref", "cte_id,chave_nfe,numero_nf")
-    manifs = buscar_tudo(sb, "nfe_manifestacoes", "numero_nf,chave_nfe,cnpj_empresa,data_arquivo")
     cte_chave = {c["id"]: c["chave"] for c in ctes}
     refs2 = [{"chave_cte": cte_chave.get(r["cte_id"]), "chave_nfe": r["chave_nfe"], "numero_nf": r.get("numero_nf")} for r in refs]
-    return {"notas": notas, "ctes": ctes, "refs": refs2, "manifs": manifs,
+    return {"notas": notas, "ctes": ctes, "refs": refs2,
             "gerado_em": datetime.now().isoformat(timespec="seconds")}
 
 def salvar_e_subir(sb,dados):

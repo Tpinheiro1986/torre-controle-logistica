@@ -1,0 +1,33 @@
+ATUALIZACAO DO PAINEL - Julho/2026
+==================================
+
+O QUE MUDOU
+-----------
+1. Grid novo com as colunas: Chave de Acesso, Situacao, Data Cancelamento,
+   Serie, Natureza da Operacao, Emitente, Destinatario, Municipio Dest.,
+   UF Dest., Modalidade Frete, Transportadora, Qtd Volumes, Peso Bruto,
+   Valor Total NF. Filtros novos: Situacao (Autorizada/Cancelada).
+2. Cancelamentos: o programa agora le os XMLs *_Cancel.xml da pasta de NF-e
+   e marca as notas canceladas no painel (badge vermelho + data).
+3. Manifestos e romaneios foram REMOVIDOS do processo (nao le mais os .txt
+   nem a pasta ROMANEIO).
+4. Velocidade: leitura dos XMLs em paralelo (16 de uma vez) e cada arquivo
+   e aberto so 1 vez (antes eram 2). A varredura incremental continua igual.
+5. O botao ATUALIZAR do painel continua funcionando: com o programa rodando
+   na maquina do Y:, ele reprocessa as pastas e republica.
+
+COMO INSTALAR (substituir 2 arquivos)
+-------------------------------------
+1. Feche o auditoria.py se estiver rodando.
+2. Copie  scripts\auditoria.py         por cima do seu
+          painel-fiscal_1\scripts\auditoria.py
+3. Copie  auditoria\index.html         por cima do seu
+          painel-fiscal_1\auditoria\index.html
+4. De dois cliques em EXECUTAR_AUDITORIA.bat.
+   - A primeira execucao pode reprocessar mais arquivos (vai preencher os
+     campos novos: frete, transportadora, volumes, peso e cancelamentos).
+     Para forcar tudo de novo:  python auditoria.py full
+   - As proximas voltam a ser incrementais (rapidas).
+
+OBS: as tabelas nfe_manifestacoes e romaneios continuam no Supabase (nao
+apaguei nada), apenas nao sao mais alimentadas nem lidas.
