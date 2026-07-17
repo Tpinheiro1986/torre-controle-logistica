@@ -378,6 +378,9 @@ def publicar_github():
     print("\n== Publicando no GitHub ==")
     try:
         subprocess.run(["git","add","-A"], cwd=REPO_DIR, check=True)
+        # puxa o que estiver no GitHub antes de empurrar (evita o erro non-fast-forward)
+        subprocess.run(["git","pull","origin","main","--no-rebase","--no-edit"],
+                       cwd=REPO_DIR, capture_output=True, text=True)
         r=subprocess.run(["git","commit","-m","auditoria: atualiza painel e dados"], cwd=REPO_DIR, capture_output=True,text=True)
         if "nothing to commit" in (r.stdout+r.stderr): print("  Nada novo para commitar.")
         subprocess.run(["git","push"], cwd=REPO_DIR, check=True)

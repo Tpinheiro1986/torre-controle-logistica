@@ -6,7 +6,7 @@ O QUE MUDOU
 1. Grid novo com as colunas: Chave de Acesso, Situacao, Data Cancelamento,
    Serie, Natureza da Operacao, Emitente, Destinatario, Municipio Dest.,
    UF Dest., Modalidade Frete, Transportadora, Qtd Volumes, Peso Bruto,
-   Valor Total NF. Filtros novos: Situacao (Autorizada/Cancelada).
+   Valor Total NF. Filtros novos: Situacao (Autorizada/Cancelada) e Natureza da Operacao.
 2. Cancelamentos: o programa agora le os XMLs *_Cancel.xml da pasta de NF-e
    e marca as notas canceladas no painel (badge vermelho + data).
 3. Manifestos e romaneios foram REMOVIDOS do processo (nao le mais os .txt
