@@ -165,6 +165,14 @@ def conectar():
     sb.auth.sign_in_with_password({"email":LOGIN_EMAIL,"password":LOGIN_SENHA})
     return sb
 
+def dedup(regs, campo):
+    """Garante 1 registro por chave dentro do lote (evita erro 21000 do Postgres).
+       Se a mesma chave aparecer 2x, vale a ultima ocorrencia."""
+    m = {}
+    for r in regs: m[r.get(campo)] = r
+    m.pop(None, None); m.pop("", None)
+    return list(m.values())
+
 def chunk(lst, n):
     for i in range(0, len(lst), n): yield lst[i:i+n]
 
@@ -258,7 +266,7 @@ def reprocessar(sb, desde=None, forcar=False):
     # cancelamentos
     cancels = [c for c in _ler_lote(arq_cancel, parse_cancelamento, "CANCEL") if c]
     canc = 0
-    for lote in chunk(cancels, 400):
+    for lote in chunk(dedup(cancels, "chave_nfe"), 400):
         try:
             sb.table("nfe_cancelamentos").upsert(lote, on_conflict="chave_nfe").execute()
             canc += len(lote)
@@ -267,7 +275,7 @@ def reprocessar(sb, desde=None, forcar=False):
     if canc: print(f"  cancelamentos registrados: {canc}", flush=True)
     idmap = {}
     for lote in chunk([n for n, _ in novas], 400):
-        res = sb.table("nfe_notas").upsert(lote, on_conflict="chave").execute()
+        res = sb.table("nfe_notas").upsert(dedup(lote, "chave"), on_conflict="chave").execute()
         for row in res.data: idmap[row["chave"]] = row["id"]
         print(f"    notas enviadas: {len(idmap)}", flush=True)
     itens_all = []
@@ -293,7 +301,7 @@ def reprocessar(sb, desde=None, forcar=False):
     print(f"  CT-e novos para enviar: {len(novosc)}", flush=True)
     cmap = {}
     for lote in chunk([c for c, _ in novosc], 400):
-        res = sb.table("cte_conhecimentos").upsert(lote, on_conflict="chave").execute()
+        res = sb.table("cte_conhecimentos").upsert(dedup(lote, "chave"), on_conflict="chave").execute()
         for row in res.data: cmap[row["chave"]] = row["id"]
     refs_all = []
     for cte, refs in novosc:
