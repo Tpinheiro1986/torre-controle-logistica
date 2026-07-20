@@ -64,6 +64,7 @@ tbody tr:hover{background:#0f1830}
 .sit{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.03em}
 .s-ok{background:rgba(52,211,153,.15);color:var(--emerald)}
 .s-canc{background:rgba(251,113,133,.18);color:var(--rose)}
+.s-inut{background:rgba(148,163,184,.18);color:var(--muted)}
 .dev{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
 .d-de{background:rgba(167,139,250,.16);color:var(--violet)}
 .d-por{background:rgba(251,191,36,.15);color:var(--amber)}
@@ -87,6 +88,7 @@ tr.canc td{opacity:.75}
   <div>
     <h1>Torre de Controle <span>· Auditoria Fiscal</span></h1>
     <div class="sub">NF-e &middot; CT-e &middot; cancelamentos &middot; transporte e faturamento</div>
+    <div class="sub" id="ultAtu" style="margin-top:2px;font-weight:600"></div>
   </div>
   <div class="head-right">
     <span class="status" id="status"></span>
@@ -98,7 +100,7 @@ tr.canc td{opacity:.75}
 
 <div class="bar">
   <div class="fg"><label>Situacao</label><select id="fSit">
-    <option value="">Todas</option><option value="Autorizada">Autorizada</option><option value="Cancelada">Cancelada</option></select></div>
+    <option value="">Todas</option><option value="Autorizada">Autorizada</option><option value="Cancelada">Cancelada</option><option value="Inutilizada">Inutilizada</option><option value="Nao autorizada">Nao autorizada</option></select></div>
   <div class="fg"><label>Emissor</label><select id="fEmit"></select></div>
   <div class="fg"><label>Natureza da Operacao</label><select id="fNat"></select></div>
   <div class="fg"><label>Cliente</label><select id="fDest"></select></div>
@@ -145,6 +147,10 @@ async function atualizar(){
 }
 
 const transpByNota={};
+function atualizarSelo(){const el=document.getElementById('ultAtu');if(!el)return;
+  if(DATA.gerado_em){const d=new Date(DATA.gerado_em);
+    el.textContent='Ultima atualizacao: '+d.toLocaleDateString('pt-BR')+' as '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+  else el.textContent='';}
 function indexar(){for(const k in transpByNota)delete transpByNota[k];
   const porChave=new Map(DATA.ctes.map(c=>[c.chave,c]));
   DATA.refs.forEach(r=>{const c=porChave.get(r.chave_cte);
@@ -157,7 +163,7 @@ let sort={col:'dataNF',dir:-1};
 
 function opts(sel,vals,label){const el=document.getElementById(sel),cur=el.value;
   el.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${v}">${label?label(v):v}</option>`).join('');el.value=cur}
-function montarFiltros(){indexar();
+function montarFiltros(){indexar();atualizarSelo();
   opts('fEmit',[...new Set(DATA.notas.map(n=>n.nome_emitente))].filter(Boolean).sort());
   opts('fNat',[...new Set(DATA.notas.map(n=>n.natureza_operacao))].filter(Boolean).sort());
   opts('fDest',[...new Set(DATA.notas.map(n=>n.nome_destinatario))].filter(Boolean).sort());
@@ -168,7 +174,7 @@ function montarFiltros(){indexar();
 document.querySelectorAll('#segVisao button').forEach(b=>b.onclick=()=>{state.visao=b.dataset.v;document.querySelectorAll('#segVisao button').forEach(x=>x.classList.toggle('on',x===b));render()});
 function limpar(){state.sit=state.emit=state.nat=state.dest=state.transp=state.fob=state.vinc=state.mes='';['fSit','fEmit','fNat','fDest','fTransp','fFob','fVinc','fMes'].forEach(id=>document.getElementById(id).value='');render()}
 
-function filtradas(){return DATA.notas.filter(n=>(!state.sit||n.situacao===state.sit)&&(!state.emit||n.nome_emitente===state.emit)&&(!state.nat||n.natureza_operacao===state.nat)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp))&&(!state.fob||n.fob_cif===state.fob)&&(!state.vinc||(state.vinc==='com'?!!T(n.chave):state.vinc==='sem'?!T(n.chave):state.vinc==='dev'?temDev(n):(!T(n.chave)&&!temDev(n)))))}
+function filtradas(){return DATA.notas.filter(n=>(!state.sit||n.situacao===state.sit)&&(!state.emit||n.nome_emitente===state.emit)&&(!state.nat||n.natureza_operacao===state.nat)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp))&&(!state.fob||n.fob_cif===state.fob)&&(!state.vinc||(state.vinc==='com'?!!T(n.chave):state.vinc==='sem'?!T(n.chave):state.vinc==='dev'?temDev(n):(!T(n.chave)&&!temDev(n)&&(n.situacao||'Autorizada')==='Autorizada'))))}
 
 function valSort(n,col){const t=T(n.chave);switch(col){
   case'chave':return n.chave||'';
@@ -222,9 +228,9 @@ function render(){const fnAll=filtradas();kpis(fnAll);const v=document.getElemen
        ${H('frete','Modalidade Frete')}${H('transp','Transportadora')}
        ${H('vol','Qtd Volumes','r')}${H('peso','Peso Bruto','r')}${H('valor','Valor Total NF','r')}
      </tr></thead><tbody>`+
-     vis.map(n=>{const t=T(n.chave);const canc=n.situacao==='Cancelada';const tn=transpDe(n);return `<tr class="${canc?'canc':''}">
+     vis.map(n=>{const t=T(n.chave);const canc=n.situacao==='Cancelada';const fora=n.situacao&&n.situacao!=='Autorizada';const tn=transpDe(n);return `<tr class="${fora?'canc':''}">
        <td><span class="chv" title="${n.chave}">${n.chave}</span><div class="b2">NF <span class="nf">${n.numero}</span> · ${dBR(n.data_emissao)}</div></td>
-       <td><span class="sit ${canc?'s-canc':'s-ok'}">${n.situacao||'Autorizada'}</span></td>
+       <td><span class="sit ${canc?'s-canc':(n.situacao==='Autorizada'?'s-ok':'s-inut')}">${n.situacao||'Autorizada'}</span></td>
        <td class="mono">${n.data_cancelamento?dBR(n.data_cancelamento):'<span class="dash">—</span>'}</td>
        <td>${n.dev_de?`<span class="dev d-de" title="Esta nota e devolucao da NF ${n.dev_de.numero}">↩ devolve NF ${n.dev_de.numero}</span>`:(n.dev_por&&n.dev_por.length?n.dev_por.map(d=>`<span class="dev d-por" title="Coberta pela devolucao NF ${d.numero}">✔ coberta por NF ${d.numero}</span>`).join('<br>'):'<span class="dash">—</span>')}</td>
        <td class="mono">${n.serie||''}</td>

@@ -152,6 +152,21 @@ def parse_cte_arquivo(path):
         if c: out.append((c, r))
     return out
 
+def parse_inutilizacao(path):
+    """Le XML de inutilizacao de numeracao (*_Inut.xml)."""
+    root = ET.parse(path).getroot()
+    inu = root.find(".//{*}inutNFe/{*}infInut") or root.find(".//{*}infInut")
+    if inu is None: return None
+    ret = root.find(".//{*}retInutNFe/{*}infInut")
+    ok = g(ret,"cStat") if ret is not None else g(inu,"cStat")
+    if ok and ok != "102": return None       # 102 = inutilizacao homologada
+    return {"cnpj":g(inu,"CNPJ"),"serie":g(inu,"serie"),"ano":g(inu,"ano"),
+            "numero_inicial":int(g(inu,"nNFIni") or 0),"numero_final":int(g(inu,"nNFFin") or 0),
+            "protocolo":g(ret,"nProt") if ret is not None else "",
+            "justificativa":(g(inu,"xJust") or "")[:300],
+            "data_recebimento":g(ret,"dhRecbto") if ret is not None else None,
+            "arquivo_origem":os.path.basename(path)}
+
 def parse_cancelamento(path):
     """Le XML de evento de cancelamento (*_Cancel.xml, tpEvento 110111)."""
     root = ET.parse(path).getroot()
@@ -251,9 +266,9 @@ def reprocessar(sb, desde=None, forcar=False):
     # ---------- NF-e (inclui eventos de cancelamento *_Cancel.xml) ----------
     arquivos = coletar(PASTA_NFE, exts=(".xml",), desde=desde)
     arq_cancel = [p for p in arquivos if os.path.basename(p).upper().endswith("_CANCEL.XML")]
-    arq_skip   = tuple(("_CCE.XML", "_INUT.XML"))
+    arq_inut   = [p for p in arquivos if os.path.basename(p).upper().endswith("_INUT.XML")]
     arq_nfe    = [p for p in arquivos
-                  if not os.path.basename(p).upper().endswith(("_CANCEL.XML",) + arq_skip)]
+                  if not os.path.basename(p).upper().endswith(("_CANCEL.XML","_INUT.XML","_CCE.XML"))]
     print("  conferindo o que ja esta no banco ...", flush=True)
     ja = chaves_existentes(sb, "nfe_notas")
     novas = []
@@ -276,6 +291,18 @@ def reprocessar(sb, desde=None, forcar=False):
         except Exception as e:
             print("    CANCEL lote erro:", e)
     if canc: print(f"  cancelamentos registrados: {canc}", flush=True)
+
+    # inutilizacoes de numeracao
+    inuts = [i for i in _ler_lote(arq_inut, parse_inutilizacao, "INUT") if i]
+    ni = 0
+    for lote in chunk(dedup([dict(i, _k=f"{i['cnpj']}|{i['serie']}|{i['numero_inicial']}|{i['numero_final']}") for i in inuts], "_k"), 400):
+        for r in lote: r.pop("_k", None)
+        try:
+            sb.table("nfe_inutilizacoes").upsert(lote, on_conflict="cnpj,serie,numero_inicial,numero_final").execute()
+            ni += len(lote)
+        except Exception as e:
+            print("    INUT lote erro:", e)
+    if ni: print(f"  inutilizacoes registradas: {ni}", flush=True)
     idmap = {}
     for lote in chunk([n for n, _ in novas], 400):
         res = sb.table("nfe_notas").upsert(dedup(lote, "chave"), on_conflict="chave").execute()
@@ -358,22 +385,36 @@ def montar_dados(sb):
     import re
     excluir, classif = carregar_matriz()
     notas_raw = buscar_tudo(sb, "nfe_notas",
-        "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,"
-        "nome_destinatario,uf_destinatario,municipio_destinatario,cnpj_destinatario,"
+        "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,cnpj_emitente,"
+        "nome_destinatario,uf_destinatario,municipio_destinatario,cnpj_destinatario,status_codigo,"
         "mod_frete,nome_transportadora,qtd_volumes,peso_bruto,nfe_referenciada,valor_total",
         ordem="data_emissao")
     cancels = buscar_tudo(sb, "nfe_cancelamentos", "chave_nfe,data_evento")
     cmap = {c["chave_nfe"]: c.get("data_evento") for c in cancels}
+    inuts = buscar_tudo(sb, "nfe_inutilizacoes", "cnpj,serie,numero_inicial,numero_final,data_recebimento")
     notas = []
     for n in notas_raw:
         cnpj = re.sub(r"\D", "", n.get("cnpj_destinatario") or "")
         if cnpj in excluir:          # cliente marcado "Nao Considerar"
             continue
+        # destino EXTREMA (transferencias internas) fica fora do painel
+        mun = (n.get("municipio_destinatario") or "").strip().upper()
+        if mun in ("EXTREMA", "EXTREMA - MG"):
+            continue
         n["fob_cif"] = classif.get(cnpj, "")
+        n["data_cancelamento"] = None
+        num = int(n.get("numero") or 0)
+        cnpj_e = re.sub(r"\D","", n.get("cnpj_emitente") or "")
+        eh_inut = any(i["cnpj"]==cnpj_e and str(i.get("serie") or "")==str(n.get("serie") or "")
+                      and i["numero_inicial"] <= num <= i["numero_final"] for i in inuts)
         if n["chave"] in cmap:
             n["situacao"] = "Cancelada"; n["data_cancelamento"] = cmap[n["chave"]]
+        elif eh_inut:
+            n["situacao"] = "Inutilizada"
+        elif (n.get("status_codigo") or "100") not in ("100","150"):
+            n["situacao"] = "Nao autorizada"
         else:
-            n["situacao"] = "Autorizada"; n["data_cancelamento"] = None
+            n["situacao"] = "Autorizada"
         notas.append(n)
     # ---- vinculo devolucao <-> nota original (refNFe do XML) ----
     por_chave = {n["chave"]: n for n in notas}
