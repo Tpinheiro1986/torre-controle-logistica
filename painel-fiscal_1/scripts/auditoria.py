@@ -79,6 +79,7 @@ def parse_nfe(path):
     tot = inf.find(".//{*}ICMSTot"); prot = root.find(".//{*}infProt"); adic = gd(inf,"infAdic")
     transp = gd(inf,"transp"); transporta = gd(transp,"transporta"); vol = gd(transp,"vol")
     mf = g(transp,"modFrete")
+    refs_nfe = ";".join(sorted({(e.text or "").strip() for e in inf.findall(".//{*}NFref/{*}refNFe") if (e.text or "").strip()}))
     nota = {"chave":(inf.get("Id") or "").replace("NFe",""),"numero":g(ide,"nNF"),"serie":g(ide,"serie"),
         "modelo":g(ide,"mod"),"natureza_operacao":g(ide,"natOp"),
         "tipo_operacao":"Saida" if g(ide,"tpNF")=="1" else "Entrada","finalidade":g(ide,"finNFe"),
@@ -88,6 +89,7 @@ def parse_nfe(path):
         "municipio_destinatario":g(ed,"xMun"),"valor_produtos":num(g(tot,"vProd")),"valor_total":num(g(tot,"vNF")),
         "valor_icms":num(g(tot,"vICMS")),"valor_frete":num(g(tot,"vFrete")),"valor_desconto":num(g(tot,"vDesc")),
         "mod_frete":MOD_FRETE.get(mf, mf),"nome_transportadora":g(transporta,"xNome"),
+        "nfe_referenciada":refs_nfe or None,
         "qtd_volumes":num(g(vol,"qVol")),"peso_bruto":num(g(vol,"pesoB")),
         "protocolo":g(prot,"nProt"),"status_codigo":g(prot,"cStat"),"status_motivo":g(prot,"xMotivo"),
         "data_autorizacao":g(prot,"dhRecbto"),"info_complementar":(g(adic,"infCpl") or "")[:200],
@@ -101,8 +103,9 @@ def parse_nfe(path):
             "cst_icms":g(icms,"CST"),"aliquota_icms":num(g(icms,"pICMS")),"valor_icms_item":num(g(icms,"vICMS"))})
     return nota, itens
 
-def parse_cte(path):
-    root=ET.parse(path).getroot(); inf=root.find(".//{*}infCte")
+def _cte_de(root, nome_origem):
+    """Extrai o CT-e de uma arvore ja carregada (arquivo direto ou de dentro de DistDFe)."""
+    inf=root.find(".//{*}infCte")
     if inf is None: return None, None
     ide=gd(inf,"ide"); emit=gd(inf,"emit"); rem=gd(inf,"rem"); dest=gd(inf,"dest")
     vp=gd(inf,"vPrest"); carga=root.find(".//{*}infCarga"); prot=root.find(".//{*}infProt")
@@ -118,8 +121,33 @@ def parse_cte(path):
         "cnpj_destinatario":g(dest,"CNPJ") or g(dest,"CPF"),"nome_destinatario":g(dest,"xNome"),
         "valor_total":num(g(vp,"vTPrest")),"valor_receber":num(g(vp,"vRec")),"valor_carga":num(g(carga,"vCarga")),
         "qtd_nfe":len(refs),"protocolo":g(prot,"nProt"),"status_codigo":g(prot,"cStat"),
-        "status_motivo":g(prot,"xMotivo"),"data_autorizacao":g(prot,"dhRecbto"),"arquivo_origem":os.path.basename(path)}
+        "status_motivo":g(prot,"xMotivo"),"data_autorizacao":g(prot,"dhRecbto"),"arquivo_origem":nome_origem}
     return cte, refs
+
+def parse_cte_arquivo(path):
+    """Le um arquivo da pasta de CT-e e devolve uma LISTA de (cte, refs).
+       - cteProc normal  -> 1 CT-e
+       - procCTeDistDFe  -> abre cada docZip (base64+gzip) e extrai os CT-es de dentro.
+         (era aqui que os CT-es 'sumiam': eles chegam compactados na Distribuicao DFe)"""
+    import base64, gzip
+    root = ET.parse(path).getroot()
+    tag = root.tag.split("}")[-1]
+    nome = os.path.basename(path)
+    out = []
+    if root.find(".//{*}docZip") is not None:            # DistDFe (CT-e ou NF-e)
+        for dz in root.iter():
+            if not dz.tag.endswith("docZip") or not (dz.text or "").strip(): continue
+            try:
+                interno = ET.fromstring(gzip.decompress(base64.b64decode(dz.text)))
+            except Exception:
+                continue
+            c, r = _cte_de(interno, nome)
+            if c: out.append((c, r))
+            # eventos (comprovante de entrega etc.) sao ignorados por enquanto
+    else:                                                 # arquivo de CT-e normal
+        c, r = _cte_de(root, nome)
+        if c: out.append((c, r))
+    return out
 
 def parse_cancelamento(path):
     """Le XML de evento de cancelamento (*_Cancel.xml, tpEvento 110111)."""
@@ -205,8 +233,9 @@ def _ler_lote(paths, fn, rotulo):
             if r is not None: out.append(r)
     return out
 
-def reprocessar(sb, desde=None):
+def reprocessar(sb, desde=None, forcar=False):
     print("\n== Reprocessando pastas (somente %d+) ==" % ANO_MINIMO, flush=True)
+    if forcar: print("  (modo completo: notas ja existentes serao REGRAVADAS com os campos novos)", flush=True)
 
     # ---------- NF-e (inclui eventos de cancelamento *_Cancel.xml) ----------
     arquivos = coletar(PASTA_NFE, exts=(".xml",), desde=desde)
@@ -219,7 +248,9 @@ def reprocessar(sb, desde=None):
     novas = []
     for r in _ler_lote(arq_nfe, parse_nfe, "NF"):
         nota, itens = r
-        if not nota or nota["chave"] in ja: continue
+        if not nota: continue
+        if not forcar and nota["chave"] in ja: continue
+        if forcar and nota["chave"] in ja: ja.discard(nota["chave"])
         ja.add(nota["chave"]); novas.append((nota, itens))
     print(f"  NF-e novas para enviar: {len(novas)}", flush=True)
 
@@ -253,10 +284,10 @@ def reprocessar(sb, desde=None):
     arquivos = coletar(PASTA_CTE, exts=(".xml",), desde=desde)
     jac = chaves_existentes(sb, "cte_conhecimentos")
     novosc = []
-    for r in _ler_lote(arquivos, parse_cte, "CT"):
-        cte, refs = r
-        if not cte or cte["chave"] in jac: continue
-        jac.add(cte["chave"]); novosc.append((cte, refs))
+    for lista in _ler_lote(arquivos, parse_cte_arquivo, "CT"):
+        for cte, refs in lista:
+            if not cte or cte["chave"] in jac: continue
+            jac.add(cte["chave"]); novosc.append((cte, refs))
     print(f"  CT-e novos para enviar: {len(novosc)}", flush=True)
     cmap = {}
     for lote in chunk([c for c, _ in novosc], 400):
@@ -314,7 +345,7 @@ def montar_dados(sb):
     notas_raw = buscar_tudo(sb, "nfe_notas",
         "id,chave,numero,serie,natureza_operacao,data_emissao,nome_emitente,uf_emitente,"
         "nome_destinatario,uf_destinatario,municipio_destinatario,cnpj_destinatario,"
-        "mod_frete,nome_transportadora,qtd_volumes,peso_bruto,valor_total",
+        "mod_frete,nome_transportadora,qtd_volumes,peso_bruto,nfe_referenciada,valor_total",
         ordem="data_emissao")
     cancels = buscar_tudo(sb, "nfe_cancelamentos", "chave_nfe,data_evento")
     cmap = {c["chave_nfe"]: c.get("data_evento") for c in cancels}
@@ -329,6 +360,20 @@ def montar_dados(sb):
         else:
             n["situacao"] = "Autorizada"; n["data_cancelamento"] = None
         notas.append(n)
+    # ---- vinculo devolucao <-> nota original (refNFe do XML) ----
+    por_chave = {n["chave"]: n for n in notas}
+    for n in notas:
+        n["dev_de"] = None      # esta nota e devolucao da NF X
+        n["dev_por"] = []       # esta nota foi coberta pelas devolucoes [Y, Z]
+    for n in notas:
+        eh_dev = "DEVOLUC" in (n.get("natureza_operacao") or "").upper()
+        for ch in (n.get("nfe_referenciada") or "").split(";"):
+            ch = ch.strip()
+            if len(ch) != 44: continue
+            orig = por_chave.get(ch)
+            if eh_dev:
+                n["dev_de"] = {"numero": (orig or {}).get("numero") or str(int(ch[25:34])), "chave": ch}
+                if orig: orig["dev_por"].append({"numero": n["numero"], "chave": n["chave"]})
     ctes = buscar_tudo(sb, "cte_conhecimentos", "id,chave,numero,serie,nome_emitente,uf_inicio,uf_fim,valor_total,data_emissao")
     refs = buscar_tudo(sb, "cte_nfe_ref", "cte_id,chave_nfe,numero_nf")
     cte_chave = {c["id"]: c["chave"] for c in ctes}
@@ -404,7 +449,7 @@ def atualizar(sb, completo=False):
     else:
         print("\n== Carga completa de %d+ ==" % ANO_MINIMO, flush=True)
     inicio = datetime.now()
-    res = reprocessar(sb, desde)
+    res = reprocessar(sb, desde, forcar=completo)
     escrever_marcador(inicio)
     return res
 

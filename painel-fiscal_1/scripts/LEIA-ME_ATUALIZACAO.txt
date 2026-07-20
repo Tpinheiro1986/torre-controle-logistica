@@ -16,6 +16,27 @@ O QUE MUDOU
 5. O botao ATUALIZAR do painel continua funcionando: com o programa rodando
    na maquina do Y:, ele reprocessa as pastas e republica.
 
+CORRECAO IMPORTANTE (17/07)
+---------------------------
+Muitas notas apareciam "sem CT-e" porque parte dos CT-es chega COMPACTADA
+dentro dos arquivos de Distribuicao DFe (nome comecando com 443_). O programa
+agora abre esses arquivos, descompacta e grava os CT-es de dentro.
+OBRIGATORIO rodar UMA VEZ a carga completa para recuperar os antigos:
+    python auditoria.py full
+(depois disso volta ao incremental normal)
+
+NOVIDADE: VINCULO DE DEVOLUCAO (17/07)
+--------------------------------------
+Devolucoes de venda agora sao cruzadas com a nota original (campo refNFe do
+XML). No grid, a coluna "Devolucao" mostra:
+  - na devolucao:    "devolve NF 63998"
+  - na nota original:"coberta por NF 65589"
+O filtro "Vinculo CT-e" ganhou 2 opcoes:
+  - "Vinculo por devolucao"
+  - "Em aberto (sem CT-e e sem devolucao)"  <- pendencias de verdade
+O modo full tambem foi corrigido: agora ele REGRAVA as notas ja existentes,
+preenchendo os campos novos (frete, transportadora, volumes, peso, refNFe).
+
 COMO INSTALAR (substituir 2 arquivos)
 -------------------------------------
 1. Feche o auditoria.py se estiver rodando.
