@@ -64,6 +64,9 @@ tbody tr:hover{background:#0f1830}
 .sit{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.03em}
 .s-ok{background:rgba(52,211,153,.15);color:var(--emerald)}
 .s-canc{background:rgba(251,113,133,.18);color:var(--rose)}
+.dev{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.d-de{background:rgba(167,139,250,.16);color:var(--violet)}
+.d-por{background:rgba(251,191,36,.15);color:var(--amber)}
 tr.canc td{opacity:.75}
 .chv{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.01em}
 .nf{font-family:var(--mono);color:var(--cyan);font-weight:600}
@@ -102,7 +105,7 @@ tr.canc td{opacity:.75}
   <div class="fg"><label>Transportador</label><select id="fTransp"></select></div>
   <div class="fg"><label>FOB / CIF</label><select id="fFob"></select></div>
   <div class="fg"><label>Vinculo CT-e</label><select id="fVinc">
-    <option value="">Todos</option><option value="sem">Sem CT-e</option><option value="com">Com CT-e</option></select></div>
+    <option value="">Todos</option><option value="sem">Sem CT-e</option><option value="com">Com CT-e</option><option value="dev">Vinculo por devolucao</option><option value="aberto">Em aberto (sem CT-e e sem devolucao)</option></select></div>
   <div class="fg"><label>Mes (emissao NF)</label><select id="fMes"></select></div>
   <div class="fg"><label>Visao</label><div class="seg" id="segVisao">
     <button data-v="nota" class="on">Notas</button>
@@ -165,12 +168,13 @@ function montarFiltros(){indexar();
 document.querySelectorAll('#segVisao button').forEach(b=>b.onclick=()=>{state.visao=b.dataset.v;document.querySelectorAll('#segVisao button').forEach(x=>x.classList.toggle('on',x===b));render()});
 function limpar(){state.sit=state.emit=state.nat=state.dest=state.transp=state.fob=state.vinc=state.mes='';['fSit','fEmit','fNat','fDest','fTransp','fFob','fVinc','fMes'].forEach(id=>document.getElementById(id).value='');render()}
 
-function filtradas(){return DATA.notas.filter(n=>(!state.sit||n.situacao===state.sit)&&(!state.emit||n.nome_emitente===state.emit)&&(!state.nat||n.natureza_operacao===state.nat)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp))&&(!state.fob||n.fob_cif===state.fob)&&(!state.vinc||(state.vinc==='com'?!!T(n.chave):!T(n.chave))))}
+function filtradas(){return DATA.notas.filter(n=>(!state.sit||n.situacao===state.sit)&&(!state.emit||n.nome_emitente===state.emit)&&(!state.nat||n.natureza_operacao===state.nat)&&(!state.dest||n.nome_destinatario===state.dest)&&(!state.mes||mesDe(n.data_emissao)===state.mes)&&(!state.transp||(T(n.chave)&&T(n.chave).nome===state.transp))&&(!state.fob||n.fob_cif===state.fob)&&(!state.vinc||(state.vinc==='com'?!!T(n.chave):state.vinc==='sem'?!T(n.chave):state.vinc==='dev'?temDev(n):(!T(n.chave)&&!temDev(n)))))}
 
 function valSort(n,col){const t=T(n.chave);switch(col){
   case'chave':return n.chave||'';
   case'sit':return n.situacao||'';
   case'dataCanc':return n.data_cancelamento||'';
+  case'dev':return n.dev_de?('a'+n.dev_de.numero):(n.dev_por&&n.dev_por.length?('b'+n.dev_por[0].numero):'z');
   case'serie':return +n.serie||0;
   case'transp':return (transpDe(n)||'').toLowerCase();
   case'emissor':return (n.nome_emitente||'').toLowerCase();
@@ -186,6 +190,7 @@ function valSort(n,col){const t=T(n.chave);switch(col){
   case'dataCT':return t?(t.data||''):'';
   case'valor':return +n.valor_total||0;default:return ''}}
 function transpDe(n){const t=T(n.chave);return (t&&t.nome)||n.nome_transportadora||''}
+function temDev(n){return !!(n.dev_de||(n.dev_por&&n.dev_por.length))}
 function ordenar(arr){const{col,dir}=sort;return arr.sort((a,b)=>{const x=valSort(a,col),y=valSort(b,col);return x<y?-dir:x>y?dir:0})}
 function thSort(col){return sort.col===col?`<span class="ar">${sort.dir>0?'▲':'▼'}</span>`:''}
 window.setSort=c=>{if(sort.col===c)sort.dir*=-1;else{sort.col=c;sort.dir=1}render()};
@@ -211,7 +216,7 @@ function render(){const fnAll=filtradas();kpis(fnAll);const v=document.getElemen
      <div class="panel-top"><span>${fnAll.length.toLocaleString('pt-BR')} nota(s)${fn.length>LIMITE?` — mostrando ${LIMITE} (refine os filtros)`:''}</span>
        <span>clique no titulo para ordenar</span></div>
      <div class="tbl-scroll"><table><thead><tr>
-       ${H('chave','Chave de Acesso')}${H('sit','Situacao')}${H('dataCanc','Data Cancelamento')}
+       ${H('chave','Chave de Acesso')}${H('sit','Situacao')}${H('dataCanc','Data Cancelamento')}${H('dev','Devolucao')}
        ${H('serie','Serie')}${H('nat','Natureza da Operacao')}${H('emissor','Emitente')}
        ${H('cliente','Destinatario')}${H('mun','Municipio Dest.')}${H('uf','UF Dest.')}
        ${H('frete','Modalidade Frete')}${H('transp','Transportadora')}
@@ -221,6 +226,7 @@ function render(){const fnAll=filtradas();kpis(fnAll);const v=document.getElemen
        <td><span class="chv" title="${n.chave}">${n.chave}</span><div class="b2">NF <span class="nf">${n.numero}</span> · ${dBR(n.data_emissao)}</div></td>
        <td><span class="sit ${canc?'s-canc':'s-ok'}">${n.situacao||'Autorizada'}</span></td>
        <td class="mono">${n.data_cancelamento?dBR(n.data_cancelamento):'<span class="dash">—</span>'}</td>
+       <td>${n.dev_de?`<span class="dev d-de" title="Esta nota e devolucao da NF ${n.dev_de.numero}">↩ devolve NF ${n.dev_de.numero}</span>`:(n.dev_por&&n.dev_por.length?n.dev_por.map(d=>`<span class="dev d-por" title="Coberta pela devolucao NF ${d.numero}">✔ coberta por NF ${d.numero}</span>`).join('<br>'):'<span class="dash">—</span>')}</td>
        <td class="mono">${n.serie||''}</td>
        <td><span class="tag" title="${n.natureza_operacao||''}">${n.natureza_operacao||''}</span></td>
        <td><div class="b1">${n.nome_emitente||''}</div><div class="b2">${n.uf_emitente||''}</div></td>

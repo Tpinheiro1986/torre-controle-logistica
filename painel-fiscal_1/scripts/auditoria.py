@@ -246,12 +246,13 @@ def reprocessar(sb, desde=None, forcar=False):
     print("  conferindo o que ja esta no banco ...", flush=True)
     ja = chaves_existentes(sb, "nfe_notas")
     novas = []
+    vistos = set()   # dedupe dentro da propria rodada (mesma NF salva 2x na pasta)
     for r in _ler_lote(arq_nfe, parse_nfe, "NF"):
         nota, itens = r
         if not nota: continue
+        if nota["chave"] in vistos: continue          # arquivo duplicado -> ignora
         if not forcar and nota["chave"] in ja: continue
-        if forcar and nota["chave"] in ja: ja.discard(nota["chave"])
-        ja.add(nota["chave"]); novas.append((nota, itens))
+        vistos.add(nota["chave"]); novas.append((nota, itens))
     print(f"  NF-e novas para enviar: {len(novas)}", flush=True)
 
     # cancelamentos
@@ -284,10 +285,11 @@ def reprocessar(sb, desde=None, forcar=False):
     arquivos = coletar(PASTA_CTE, exts=(".xml",), desde=desde)
     jac = chaves_existentes(sb, "cte_conhecimentos")
     novosc = []
+    vistosc = set()
     for lista in _ler_lote(arquivos, parse_cte_arquivo, "CT"):
         for cte, refs in lista:
-            if not cte or cte["chave"] in jac: continue
-            jac.add(cte["chave"]); novosc.append((cte, refs))
+            if not cte or cte["chave"] in vistosc or cte["chave"] in jac: continue
+            vistosc.add(cte["chave"]); novosc.append((cte, refs))
     print(f"  CT-e novos para enviar: {len(novosc)}", flush=True)
     cmap = {}
     for lote in chunk([c for c, _ in novosc], 400):
