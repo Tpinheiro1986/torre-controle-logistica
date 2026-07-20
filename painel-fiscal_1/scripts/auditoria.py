@@ -28,7 +28,10 @@ LOGIN_EMAIL   = "thiago_balao@yahoo.com.br"     # mesmo login do painel
 LOGIN_SENHA   = "Genomma@2026"
 
 PASTA_NFE       = r"Y:\ERP-12\ArqXML-MG"
-PASTA_CTE       = r"Y:\ERP-12\TOTVSCOLAB20-PRD\RECEIVED"
+PASTAS_CTE      = [
+    r"Y:\ERP-12\TOTVSCOLAB20-PRD\RECEIVED",   # TOTVS Colab: 100% dos CT-es recebidos
+    r"Y:\ERP-12\TRANSP-PRD\CTE",              # CT-es APROVADOS (frete conferido no outro sistema)
+]
 PARALELO        = 16     # leitores simultaneos (rede aguenta bem; reduza se der erro)
 
 ANO_MINIMO   = 2026
@@ -290,7 +293,9 @@ def reprocessar(sb, desde=None, forcar=False):
     nf = len(novas)
 
     # ---------- CT-e ----------
-    arquivos = coletar(PASTA_CTE, exts=(".xml",), desde=desde)
+    arquivos = []
+    for pasta_cte in PASTAS_CTE:
+        arquivos += coletar(pasta_cte, exts=(".xml",), desde=desde)
     jac = chaves_existentes(sb, "cte_conhecimentos")
     novosc = []
     vistosc = set()
