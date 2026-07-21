@@ -1,0 +1,42 @@
+SCORECARD — Torre de Controle Logística
+========================================
+
+CONTEÚDO
+  index.html               -> novo layout do scorecard (6 abas, 6 modos)
+  publicar_scorecard.py    -> publicador (git-only, não-destrutivo)
+  publicar.bat             -> atalho de duplo clique para publicar
+  dados.json               -> (SEU arquivo já existente; NÃO vem neste pacote)
+
+ONDE COLOCAR
+  Copie os 3 arquivos para:
+  C:\Users\thiago.pinheiro\OneDrive - genommalabinternacional\Área de Trabalho\
+  Codigo\torre-controle-logistica\scorecard
+
+  RECOMENDADO antes de sobrescrever o index.html atual:
+  o Git guarda a versão anterior automaticamente (dá para reverter com
+  `git checkout HEAD~1 -- scorecard/index.html`). Ainda assim, se quiser
+  comparar primeiro, salve como "index_novo.html", abra no navegador e só
+  então renomeie para index.html.
+
+DADOS (importante)
+  A página LÊ o dados.json da própria pasta e só usa se o schema bater com os
+  campos esperados (totalPed, otif, frac, faturamento, ...). Se o seu dados.json
+  tiver outro formato, a página mostra dados de DEMONSTRAÇÃO e AVISA no console —
+  sem nunca alterar o arquivo. Para conectar seus números reais, ajuste a função
+  mapearDados() no index.html (ou peça ajuda com o schema do seu dados.json).
+
+PUBLICAR ATUALIZAÇÕES
+  Duplo clique em publicar.bat  (ou: python publicar_scorecard.py)
+  O que ele faz:
+    • versiona só a pasta scorecard/;
+    • NÃO sobrescreve o dados.json publicado (histórico intacto);
+    • git pull --rebase e, se falhar, merge --no-edit; depois git push;
+    • limpa locks do .git (OneDrive) e recupera rebase interrompido;
+    • sobe a árvore até achar o .git (tanto faz a pasta onde estiver).
+
+  Teste sem enviar nada:
+    set PUBLICAR_DRYRUN=1 && python publicar_scorecard.py
+
+  Upload do dados.json ao Supabase vem DESLIGADO de propósito
+  (SUBIR_DADOS_SUPABASE = False), justamente para não mexer nas informações
+  passadas. Só ligue se quiser regravar o histórico no Storage.
