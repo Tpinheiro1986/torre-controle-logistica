@@ -307,10 +307,10 @@ const MANUAL={
   custo_tr_ac: Object.assign({}, DATA.custo_tr_ac.series)
 };
 /* OTIF agora é CALCULADO: On Time (OTD) ÷ Fill Rate × 100 */
-DATA.otif.calc='On Time (OTD) ÷ Fill Rate × 100';
+DATA.otif.calc='On Time (OTD) × In-Full';
 function recomputeOtif(){
-  const ot=DATA.ontime.series, fr=DATA.fillrate.series, s={};
-  Object.keys(ot).forEach(k=>{ if(ot[k]!=null && fr[k]!=null && fr[k]>0) s[k]=+(ot[k]/fr[k]).toFixed(4); });
+  const ot=DATA.ontime.series, inf=DATA.infull.series, s={};
+  Object.keys(ot).forEach(k=>{ if(ot[k]!=null && inf[k]!=null) s[k]=+(ot[k]*inf[k]).toFixed(4); });
   DATA.otif.series=s;
   recomputeDerived('otif');
 }
@@ -350,7 +350,7 @@ const COL = {text:cssvar('--text'),text2:cssvar('--text2'),text3:cssvar('--text3
   green:cssvar('--green'),amber:cssvar('--amber'),red:cssvar('--red'),blue:cssvar('--blue')};
 
 const YEARS=['2021','2022','2023','2024','2025','2026'];
-const YEAR_COL = {'2021':'#8C9196','2022':'#56B4E9','2023':'#009E73','2024':'#CC79A7','2025':'#0072B2','2026':'#D55E00'};
+const YEAR_COL = {'2021':'#9DD3EE','2022':'#5AA9DE','2023':'#2E7DC4','2024':'#1E6FC0','2025':'#1B4E8F','2026':'#0B2A55'};
 const MONTH_LABELS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const MONTHS_idx=()=>['01','02','03','04','05','06','07','08','09','10','11','12'];
 
@@ -1207,7 +1207,7 @@ function readGridInto(k){
     if(v==null) delete ind.series[key]; else ind.series[key]=v;
   }));
   recomputeDerived(k);
-  if(k==='ontime'||k==='fillrate') recomputeOtif();
+  if(k==='ontime'||k==='infull') recomputeOtif();
   if(CALC_BASES.includes(k)) recomputeCalc();
 }
 function projetarProximo(){
