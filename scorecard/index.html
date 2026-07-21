@@ -1,1271 +1,538 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Scorecard Logístico — Torre de Controle</title>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
-  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
-  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
-  --radius:8px;--radius-lg:14px;
-  --blue:#185FA5;--blue-d:#0C447C;--blue-l:#E6F1FB;
-  --green:#3B6D11;--green-l:#EAF3DE;
-  --amber:#C9700B;--amber-l:#FBF1E2;
-  --red:#A32D2D;--red-l:#FCEBEB;
-  --teal:#1D9E75;--purple:#7030A0;
-  --grid:rgba(0,0,0,.06);
-}
-@media(prefers-color-scheme:dark){
-  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#161614;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;
-  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);--blue-l:#15324d;--green-l:#1e2e14;
-  --amber-l:#33260f;--red-l:#341717;--grid:rgba(255,255,255,.07);}
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px}
-
-.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.nav-brand{display:flex;align-items:center;gap:10px}
-.nav-back{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);text-decoration:none;padding:5px 10px;border-radius:14px;border:0.5px solid var(--border2)}
-.nav-back:hover{background:var(--bg2)}
-.nav-icon{width:30px;height:30px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center}
-.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.nav-title{font-size:14px;font-weight:700;line-height:1.1}
-.nav-sub{font-size:10px;color:var(--text2)}
-.nav-right{display:flex;align-items:center;gap:10px}
-.live-dot{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text2);background:var(--bg2);border:0.5px solid var(--border);padding:4px 10px;border-radius:14px}
-.live-dot i{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,109,17,.45)}70%{box-shadow:0 0 0 6px rgba(59,109,17,0)}100%{box-shadow:0 0 0 0 rgba(59,109,17,0)}}
-
-.wrap{max-width:1180px;margin:0 auto;padding:26px 28px 64px}
-.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
-.h-title{font-size:23px;font-weight:700;letter-spacing:-.01em}
-.h-sub{font-size:12px;color:var(--text2);margin-top:3px}
-.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.ctl-lab{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.period{display:flex;gap:4px;background:var(--bg);border:0.5px solid var(--border);border-radius:11px;padding:4px}
-.period button{font-size:11px;font-weight:600;color:var(--text2);background:transparent;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all .12s;white-space:nowrap}
-.period button:hover{color:var(--text)}
-.period button.on{background:var(--blue);color:#fff}
-
-.ybar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--bg);border:0.5px solid var(--border);border-radius:11px;padding:9px 14px;margin-bottom:22px}
-.ybar .lab{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-right:4px}
-.yl{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text2);font-weight:600;cursor:pointer;user-select:none;padding:3px 9px;border-radius:8px;transition:all .12s}
-.yl:hover{background:var(--bg2)}
-.yl.sel{background:var(--bg3);color:var(--text)}
-.yl.off{opacity:.32}
-.yl i{width:16px;height:3px;border-radius:2px;display:inline-block}
-
-.health{display:grid;grid-template-columns:repeat(4,1fr) 1.2fr;gap:12px;margin-bottom:26px}
-.hstat{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;position:relative;overflow:hidden}
-.hstat .bar{position:absolute;left:0;top:0;bottom:0;width:3px}
-.hstat .lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
-.hstat .val{font-size:30px;font-weight:700;line-height:1.05;margin-top:7px;font-variant-numeric:tabular-nums}
-.hstat .val small{font-size:14px;color:var(--text3);font-weight:600}
-.hstat .meta{font-size:11px;color:var(--text2);margin-top:3px}
-.hdonut{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:6px 10px;display:flex;align-items:center}
-
-.section{margin-bottom:18px}
-.sec-head{display:flex;align-items:center;gap:9px;margin-bottom:12px;margin-top:26px}
-.sec-dot{width:10px;height:10px;border-radius:3px}
-.sec-name{font-size:13px;font-weight:700;letter-spacing:.01em}
-.sec-rule{flex:1;height:0.5px;background:var(--border)}
-.sec-count{font-size:10px;color:var(--text3)}
-
-/* UM gráfico por faixa (tela cheia) */
-.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px 12px;margin-bottom:14px}
-.p-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px}
-.p-id{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-.p-name{font-size:15px;font-weight:700}
-.p-num{display:flex;align-items:baseline;gap:8px}
-.p-val{font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
-.p-val small{font-size:13px;color:var(--text3);font-weight:600}
-.p-yoy{font-size:11px;font-weight:600}
-.p-yoy .up{color:var(--green)}.p-yoy .dn{color:var(--red)}
-.p-status{font-size:9px;font-weight:700;padding:3px 8px;border-radius:9px;white-space:nowrap}
-.s-ok{background:var(--green-l);color:var(--green)}
-.s-warn{background:var(--amber-l);color:var(--amber)}
-.s-bad{background:var(--red-l);color:var(--red)}
-.p-meta{font-size:11px;color:var(--text2);margin-top:2px}
-.p-meta b{color:var(--text2);font-weight:600}
-
-/* seletor de modelo de visualização */
-.vizrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0 2px}
-.vizchips{display:flex;gap:4px;background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:3px}
-.vchip{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text2);background:transparent;border:none;padding:6px 11px;border-radius:7px;cursor:pointer;position:relative;transition:all .12s}
-.vchip:hover{color:var(--text)}
-.vchip.on{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.vchip svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.vchip .reco{position:absolute;top:-3px;right:-3px;width:7px;height:7px;border-radius:50%;background:var(--green);border:1.5px solid var(--bg)}
-.reco-note{font-size:10.5px;color:var(--text3)}
-.reco-note b{color:var(--green);font-weight:600}
-.p-chart{margin-top:6px;height:300px}
-
-@media(max-width:760px){.health{grid-template-columns:repeat(2,1fr)}.hdonut{grid-column:span 2}.wrap{padding:18px 14px 48px}.p-chart{height:250px}}
-@media(max-width:560px){.health{grid-template-columns:1fr}.hdonut{grid-column:auto}}
-
-/* abas por dimensão */
-.tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tab{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--text2);background:transparent;border:none;border-bottom:2.5px solid transparent;padding:11px 15px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s;margin-bottom:-1px}
-.tab:hover{color:var(--text)}
-.tab.on{color:var(--text)}
-.tab .tdot{width:9px;height:9px;border-radius:3px;flex:none}
-.tab .ticon{width:15px;height:15px;flex:none;display:block}
-.tab .ticon svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block;opacity:.55;transition:opacity .12s}
-.tab:hover .ticon svg,.tab.on .ticon svg{opacity:1}
-.tab .tcount{font-size:10px;color:var(--text3);background:var(--bg3);border-radius:8px;padding:1px 7px;font-weight:600}
-.tab.on .tcount{color:var(--text2)}
-.tab-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.th-left{display:flex;align-items:center;gap:11px}
-.th-name{font-size:18px;font-weight:700;letter-spacing:-.01em}
-.th-sub{font-size:11.5px;color:var(--text2);margin-top:1px}
-.th-mini{display:flex;gap:7px;flex-wrap:wrap}
-.th-chip{font-size:11px;font-weight:600;padding:5px 11px;border-radius:9px;display:inline-flex;gap:5px;align-items:center}
-.tab-extra:empty{display:none}
-.tab-extra{margin-bottom:16px}
-/* === Admin / Edição === */
-.admin-badge{display:none;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#fff;background:var(--blue);border:none;padding:5px 12px;border-radius:14px;cursor:pointer}
-.admin-badge.show{display:inline-flex}
-.admin-badge:hover{background:var(--blue-d)}
-.admin-badge svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.modal-bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
-.modal-bk.on{display:flex}
-.modal{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:760px;box-shadow:0 18px 60px rgba(0,0,0,.25)}
-.modal-h{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:0.5px solid var(--border)}
-.modal-h .mt{font-size:15px;font-weight:700}
-.modal-h .ms{font-size:11px;color:var(--text2);margin-top:2px}
-.modal-x{border:none;background:transparent;font-size:20px;color:var(--text2);cursor:pointer;line-height:1;padding:4px 8px;border-radius:8px}
-.modal-x:hover{background:var(--bg2)}
-.modal-b{padding:20px 22px}
-.ed-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.ed-sel{flex:1;min-width:200px;padding:9px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;font-weight:600;outline:none}
-.ed-meta{font-size:11px;color:var(--text2)}
-.ed-gridwrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--radius);max-height:340px;overflow-y:auto}
-table.ed-grid{border-collapse:collapse;font-size:12px;width:100%;min-width:520px}
-table.ed-grid th{position:sticky;top:0;background:var(--bg2);padding:7px 8px;font-size:10px;font-weight:600;color:var(--text2);border-bottom:0.5px solid var(--border);text-align:center;z-index:1}
-table.ed-grid th:first-child{text-align:left}
-table.ed-grid td{padding:0;border-bottom:0.5px solid var(--border);text-align:center}
-table.ed-grid td.ml{padding:6px 8px;font-weight:600;color:var(--text2);text-align:left;background:var(--bg2)}
-table.ed-grid input{width:100%;min-width:62px;border:none;background:transparent;color:var(--text);font-size:12px;text-align:center;padding:7px 4px;outline:none;font-variant-numeric:tabular-nums}
-table.ed-grid input:focus{background:var(--blue-l);box-shadow:inset 0 0 0 1.5px var(--blue)}
-table.ed-grid input.proj{background:var(--amber-l);font-style:italic}
-table.ed-grid.rs input{min-width:96px}
-.ed-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
-.eb{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:9px 14px;border-radius:var(--radius);cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text)}
-.eb:hover{background:var(--bg2)}
-.eb.pri{background:var(--blue);color:#fff;border-color:var(--blue)}
-.eb.pri:hover{background:var(--blue-d)}
-.eb.ok{background:var(--green);color:#fff;border-color:var(--green)}
-.eb:disabled{opacity:.5;cursor:not-allowed}
-.ed-status{font-size:11px;color:var(--text2);flex:1;min-width:120px}
-.ed-status.good{color:var(--green)}
-.ed-status.bad{color:var(--red)}
-.ed-hint{font-size:10.5px;color:var(--text3);margin-top:10px;line-height:1.5}
-/* Explicação do indicador dentro do painel */
-.bi-box{margin-top:10px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg2);overflow:hidden}
-.bi-sum{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--text2);padding:9px 13px;cursor:pointer;list-style:none;user-select:none}
-.bi-sum::-webkit-details-marker{display:none}
-.bi-sum:hover{color:var(--text)}
-.bi-sum .chev{margin-left:auto;transition:transform .15s}
-details[open] .bi-sum .chev{transform:rotate(90deg)}
-.bi-body{padding:4px 14px 14px;border-top:0.5px solid var(--border)}
-.bi-q{display:flex;gap:10px;padding:7px 0;border-bottom:0.5px dashed var(--border)}
-.bi-q:last-child{border-bottom:none}
-.bi-q .ql{font-size:11px;color:var(--text2);min-width:148px;flex:none}
-.bi-q .qa{font-size:12px;color:var(--text);font-weight:500}
-.bi-q .qa b{font-weight:700}
-
-/* ===== Refino visual — tema Genomma (sobreposto, não altera a estrutura) ===== */
-@media(prefers-color-scheme:light){
-  :root{--bg2:#EEF4FA;--bg3:#F5F8FB;--border:rgba(11,42,85,.10);--border2:rgba(11,42,85,.16);--grid:rgba(11,42,85,.06)}
-}
-:root{--radius-lg:16px}
-.topnav{background:linear-gradient(100deg,#0B2A55,#185FA5 72%);border-bottom:0;box-shadow:0 4px 16px rgba(11,42,85,.14)}
-.topnav .nav-title{color:#fff}
-.topnav .nav-sub{color:rgba(255,255,255,.80)}
-.topnav .nav-icon{background:rgba(255,255,255,.18)}
-.topnav .nav-icon svg{stroke:#fff}
-.topnav .nav-back{color:#fff;border-color:rgba(255,255,255,.30)}
-.topnav .nav-back:hover{background:rgba(255,255,255,.14)}
-.topnav .live-dot{color:rgba(255,255,255,.88);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22)}
-.topnav .live-dot i{background:#7CE0B8}
-.topnav .admin-badge{background:rgba(255,255,255,.18)}
-.topnav .admin-badge:hover{background:rgba(255,255,255,.30)}
-.panel{box-shadow:0 1px 2px rgba(16,45,70,.04),0 8px 24px rgba(16,45,70,.06)}
-.hstat{border-radius:16px;box-shadow:0 1px 2px rgba(16,45,70,.04),0 8px 24px rgba(16,45,70,.06)}
-.modal{border-radius:16px;box-shadow:0 30px 80px rgba(11,42,85,.30)}
-.tab.on{border-bottom-color:var(--blue)}
-.period button.on{background:var(--blue)}
-
+  :root{
+    --genomma-900:#0B2A55;--genomma-700:#134E86;--genomma:#185FA5;--genomma-500:#1E6FC0;
+    --genomma-400:#37A0D8;--genomma-300:#7CC6E8;--genomma-200:#C7E0F4;--genomma-100:#E8F2FB;
+    --ink:#12222F;--ink-soft:#5B6B78;--line:#E3EAF0;--bg:#F5F8FB;--card:#FFF;
+    --alert:#E4572E;--warn:#E5A50A;--ok:#1F9E6E;
+    --radius:16px;--shadow:0 1px 2px rgba(16,45,70,.04),0 8px 24px rgba(16,45,70,.06);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px;-webkit-font-smoothing:antialiased}
+  .topbar{display:flex;align-items:center;gap:16px;padding:14px 22px;background:linear-gradient(100deg,var(--genomma-900),var(--genomma) 72%);color:#fff;position:sticky;top:0;z-index:40;box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+  .brand .dot{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+  .brand small{display:block;font-weight:500;opacity:.78;font-size:11px}
+  .topbar .spacer{flex:1}
+  .btn{border:0;border-radius:10px;padding:8px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn-ghost{background:rgba(255,255,255,.16);color:#fff}.btn-ghost:hover{background:rgba(255,255,255,.26)}
+  .btn-primary{background:#fff;color:var(--genomma-900)}.btn-primary:hover{background:var(--genomma-100)}
+  .tabs{display:flex;gap:2px;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line);padding:0 22px;position:sticky;top:58px;z-index:30}
+  .tab{display:flex;align-items:center;gap:8px;padding:14px 15px;border:0;background:transparent;color:var(--ink-soft);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:.15s}
+  .tab svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7}
+  .tab:hover{color:var(--genomma)} .tab.active{color:var(--genomma);border-bottom-color:var(--genomma)}
+  .wrap{max-width:1400px;margin:0 auto;padding:20px 22px}
+  .filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .dim-head{display:flex;align-items:baseline;gap:10px}.dim-head h2{margin:0;font-size:18px}.dim-head span{color:var(--ink-soft);font-size:12px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}.filters label{color:var(--ink-soft);font-size:12px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink-soft);transition:.15s;user-select:none;display:flex;align-items:center;gap:6px}
+  .chip .sw{width:9px;height:9px;border-radius:50%}.chip.on{background:var(--genomma);border-color:var(--genomma);color:#fff}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--barc,var(--genomma))}
+  .kpi .lbl{color:var(--ink-soft);font-size:12px;font-weight:600;min-height:30px}
+  .kpi .val{font-size:26px;font-weight:750;margin:6px 0 2px}.kpi .val small{font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .kpi .delta{font-size:11px;font-weight:600}.up{color:var(--ok)}.down{color:var(--alert)}.flat{color:var(--ink-soft)}
+  .kpi .tag{position:absolute;top:12px;right:14px;font-size:10px;color:var(--ink-soft);background:var(--genomma-100);border-radius:20px;padding:2px 7px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .panel .head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .panel h3{margin:0;font-size:14px}.panel .sub{margin:2px 0 0;color:var(--ink-soft);font-size:12px}
+  .metatag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:8px}
+  .metatag.has{background:var(--genomma-100);color:var(--genomma-700)}.metatag.no{background:#F1F0EE;color:var(--ink-soft)}
+  .metatag i{width:7px;height:7px;border-radius:50%}
+  .modes{display:flex;gap:3px;background:var(--genomma-100);border-radius:9px;padding:3px}
+  .modes button{border:0;background:transparent;color:var(--genomma-700);font-family:inherit;font-size:11px;font-weight:600;padding:5px 9px;border-radius:7px;cursor:pointer;transition:.12s}
+  .modes button.on{background:#fff;color:var(--genomma);box-shadow:0 1px 2px rgba(16,45,70,.12)}
+  .about{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+  .about summary{cursor:pointer;color:var(--genomma);font-size:12px;font-weight:600;list-style:none}
+  .about summary::-webkit-details-marker{display:none}
+  .about summary::before{content:"▸ ";font-size:10px}.about[open] summary::before{content:"▾ "}
+  .about p{margin:6px 0 0;color:var(--ink-soft);font-size:12px;line-height:1.5}
+  .overlay{position:fixed;inset:0;background:rgba(11,42,85,.4);display:none;align-items:center;justify-content:center;z-index:60;backdrop-filter:blur(2px)}
+  .overlay.open{display:flex}
+  .modal{background:#fff;border-radius:18px;width:min(980px,94vw);max-height:90vh;overflow:auto;box-shadow:0 30px 80px rgba(11,42,85,.3)}
+  .modal header{position:sticky;top:0;background:#fff;padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .modal header h2{margin:0;font-size:16px}.modal .body{padding:18px 22px}
+  .modal footer{position:sticky;bottom:0;background:#fff;padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+  .gridform{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:10px;margin-bottom:12px;align-items:end}
+  .f{display:flex;flex-direction:column;gap:4px}.f label{font-size:11px;color:var(--ink-soft);font-weight:600}
+  select,input[type=number],input[type=text]{font-family:inherit;font-size:12px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;color:var(--ink)}
+  .meta-box{display:flex;align-items:center;gap:10px;background:var(--genomma-100);border:1px solid var(--genomma-200);border-radius:12px;padding:10px 14px;margin-bottom:12px;flex-wrap:wrap}
+  .meta-box .mlab{font-size:12px;font-weight:700;color:var(--genomma-900)}
+  .meta-box input{width:120px}
+  .meta-box .sig{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+  .sig.on{background:#E4F6EE;color:var(--ok)}.sig.off{background:#F1F0EE;color:var(--ink-soft)}
+  .sig i{width:8px;height:8px;border-radius:50%}
+  .month-table{width:100%;border-collapse:collapse;margin-top:6px}
+  .month-table th,.month-table td{border:1px solid var(--line);padding:5px;text-align:center;font-size:12px}
+  .month-table th{background:var(--genomma-100);color:var(--genomma-900)}
+  .month-table input{width:74px;border:1px solid var(--line);border-radius:6px;padding:4px;text-align:right}
+  .hint{font-size:11px;color:var(--ink-soft)}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--genomma-900);color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:80}
+  .toast.show{opacity:1}
+  .empty{color:var(--ink-soft);font-size:12px;text-align:center;padding:40px 10px}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.gridform{grid-template-columns:1fr 1fr}}
 </style>
 </head>
-
 <body>
-
-<div class="topnav">
-  <div class="nav-brand">
-    <a class="nav-back" href="../index.html">‹ Torre</a>
-    <div class="nav-icon">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    </div>
-    <div>
-      <div class="nav-title">Scorecard Logístico</div>
-      <div class="nav-sub">Genomma Lab Brasil · Operações</div>
-    </div>
-  </div>
-  <div class="nav-right">
-    <button class="admin-badge" id="admin-badge" onclick="openEditor()" title="Lançar e atualizar dados">
-      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Lançar / Atualizar
-    </button>
-    <span class="live-dot"><i></i> Consolidado 2021–2026</span>
-  </div>
+<div class="topbar">
+  <div class="brand"><span class="dot">◧</span><div>Scorecard Logístico<small>Torre de Controle · Genomma Lab</small></div></div>
+  <div class="spacer"></div>
+  <button class="btn btn-ghost" id="btnProj">Projetar ▸</button>
+  <button class="btn btn-primary" id="btnEdit">Lançar / editar dados</button>
 </div>
-
+<nav class="tabs" id="tabs"></nav>
 <div class="wrap">
-
-  <div class="head">
-    <div>
-      <div class="h-title">Visão Gerencial de Indicadores</div>
-      <div class="h-sub" id="h-sub">Indicadores consolidados 2021–2026 · navegação por dimensão · 6 modelos de visualização</div>
-    </div>
-    <div class="controls">
-      <span class="ctl-lab">Destaque KPI</span>
-      <div class="period" id="period"></div>
-    </div>
+  <div class="filters">
+    <div class="dim-head"><h2 id="dimNome">—</h2><span id="dimSub"></span></div>
+    <span style="flex:1"></span>
+    <label>Anos:</label><div class="chips" id="yearChips"></div>
   </div>
-
-  <div class="ybar" id="ybar"></div>
-  <div class="health" id="health"></div>
-
-  <div class="tabs" id="tabs"></div>
-  <div id="tabcontent"></div>
-
+  <div class="kpis" id="kpis"></div>
+  <div class="grid" id="panels"></div>
 </div>
-
-<!-- MODAL ADMIN: Lançar / Atualizar Dados -->
-<div class="modal-bk" id="ed-modal">
+<div class="overlay" id="overlay">
   <div class="modal">
-    <div class="modal-h">
-      <div>
-        <div class="mt">Lançar / Atualizar Dados</div>
-        <div class="ms">Edite valores mensais, projete meses futuros e atualize os indicadores. Visível apenas para o administrador.</div>
+    <header><h2>Lançar / editar dados</h2>
+      <button class="btn btn-primary" id="btnClose">Fechar ✕</button></header>
+    <div class="body">
+      <div class="gridform">
+        <div class="f"><label>Indicador</label><select id="edInd"></select></div>
+        <div class="f"><label>Ano</label><select id="edAno"></select></div>
+        <div class="f"><label>Projetar a partir de</label><select id="edProjFrom"></select></div>
+        <div class="f"><button class="btn btn-primary" style="background:var(--genomma);color:#fff" id="btnFillProj">Preencher projeção</button></div>
       </div>
-      <button class="modal-x" onclick="closeEditor()">&times;</button>
+      <div class="meta-box">
+        <span class="mlab">Meta do indicador</span>
+        <input type="number" step="any" id="edMeta" placeholder="ex.: 95">
+        <span id="edMetaUnit" class="hint"></span>
+        <span id="edMetaSig" class="sig off"><i></i>sem meta</span>
+        <span class="hint" style="flex:1;min-width:180px">Deixe vazio para <b>não exibir linha de meta</b> no gráfico.</span>
+      </div>
+      <p class="hint">Edite os meses (na unidade exibida). "Pré-visualizar" aplica meta + valores nos gráficos sem salvar.</p>
+      <div style="overflow:auto"><table class="month-table" id="edTable"></table></div>
     </div>
-    <div class="modal-b">
-      <div class="ed-row">
-        <select class="ed-sel" id="ed-ind" onchange="buildGrid()"></select>
-        <span class="ed-meta" id="ed-metainfo"></span>
+    <footer><span class="hint" id="edStatus">—</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="background:var(--genomma-100);color:var(--genomma-900)" id="btnPreview">Pré-visualizar</button>
+        <button class="btn btn-primary" style="background:var(--genomma-100);color:var(--genomma-900)" id="btnExport">Exportar dados.json</button>
+        <button class="btn btn-primary" style="background:var(--genomma);color:#fff" id="btnSave">Salvar</button>
       </div>
-      <div class="ed-gridwrap">
-        <table class="ed-grid" id="ed-grid"></table>
-      </div>
-      <div class="ed-hint" id="ed-hint"></div>
-      <div class="ed-foot">
-        <button class="eb" onclick="projetarProximo()" title="Preenche o próximo mês vazio do ano de referência com a média histórica daquele mês">⌁ Projetar próximo mês</button>
-        <button class="eb pri" onclick="aplicarPreview()">↻ Aplicar (pré-visualizar)</button>
-        <button class="eb ok" id="ed-save" onclick="salvarServidor()">⤓ Salvar no servidor</button>
-        <button class="eb" onclick="exportarJSON()">↧ Exportar JSON</button>
-        <span class="ed-status" id="ed-status"></span>
-      </div>
-    </div>
+    </footer>
   </div>
 </div>
-
+<div class="toast" id="toast"></div>
 <script>
-const DATA = {"otif":{"label":"OTIF Entrega","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.95,"series":{"2021-01":0.8667,"2021-02":0.9443,"2021-03":0.9813,"2021-04":0.9429,"2021-05":0.9817,"2021-06":0.9765,"2021-07":0.9129,"2021-08":0.9672,"2021-09":0.9799,"2021-10":0.9714,"2021-11":0.978,"2021-12":0.9786,"2022-01":0.9791,"2022-02":0.9652,"2022-03":0.9849,"2022-04":0.9692,"2022-05":0.9467,"2022-06":0.9489,"2022-07":0.9315,"2022-08":0.9705,"2022-09":0.977,"2022-10":0.9287,"2022-11":0.9418,"2022-12":0.9558,"2023-01":0.9059,"2023-02":0.9265,"2023-03":0.9582,"2023-04":0.9567,"2023-05":0.9909,"2023-06":0.9944,"2023-07":0.9426,"2023-08":0.9782,"2023-09":0.9975,"2023-10":0.9507,"2023-11":0.9831,"2023-12":0.9841,"2024-01":0.987,"2024-02":0.9551,"2024-03":0.9824,"2024-04":0.9912,"2024-05":0.8751,"2024-06":0.958,"2024-07":0.986,"2024-08":0.9214,"2024-09":0.9521,"2024-10":0.9128,"2024-11":0.9693,"2024-12":0.993,"2025-01":0.9543,"2025-02":0.9404,"2025-03":0.9681,"2025-04":0.9373,"2025-05":0.9761,"2025-06":0.9801,"2025-07":0.8897,"2025-08":0.9632,"2025-09":0.991,"2025-10":0.9691,"2025-11":0.9691,"2025-12":0.975,"2026-01":0.995,"2026-02":0.9115,"2026-03":0.993,"2026-04":0.996,"2026-05":0.9791},"yearly":{"2021":0.9568,"2022":0.9583,"2023":0.964,"2024":0.957,"2025":0.9595,"2026":0.9749},"last_month":"2026-05","last_val":0.9791},"ontime":{"label":"On Time (Pontualidade)","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.99,"series":{"2021-01":0.9927,"2021-02":0.993,"2021-03":0.9942,"2021-04":0.9781,"2021-05":0.9837,"2021-06":0.9844,"2021-07":0.9712,"2021-08":0.974,"2021-09":0.9819,"2021-10":0.9763,"2021-11":0.98,"2021-12":0.9841,"2022-01":0.997,"2022-02":0.991,"2022-03":0.997,"2022-04":0.985,"2022-05":0.98,"2022-06":0.982,"2022-07":0.98,"2022-08":0.983,"2022-09":1,"2022-10":0.984,"2022-11":0.977,"2022-12":0.988,"2023-01":0.99,"2023-02":0.993,"2023-03":0.998,"2023-04":0.996,"2023-05":0.999,"2023-06":0.998,"2023-07":1,"2023-08":0.998,"2023-09":0.999,"2023-10":0.994,"2023-11":0.995,"2023-12":0.993,"2024-01":0.998,"2024-02":0.997,"2024-03":0.996,"2024-04":0.994,"2024-05":0.995,"2024-06":0.997,"2024-07":0.996,"2024-08":0.994,"2024-09":0.995,"2024-10":0.997,"2024-11":0.994,"2024-12":0.995,"2025-01":0.991,"2025-02":0.992,"2025-03":0.995,"2025-04":0.995,"2025-05":0.993,"2025-06":0.99,"2025-07":0.993,"2025-08":0.995,"2025-09":0.996,"2025-10":0.997,"2025-11":0.998,"2025-12":0.998,"2026-01":0.997,"2026-02":0.994,"2026-03":0.995,"2026-04":0.996,"2026-05":0.997},"yearly":{"2021":0.9828,"2022":0.987,"2023":0.9961,"2024":0.9957,"2025":0.9944,"2026":0.9958},"last_month":"2026-05","last_val":0.997},"infull":{"label":"In-Full (Quantidade)","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.95,"series":{"2021-01":0.873,"2021-02":0.951,"2021-03":0.987,"2021-04":0.964,"2021-05":0.998,"2021-06":0.992,"2021-07":0.94,"2021-08":0.993,"2021-09":0.9979,"2021-10":0.995,"2021-11":0.998,"2021-12":0.9944,"2022-01":0.982,"2022-02":0.974,"2022-03":0.9879,"2022-04":0.984,"2022-05":0.966,"2022-06":0.9663,"2022-07":0.9505,"2022-08":0.9873,"2022-09":0.977,"2022-10":0.9438,"2022-11":0.964,"2022-12":0.9674,"2023-01":0.915,"2023-02":0.933,"2023-03":0.9601,"2023-04":0.9605,"2023-05":0.9919,"2023-06":0.9964,"2023-07":0.9426,"2023-08":0.9802,"2023-09":0.9985,"2023-10":0.9564,"2023-11":0.988,"2023-12":0.991,"2024-01":0.9886,"2024-02":0.9569,"2024-03":0.9857,"2024-04":0.9848,"2024-05":0.8786,"2024-06":0.9605,"2024-07":0.9881,"2024-08":0.9253,"2024-09":0.9555,"2024-10":0.9138,"2024-11":0.9743,"2024-12":0.9953,"2025-01":0.9627,"2025-02":0.9476,"2025-03":0.9718,"2025-04":0.9373,"2025-05":0.9807,"2025-06":0.9895,"2025-07":0.8913,"2025-08":0.9668,"2025-09":0.9944,"2025-10":0.9626,"2025-11":0.9669,"2025-12":0.9767,"2026-01":0.9979,"2026-02":0.9167,"2026-03":0.9979,"2026-04":0.939,"2026-05":0.9723},"yearly":{"2021":0.9736,"2022":0.9708,"2023":0.9678,"2024":0.959,"2025":0.9624,"2026":0.9647},"last_month":"2026-05","last_val":0.9723},"fillrate":{"label":"Fill Rate (Atendimento)","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.95,"series":{"2021-01":0.8321,"2021-02":0.832,"2021-03":0.9489,"2021-04":0.8617,"2021-05":0.9251,"2021-06":0.9522,"2021-07":0.9029,"2021-08":0.9973,"2021-09":0.9979,"2021-10":0.998,"2021-11":0.997,"2021-12":0.998,"2022-01":0.982,"2022-02":0.974,"2022-03":0.9879,"2022-04":0.984,"2022-05":0.966,"2022-06":0.9663,"2022-07":0.9505,"2022-08":0.9873,"2022-09":0.977,"2022-10":0.9438,"2022-11":0.964,"2022-12":0.9674,"2023-01":0.915,"2023-02":0.933,"2023-03":0.9601,"2023-04":0.9605,"2023-05":0.9919,"2023-06":0.9964,"2023-07":0.9426,"2023-08":0.9802,"2023-09":0.9985,"2023-10":0.9564,"2023-11":0.988,"2023-12":0.991,"2024-01":0.989,"2024-02":0.958,"2024-03":0.9863,"2024-04":0.9972,"2024-05":0.8795,"2024-06":0.9609,"2024-07":0.99,"2024-08":0.927,"2024-09":0.9569,"2024-10":0.9155,"2024-11":0.9752,"2024-12":0.998,"2025-01":0.963,"2025-02":0.948,"2025-03":0.973,"2025-04":0.942,"2025-05":0.983,"2025-06":0.99,"2025-07":0.896,"2025-08":0.968,"2025-09":0.995,"2025-10":0.972,"2025-11":0.971,"2025-12":0.977,"2026-01":0.998,"2026-02":0.917,"2026-03":0.998,"2026-04":1,"2026-05":0.982},"yearly":{"2021":0.9369,"2022":0.9708,"2023":0.9678,"2024":0.9611,"2025":0.9648,"2026":0.979},"last_month":"2026-05","last_val":0.982},"custo_op":{"label":"Custo Operacional %T&W","group":"Custo Logístico","dir":"down","unit":"%","target":0.051,"series":{"2021-02":0.3176,"2021-03":0.0916,"2021-04":0.0633,"2021-05":0.0679,"2021-06":0.0616,"2021-07":0.0526,"2021-08":0.0541,"2021-09":0.0557,"2021-10":0.0515,"2021-11":0.0515,"2021-12":0.052,"2022-02":0.1166,"2022-03":0.0433,"2022-04":0.0402,"2022-05":0.0467,"2022-06":0.0465,"2022-07":0.0406,"2022-08":0.044,"2022-09":0.045,"2022-10":0.0422,"2022-11":0.045,"2022-12":0.045,"2023-01":0.1166,"2023-02":0.0615,"2023-03":0.0438,"2023-04":0.0517,"2023-05":0.0512,"2023-06":0.0422,"2023-07":0.0466,"2023-08":0.0464,"2023-09":0.0423,"2023-10":0.0461,"2023-11":0.0432,"2023-12":0.042,"2024-01":0.1027,"2024-02":0.0554,"2024-03":0.0409,"2024-04":0.051,"2024-05":0.0481,"2024-06":0.0435,"2024-07":0.0496,"2024-08":0.0486,"2024-09":0.0455,"2024-10":0.0479,"2024-11":0.0448,"2024-12":0.046,"2025-01":0.0722,"2025-02":0.0479,"2025-03":0.0476,"2025-04":0.0528,"2025-05":0.0491,"2025-06":0.0456,"2025-07":0.054,"2025-08":0.052,"2025-09":0.0476,"2025-10":0.0511,"2025-11":0.0471,"2025-12":0.0466,"2026-01":0.1484,"2026-02":0.1026,"2026-03":0.0458,"2026-04":0.0545,"2026-05":0.0553,"2021-01":0.318,"2022-01":0.117},"yearly":{"2021":0.1031,"2022":0.056,"2023":0.0528,"2024":0.052,"2025":0.0511,"2026":0.0813},"last_month":"2026-05","last_val":0.0553},"custo_tr_ac":{"label":"Custo de Transporte %T (Acum.)","group":"Custo Logístico","dir":"down","unit":"%","target":0.043,"series":{"2021-03":0.0274,"2021-04":0.0304,"2021-05":0.0341,"2021-06":0.0309,"2021-07":0.0323,"2021-08":0.0309,"2021-09":0.0311,"2021-10":0.0315,"2021-11":0.0306,"2021-12":0.03,"2022-01":0.0265,"2022-02":0.0237,"2022-03":0.0248,"2022-04":0.0254,"2022-05":0.0254,"2022-06":0.0257,"2022-07":0.0262,"2022-08":0.0258,"2022-09":0.0274,"2022-10":0.0278,"2022-11":0.028,"2022-12":0.028,"2023-01":0.0266,"2023-02":0.0243,"2023-03":0.0278,"2023-04":0.0303,"2023-05":0.0303,"2023-06":0.0294,"2023-07":0.0292,"2023-08":0.0298,"2023-09":0.0298,"2023-10":0.0299,"2023-11":0.0299,"2023-12":0.0299,"2024-01":0.0242,"2024-02":0.0259,"2024-03":0.0295,"2024-04":0.0318,"2024-05":0.0326,"2024-06":0.0328,"2024-07":0.033,"2024-08":0.0325,"2024-09":0.0324,"2024-10":0.0329,"2024-11":0.032,"2024-12":0.032,"2025-01":0.0439,"2025-02":0.0379,"2025-03":0.0372,"2025-04":0.0367,"2025-05":0.0359,"2025-06":0.035,"2025-07":0.0348,"2025-08":0.0347,"2025-09":0.0339,"2025-10":0.0341,"2025-11":0.0333,"2025-12":0.0333,"2026-01":0.0411,"2026-02":0.0391,"2026-03":0.0378,"2026-04":0.0391,"2026-05":0.0391},"yearly":{"2021":0.0309,"2022":0.0262,"2023":0.0289,"2024":0.031,"2025":0.0359,"2026":0.0392},"last_month":"2026-05","last_val":0.0391},"qualidade":{"label":"Incidências de Qualidade","group":"Qualidade & Devolução","dir":"down","unit":"%","target":0.015,"series":{"2021-01":0.0621,"2021-02":0.0563,"2021-03":0.0174,"2021-04":0.0242,"2021-05":0.0035,"2021-06":0,"2021-07":0.0205,"2021-08":0,"2021-09":0,"2021-10":0.007,"2021-11":0.002,"2021-12":0.038,"2022-01":0.0097,"2022-02":0.0595,"2022-03":0.0075,"2022-04":0.0292,"2022-05":0.0055,"2022-06":0.0233,"2022-07":0.0223,"2022-08":0.0197,"2022-09":0.006,"2022-10":0.023,"2022-11":0.0092,"2022-12":0.0096,"2023-01":0.016,"2023-02":0.025,"2023-03":0.025,"2023-04":0.006,"2023-05":0.058,"2023-06":0.062,"2023-07":0,"2023-08":0,"2023-09":0.0265,"2023-10":0.024,"2023-11":0.047,"2023-12":0,"2024-01":0.0287,"2024-02":0.0123,"2024-03":0,"2024-04":0,"2024-05":0.023,"2024-06":0.0058,"2024-07":0.0258,"2024-08":0.0099,"2024-09":0.0204,"2024-10":0.0105,"2024-11":0.0105,"2024-12":0.0174,"2025-01":0.0189,"2025-02":0.0123,"2025-03":0.0103,"2025-04":0.0137,"2025-05":0.019,"2025-06":0.0064,"2025-07":0.009,"2025-08":0.0183,"2025-09":0.0076,"2025-10":0.0405,"2025-11":0.0049,"2025-12":0.0284,"2026-01":0,"2026-02":0.006,"2026-03":0.0058,"2026-04":0,"2026-05":0},"yearly":{"2021":0.0193,"2022":0.0187,"2023":0.0241,"2024":0.0137,"2025":0.0158,"2026":0.0024},"last_month":"2026-05","last_val":0},"ocup":{"label":"Ocupação CD","group":"Estoque & Acuracidade","dir":"target","unit":"%","target":0.85,"series":{"2021-06":0.777,"2021-07":0.882,"2021-08":0.838,"2021-09":0.849,"2021-10":0.8,"2021-11":0.81,"2021-12":0.7,"2022-01":0.852,"2022-02":0.82,"2022-03":0.59,"2022-04":0.65,"2022-05":0.69,"2022-06":0.58,"2022-07":0.66,"2022-08":0.71,"2022-09":0.61,"2022-10":0.63,"2022-11":0.67,"2022-12":0.64,"2023-01":0.56,"2023-02":0.49,"2023-03":0.39,"2023-04":0.45,"2023-05":0.52,"2023-06":0.46,"2023-07":0.53,"2023-08":0.63,"2023-09":0.66,"2023-10":0.54,"2023-11":0.53,"2023-12":0.45,"2024-01":0.62,"2024-02":0.61,"2024-03":0.49,"2024-04":0.57,"2024-05":0.59,"2024-06":0.57,"2024-07":0.89,"2024-08":0.96,"2024-09":0.72,"2024-10":0.74,"2024-11":0.76,"2024-12":0.7,"2025-01":0.72,"2025-02":0.71,"2025-03":0.56,"2025-04":0.64,"2025-05":0.71,"2025-06":0.6,"2025-07":0.9,"2025-08":0.97,"2025-09":0.7,"2025-10":0.93,"2025-11":0.82,"2025-12":0.83,"2026-01":0.75,"2026-02":0.84,"2026-03":0.6,"2026-04":0.81,"2026-05":0.83},"yearly":{"2021":0.808,"2022":0.6752,"2023":0.5175,"2024":0.685,"2025":0.7575,"2026":0.766},"last_month":"2026-05","last_val":0.83},"ira":{"label":"IRA — Acuracidade Qtde","group":"Estoque & Acuracidade","dir":"up","unit":"%","target":0.99,"series":{"2021-01":0.9995,"2021-02":0.9995,"2021-03":0.9995,"2021-04":0.9994,"2021-05":0.999,"2021-06":0.9968,"2021-07":0.999,"2021-08":1.0,"2021-09":0.9997,"2021-10":0.9996,"2021-11":1.0,"2021-12":0.9978,"2022-01":0.9872,"2022-02":0.9886,"2022-03":0.997,"2022-04":0.9985,"2022-05":0.9975,"2022-06":0.997,"2022-07":0.9974,"2022-08":0.9989,"2022-09":0.9992,"2022-10":0.9994,"2022-11":0.9999,"2022-12":1.0,"2023-01":0.9981,"2023-02":0.9996,"2023-03":0.9975,"2023-04":1.0,"2023-05":0.9668,"2023-06":0.9997,"2023-07":0.9968,"2023-08":0.9998,"2023-09":0.9987,"2023-10":0.9989,"2023-11":1,"2023-12":0.9998,"2024-01":0.9996,"2024-02":1.0,"2024-03":0.999,"2024-04":0.9999,"2024-05":0.9994,"2024-06":0.9994,"2024-07":0.9998,"2024-08":0.9992,"2024-09":0.9972,"2024-10":0.9996,"2024-11":0.9999,"2024-12":1.0,"2025-01":0.9975,"2025-02":0.995,"2025-03":0.9994,"2025-04":0.9982,"2025-05":0.9976,"2025-06":0.9991,"2025-07":0.9991,"2025-08":1.0,"2025-09":0.9995,"2025-10":0.9968,"2025-11":1.0,"2025-12":0.9973,"2026-01":0.9999,"2026-02":0.9998,"2026-03":0.9993,"2026-04":0.9997,"2026-05":0.9996},"yearly":{"2021":0.9991,"2022":0.9967,"2023":0.9963,"2024":0.9994,"2025":0.9983,"2026":0.9996},"last_month":"2026-05","last_val":0.9996},"ila":{"label":"ILA — Acuracidade Local","group":"Estoque & Acuracidade","dir":"up","unit":"%","target":0.99,"series":{"2021-01":0.996,"2021-02":0.996,"2021-03":0.996,"2021-04":0.9504,"2021-05":0.9848,"2021-06":0.9733,"2021-07":0.9946,"2021-08":0.9989,"2021-09":0.9981,"2021-10":0.9951,"2021-11":0.9979,"2021-12":0.9826,"2022-01":0.9894,"2022-02":0.9905,"2022-03":0.9967,"2022-04":0.9975,"2022-05":0.9981,"2022-06":0.9973,"2022-07":0.9977,"2022-08":0.9953,"2022-09":0.9997,"2022-10":0.9984,"2022-11":0.9977,"2022-12":0.999,"2023-01":1,"2023-02":0.9969,"2023-03":0.9955,"2023-04":0.9989,"2023-05":0.9616,"2023-06":0.997,"2023-07":0.9959,"2023-08":0.9928,"2023-09":0.9967,"2023-10":0.9911,"2023-11":1,"2023-12":0.998,"2024-01":0.9974,"2024-02":0.9994,"2024-03":0.9971,"2024-04":0.9989,"2024-05":0.9984,"2024-06":0.9932,"2024-07":0.9988,"2024-08":0.9979,"2024-09":0.9973,"2024-10":0.9923,"2024-11":0.9979,"2024-12":0.9967,"2025-01":0.9964,"2025-02":0.9974,"2025-03":0.9983,"2025-04":0.997,"2025-05":0.9955,"2025-06":0.9992,"2025-07":0.9989,"2025-08":0.9986,"2025-09":0.9984,"2025-10":0.995,"2025-11":0.9993,"2025-12":0.9941,"2026-01":0.9987,"2026-02":0.9982,"2026-03":0.9968,"2026-04":0.9979,"2026-05":0.9967},"yearly":{"2021":0.9886,"2022":0.9964,"2023":0.9937,"2024":0.9971,"2025":0.9973,"2026":0.9977},"last_month":"2026-05","last_val":0.9967},"liberacao":{"label":"Liberação de Pedidos","group":"Prazos & Lead Time","dir":"down","unit":"d","target":2.0,"series":{"2024-01":3.9,"2024-02":2.2,"2024-03":2.7,"2024-04":2.5,"2024-05":2.7,"2024-06":3.8,"2024-07":3.3,"2024-08":2.1,"2024-09":3.1,"2024-10":2.5,"2024-11":5.9,"2024-12":2,"2025-01":0.8,"2025-02":1.1,"2025-03":2.7,"2025-04":0.8,"2025-05":1.4,"2025-06":2.2,"2025-07":0.6,"2025-08":2.3,"2025-09":1,"2025-10":0.6,"2025-11":1.2,"2025-12":2.1,"2026-01":0.6,"2026-02":1.2,"2026-03":1.7,"2026-04":1.2,"2026-05":1.5},"yearly":{"2024":3.0583,"2025":1.4,"2026":1.24},"last_month":"2026-05","last_val":1.5},"lead_ped":{"label":"Lead Time de Pedidos","group":"Prazos & Lead Time","dir":"down","unit":"d","target":10.0,"series":{"2021-02":14.3707,"2021-03":13.8133,"2021-04":13.6398,"2021-05":11.3352,"2021-06":11.9065,"2021-07":9.9146,"2021-08":10.579,"2021-09":10.1028,"2021-10":9.0615,"2021-11":15.5,"2021-12":10.3,"2022-02":9.9,"2022-03":9.5,"2022-04":8.4748,"2022-05":12.5,"2022-06":8.5,"2022-07":9.3,"2022-08":9.5,"2022-09":8.8,"2022-10":7.3,"2022-11":10.5,"2022-12":10.6,"2023-01":9.9,"2023-02":10.5,"2023-03":11.7,"2023-04":12.1,"2023-05":10.1,"2023-06":8.7,"2023-07":12.9,"2023-08":11.5,"2023-09":6.4,"2023-10":10.6,"2023-11":11.4,"2023-12":9.5,"2024-01":11,"2024-02":10.2,"2024-03":9.5,"2024-04":7.5,"2024-05":9.2,"2024-06":10.1,"2024-07":9.7,"2024-08":8.6,"2024-09":9.2,"2024-10":9.8,"2024-11":13.3,"2024-12":8,"2025-01":6.1,"2025-02":8,"2025-03":9.5,"2025-04":8.6,"2025-05":8.2,"2025-06":9.3,"2025-07":7,"2025-08":9,"2025-09":7.6,"2025-10":7.7,"2025-11":7.9,"2025-12":10.6,"2026-01":7.2,"2026-02":8.1,"2026-03":8.8,"2026-04":8.8,"2026-05":9.6,"2021-01":14.37,"2022-01":9.9},"yearly":{"2021":12.0744,"2022":9.5646,"2023":10.4417,"2024":9.675,"2025":8.2917,"2026":8.5},"last_month":"2026-05","last_val":9.6},"lead_nf":{"label":"Lead Time de NF","group":"Prazos & Lead Time","dir":"down","unit":"d","target":8.0,"series":{"2021-02":11.6388,"2021-03":10.8355,"2021-04":10.0362,"2021-05":9.8353,"2021-06":8.9329,"2021-07":7.8138,"2021-08":9.1277,"2021-09":7.951,"2021-10":7.5027,"2021-11":8.5,"2021-12":8.6,"2022-02":8.8,"2022-03":8.1,"2022-04":6.3463,"2022-05":9.8,"2022-06":6.8,"2022-07":6.5,"2022-08":7.1,"2022-09":6.6,"2022-10":5.8,"2022-11":9.9,"2022-12":8,"2023-01":7.4,"2023-02":8.1,"2023-03":6.8,"2023-04":8,"2023-05":7.6,"2023-06":6.7,"2023-07":8.1,"2023-08":8.6,"2023-09":5.8,"2023-10":7.3,"2023-11":7.9,"2023-12":6.1,"2024-01":6.9,"2024-02":7.2,"2024-03":6.5,"2024-04":5.4,"2024-05":7,"2024-06":5.6,"2024-07":6.4,"2024-08":5.6,"2024-09":5.9,"2024-10":6.9,"2024-11":7.6,"2024-12":4.5,"2025-01":4,"2025-02":5,"2025-03":4.1,"2025-04":6.2,"2025-05":3.8,"2025-06":4.3,"2025-07":4.7,"2025-08":5.9,"2025-09":3.8,"2025-10":5.1,"2025-11":6.2,"2025-12":5.7,"2026-01":4.7,"2026-02":6,"2026-03":4.1,"2026-04":6.5,"2026-05":7.6,"2021-01":11.64,"2022-01":8.8},"yearly":{"2021":9.3678,"2022":7.7122,"2023":7.3667,"2024":6.2917,"2025":4.9,"2026":5.78},"last_month":"2026-05","last_val":7.6},"lead_tr":{"label":"Lead Time de Transportadora","group":"Prazos & Lead Time","dir":"down","unit":"d","target":6.0,"series":{"2021-02":7.6668,"2021-03":8.2568,"2021-04":7.3623,"2021-05":7.9565,"2021-06":7.0217,"2021-07":7,"2021-08":7.0445,"2021-09":5.7558,"2021-10":5.6559,"2021-11":6.6,"2021-12":6.6,"2022-02":7.3,"2022-03":6.5,"2022-04":4.9914,"2022-05":8.3,"2022-06":5.7,"2022-07":5.1,"2022-08":5.6,"2022-09":5.4,"2022-10":4.5,"2022-11":8.5,"2022-12":6.3,"2023-01":5.8,"2023-02":6,"2023-03":5.2,"2023-04":6.3,"2023-05":6.3,"2023-06":5.1,"2023-07":7,"2023-08":7.4,"2023-09":4.4,"2023-10":5.2,"2023-11":6.2,"2023-12":5.2,"2024-01":5,"2024-02":6.2,"2024-03":4.8,"2024-04":4.7,"2024-05":5.6,"2024-06":5,"2024-07":5.5,"2024-08":4.6,"2024-09":5.2,"2024-10":5.9,"2024-11":5.6,"2024-12":4.1,"2025-01":4,"2025-02":4.3,"2025-03":3.7,"2025-04":5.3,"2025-05":3.7,"2025-06":3.9,"2025-07":4.1,"2025-08":5.1,"2025-09":3.6,"2025-10":4.5,"2025-11":5.3,"2025-12":5,"2026-01":4.4,"2026-02":5.2,"2026-03":3.8,"2026-04":5.7,"2026-05":5.7,"2021-01":7.67,"2022-01":7.3},"yearly":{"2021":7.0492,"2022":6.2909,"2023":5.8417,"2024":5.1833,"2025":4.375,"2026":4.96},"last_month":"2026-05","last_val":5.7},"lead_exp":{"label":"Dias de Expedição","group":"Prazos & Lead Time","dir":"down","unit":"d","target":9.0,"series":{"2021-02":12.5238,"2021-03":12.5133,"2021-04":10.7398,"2021-05":9.2352,"2021-06":10.2065,"2021-07":9.2146,"2021-08":8.979,"2021-09":10.1028,"2021-10":9.0615,"2021-11":14.6,"2021-12":8.7,"2022-02":9.1,"2022-03":8.8,"2022-04":7.2891,"2022-05":11.9,"2022-06":8.1,"2022-07":8,"2022-08":9.5,"2022-09":8.2,"2022-10":5.5,"2022-11":9.2,"2022-12":10.5,"2023-01":10.6,"2023-02":10.4,"2023-03":11.7,"2023-04":13,"2023-05":9.2,"2023-06":7.1,"2023-07":13.2,"2023-08":11.7,"2023-09":6.4,"2023-10":10.1,"2023-11":11.7,"2023-12":10,"2024-01":1.9,"2024-02":1,"2024-03":1.6,"2024-04":1,"2024-05":1.3,"2024-06":1.6,"2024-07":1.1,"2024-08":1,"2024-09":1.6,"2024-10":2.5,"2024-11":1.2,"2024-12":1.4,"2025-01":1.2,"2025-02":1.6,"2025-03":1.7,"2025-04":1.4,"2025-05":1.3,"2025-06":2.2,"2025-07":1,"2025-08":1.1,"2025-09":2.2,"2025-10":1.8,"2025-11":1.4,"2025-12":2.1,"2026-01":1.7,"2026-02":1.6,"2026-03":2.2,"2026-04":1.6,"2026-05":2,"2021-01":12.52,"2022-01":9.1},"yearly":{"2021":10.6997,"2022":8.7658,"2023":10.425,"2024":1.4333,"2025":1.5833,"2026":1.82},"last_month":"2026-05","last_val":2},"absent":{"label":"Absenteísmo (OPL)","group":"Pessoas (OPL)","dir":"down","unit":"%","target":0.05,"series":{"2021-01":0.027,"2021-02":0.037,"2021-03":0.042,"2021-04":0.034,"2021-05":0.073,"2021-06":0.036,"2021-07":0.048,"2021-08":0.031,"2021-09":0.025,"2021-10":0.057,"2021-11":0.069,"2021-12":0.041,"2022-01":0.084,"2022-02":0.005,"2022-03":0.002,"2022-04":0.006,"2022-05":0.011,"2022-06":0.017,"2022-07":0.008,"2022-08":0.006,"2022-09":0.006,"2022-10":0.001,"2022-11":0.007,"2022-12":0.024,"2023-01":0.019,"2023-02":0.004,"2023-03":0.01,"2023-04":0.001,"2023-05":0.017,"2023-06":0.031,"2023-07":0.023,"2023-08":0.003,"2023-09":0.011,"2023-10":0.026,"2023-11":0.02,"2023-12":0.011,"2024-01":0.022,"2024-02":0.035,"2024-03":0.036,"2024-04":0.074,"2024-05":0.048,"2024-06":0.057,"2024-07":0.119,"2024-08":0.12,"2024-09":0.037,"2024-10":0.067,"2024-11":0.135,"2024-12":0.068,"2025-01":0.024,"2025-02":0.001,"2025-03":0.035,"2025-04":0.036,"2025-05":0.072,"2025-06":0.086,"2025-07":0.101,"2025-08":0.082,"2025-09":0.007,"2025-10":0.071,"2025-11":0.021,"2025-12":0.052,"2026-01":0.032,"2026-02":0.027,"2026-03":0.019,"2026-04":0.039,"2026-05":0.029},"yearly":{"2021":0.0433,"2022":0.0148,"2023":0.0147,"2024":0.0682,"2025":0.049,"2026":0.0292},"last_month":"2026-05","last_val":0.029},"turnover":{"label":"Turnover (OPL)","group":"Pessoas (OPL)","dir":"down","unit":"%","target":0.05,"series":{"2021-01":0.344,"2021-02":0.172,"2021-03":0.188,"2021-04":0.234,"2021-05":0.141,"2021-06":0.047,"2021-07":0.125,"2021-08":0.063,"2021-09":0.125,"2021-10":0.047,"2021-11":0.026,"2021-12":0.021,"2022-01":0.188,"2022-02":0.0,"2022-03":0.0,"2022-04":0.0,"2022-05":0.031,"2022-06":0.0,"2022-07":0.063,"2022-08":0.047,"2022-09":0.0,"2022-10":0.016,"2022-11":0.047,"2022-12":0.062,"2023-01":0.031,"2023-02":0.016,"2023-03":0.094,"2023-04":0.031,"2023-05":0.031,"2023-06":0.078,"2023-07":0.0,"2023-08":0.063,"2023-09":0.0,"2023-10":0.031,"2023-11":0.11,"2023-12":0.0,"2024-01":0.016,"2024-02":0.016,"2024-03":0.0,"2024-04":0.0,"2024-05":0.094,"2024-06":0.109,"2024-07":0.016,"2024-08":0.0,"2024-09":0.0,"2024-10":0.0,"2024-11":0.0,"2024-12":0.016,"2025-01":0.047,"2025-02":0.016,"2025-03":0.0,"2025-04":0.0,"2025-05":0.016,"2025-06":0.031,"2025-07":0.016,"2025-08":0.078,"2025-09":0.0,"2025-10":0.031,"2025-11":0.078,"2025-12":0.0,"2026-01":0.079,"2026-02":0.047,"2026-03":0.031,"2026-04":0.031,"2026-05":0.094},"yearly":{"2021":0.1278,"2022":0.0378,"2023":0.0404,"2024":0.0223,"2025":0.0261,"2026":0.0564},"last_month":"2026-05","last_val":0.094}};
+/* ============================================================
+   Scorecard Logístico — layout cockpit, DADOS REAIS.
+   Dados embutidos (baseline) + override por ./dados.json / Supabase.
+   Nada inventado: só os indicadores e séries reais do dados.json.
+   OTIF = On Time × In-Full (corrigido). Metas editáveis por indicador;
+   sem meta => sem linha de meta no gráfico.
+   ============================================================ */
+const DATA_EMBED = /*__DATA__*/{"otif":{"label":"OTIF Entrega","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.95,"series":{"2021-01":0.8667,"2021-02":0.9443,"2021-03":0.9813,"2021-04":0.9429,"2021-05":0.9817,"2021-06":0.9765,"2021-07":0.9129,"2021-08":0.9672,"2021-09":0.9799,"2021-10":0.9714,"2021-11":0.978,"2021-12":0.9786,"2022-01":0.9791,"2022-02":0.9652,"2022-03":0.9849,"2022-04":0.9692,"2022-05":0.9467,"2022-06":0.9489,"2022-07":0.9315,"2022-08":0.9705,"2022-09":0.977,"2022-10":0.9287,"2022-11":0.9418,"2022-12":0.9558,"2023-01":0.9059,"2023-02":0.9265,"2023-03":0.9582,"2023-04":0.9567,"2023-05":0.9909,"2023-06":0.9944,"2023-07":0.9426,"2023-08":0.9782,"2023-09":0.9975,"2023-10":0.9507,"2023-11":0.9831,"2023-12":0.9841,"2024-01":0.987,"2024-02":0.9551,"2024-03":0.9824,"2024-04":0.9912,"2024-05":0.8751,"2024-06":0.958,"2024-07":0.986,"2024-08":0.9214,"2024-09":0.9521,"2024-10":0.9128,"2024-11":0.9693,"2024-12":0.993,"2025-01":0.9543,"2025-02":0.9404,"2025-03":0.9681,"2025-04":0.9373,"2025-05":0.9761,"2025-06":0.9801,"2025-07":0.8897,"2025-08":0.9632,"2025-09":0.991,"2025-10":0.9691,"2025-11":0.9691,"2025-12":0.975,"2026-01":0.995,"2026-02":0.9115,"2026-03":0.993,"2026-04":0.996,"2026-05":0.9791},"yearly":{"2021":0.9568,"2022":0.9583,"2023":0.9641,"2024":0.957,"2025":0.9594,"2026":0.9749},"last_month":"2026-05","last_val":0.9791},"ontime":{"label":"On Time (Pontualidade)","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.99,"series":{"2021-01":0.993,"2021-02":0.993,"2021-03":0.994,"2021-04":0.978,"2021-05":0.984,"2021-06":0.984,"2021-07":0.971,"2021-08":0.974,"2021-09":0.982,"2021-10":0.976,"2021-11":0.98,"2021-12":0.984,"2022-01":0.997,"2022-02":0.991,"2022-03":0.997,"2022-04":0.985,"2022-05":0.98,"2022-06":0.982,"2022-07":0.98,"2022-08":0.983,"2022-09":1,"2022-10":0.984,"2022-11":0.977,"2022-12":0.988,"2023-01":0.99,"2023-02":0.993,"2023-03":0.998,"2023-04":0.996,"2023-05":0.999,"2023-06":0.998,"2023-07":1,"2023-08":0.998,"2023-09":0.999,"2023-10":0.994,"2023-11":0.995,"2023-12":0.993,"2024-01":0.998,"2024-02":0.997,"2024-03":0.996,"2024-04":0.994,"2024-05":0.995,"2024-06":0.997,"2024-07":0.996,"2024-08":0.994,"2024-09":0.995,"2024-10":0.997,"2024-11":0.994,"2024-12":0.995,"2025-01":0.991,"2025-02":0.992,"2025-03":0.995,"2025-04":0.995,"2025-05":0.993,"2025-06":0.99,"2025-07":0.993,"2025-08":0.995,"2025-09":0.996,"2025-10":0.997,"2025-11":0.998,"2025-12":0.998,"2026-01":0.997,"2026-02":0.994,"2026-03":0.995,"2026-04":0.996,"2026-05":0.997,"2026-06":0.997},"yearly":{"2021":0.9828,"2022":0.987,"2023":0.9961,"2024":0.9957,"2025":0.9944,"2026":0.996},"last_month":"2026-06","last_val":0.997},"infull":{"label":"In-Full (Quantidade)","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.95,"series":{"2021-01":0.873,"2021-02":0.951,"2021-03":0.987,"2021-04":0.964,"2021-05":0.998,"2021-06":0.992,"2021-07":0.94,"2021-08":0.993,"2021-09":0.998,"2021-10":0.995,"2021-11":0.998,"2021-12":0.994,"2022-01":0.982,"2022-02":0.974,"2022-03":0.988,"2022-04":0.984,"2022-05":0.966,"2022-06":0.966,"2022-07":0.95,"2022-08":0.987,"2022-09":0.977,"2022-10":0.944,"2022-11":0.964,"2022-12":0.967,"2023-01":0.915,"2023-02":0.933,"2023-03":0.96,"2023-04":0.96,"2023-05":0.992,"2023-06":0.996,"2023-07":0.943,"2023-08":0.98,"2023-09":0.999,"2023-10":0.956,"2023-11":0.988,"2023-12":0.991,"2024-01":0.989,"2024-02":0.957,"2024-03":0.986,"2024-04":0.985,"2024-05":0.879,"2024-06":0.96,"2024-07":0.988,"2024-08":0.925,"2024-09":0.955,"2024-10":0.914,"2024-11":0.974,"2024-12":0.995,"2025-01":0.963,"2025-02":0.948,"2025-03":0.972,"2025-04":0.937,"2025-05":0.981,"2025-06":0.99,"2025-07":0.891,"2025-08":0.967,"2025-09":0.994,"2025-10":0.963,"2025-11":0.967,"2025-12":0.977,"2026-01":0.998,"2026-02":0.917,"2026-03":0.998,"2026-04":0.939,"2026-05":0.972,"2026-06":0.997},"yearly":{"2021":0.9736,"2022":0.9708,"2023":0.9677,"2024":0.9589,"2025":0.9625,"2026":0.9702},"last_month":"2026-06","last_val":0.997},"fillrate":{"label":"Fill Rate (Atendimento)","group":"Entregas & Atendimento","dir":"up","unit":"%","target":0.95,"series":{"2021-01":0.832,"2021-02":0.832,"2021-03":0.949,"2021-04":0.862,"2021-05":0.925,"2021-06":0.952,"2021-07":0.903,"2021-08":0.997,"2021-09":0.998,"2021-10":0.998,"2021-11":0.997,"2021-12":0.998,"2022-01":0.982,"2022-02":0.974,"2022-03":0.988,"2022-04":0.984,"2022-05":0.966,"2022-06":0.966,"2022-07":0.95,"2022-08":0.987,"2022-09":0.977,"2022-10":0.944,"2022-11":0.964,"2022-12":0.967,"2023-01":0.915,"2023-02":0.933,"2023-03":0.96,"2023-04":0.96,"2023-05":0.992,"2023-06":0.996,"2023-07":0.943,"2023-08":0.98,"2023-09":0.999,"2023-10":0.956,"2023-11":0.988,"2023-12":0.991,"2024-01":0.989,"2024-02":0.958,"2024-03":0.986,"2024-04":0.997,"2024-05":0.879,"2024-06":0.961,"2024-07":0.99,"2024-08":0.927,"2024-09":0.957,"2024-10":0.915,"2024-11":0.975,"2024-12":0.998,"2025-01":0.963,"2025-02":0.948,"2025-03":0.973,"2025-04":0.942,"2025-05":0.983,"2025-06":0.99,"2025-07":0.896,"2025-08":0.968,"2025-09":0.995,"2025-10":0.972,"2025-11":0.971,"2025-12":0.977,"2026-01":0.998,"2026-02":0.917,"2026-03":0.998,"2026-04":1,"2026-05":0.982,"2026-06":0.999},"yearly":{"2021":0.9369,"2022":0.9708,"2023":0.9677,"2024":0.961,"2025":0.9648,"2026":0.9823},"last_month":"2026-06","last_val":0.999},"custo_op":{"label":"Custo Operacional %TW Mensal","group":"Custo Logístico","dir":"down","unit":"%","target":0.055,"series":{"2021-02":0.3176,"2021-03":0.0916,"2021-04":0.0633,"2021-05":0.0679,"2021-06":0.0616,"2021-07":0.0526,"2021-08":0.0541,"2021-09":0.0557,"2021-10":0.0515,"2021-11":0.0515,"2021-12":0.052,"2022-02":0.1166,"2022-03":0.0433,"2022-04":0.0402,"2022-05":0.0467,"2022-06":0.0465,"2022-07":0.0406,"2022-08":0.044,"2022-09":0.045,"2022-10":0.0422,"2022-11":0.045,"2022-12":0.045,"2023-01":0.1166,"2023-02":0.0615,"2023-03":0.0438,"2023-04":0.0517,"2023-05":0.0512,"2023-06":0.0422,"2023-07":0.0466,"2023-08":0.0464,"2023-09":0.0423,"2023-10":0.0461,"2023-11":0.0432,"2023-12":0.042,"2024-01":0.1027,"2024-02":0.0554,"2024-03":0.0409,"2024-04":0.051,"2024-05":0.0481,"2024-06":0.0435,"2024-07":0.0496,"2024-08":0.0486,"2024-09":0.0455,"2024-10":0.0479,"2024-11":0.0448,"2024-12":0.046,"2021-01":0.318,"2022-01":0.117,"2025-01":0.0759,"2025-02":0.0464,"2025-03":0.0473,"2025-04":0.0873,"2025-05":0.0373,"2025-06":0.0387,"2025-07":0.1046,"2025-08":0.0515,"2025-09":0.042,"2025-10":0.1205,"2025-11":0.0217,"2025-12":0.0424,"2026-01":0.1448,"2026-02":0.0509,"2026-03":0.0323,"2026-04":0.1541,"2026-05":0.0419,"2026-06":0.0294},"yearly":{"2021":0.1031,"2022":0.056,"2023":0.0528,"2024":0.052,"2025":0.0596,"2026":0.0756},"last_month":"2026-06","last_val":0.0294,"calc":"Custo T&W ÷ Faturamento (2025+) · manual até 2024","headFrom":"custo_op_ac","qAccFrom":"custo_op_ac"},"custo_tr_ac":{"label":"Custo de Transporte %T (Acumulado)","group":"Custo Logístico","dir":"down","unit":"%","target":0.04,"series":{"2021-03":0.0274,"2021-04":0.0304,"2021-05":0.0341,"2021-06":0.0309,"2021-07":0.0323,"2021-08":0.0309,"2021-09":0.0311,"2021-10":0.0315,"2021-11":0.0306,"2021-12":0.03,"2022-01":0.0265,"2022-02":0.0237,"2022-03":0.0248,"2022-04":0.0254,"2022-05":0.0254,"2022-06":0.0257,"2022-07":0.0262,"2022-08":0.0258,"2022-09":0.0274,"2022-10":0.0278,"2022-11":0.028,"2022-12":0.028,"2023-01":0.0266,"2023-02":0.0243,"2023-03":0.0278,"2023-04":0.0303,"2023-05":0.0303,"2023-06":0.0294,"2023-07":0.0292,"2023-08":0.0298,"2023-09":0.0298,"2023-10":0.0299,"2023-11":0.0299,"2023-12":0.0299,"2024-01":0.0242,"2024-02":0.0259,"2024-03":0.0295,"2024-04":0.0318,"2024-05":0.0326,"2024-06":0.0328,"2024-07":0.033,"2024-08":0.0325,"2024-09":0.0324,"2024-10":0.0329,"2024-11":0.032,"2024-12":0.032,"2025-01":0.0521,"2025-02":0.0406,"2025-03":0.0393,"2025-04":0.0416,"2025-05":0.0379,"2025-06":0.0351,"2025-07":0.0373,"2025-08":0.037,"2025-09":0.0352,"2025-10":0.0379,"2025-11":0.0345,"2025-12":0.0342,"2026-01":0.101,"2026-02":0.0547,"2026-03":0.0338,"2026-04":0.0428,"2026-05":0.0395,"2026-06":0.0342},"yearly":{"2021":0.03,"2022":0.028,"2023":0.0299,"2024":0.032,"2025":0.0342,"2026":0.0342},"last_month":"2026-06","last_val":0.0342,"calc":"Σ Transporte ÷ Σ Faturamento (2025+) · manual até 2024","acc":true},"qualidade":{"label":"Incidências de Qualidade","group":"Qualidade & Devolução","dir":"down","unit":"%","target":0.015,"series":{"2021-01":0.0621,"2021-02":0.0563,"2021-03":0.0174,"2021-04":0.0242,"2021-05":0.0035,"2021-06":0,"2021-07":0.0205,"2021-08":0,"2021-09":0,"2021-10":0.007,"2021-11":0.002,"2021-12":0.038,"2022-01":0.0097,"2022-02":0.0595,"2022-03":0.0075,"2022-04":0.0292,"2022-05":0.0055,"2022-06":0.0233,"2022-07":0.0223,"2022-08":0.0197,"2022-09":0.006,"2022-10":0.023,"2022-11":0.0092,"2022-12":0.0096,"2023-01":0.016,"2023-02":0.025,"2023-03":0.025,"2023-04":0.006,"2023-05":0.058,"2023-06":0.062,"2023-07":0,"2023-08":0,"2023-09":0.0265,"2023-10":0.024,"2023-11":0.047,"2023-12":0,"2024-01":0.0287,"2024-02":0.0123,"2024-03":0,"2024-04":0,"2024-05":0.023,"2024-06":0.0058,"2024-07":0.0258,"2024-08":0.0099,"2024-09":0.0204,"2024-10":0.0105,"2024-11":0.0105,"2024-12":0.0174,"2025-01":0.0189,"2025-02":0.0123,"2025-03":0.0103,"2025-04":0.0137,"2025-05":0.019,"2025-06":0.0064,"2025-07":0.009,"2025-08":0.0183,"2025-09":0.0076,"2025-10":0.0405,"2025-11":0.0049,"2025-12":0.0284,"2026-01":0,"2026-02":0.006,"2026-03":0.0058,"2026-04":0,"2026-05":0,"2026-06":0.005},"yearly":{"2021":0.0192,"2022":0.0187,"2023":0.0241,"2024":0.0137,"2025":0.0158,"2026":0.0028},"last_month":"2026-06","last_val":0.005},"devolucao":{"label":"% Total de Devolução","group":"Qualidade & Devolução","dir":"down","unit":"%","target":0.01,"series":{"2021-01":0.024,"2021-02":0.0148,"2021-03":0.015,"2021-04":0.0232,"2021-05":0.0194,"2021-06":0.0039,"2021-07":0.0077,"2021-08":0.009,"2021-09":0.0034,"2021-10":0.0036,"2021-11":0.0131,"2021-12":0.0034,"2022-01":0.0243,"2022-02":0.0089,"2022-03":0.0088,"2022-04":0.0043,"2022-05":0.0058,"2022-06":0.0122,"2022-07":0.0115,"2022-08":0.0097,"2022-09":0.02,"2022-10":0.0251,"2022-11":0.0031,"2022-12":0.004,"2023-01":0.0142,"2023-02":0.0117,"2023-03":0.0087,"2023-04":0.0049,"2023-05":0.0123,"2023-06":0.0041,"2023-07":0.0706,"2023-08":0.0035,"2023-09":0.0149,"2023-10":0.0926,"2023-11":0.0043,"2023-12":0.0036,"2024-01":0.0454,"2024-02":0.0012,"2024-03":0.0068,"2024-04":0.0488,"2024-05":0.0196,"2024-06":0.0061,"2024-07":0.0252,"2024-08":0.0076,"2024-09":0.0054,"2024-10":0.0172,"2024-11":0.0027,"2024-12":0.0111,"2025-01":0.0003,"2025-02":0.0189,"2025-03":0.0085,"2025-04":0.0288,"2025-05":0.012,"2025-06":0.005,"2025-07":0.0237,"2025-08":0.0135,"2025-09":0.0042,"2025-10":0.0365,"2025-11":0.0158,"2025-12":0.0049,"2026-01":0.0011,"2026-02":0.0144,"2026-03":0.0008,"2026-04":0.0748,"2026-05":0.0173},"yearly":{"2021":0.0117,"2022":0.0115,"2023":0.0204,"2024":0.0164,"2025":0.0143,"2026":0.0217},"last_month":"2026-05","last_val":0.0173},"ocup":{"label":"Ocupação CD","group":"Estoque & Acuracidade","dir":"target","unit":"%","target":0.85,"series":{"2021-06":0.777,"2021-07":0.882,"2021-08":0.838,"2021-09":0.849,"2021-10":0.8,"2021-11":0.81,"2021-12":0.7,"2022-01":0.852,"2022-02":0.82,"2022-03":0.59,"2022-04":0.65,"2022-05":0.69,"2022-06":0.58,"2022-07":0.66,"2022-08":0.71,"2022-09":0.61,"2022-10":0.63,"2022-11":0.67,"2022-12":0.64,"2023-01":0.56,"2023-02":0.49,"2023-03":0.39,"2023-04":0.45,"2023-05":0.52,"2023-06":0.46,"2023-07":0.53,"2023-08":0.63,"2023-09":0.66,"2023-10":0.54,"2023-11":0.53,"2023-12":0.45,"2024-01":0.62,"2024-02":0.61,"2024-03":0.49,"2024-04":0.57,"2024-05":0.59,"2024-06":0.57,"2024-07":0.89,"2024-08":0.96,"2024-09":0.72,"2024-10":0.74,"2024-11":0.76,"2024-12":0.7,"2025-01":0.72,"2025-02":0.71,"2025-03":0.56,"2025-04":0.64,"2025-05":0.71,"2025-06":0.6,"2025-07":0.9,"2025-08":0.97,"2025-09":0.7,"2025-10":0.93,"2025-11":0.82,"2025-12":0.83,"2026-01":0.75,"2026-02":0.84,"2026-03":0.6,"2026-04":0.81,"2026-05":0.83,"2026-06":0.77},"yearly":{"2021":0.808,"2022":0.6752,"2023":0.5175,"2024":0.685,"2025":0.7575,"2026":0.7667},"last_month":"2026-06","last_val":0.77},"ira":{"label":"IRA — Acuracidade Qtde","group":"Estoque & Acuracidade","dir":"up","unit":"%","target":0.99,"series":{"2021-01":1,"2021-02":1,"2021-03":1,"2021-04":0.999,"2021-05":0.999,"2021-06":0.997,"2021-07":0.999,"2021-08":1,"2021-09":1,"2021-10":1,"2021-11":1,"2021-12":0.998,"2022-01":0.987,"2022-02":0.989,"2022-03":0.997,"2022-04":0.999,"2022-05":0.998,"2022-06":0.997,"2022-07":0.997,"2022-08":0.999,"2022-09":0.999,"2022-10":0.999,"2022-11":1,"2022-12":1,"2023-01":0.998,"2023-02":1,"2023-03":0.998,"2023-04":1,"2023-05":0.967,"2023-06":1,"2023-07":0.997,"2023-08":1,"2023-09":0.999,"2023-10":0.999,"2023-11":1,"2023-12":1,"2024-01":1,"2024-02":1,"2024-03":0.999,"2024-04":1,"2024-05":0.999,"2024-06":0.999,"2024-07":1,"2024-08":0.999,"2024-09":0.997,"2024-10":1,"2024-11":1,"2024-12":1,"2025-01":0.998,"2025-02":0.995,"2025-03":0.999,"2025-04":0.998,"2025-05":0.998,"2025-06":0.999,"2025-07":0.999,"2025-08":1,"2025-09":1,"2025-10":0.997,"2025-11":1,"2025-12":0.997,"2026-01":1,"2026-02":1,"2026-03":0.999,"2026-04":1,"2026-05":1,"2026-06":0.996},"yearly":{"2021":0.9993,"2022":0.9968,"2023":0.9965,"2024":0.9994,"2025":0.9983,"2026":0.9992},"last_month":"2026-06","last_val":0.996},"ila":{"label":"ILA — Acuracidade Local","group":"Estoque & Acuracidade","dir":"up","unit":"%","target":0.99,"series":{"2021-01":0.996,"2021-02":0.996,"2021-03":0.996,"2021-04":0.95,"2021-05":0.985,"2021-06":0.973,"2021-07":0.995,"2021-08":0.999,"2021-09":0.998,"2021-10":0.995,"2021-11":0.998,"2021-12":0.983,"2022-01":0.989,"2022-02":0.991,"2022-03":0.997,"2022-04":0.998,"2022-05":0.998,"2022-06":0.997,"2022-07":0.998,"2022-08":0.995,"2022-09":1,"2022-10":0.998,"2022-11":0.998,"2022-12":0.999,"2023-01":1,"2023-02":0.997,"2023-03":0.996,"2023-04":0.999,"2023-05":0.962,"2023-06":0.997,"2023-07":0.996,"2023-08":0.993,"2023-09":0.997,"2023-10":0.991,"2023-11":1,"2023-12":0.998,"2024-01":0.997,"2024-02":0.999,"2024-03":0.997,"2024-04":0.999,"2024-05":0.998,"2024-06":0.993,"2024-07":0.999,"2024-08":0.998,"2024-09":0.997,"2024-10":0.992,"2024-11":0.998,"2024-12":0.997,"2025-01":0.996,"2025-02":0.997,"2025-03":0.998,"2025-04":0.997,"2025-05":0.996,"2025-06":0.999,"2025-07":0.999,"2025-08":0.999,"2025-09":0.998,"2025-10":0.995,"2025-11":0.999,"2025-12":0.994,"2026-01":0.999,"2026-02":0.998,"2026-03":0.997,"2026-04":0.998,"2026-05":0.997,"2026-06":0.997},"yearly":{"2021":0.9887,"2022":0.9965,"2023":0.9938,"2024":0.997,"2025":0.9972,"2026":0.9977},"last_month":"2026-06","last_val":0.997},"liberacao":{"label":"Liberação de Pedidos","group":"Prazos & Lead Time","dir":"down","unit":"d","target":2,"series":{"2024-01":3.9,"2024-02":2.2,"2024-03":2.7,"2024-04":2.5,"2024-05":2.7,"2024-06":3.8,"2024-07":3.3,"2024-08":2.1,"2024-09":3.1,"2024-10":2.5,"2024-11":5.9,"2024-12":2,"2025-01":0.8,"2025-02":1.1,"2025-03":2.7,"2025-04":0.8,"2025-05":1.4,"2025-06":2.2,"2025-07":0.6,"2025-08":2.3,"2025-09":1,"2025-10":0.6,"2025-11":1.2,"2025-12":2.1,"2026-01":0.6,"2026-02":1.2,"2026-03":1.7,"2026-04":1.2,"2026-05":1.5,"2026-06":1.4},"yearly":{"2024":3.0583,"2025":1.4,"2026":1.2667},"last_month":"2026-06","last_val":1.4},"lead_ped":{"label":"Lead Time de Pedidos","group":"Prazos & Lead Time","dir":"down","unit":"d","target":10,"series":{"2021-02":14.4,"2021-03":13.8,"2021-04":13.6,"2021-05":11.3,"2021-06":11.9,"2021-07":9.9,"2021-08":10.6,"2021-09":10.1,"2021-10":9.1,"2021-11":15.5,"2021-12":10.3,"2022-02":9.9,"2022-03":9.5,"2022-04":8.5,"2022-05":12.5,"2022-06":8.5,"2022-07":9.3,"2022-08":9.5,"2022-09":8.8,"2022-10":7.3,"2022-11":10.5,"2022-12":10.6,"2023-01":9.9,"2023-02":10.5,"2023-03":11.7,"2023-04":12.1,"2023-05":10.1,"2023-06":8.7,"2023-07":12.9,"2023-08":11.5,"2023-09":6.4,"2023-10":10.6,"2023-11":11.4,"2023-12":9.5,"2024-01":11,"2024-02":10.2,"2024-03":9.5,"2024-04":7.5,"2024-05":9.2,"2024-06":10.1,"2024-07":9.7,"2024-08":8.6,"2024-09":9.2,"2024-10":9.8,"2024-11":13.3,"2024-12":8,"2025-01":6.1,"2025-02":8,"2025-03":9.5,"2025-04":8.6,"2025-05":8.2,"2025-06":9.3,"2025-07":7,"2025-08":9,"2025-09":7.6,"2025-10":7.7,"2025-11":7.9,"2025-12":10.6,"2026-01":7.2,"2026-02":8.1,"2026-03":8.8,"2026-04":8.8,"2026-05":9.6,"2021-01":14.4,"2022-01":9.9,"2026-06":8.1},"yearly":{"2021":12.075,"2022":9.5667,"2023":10.4417,"2024":9.675,"2025":8.2917,"2026":8.4333},"last_month":"2026-06","last_val":8.1},"lead_nf":{"label":"Lead Time de NF","group":"Prazos & Lead Time","dir":"down","unit":"d","target":8,"series":{"2021-02":11.6,"2021-03":10.8,"2021-04":10,"2021-05":9.8,"2021-06":8.9,"2021-07":7.8,"2021-08":9.1,"2021-09":8,"2021-10":7.5,"2021-11":8.5,"2021-12":8.6,"2022-02":8.8,"2022-03":8.1,"2022-04":6.3,"2022-05":9.8,"2022-06":6.8,"2022-07":6.5,"2022-08":7.1,"2022-09":6.6,"2022-10":5.8,"2022-11":9.9,"2022-12":8,"2023-01":7.4,"2023-02":8.1,"2023-03":6.8,"2023-04":8,"2023-05":7.6,"2023-06":6.7,"2023-07":8.1,"2023-08":8.6,"2023-09":5.8,"2023-10":7.3,"2023-11":7.9,"2023-12":6.1,"2024-01":6.9,"2024-02":7.2,"2024-03":6.5,"2024-04":5.4,"2024-05":7,"2024-06":5.6,"2024-07":6.4,"2024-08":5.6,"2024-09":5.9,"2024-10":6.9,"2024-11":7.6,"2024-12":4.5,"2025-01":4,"2025-02":5,"2025-03":4.1,"2025-04":6.2,"2025-05":3.8,"2025-06":4.3,"2025-07":4.7,"2025-08":5.9,"2025-09":3.8,"2025-10":5.1,"2025-11":6.2,"2025-12":5.7,"2026-01":4.7,"2026-02":6,"2026-03":4.1,"2026-04":6.5,"2026-05":7.6,"2021-01":11.6,"2022-01":8.8,"2026-06":6.6},"yearly":{"2021":9.35,"2022":7.7083,"2023":7.3667,"2024":6.2917,"2025":4.9,"2026":5.9167},"last_month":"2026-06","last_val":6.6},"lead_tr":{"label":"Lead Time de Transportadora","group":"Prazos & Lead Time","dir":"down","unit":"d","target":6,"series":{"2021-02":7.7,"2021-03":8.3,"2021-04":7.4,"2021-05":8,"2021-06":7,"2021-07":7,"2021-08":7,"2021-09":5.8,"2021-10":5.7,"2021-11":6.6,"2021-12":6.6,"2022-02":7.3,"2022-03":6.5,"2022-04":5,"2022-05":8.3,"2022-06":5.7,"2022-07":5.1,"2022-08":5.6,"2022-09":5.4,"2022-10":4.5,"2022-11":8.5,"2022-12":6.3,"2023-01":5.8,"2023-02":6,"2023-03":5.2,"2023-04":6.3,"2023-05":6.3,"2023-06":5.1,"2023-07":7,"2023-08":7.4,"2023-09":4.4,"2023-10":5.2,"2023-11":6.2,"2023-12":5.2,"2024-01":5,"2024-02":6.2,"2024-03":4.8,"2024-04":4.7,"2024-05":5.6,"2024-06":5,"2024-07":5.5,"2024-08":4.6,"2024-09":5.2,"2024-10":5.9,"2024-11":5.6,"2024-12":4.1,"2025-01":4,"2025-02":4.3,"2025-03":3.7,"2025-04":5.3,"2025-05":3.7,"2025-06":3.9,"2025-07":4.1,"2025-08":5.1,"2025-09":3.6,"2025-10":4.5,"2025-11":5.3,"2025-12":5,"2026-01":4.4,"2026-02":5.2,"2026-03":3.8,"2026-04":5.7,"2026-05":5.7,"2021-01":7.7,"2022-01":7.3,"2026-06":4.1},"yearly":{"2021":7.0667,"2022":6.2917,"2023":5.8417,"2024":5.1833,"2025":4.375,"2026":4.8167},"last_month":"2026-06","last_val":4.1},"lead_exp":{"label":"Dias de Expedição","group":"Prazos & Lead Time","dir":"down","unit":"d","target":9,"series":{"2021-02":12.5,"2021-03":12.5,"2021-04":10.7,"2021-05":9.2,"2021-06":10.2,"2021-07":9.2,"2021-08":9,"2021-09":10.1,"2021-10":9.1,"2021-11":14.6,"2021-12":8.7,"2022-02":9.1,"2022-03":8.8,"2022-04":7.3,"2022-05":11.9,"2022-06":8.1,"2022-07":8,"2022-08":9.5,"2022-09":8.2,"2022-10":5.5,"2022-11":9.2,"2022-12":10.5,"2023-01":10.6,"2023-02":10.4,"2023-03":11.7,"2023-04":13,"2023-05":9.2,"2023-06":7.1,"2023-07":13.2,"2023-08":11.7,"2023-09":6.4,"2023-10":10.1,"2023-11":11.7,"2023-12":10,"2024-01":1.9,"2024-02":1,"2024-03":1.6,"2024-04":1,"2024-05":1.3,"2024-06":1.6,"2024-07":1.1,"2024-08":1,"2024-09":1.6,"2024-10":2.5,"2024-11":1.2,"2024-12":1.4,"2025-01":1.2,"2025-02":1.6,"2025-03":1.7,"2025-04":1.4,"2025-05":1.3,"2025-06":2.2,"2025-07":1,"2025-08":1.1,"2025-09":2.2,"2025-10":1.8,"2025-11":1.4,"2025-12":2.1,"2026-01":1.7,"2026-02":1.6,"2026-03":2.2,"2026-04":1.6,"2026-05":2,"2021-01":12.5,"2022-01":9.1,"2026-06":2.3},"yearly":{"2021":10.6917,"2022":8.7667,"2023":10.425,"2024":1.4333,"2025":1.5833,"2026":1.9},"last_month":"2026-06","last_val":2.3},"absent":{"label":"Absenteísmo (OPL)","group":"Pessoas (OPL)","dir":"down","unit":"%","target":0.05,"series":{"2021-01":0.027,"2021-02":0.037,"2021-03":0.042,"2021-04":0.034,"2021-05":0.073,"2021-06":0.036,"2021-07":0.048,"2021-08":0.031,"2021-09":0.025,"2021-10":0.057,"2021-11":0.069,"2021-12":0.041,"2022-01":0.084,"2022-02":0.005,"2022-03":0.002,"2022-04":0.006,"2022-05":0.011,"2022-06":0.017,"2022-07":0.008,"2022-08":0.006,"2022-09":0.006,"2022-10":0.001,"2022-11":0.007,"2022-12":0.024,"2023-01":0.019,"2023-02":0.004,"2023-03":0.01,"2023-04":0.001,"2023-05":0.017,"2023-06":0.031,"2023-07":0.023,"2023-08":0.003,"2023-09":0.011,"2023-10":0.026,"2023-11":0.02,"2023-12":0.011,"2024-01":0.022,"2024-02":0.035,"2024-03":0.036,"2024-04":0.074,"2024-05":0.048,"2024-06":0.057,"2024-07":0.119,"2024-08":0.12,"2024-09":0.037,"2024-10":0.067,"2024-11":0.135,"2024-12":0.068,"2025-01":0.024,"2025-02":0.001,"2025-03":0.035,"2025-04":0.036,"2025-05":0.072,"2025-06":0.086,"2025-07":0.101,"2025-08":0.082,"2025-09":0.007,"2025-10":0.071,"2025-11":0.021,"2025-12":0.052,"2026-01":0.032,"2026-02":0.027,"2026-03":0.019,"2026-04":0.039,"2026-05":0.029,"2026-06":0.021},"yearly":{"2021":0.0433,"2022":0.0148,"2023":0.0147,"2024":0.0682,"2025":0.049,"2026":0.0278},"last_month":"2026-06","last_val":0.021},"turnover":{"label":"Turnover (OPL)","group":"Pessoas (OPL)","dir":"down","unit":"%","target":0.05,"series":{"2021-01":0.344,"2021-02":0.172,"2021-03":0.188,"2021-04":0.234,"2021-05":0.141,"2021-06":0.047,"2021-07":0.125,"2021-08":0.063,"2021-09":0.125,"2021-10":0.047,"2021-11":0.026,"2021-12":0.021,"2022-01":0.188,"2022-02":0,"2022-03":0,"2022-04":0,"2022-05":0.031,"2022-06":0,"2022-07":0.063,"2022-08":0.047,"2022-09":0,"2022-10":0.016,"2022-11":0.047,"2022-12":0.062,"2023-01":0.031,"2023-02":0.016,"2023-03":0.094,"2023-04":0.031,"2023-05":0.031,"2023-06":0.078,"2023-07":0,"2023-08":0.063,"2023-09":0,"2023-10":0.031,"2023-11":0.11,"2023-12":0,"2024-01":0.016,"2024-02":0.016,"2024-03":0,"2024-04":0,"2024-05":0.094,"2024-06":0.109,"2024-07":0.016,"2024-08":0,"2024-09":0,"2024-10":0,"2024-11":0,"2024-12":0.016,"2025-01":0.047,"2025-02":0.016,"2025-03":0,"2025-04":0,"2025-05":0.016,"2025-06":0.031,"2025-07":0.016,"2025-08":0.078,"2025-09":0,"2025-10":0.031,"2025-11":0.078,"2025-12":0,"2026-01":0.079,"2026-02":0.047,"2026-03":0.031,"2026-04":0.031,"2026-05":0.094,"2026-06":0.047},"yearly":{"2021":0.1277,"2022":0.0378,"2023":0.0404,"2024":0.0223,"2025":0.0261,"2026":0.0548},"last_month":"2026-06","last_val":0.047},"fat_rs":{"label":"Faturamento (R$) Líquido","group":"Custo Logístico","dir":"up","unit":"rs","target":null,"series":{"2021-01":8529113,"2021-02":17887006,"2021-03":45362740,"2021-04":10577192,"2021-05":22476921,"2021-06":38160225,"2021-07":11003804,"2021-08":17288556,"2021-09":35616985,"2021-10":13574708,"2021-11":17570299,"2021-12":45327162,"2022-01":7490561,"2022-02":15230453,"2022-03":48262869,"2022-04":9734891,"2022-05":17958455,"2022-06":47534324,"2022-07":10066329,"2022-08":23485385,"2022-09":41676791,"2022-10":10537071,"2022-11":25320873,"2022-12":41754196,"2023-01":9784952,"2023-02":18900374,"2023-03":49282243,"2023-04":8455417,"2023-05":19062940,"2023-06":55406558,"2023-07":15026200,"2023-08":20217101,"2023-09":51665190,"2023-10":9244066,"2023-11":39227694,"2023-12":40922678,"2024-01":10866111,"2024-02":24248935,"2024-03":47989290,"2024-04":9883001,"2024-05":30959688,"2024-06":52212482,"2024-07":14116604,"2024-08":26696986,"2024-09":53306245,"2024-10":18633483,"2024-11":51665755,"2024-12":33735916,"2025-01":18015010,"2025-02":29078462,"2025-03":45673408,"2025-04":13937973,"2025-05":37427943,"2025-06":51391475,"2025-07":13615762,"2025-08":23448446,"2025-09":61477959,"2025-10":14764455,"2025-11":48832383,"2025-12":43616101,"2026-01":10874606,"2026-02":16455067,"2026-03":72511884,"2026-04":12994369,"2026-05":26207139,"2026-06":63769399},"yearly":{"2021":283374711,"2022":299052198,"2023":337195413,"2024":374314496,"2025":401279377,"2026":202812464},"last_month":"2026-06","last_val":63769399},"ctransp_rs":{"label":"Custo de Transporte (R$)","group":"Custo Logístico","dir":"down","unit":"rs","target":null,"series":{"2024-01":766322,"2024-02":479350,"2024-03":1070079,"2024-04":1111469,"2024-05":989562,"2024-06":1367060,"2024-07":1066379,"2024-08":692977,"2024-09":1399838,"2024-10":1076159,"2024-11":1055266,"2024-12":1187591,"2025-01":938283,"2025-02":972638,"2025-03":1731939,"2025-04":794875,"2025-05":1025127,"2025-06":1406581,"2025-07":928589,"2025-08":801423,"2025-09":1765529,"2025-10":1347653,"2025-11":641128,"2025-12":1364790,"2026-01":1098225,"2026-02":395870,"2026-03":1882818,"2026-04":1450660,"2026-05":669391,"2026-06":1431792},"yearly":{"2024":12262052,"2025":13718555,"2026":6928756},"last_month":"2026-06","last_val":1431792},"ctw_rs":{"label":"Custo Total T&W (R$)","group":"Custo Logístico","dir":"down","unit":"rs","target":null,"series":{"2021-01":3811872,"2021-02":290211,"2021-03":2124736,"2021-04":1047068,"2021-05":867608,"2021-06":1068596,"2021-07":807942,"2021-08":1212469,"2021-09":1112654,"2021-10":695492,"2021-11":1012122,"2021-12":1074636,"2022-01":829809,"2022-02":714303,"2022-03":2038099,"2022-04":1001596,"2022-05":815902,"2022-06":1343202,"2022-07":946015,"2022-08":930373,"2022-09":1540109,"2022-10":1144546,"2022-11":958147,"2022-12":910910,"2023-01":1140437,"2023-02":624444,"2023-03":1648585,"2023-04":1062006,"2023-05":931905,"2023-06":1393320,"2023-07":1392566,"2023-08":919373,"2023-09":1376586,"2023-10":1386596,"2023-11":1283647,"2023-12":1354465,"2024-01":1164165,"2024-02":882070,"2024-03":1379432,"2024-04":1509521,"2024-05":1304989,"2024-06":1705982,"2024-07":1474803,"2024-08":1096390,"2024-09":1751139,"2024-10":1536633,"2024-11":1431805,"2024-12":1593022,"2025-01":1367188,"2025-02":1348044,"2025-03":2161431,"2025-04":1217207,"2025-05":1396357,"2025-06":1989496,"2025-07":1423547,"2025-08":1208107,"2025-09":2579030,"2025-10":1778538,"2025-11":1061757,"2025-12":1848379,"2026-01":1574590,"2026-02":837910,"2026-03":2342732,"2026-04":2002048,"2026-05":1098180,"2026-06":1874782},"yearly":{"2021":15125406,"2022":13173011,"2023":14513930,"2024":16829951,"2025":19379081,"2026":9730242},"last_month":"2026-06","last_val":1874782},"dev_rs":{"label":"Devolução (R$)","group":"Custo Logístico","dir":"down","unit":"rs","target":null,"series":{"2026-01":161138.95,"2026-02":105104.57,"2021-01":56010.37,"2021-02":1689821.74,"2021-03":809490.38,"2021-04":626984.95,"2021-05":346225.71,"2021-06":736775.63,"2021-07":229173.31,"2021-08":172902.31,"2021-09":232007.64,"2021-10":111400.63,"2021-11":146259.21,"2021-12":512173.73,"2025-01":164956.01,"2025-02":706259.93,"2025-03":436448.16,"2025-04":436448.16,"2025-05":347016.73,"2025-06":210819.62,"2025-07":329074.41,"2025-08":249591.54,"2025-09":293594.32,"2025-10":425855.98,"2025-11":299197.99,"2025-12":748044.32,"2026-03":179205.11,"2026-04":885672.53,"2026-05":314982.69,"2026-06":855419.13},"yearly":{"2021":5669225.61,"2025":4647307.17,"2026":2501522.98},"showQuarters":true,"last_month":"2026-06","last_val":855419.13},"fatliq_rs":{"label":"Faturamento Líquido (R$) - (devolução)","group":"Custo Logístico","dir":"up","unit":"rs","target":null,"series":{"2021-01":8473102.63,"2021-02":16197184.26,"2021-03":44553249.62,"2021-04":9950207.05,"2021-05":22130695.29,"2021-06":37423449.37,"2021-07":10774630.69,"2021-08":17115653.69,"2021-09":35384977.36,"2021-10":13463307.37,"2021-11":17424039.79,"2021-12":44814988.27,"2022-01":7490561,"2022-02":15230453,"2022-03":48262869,"2022-04":9734891,"2022-05":17958455,"2022-06":47534324,"2022-07":10066329,"2022-08":23485385,"2022-09":41676791,"2022-10":10537071,"2022-11":25320873,"2022-12":41754196,"2023-01":9784952,"2023-02":18900374,"2023-03":49282243,"2023-04":8455417,"2023-05":19062940,"2023-06":55406558,"2023-07":15026200,"2023-08":20217101,"2023-09":51665190,"2023-10":9244066,"2023-11":39227694,"2023-12":40922678,"2024-01":10866111,"2024-02":24248935,"2024-03":47989290,"2024-04":9883001,"2024-05":30959688,"2024-06":52212482,"2024-07":14116604,"2024-08":26696986,"2024-09":53306245,"2024-10":18633483,"2024-11":51665755,"2024-12":33735916,"2025-01":17850053.99,"2025-02":28372202.07,"2025-03":45236959.84,"2025-04":13501524.84,"2025-05":37080926.27,"2025-06":51180655.38,"2025-07":13286687.59,"2025-08":23198854.46,"2025-09":61184364.68,"2025-10":14338599.02,"2025-11":48533185.01,"2025-12":42868056.68,"2026-01":10713467.05,"2026-02":16349962.43,"2026-03":72332678.89,"2026-04":12108696.47,"2026-05":25892156.31,"2026-06":62913979.87},"yearly":{"2021":277705485.39,"2022":299052198,"2023":337195413,"2024":374314496,"2025":396632069.83,"2026":200310941.02},"calc":"Faturamento − Devolução","last_month":"2026-06","last_val":62913979.87},"devpct":{"label":"% Devolução (Dev ÷ Fat)","group":"Custo Logístico","dir":"down","unit":"%","target":0.01,"series":{"2021-01":0.0066,"2021-02":0.0945,"2021-03":0.0178,"2021-04":0.0593,"2021-05":0.0154,"2021-06":0.0193,"2021-07":0.0208,"2021-08":0.01,"2021-09":0.0065,"2021-10":0.0082,"2021-11":0.0083,"2021-12":0.0113,"2025-01":0.0092,"2025-02":0.0243,"2025-03":0.0096,"2025-04":0.0313,"2025-05":0.0093,"2025-06":0.0041,"2025-07":0.0242,"2025-08":0.0106,"2025-09":0.0048,"2025-10":0.0288,"2025-11":0.0061,"2025-12":0.0172,"2026-01":0.0148,"2026-02":0.0064,"2026-03":0.0025,"2026-04":0.0682,"2026-05":0.012,"2026-06":0.0134},"yearly":{"2021":0.0232,"2025":0.015,"2026":0.0195},"calc":"Devolução R$ ÷ Faturamento R$","last_month":"2026-06","last_val":0.0134},"custo_op_ac":{"label":"Custo %TW Acumulado","group":"Custo Logístico","dir":"down","unit":"%","target":0.055,"series":{"2021-01":0.4469,"2021-02":0.1553,"2021-03":0.0868,"2021-04":0.0883,"2021-05":0.0777,"2021-06":0.0644,"2021-07":0.0651,"2021-08":0.0656,"2021-09":0.0597,"2021-10":0.0591,"2021-11":0.059,"2021-12":0.0534,"2022-01":0.1108,"2022-02":0.068,"2022-03":0.0505,"2022-04":0.0568,"2022-05":0.0547,"2022-06":0.0461,"2022-07":0.0492,"2022-08":0.0479,"2022-09":0.0459,"2022-10":0.0487,"2022-11":0.0477,"2022-12":0.044,"2023-01":0.1166,"2023-02":0.0615,"2023-03":0.0438,"2023-04":0.0518,"2023-05":0.0513,"2023-06":0.0423,"2023-07":0.0466,"2023-08":0.0465,"2023-09":0.0423,"2023-10":0.0462,"2023-11":0.0444,"2023-12":0.043,"2024-01":0.1071,"2024-02":0.0583,"2024-03":0.0412,"2024-04":0.0531,"2024-05":0.0503,"2024-06":0.0451,"2024-07":0.0495,"2024-08":0.0485,"2024-09":0.0454,"2024-10":0.0478,"2024-11":0.0447,"2024-12":0.045,"2025-01":0.0759,"2025-02":0.0577,"2025-03":0.0526,"2025-04":0.0571,"2025-05":0.052,"2025-06":0.0485,"2025-07":0.0521,"2025-08":0.0521,"2025-09":0.05,"2025-10":0.0533,"2025-11":0.049,"2025-12":0.0483,"2026-01":0.1448,"2026-02":0.0883,"2026-03":0.0476,"2026-04":0.0599,"2026-05":0.0565,"2026-06":0.048},"yearly":{"2021":0.0534,"2022":0.044,"2023":0.043,"2024":0.045,"2025":0.0483,"2026":0.048},"acc":true,"qAccFrom":"custo_op_ac","calc":"Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)","last_month":"2026-06","last_val":0.048}};
+const INV_EMBED = {inventario:{label:'Inventário — Ajustes (R$)',group:'Estoque & Acuracidade',dir:'down',unit:'rs',target:null,half:true,
+  series:{'2016-H1':24790.23,'2016-H2':608365.66,'2017-H1':-325173.68,'2017-H2':28954.90,'2018-H1':-105380.29,'2018-H2':9025.10,'2019-H1':560609.65,'2019-H2':0,'2020-H1':386826.22,'2020-H2':0,'2021-H1':-172976.96,'2021-H2':54767.26,'2022-H1':-16816.47,'2022-H2':17096.47,'2023-H1':0,'2023-H2':-58.88,'2024-H1':0,'2024-H2':-1320.65,'2025-H1':0,'2025-H2':12.57}}};
+let DATA = Object.assign(JSON.parse(JSON.stringify(DATA_EMBED)), JSON.parse(JSON.stringify(INV_EMBED)));
 
-/* =====================================================================
-   INDICADORES FINANCEIROS (R$) · Custo Logístico
-   Base (lançamento manual): fat_rs, ctransp_rs, ctw_rs, dev_rs
-   Calculados automaticamente: fatliq_rs, devpct, custo_op, custo_tr_ac, custo_op_ac
-   ===================================================================== */
-Object.assign(DATA,{
- fat_rs:{label:'Faturamento (R$) Líquido',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{}},
- ctransp_rs:{label:'Custo de Transporte (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
- ctw_rs:{label:'Custo Total T&W (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
- dev_rs:{label:'Devolução (R$)',group:'Custo Logístico',dir:'down',unit:'rs',target:null,series:{},yearly:{}},
- fatliq_rs:{label:'Faturamento Líquido (R$) - (devolução)',group:'Custo Logístico',dir:'up',unit:'rs',target:null,series:{},yearly:{},calc:'Faturamento − Devolução'},
- devpct:{label:'% Devolução (Dev ÷ Fat)',group:'Custo Logístico',dir:'down',unit:'%',target:0.01,series:{},yearly:{},calc:'Devolução R$ ÷ Faturamento R$'},
- custo_op_ac:{label:'Custo %TW Acumulado',group:'Custo Logístico',dir:'down',unit:'%',target:0.055,series:{},yearly:{},acc:true,qAccFrom:'custo_op_ac',calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'}
-});
-/* Inventário — ajustes (R$) apurados por semestre (H1/H2), histórico anual */
-DATA.inventario={label:'Inventário — Ajustes (R$)',group:'Estoque & Acuracidade',dir:'down',unit:'rs',target:null,half:true,
- series:{'2016-H1':24790.23,'2016-H2':608365.66,'2017-H1':-325173.68,'2017-H2':28954.90,'2018-H1':-105380.29,'2018-H2':9025.10,
-  '2019-H1':560609.65,'2019-H2':0,'2020-H1':386826.22,'2020-H2':0,'2021-H1':-172976.96,'2021-H2':54767.26,
-  '2022-H1':-16816.47,'2022-H2':17096.47,'2023-H1':0,'2023-H2':-58.88,'2024-H1':0,'2024-H2':-1320.65,'2025-H1':0,'2025-H2':12.57}};
-/* Devolução em barras mostra os totais por trimestre */
-DATA.dev_rs.showQuarters=true;
-/* custo_op e custo_tr_ac passam a ser CALCULADOS a partir dos R$ (2025 em diante),
-   mantendo o histórico manual (embarcado) até 2024. */
-const CALC_FROM='2025';
-const MANUAL={
-  custo_op:    Object.assign({}, DATA.custo_op.series),
-  custo_tr_ac: Object.assign({}, DATA.custo_tr_ac.series)
+const API_BASE = "";                    // backend opcional
+const SUPA_URL = "https://ennsbpibfnuwlvtodukg.supabase.co";
+const STORE = "dashboards/scorecard/dados.json";
+const MESES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const MMI = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+const YEAR_COL = {'2021':'#9DD3EE','2022':'#5AA9DE','2023':'#2E7DC4','2024':'#1E6FC0','2025':'#1B4E8F','2026':'#0B2A55'};
+const CURVA = "smooth";
+const IC = {
+  'Entregas & Atendimento':'<path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>',
+  'Custo Logístico':'<circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 9.5c0-1 1-1.6 2.5-1.6s2.5.7 2.5 1.7-1 1.4-2.5 1.4-2.5.5-2.5 1.5 1 1.6 2.5 1.6 2.5-.6 2.5-1.6"/>',
+  'Qualidade & Devolução':'<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+  'Estoque & Acuracidade':'<path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/>',
+  'Prazos & Lead Time':'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  'Pessoas (OPL)':'<circle cx="9" cy="8" r="3"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5"/><path d="M16 6a3 3 0 010 6M21 19c0-2.2-1.5-4-3.5-4.6"/>',
 };
-/* OTIF agora é CALCULADO: On Time (OTD) ÷ Fill Rate × 100 */
-DATA.otif.calc='On Time (OTD) × In-Full';
+const MODOS=[["lines","Linhas"],["bars","Barras"],["area","Área"],["heat","Heatmap"],["gauge","Medidor"],["acum","Acumulado"]];
+
+/* ---- OTIF corrigido: On Time × In-Full ---- */
 function recomputeOtif(){
+  if(!DATA.otif||!DATA.ontime||!DATA.infull) return;
   const ot=DATA.ontime.series, inf=DATA.infull.series, s={};
   Object.keys(ot).forEach(k=>{ if(ot[k]!=null && inf[k]!=null) s[k]=+(ot[k]*inf[k]).toFixed(4); });
-  DATA.otif.series=s;
-  recomputeDerived('otif');
+  DATA.otif.series=s; DATA.otif.calc='On Time (OTD) × In-Full';
+  // recalcula yearly e last_val do OTIF
+  const yy={}; Object.keys(s).forEach(k=>{const y=k.slice(0,4);(yy[y]=yy[y]||[]).push(s[k]);});
+  DATA.otif.yearly={}; Object.keys(yy).forEach(y=>DATA.otif.yearly[y]=+(yy[y].reduce((a,b)=>a+b,0)/yy[y].length).toFixed(4));
+  const last=Object.keys(s).sort().pop(); if(last){DATA.otif.last_month=last;DATA.otif.last_val=s[last];}
 }
-/* Escala fixa do eixo Y do On Time (96–100%) para leitura fácil */
-DATA.ontime.yMin=96; DATA.ontime.yMax=100;
-DATA.custo_op.label='Custo Operacional %TW Mensal';
-DATA.custo_op.target=0.055;
-DATA.custo_op.calc='Custo T&W ÷ Faturamento (2025+) · manual até 2024';
-DATA.custo_op.headFrom='custo_op_ac';   /* card mostra o acumulado final do ano */
-DATA.custo_op.qAccFrom='custo_op_ac';   /* marcação de quarter (acumulado) no gráfico */
-DATA.custo_tr_ac.calc='Σ Transporte ÷ Σ Faturamento (2025+) · manual até 2024';
-DATA.custo_tr_ac.acc=true;
-DATA.custo_tr_ac.label='Custo de Transporte %T (Acumulado)';
-DATA.custo_tr_ac.target=0.04;   /* meta abaixo de 4% · quanto menor melhor */
 
-const GROUPS = {
-  'Entregas & Atendimento':'--blue',
-  'Custo Logístico':'--amber',
-  'Qualidade & Devolução':'--purple',
-  'Estoque & Acuracidade':'--teal',
-  'Prazos & Lead Time':'#0E7490',
-  'Pessoas (OPL)':'#A65A2E'
-};
-/* ícone por dimensão (estilo stroke, viewBox 0 0 24 24) */
-const GROUP_ICONS = {
-  'Entregas & Atendimento':'<path d="M14 17V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h1"/><path d="M14 9h4l4 4v4a1 1 0 0 1-1 1h-1"/><path d="M9 18h6"/><circle cx="6.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/>',
-  'Custo Logístico':'<circle cx="12" cy="12" r="9"/><path d="M15 9.5a2.5 2.5 0 0 0-2.5-1.5h-1a2.2 2.2 0 0 0 0 4.4h1a2.2 2.2 0 0 1 0 4.4h-1A2.5 2.5 0 0 1 9 15.3"/><line x1="12" y1="6.4" x2="12" y2="17.6"/>',
-  'Qualidade & Devolução':'<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.78 4.78 4 4 0 0 1-6.74 0 4 4 0 0 1-4.78-4.78 4 4 0 0 1 0-6.75Z"/><path d="m9 12 2 2 4-4"/>',
-  'Estoque & Acuracidade':'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7l8.7 5 8.7-5"/><path d="M12 22V12"/>',
-  'Prazos & Lead Time':'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
-  'Pessoas (OPL)':'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
-};
-const groupIcon = g => GROUP_ICONS[g] || GROUP_ICONS['Estoque & Acuracidade'];
-const cssvar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const dark = matchMedia('(prefers-color-scheme:dark)').matches;
-const COL = {text:cssvar('--text'),text2:cssvar('--text2'),text3:cssvar('--text3'),grid:cssvar('--grid'),bg:cssvar('--bg'),
-  green:cssvar('--green'),amber:cssvar('--amber'),red:cssvar('--red'),blue:cssvar('--blue')};
+/* ---- derivados de listas ---- */
+function YEARS(){ const set=new Set();
+  Object.values(DATA).forEach(ind=>{ if(ind.half)return; Object.keys(ind.series||{}).forEach(k=>{const y=k.slice(0,4); if(/^20\d\d$/.test(y)) set.add(y);}); });
+  return [...set].sort();
+}
+function GROUPS(){ const g=[]; Object.values(DATA).forEach(ind=>{ if(ind.group && !g.includes(ind.group)) g.push(ind.group);}); return g; }
+function indsDe(group){ return Object.keys(DATA).filter(k=>DATA[k].group===group); }
 
-const YEARS=['2021','2022','2023','2024','2025','2026'];
-const YEAR_COL = {'2021':'#9DD3EE','2022':'#5AA9DE','2023':'#2E7DC4','2024':'#1E6FC0','2025':'#1B4E8F','2026':'#0B2A55'};
-const MONTH_LABELS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const MONTHS_idx=()=>['01','02','03','04','05','06','07','08','09','10','11','12'];
-
-const VIZ={
-  lines:{name:'Linhas',icon:'<polyline points="3 17 9 11 13 15 21 6"/>'},
-  bars:{name:'Barras',icon:'<line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="9"/>'},
-  area:{name:'Área',icon:'<path d="M3 17l5-6 4 3 6-7v10z"/>'},
-  acum:{name:'Acumulado',icon:'<path d="M3 20h18"/><path d="M4 18c3-.8 5-4.5 8-7.5S17.5 6 20 5"/>'},
-  acumbar:{name:'Acum. barras',icon:'<line x1="5" y1="20" x2="5" y2="15"/><line x1="10" y1="20" x2="10" y2="11"/><line x1="15" y1="20" x2="15" y2="7"/><line x1="20" y1="20" x2="20" y2="4"/>'},
-  yoy:{name:'Comparativo',icon:'<line x1="7" y1="20" x2="7" y2="8"/><line x1="17" y1="20" x2="17" y2="5"/><path d="M9 6l3-2 3 2"/>'},
-  heat:{name:'Heatmap',icon:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'},
-  gauge:{name:'Medidor',icon:'<path d="M4 16a8 8 0 1116 0"/><line x1="12" y1="16" x2="15" y2="11"/>'}
-};
-const RECO={
-  otif:['lines','linhas mostram o OTIF calculado (OTD ÷ Fill Rate × 100) comparado à meta'],
-  ontime:['lines','linhas evidenciam a estabilidade da pontualidade vs meta'],
-  infull:['lines','linhas mostram a oscilação mensal entre anos'],
-  fillrate:['lines','linhas destacam a recuperação do atendimento ao longo dos anos'],
-  custo_op:['bars','barras por mês comparam o custo de cada ano e destacam picos'],
-  custo_tr_ac:['lines','linhas mostram a curva acumulada do custo de frete ao longo do ano'],
-  qualidade:['bars','barras evidenciam picos pontuais de incidências'],
-  ocup:['heat','heatmap mês×ano revela a sazonalidade da ocupação de uma vez'],
-  ira:['lines','linhas mostram a acuracidade próxima do teto, com a meta'],
-  ila:['lines','linhas mostram a acuracidade de localização vs meta'],
-  liberacao:['bars','barras comparam o tempo de liberação por mês entre anos'],
-  lead_ped:['lines','linhas mostram a tendência do lead time ao longo do ano'],
-  lead_nf:['lines','linhas mostram a evolução do lead time de NF'],
-  lead_tr:['lines','linhas mostram a evolução do lead time da transportadora'],
-  lead_exp:['lines','linhas mostram a evolução dos dias de expedição'],
-  absent:['lines','linhas acompanham a tendência do absenteísmo'],
-  turnover:['lines','linhas acompanham a tendência do turnover'],
-  fat_rs:['acum','a curva acumulada compara o ritmo de faturamento entre anos, com o % de crescimento ano a ano dentro do gráfico'],
-  ctransp_rs:['acum','acumulado compara o crescimento do custo de frete ano contra ano'],
-  ctw_rs:['acum','acumulado compara o crescimento do custo total T&W ano contra ano'],
-  dev_rs:['bars','barras mostram a devolução mês a mês; use Acumulado para o total do ano'],
-  fatliq_rs:['acum','a curva acumulada compara o faturamento líquido entre anos, com o % de crescimento ano a ano dentro do gráfico'],
-  devpct:['lines','linhas mostram o % de devolução mensal comparado à meta'],
-  custo_op_ac:['lines','curva já acumulada do custo T&W em % do faturamento'],
-  inventario:['bars','barras semestrais mostram os ajustes (perdas em R$) apurados em cada inventário'],
-};
-
-/* modos de visualização disponíveis por tipo de indicador */
-const vizModes = ind => ind.half ? ['bars'] : ind.unit==='rs' ? ['acum','acumbar','yoy','lines','bars','area'] : ['lines','bars','area','heat','gauge'];
-
-let refYear='2026';
-let hiddenYears=new Set();
-let activeTab=Object.keys(GROUPS)[0];
-const vizByKey={};
-Object.keys(DATA).forEach(k=>vizByKey[k]=RECO[k]?RECO[k][0]:'lines');
+/* ---- estado ---- */
+let anosSel = JSON.parse(localStorage.getItem("sc2-anos")||"null");
+let dimAtiva=null, modoPorInd=JSON.parse(localStorage.getItem("sc2-modos")||"{}");
 const charts={};
+function salvar(){localStorage.setItem("sc2-anos",JSON.stringify(anosSel));localStorage.setItem("sc2-modos",JSON.stringify(modoPorInd));}
+function modoDe(id){return modoPorInd[id]|| (DATA[id]&&DATA[id].unit==='rs'?'acum':'lines');}
 
-/* === Preferência de anos (salva no navegador) ===
-   1ª vez: mostra só o ano corrente. Depois: lembra o que ficou setado. */
-const PREF_KEY='scorecard-anos-pref-v2';
-function savePref(){
-  try{ localStorage.setItem(PREF_KEY, JSON.stringify({refYear, hidden:[...hiddenYears], tab:activeTab, viz:vizByKey})); }catch(e){}
-}
-function loadPref(){
-  try{
-    const raw=localStorage.getItem(PREF_KEY); if(!raw) return false;
-    const p=JSON.parse(raw);
-    if(p && YEARS.includes(p.refYear)) refYear=p.refYear;
-    if(p && Array.isArray(p.hidden)) hiddenYears=new Set(p.hidden.filter(y=>YEARS.includes(y)));
-    if(p && p.tab && GROUPS[p.tab]) activeTab=p.tab;                 // última aba
-    if(p && p.viz && typeof p.viz==='object'){                       // último tipo de gráfico por indicador
-      Object.keys(p.viz).forEach(k=>{
-        if(DATA[k] && vizModes(DATA[k]).includes(p.viz[k])) vizByKey[k]=p.viz[k];
-      });
-    }
-    return true;
-  }catch(e){ return false; }
-}
-function initAnos(){
-  if(!loadPref()){
-    const cur=YEARS[YEARS.length-1];           // ano corrente (mais recente)
-    refYear=cur;
-    hiddenYears=new Set(YEARS.filter(y=>y!==cur)); // oculta todos menos o corrente
-  }
-  hiddenYears.delete(refYear);                  // o ano de referência sempre visível
-}
-
-const fmtRS=v=>v==null?'—':'R$ '+(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
-function fmtVal(ind,v){
-  if(v==null) return '—';
+/* ---- formatação ---- */
+function isPct(ind){return ind.unit==='%';}
+function scale(ind,v){return v==null?null:(isPct(ind)?v*100:v);}
+function fmtRS(v){const a=Math.abs(v);return 'R$ '+(a>=1e6?(v/1e6).toFixed(2)+' Mi':a>=1e3?(v/1e3).toFixed(0)+' mil':v.toLocaleString('pt-BR',{maximumFractionDigits:0}));}
+function fmtRSfull(v){return 'R$ '+(+v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtVal(ind,v){ if(v==null)return '—';
+  if(ind.unit==='%') return (v*100).toFixed(1)+'%';
+  if(ind.unit==='d') return v.toFixed(1)+' d';
   if(ind.unit==='rs') return fmtRS(v);
-  if(ind.unit==='d') return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' d';
-  const dec=(ind.target!=null&&ind.target<0.2)?2:1;
-  return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec})+'%';
+  return (+v).toLocaleString('pt-BR');
 }
-function fmtMeta(ind){if(ind.unit==='rs'||ind.target==null)return '—';
-  return (ind.dir==='down'?'≤ ':ind.dir==='up'?'≥ ':'~ ')+fmtVal(ind,ind.target);}
-const sv=(ind,key)=>{const v=ind.series[key];if(v==null)return null;
-  return ind.unit==='rs'?+(v/1e6).toFixed(2):(ind.unit==='d'?+v.toFixed(2):+(v*100).toFixed(2));};
-const metaPlot=ind=>ind.unit==='d'?ind.target:ind.target*100;
-/* escala automática para R$: usa M (milhões) ou mil conforme a grandeza da série
-   (evita eixo "R$0M" quando os valores são pequenos, ex.: Devolução) */
-function rsScale(ind){
-  let mx=0; for(const key in ind.series){ const v=ind.series[key]; if(v!=null&&Math.abs(v)>mx) mx=Math.abs(v); }
-  mx/=1e6; /* sv() entrega o valor já em milhões */
-  if(mx>=1)     return {mul:1,   suf:' M',  dax:mx<10?1:0, dt:2};
-  if(mx>=0.001) return {mul:1000,suf:' mil',dax:0,          dt:0};
-  return {mul:1e6, suf:'', dax:0, dt:0};
+function fmtMeta(ind){ if(ind.target==null)return null;
+  if(ind.unit==='%') return (ind.target*100).toFixed(ind.target<0.1?1:0)+'%';
+  if(ind.unit==='d') return ind.target+' d';
+  return ''+ind.target;
 }
-const axFmt=ind=>{
-  if(ind.unit==='d') return v=>v.toFixed(0)+'d';
-  if(ind.unit!=='rs') return v=>(Math.abs(v)<10?v.toFixed(1).replace('.',','):v.toFixed(0))+'%';
-  const s=rsScale(ind);
-  return v=>v==null?'':'R$'+(v*s.mul).toLocaleString('pt-BR',{maximumFractionDigits:s.dax})+s.suf;
-};
-const tipFmt=ind=>{
-  if(ind.unit==='rs'){ const s=rsScale(ind);
-    return v=>v==null?'—':'R$ '+(v*s.mul).toLocaleString('pt-BR',{minimumFractionDigits:s.dt,maximumFractionDigits:s.dt})+s.suf; }
-  return v=>v==null?'—':(ind.unit==='d'?v.toFixed(1)+' d':v.toFixed((ind.target!=null&&ind.target<0.2)?2:1)+'%');
-};
+function serieAno(ind,y){ return MMI.map(mm=>{const v=ind.series[`${y}-${mm}`]; return v==null?null:v;}); }
+function anosComDado(ind){ return YEARS().filter(y=>MMI.some(mm=>ind.series[`${y}-${mm}`]!=null)); }
+function ultimoIdx(ind,y){ let last=-1; MMI.forEach((mm,i)=>{if(ind.series[`${y}-${mm}`]!=null)last=i;}); return last; }
+function anualDe(ind,y){ if(ind.yearly && ind.yearly[y]!=null) return ind.yearly[y];
+  const s=serieAno(ind,y).filter(v=>v!=null); return s.length? s.reduce((a,b)=>a+b,0)/s.length : null; }
 
-/* R$: valor do período é a SOMA (acumulado); % e dias continuam pela média */
-function periodValue(ind,yr){
-  if(ind.headFrom && DATA[ind.headFrom]){ const hv=periodValue(DATA[ind.headFrom],yr); if(hv!=null) return hv; } /* usa o acumulado final */
-  const ms=Object.keys(ind.series).filter(k=>k.startsWith(yr));
-  if(!ms.length) return null;
-  if(ind.acc){ ms.sort(); return ind.series[ms[ms.length-1]]; } /* acumulado: usa o último mês */
-  const tot=ms.reduce((a,k)=>a+ind.series[k],0);
-  return ind.unit==='rs'? tot : tot/ms.length;}
-/* soma YTD considerando apenas os meses informados (p/ comparar mesmo período) */
-function ytdSum(ind,yr,months){let s=0,n=0;months.forEach(mm=>{const v=ind.series[`${yr}-${mm}`];if(v!=null){s+=v;n++;}});return n?s:null;}
-function monthsFilled(ind,yr){return MONTHS_idx().filter(mm=>ind.series[`${yr}-${mm}`]!=null);}
-/* CAGR usando apenas anos completos (12 meses) */
-function cagrTxt(ind){
-  const totals={};
-  YEARS.forEach(y=>{const ms=monthsFilled(ind,y);
-    if(ms.length===12){totals[y]=ms.reduce((a,mm)=>a+ind.series[`${y}-${mm}`],0);}});
-  const ys=Object.keys(totals).sort().filter(y=>totals[y]>0);
-  if(ys.length<2) return '';
-  const y0=ys[0], y1=ys[ys.length-1], n=(+y1)-(+y0);
-  if(n<=0) return '';
-  const c=(Math.pow(totals[y1]/totals[y0],1/n)-1)*100;
-  const s=(c>=0?'+':'')+c.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
-  return `CAGR ${y0}→${y1}: <b>${s}% a.a.</b>`;
+/* ---- status vs meta ---- */
+function status(ind,v){ if(ind.target==null||v==null) return 'na'; const t=ind.target;
+  if(ind.dir==='up')   return v>=t?'ok':v>=t*0.97?'warn':'bad';
+  if(ind.dir==='down') return v<=t?'ok':v<=t*1.15?'warn':'bad';
+  return Math.abs(v-t)<=t*0.06?'ok':Math.abs(v-t)<=t*0.12?'warn':'bad'; // target
 }
-function status(ind,val){if(ind.unit==='rs'||ind.target==null)return'na';
-  if(val==null)return'warn';const t=ind.target;
-  if(ind.dir==='up')return val>=t?'ok':(val>=t-0.02?'warn':'bad');
-  if(ind.dir==='down')return val<=t?'ok':(val<=t*1.25?'warn':'bad');
-  return Math.abs(val-t)<=0.05?'ok':(Math.abs(val-t)<=0.10?'warn':'bad');}
-const STLABEL={ok:'No alvo',warn:'Atenção',bad:'Fora',na:''};
-const statusColor=s=>s==='ok'?COL.green:s==='warn'?COL.amber:s==='na'?COL.text3:COL.red;
-const groupColor=g=>{const v=GROUPS[g];return v.startsWith('--')?cssvar(v):v;};
-const visibleYears=()=>YEARS.filter(y=>!hiddenYears.has(y));
-const KPI_ORDER={fat_rs:1,fatliq_rs:2,ctw_rs:3,custo_op:4,custo_op_ac:5,ctransp_rs:6,custo_tr_ac:7,dev_rs:8,devpct:9};
-const groupKeys=g=>Object.keys(DATA).filter(k=>DATA[k].group===g)
-  .sort((a,b)=>(KPI_ORDER[a]||99)-(KPI_ORDER[b]||99));
-function groupStat(g){let ok=0,warn=0,bad=0;groupKeys(g).forEach(k=>{const v=periodValue(DATA[k],refYear);
-  const s=status(DATA[k],v);if(s==='na')return;s==='ok'?ok++:s==='warn'?warn++:bad++;});return{ok,warn,bad};}
+const STCOR={ok:'var(--ok)',warn:'var(--warn)',bad:'var(--alert)',na:'var(--ink-soft)'};
 
-function buildPeriod(){
-  const el=document.getElementById('period');
-  el.innerHTML=YEARS.map(y=>`<button data-y="${y}" class="${y===refYear?'on':''}">${y==='2026'?'YTD 26':y}</button>`).join('');
-  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{refYear=b.dataset.y;hiddenYears.delete(refYear);savePref();render();});
+/* ============================================================ render */
+function render(){
+  const ys=YEARS();
+  if(!anosSel) anosSel = ys.slice(-2);
+  anosSel = anosSel.filter(a=>ys.includes(a)); if(!anosSel.length) anosSel=ys.slice(-2);
+  if(!dimAtiva) dimAtiva=GROUPS()[0];
+  renderTabs(); renderChips(); renderDim();
 }
-function buildYearBar(){
-  const el=document.getElementById('ybar');
-  el.innerHTML=`<span class="lab">Anos</span>`+YEARS.map(y=>`
-    <span class="yl ${hiddenYears.has(y)?'off':''} ${y===refYear?'sel':''}" data-y="${y}">
-      <i style="background:${YEAR_COL[y]}"></i>${y==='2026'?'2026 (YTD Jan–Mai)':y}</span>`).join('')
-    +`<span style="flex:1"></span><span class="lab" style="margin:0">clique p/ mostrar/ocultar</span>`;
-  el.querySelectorAll('.yl').forEach(s=>s.onclick=()=>{
-    const y=s.dataset.y;hiddenYears.has(y)?hiddenYears.delete(y):hiddenYears.add(y);
-    savePref();buildYearBar();renderCharts();});
+function renderTabs(){
+  const el=document.getElementById("tabs"); el.innerHTML="";
+  GROUPS().forEach(g=>{
+    const b=document.createElement("button"); b.className="tab"+(g===dimAtiva?" active":"");
+    b.innerHTML=`<svg viewBox="0 0 24 24">${IC[g]||''}</svg>${g}`;
+    b.onclick=()=>{dimAtiva=g;renderTabs();renderDim();}; el.appendChild(b);
+  });
 }
-function buildHealth(){
-  const keys=Object.keys(DATA);let ok=0,warn=0,bad=0,n=0;
-  keys.forEach(k=>{if(DATA[k].unit==='rs'||DATA[k].target==null)return;
-    const v=periodValue(DATA[k],refYear);if(v==null)return;n++;
-    const s=status(DATA[k],v);s==='ok'?ok++:s==='warn'?warn++:bad++;});
-  const score=Math.round(ok/n*100);
-  const cards=[
-    {lbl:'Score geral',val:score+'<small>%</small>',meta:`${ok} de ${n} no alvo`,c:score>=70?COL.green:score>=50?COL.amber:COL.red},
-    {lbl:'No alvo',val:ok,meta:'indicadores ✓',c:COL.green},
-    {lbl:'Em atenção',val:warn,meta:'próximos da meta',c:COL.amber},
-    {lbl:'Fora da meta',val:bad,meta:'requerem ação',c:COL.red},
-  ];
-  const el=document.getElementById('health');
-  el.innerHTML=cards.map(c=>`<div class="hstat"><span class="bar" style="background:${c.c}"></span>
-    <div class="lbl">${c.lbl}</div><div class="val">${c.val}</div><div class="meta">${c.meta}</div></div>`).join('')
-    +`<div class="hdonut"><div id="hdonut" style="width:100%"></div></div>`;
-  if(charts.donut)charts.donut.destroy();
-  charts.donut=new ApexCharts(document.getElementById('hdonut'),{
-    chart:{type:'donut',height:120,sparkline:{enabled:true}},series:[ok,warn,bad],labels:['No alvo','Atenção','Fora'],
-    colors:[COL.green,COL.amber,COL.red],stroke:{width:2,colors:[COL.bg]},
-    legend:{show:true,position:'right',fontSize:'10px',labels:{colors:COL.text2},markers:{width:8,height:8},itemMargin:{vertical:1}},
-    dataLabels:{enabled:false},
-    plotOptions:{pie:{donut:{size:'62%',labels:{show:true,total:{show:true,label:'',color:COL.text2,formatter:()=>n}}}}},
-    tooltip:{theme:dark?'dark':'light',y:{formatter:v=>v+' ind.'}}});
-  charts.donut.render();
-  document.getElementById('h-sub').textContent=
-    `Referência KPI: ${refYear==='2026'?'YTD 2026 (Jan–Mai)':refYear} · ${Object.keys(DATA).length} indicadores · ${Object.keys(GROUPS).filter(g=>groupKeys(g).length).length} dimensões · 6 modelos`;
+function renderChips(){
+  const box=document.getElementById("yearChips"); box.innerHTML="";
+  YEARS().forEach(a=>{
+    const c=document.createElement("div"); c.className="chip"+(anosSel.includes(a)?" on":"");
+    c.innerHTML=`<span class="sw" style="background:${YEAR_COL[a]||'#888'}"></span>${a}`;
+    c.onclick=()=>{ if(anosSel.includes(a)){if(anosSel.length>1)anosSel=anosSel.filter(x=>x!==a);} else anosSel=[...anosSel,a].sort();
+      salvar();renderChips();renderDim(); };
+    box.appendChild(c);
+  });
 }
-
-/* ABAS */
-function buildTabs(){
-  const el=document.getElementById('tabs');
-  el.innerHTML=Object.keys(GROUPS).filter(g=>groupKeys(g).length).map(g=>{
-    const on=g===activeTab;
-    return `<button class="tab ${on?'on':''}" data-g="${g}" style="${on?`border-color:${groupColor(g)}`:''}">
-      <span class="ticon" style="color:${groupColor(g)}"><svg viewBox="0 0 24 24">${groupIcon(g)}</svg></span>${g}
-      <span class="tcount">${groupKeys(g).length}</span></button>`;
-  }).join('');
-  el.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{activeTab=b.dataset.g;savePref();showTab();});
+function renderDim(){
+  document.getElementById("dimNome").textContent=dimAtiva;
+  document.getElementById("dimSub").textContent="";
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}}); for(const k in charts)delete charts[k];
+  renderKpis(); renderPanels();
 }
-function destroyPanelCharts(){Object.keys(DATA).forEach(k=>{if(charts[k]){charts[k].destroy();delete charts[k];}});}
-function showTab(){
-  // marca aba ativa
-  document.querySelectorAll('.tab').forEach(b=>{
-    const on=b.dataset.g===activeTab;b.classList.toggle('on',on);
-    b.style.borderColor=on?groupColor(activeTab):'transparent';});
-  const g=activeTab;const st=groupStat(g);
-  const cont=document.getElementById('tabcontent');
-  cont.innerHTML=`
-    <div class="tab-head">
-      <div class="th-left">
-        <span class="sec-dot" style="width:14px;height:14px;border-radius:4px;background:${groupColor(g)}"></span>
-        <div><div class="th-name">${g}</div>
-          <div class="th-sub">${groupKeys(g).length} indicadores · referência ${refYear==='2026'?'YTD 26':refYear}</div></div>
-      </div>
-      <div class="th-mini">
-        <span class="th-chip s-ok">● ${st.ok} no alvo</span>
-        <span class="th-chip s-warn">● ${st.warn} atenção</span>
-        <span class="th-chip s-bad">● ${st.bad} fora</span>
-      </div>
-    </div>
-    <div class="tab-extra" id="tab-extra-${g.replace(/[^a-z]/gi,'')}"></div>
-    <div id="panels"></div>`;
-  destroyPanelCharts();
-  const pc=document.getElementById('panels');
-  groupKeys(g).forEach(k=>pc.appendChild(panel(k)));
-  groupKeys(g).forEach(drawOne);
-}
-
-function panel(k){
-  if(DATA[k].half) return panelHalf(k);
-  const ind=DATA[k];const val=periodValue(ind,refYear);
-  const prevYr=String(+refYear-1);
-  const s=status(ind,val);let yoy='';
-  if(ind.unit==='rs'){
-    /* R$: comparação YTD mesmo período (variação %) */
-    const ms=monthsFilled(ind,refYear);
-    const cur=ms.length?ytdSum(ind,refYear,ms):null;
-    const prev=ms.length?ytdSum(ind,prevYr,ms):null;
+function renderKpis(){
+  const box=document.getElementById("kpis"); box.innerHTML="";
+  const anoAtual=[...anosSel].sort().pop(), anoAnt=String(+anoAtual-1);
+  indsDe(dimAtiva).forEach(id=>{
+    const ind=DATA[id];
+    if(ind.half){
+      const keys=Object.keys(ind.series).sort(), total=keys.reduce((a,x)=>a+ind.series[x],0);
+      const anos=[...new Set(keys.map(x=>x.slice(0,4)))];
+      box.insertAdjacentHTML("beforeend",`
+        <div class="kpi" style="--barc:var(--genomma)">
+          <div class="tag">${anos[0]}–${anos[anos.length-1]}</div>
+          <div class="lbl">${ind.label}</div>
+          <div class="val">${fmtRSfull(total)}</div>
+          <span class="delta flat">acumulado do período</span>
+          <div class="hint" style="margin-top:5px">Informacional (R$)</div>
+        </div>`);
+      return;
+    }
+    const cur=anualDe(ind,anoAtual), prev=anualDe(ind,anoAnt);
+    let deltaTxt="—",dir="flat";
     if(cur!=null&&prev!=null&&prev!==0){
-      const pct=((cur/prev)-1)*100;
-      const good=ind.dir==='down'?pct<0:pct>0;const arrow=pct>=0?'▲':'▼';
-      yoy=`<span class="${good?'up':'dn'}">${arrow} ${Math.abs(pct).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</span> <span style="color:var(--text3);font-weight:500">vs ${prevYr} (mesmo período)</span>`;
-    } else yoy=`<span style="color:var(--text3)">sem base ${prevYr}</span>`;
-  } else {
-    const prev=periodValue(ind,prevYr);
-    if(val!=null&&prev!=null){
-      const good=ind.dir==='down'?val<prev:val>prev;const arrow=val>=prev?'▲':'▼';
-      const dtxt=ind.unit==='d'?Math.abs(val-prev).toFixed(1)+' d':Math.abs((val-prev)*100).toFixed(1)+'pp';
-      const cls=ind.dir==='target'?'':(good?'up':'dn');
-      yoy=`<span class="${cls}">${arrow} ${dtxt}</span> <span style="color:var(--text3);font-weight:500">vs ${prevYr}</span>`;
-    } else yoy=`<span style="color:var(--text3)">sem base ${prevYr}</span>`;
-  }
-  const reco=RECO[k]?RECO[k][0]:'lines';
-  const chips=vizModes(ind).map(v=>`
-    <button class="vchip ${vizByKey[k]===v?'on':''}" data-k="${k}" data-v="${v}">
-      <svg viewBox="0 0 24 24">${VIZ[v].icon}</svg>${VIZ[v].name}${v===reco?'<span class="reco" title="Sugerido"></span>':''}
-    </button>`).join('');
-  const div=document.createElement('div');div.className='panel';div.dataset.k=k;
-  div.innerHTML=`
-    <div class="p-head">
-      <div class="p-id">
-        <span class="p-name">${ind.label}</span>
-        <span class="p-num"><span class="p-val">${fmtVal(ind,val)}</span><span class="p-yoy">${yoy}</span></span>
-      </div>
-      ${s==='na'
-        ?`<span class="p-status" style="background:var(--blue-l);color:var(--blue)">${ind.calc?'Calculado':'Financeiro (R$)'}</span>`
-        :`<span class="p-status s-${s}">${STLABEL[s]}</span>`}
-    </div>
-    <div class="p-meta">${ind.unit==='rs'
-      ? `Acumulado ${refYear==='2026'?'YTD 26':refYear} · ${cagrTxt(ind)||'CAGR: requer 2 anos completos'} · ${ind.calc?'cálculo automático: <b>'+ind.calc+'</b>':'lançamento manual (R$)'}`
-      : `Meta <b>${fmtMeta(ind)}</b> · ${ind.unit==='d'?'dias':'percentual'}${ind.calc?' · cálculo automático: <b>'+ind.calc+'</b>':''} · referência ${refYear==='2026'?'YTD 26':refYear}`}</div>
-    <div class="vizrow">
-      <div class="vizchips">${chips}</div>
-      <div class="reco-note">Sugerido: <b>${VIZ[reco].name}</b> — ${RECO[k]?RECO[k][1]:''}</div>
-    </div>
-    ${infoBox(k)}
-    <div class="p-chart" id="pc-${k}"></div>`;
-  div.querySelectorAll('.vchip').forEach(b=>b.onclick=()=>{
-    vizByKey[k]=b.dataset.v;savePref();
-    div.querySelectorAll('.vchip').forEach(x=>x.classList.toggle('on',x.dataset.v===b.dataset.v));
-    drawOne(k);});
-  return div;
+      if(ind.unit==='%'){const d=(cur-prev)*100;dir=d>0.05?(ind.dir==='up'?'up':'down'):d<-0.05?(ind.dir==='up'?'down':'up'):'flat';deltaTxt=(d>=0?'+':'')+d.toFixed(1)+' p.p. YoY';}
+      else if(ind.unit==='d'){const d=cur-prev;dir=d>0.05?(ind.dir==='up'?'up':'down'):d<-0.05?(ind.dir==='up'?'down':'up'):'flat';deltaTxt=(d>=0?'+':'')+d.toFixed(1)+' d YoY';}
+      else{const p=(cur-prev)/Math.abs(prev)*100;dir=p>0.3?(ind.dir==='up'?'up':'down'):p<-0.3?(ind.dir==='up'?'down':'up'):'flat';deltaTxt=(p>=0?'+':'')+p.toFixed(1)+'% YoY';}
+    }
+    const s=status(ind,cur);
+    const metaLine = ind.target!=null
+      ? `<div class="hint" style="margin-top:5px">Meta ${fmtMeta(ind)} · <b style="color:${STCOR[s]}">${s==='ok'?'ok':s==='warn'?'atenção':s==='bad'?'fora':'—'}</b></div>`
+      : `<div class="hint" style="margin-top:5px">Sem meta cadastrada</div>`;
+    box.insertAdjacentHTML("beforeend",`
+      <div class="kpi" style="--barc:${YEAR_COL[anoAtual]||'var(--genomma)'}">
+        <div class="tag">${anoAtual}</div>
+        <div class="lbl">${ind.label}</div>
+        <div class="val">${fmtVal(ind,cur).replace(/(%| d| Mi| mil)$/,'<small>$1</small>')}</div>
+        <span class="delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'—'} ${deltaTxt}</span>
+        ${metaLine}
+      </div>`);
+  });
+}
+function renderPanels(){
+  const box=document.getElementById("panels"); box.innerHTML="";
+  const list=indsDe(dimAtiva);
+  if(!list.length){box.innerHTML='<div class="empty">Sem indicadores nesta dimensão.</div>';return;}
+  list.forEach(id=>{
+    const ind=DATA[id];
+    const metaTag = ind.target!=null
+      ? `<span class="metatag has"><i style="background:var(--ok)"></i>Meta ${fmtMeta(ind)}</span>`
+      : (ind.unit==='rs'
+        ? `<span class="metatag no"><i style="background:var(--ink-soft)"></i>informacional</span>`
+        : `<span class="metatag no"><i style="background:var(--ink-soft)"></i>sem meta</span>`);
+    const modos = ind.half ? [["bars","Barras"]] : ind.unit==='rs' ? [["acum","Acumulado"],["lines","Linhas"],["bars","Barras"],["area","Área"]] : MODOS;
+    box.insertAdjacentHTML("beforeend",`
+      <div class="panel" id="p_${id}">
+        <div class="head">
+          <div><h3>${ind.label}${metaTag}</h3><p class="sub">${subTexto(ind)}</p></div>
+          <div class="modes" data-ind="${id}">${modos.map(([m,l])=>`<button data-m="${m}" class="${modoDe(id)===m?'on':''}">${l}</button>`).join("")}</div>
+        </div>
+        <div id="ch_${id}" style="height:300px"></div>
+        <details class="about"><summary>Sobre o indicador</summary><p>${sobreTexto(ind)}</p></details>
+      </div>`);
+  });
+  box.querySelectorAll(".modes").forEach(g=>g.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const id=g.dataset.ind; modoPorInd[id]=b.dataset.m; salvar();
+    g.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); desenhar(id);
+  }));
+  list.forEach(desenhar);
+}
+function subTexto(ind){
+  if(ind.half) return 'Ajustes por semestre (H1/H2) · azul = positivo · vermelho = negativo';
+  const dirtxt = ind.dir==='up'?'Maior é melhor':ind.dir==='down'?'Menor é melhor':'Alvo ideal';
+  return ind.target!=null ? `${dirtxt} · meta ${fmtMeta(ind)}` : `${dirtxt} · sem meta`;
+}
+function sobreTexto(ind){
+  if(ind.calc) return `Cálculo: ${ind.calc}. Dimensão: ${ind.group}. Unidade: ${ind.unit==='%'?'percentual':ind.unit==='d'?'dias':ind.unit==='rs'?'R$':'—'}.`;
+  return `Dimensão: ${ind.group}. Unidade: ${ind.unit==='%'?'percentual':ind.unit==='d'?'dias':ind.unit==='rs'?'R$':'—'}.`;
 }
 
-/* Painel do Inventário (dados semestrais H1/H2, em R$) */
-const fmtRSfull=v=>v==null?'—':(v<0?'\u2212R$ ':'R$ ')+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-function panelHalf(k){
-  const ind=DATA[k];
-  const keys=Object.keys(ind.series).sort();
-  const years=[...new Set(keys.map(x=>x.slice(0,4)))];
-  const total=keys.reduce((a,x)=>a+ind.series[x],0);
-  const ysum=y=>{const ks=keys.filter(x=>x.startsWith(y));return ks.length?ks.reduce((a,x)=>a+ind.series[x],0):null;};
-  const ly=years[years.length-1], lyv=ysum(ly);
-  const div=document.createElement('div');div.className='panel';div.dataset.k=k;
-  div.innerHTML=`
-    <div class="p-head">
-      <div class="p-id">
-        <span class="p-name">${ind.label}</span>
-        <span class="p-num"><span class="p-val">${fmtRSfull(total)}</span>
-          <span class="p-yoy"><span style="color:var(--text3);font-weight:500">acumulado ${years[0]}–${ly} · ${ly}: ${fmtRSfull(lyv)}</span></span></span>
-      </div>
-      <span class="p-status" style="background:var(--blue-l);color:var(--blue)">Anual · H1/H2</span>
-    </div>
-    <div class="p-meta">Ajustes apurados nos inventários, por semestre (H1/H2) · histórico ${years[0]}–${ly} · <b style="color:#5B9BD5">azul</b> = ajuste positivo · <b style="color:var(--red)">vermelho</b> = ajuste negativo</div>
-    ${infoBox(k)}
-    <div class="p-chart" id="pc-${k}"></div>`;
-  return div;
+/* ---- ApexCharts ---- */
+const baseOpts={chart:{fontFamily:"inherit",toolbar:{show:false},animations:{easing:"easeinout",speed:420},foreColor:"#5B6B78"},
+  grid:{borderColor:"#EDF2F7",strokeDashArray:4},dataLabels:{enabled:false},
+  legend:{position:"top",horizontalAlign:"left",fontSize:"12px",markers:{radius:6}},tooltip:{theme:"light"}};
+function eixoFmt(ind){
+  if(ind.unit==='%')return v=>{const r=Math.round(v*10)/10;return (Number.isInteger(r)?r:r.toFixed(1))+'%';};
+  if(ind.unit==='d')return v=>v.toFixed(0)+'d';
+  if(ind.unit==='rs')return v=>fmtRS(v);
+  return v=>Math.round(v).toLocaleString('pt-BR');
 }
-function inventarioOpt(ind){
-  const keys=Object.keys(ind.series).sort();
+/* escala Y correta: % "maior é melhor"/alvo nunca passa de 100; % "menor é melhor" começa em 0 */
+function yCfg(ind){ const c={labels:{formatter:eixoFmt(ind)},forceNiceScale:true};
+  if(ind.unit==='%'&&(ind.dir==='up'||ind.dir==='target')) c.max=100;
+  if(ind.unit==='%'&&ind.dir==='down') c.min=0;
+  return c;
+}
+/* anos do mais recente para o mais antigo (novo no topo) */
+function anosOrd(){ return [...anosSel].sort().reverse(); }
+function mk(id,opts){const sel="#ch_"+id;if(charts[id]){charts[id].updateOptions(opts,true,true);return;}charts[id]=new ApexCharts(document.querySelector(sel),opts);charts[id].render();}
+function metaAnn(ind){ if(ind.target==null) return {}; const y=scale(ind,ind.target);
+  return {yaxis:[{y,borderColor:"#E4572E",strokeDashArray:5,label:{text:"Meta "+fmtMeta(ind),style:{background:"#E4572E",color:"#fff",fontSize:"10px"}}}]}; }
+
+function desenharInv(id){
+  const ind=DATA[id], keys=Object.keys(ind.series).sort();
   const cats=keys.map(x=>x.replace('-',' '));
-  const vals=keys.map(x=>+(ind.series[x]/1000).toFixed(2)); /* em mil */
-  /* rótulo compacto e legível acima de cada barra (valores em mil) */
-  const lbl=v=>{
-    if(v==null) return '';
-    if(v===0) return '0';
-    const a=Math.abs(v), sg=v<0?'\u2212':'';
-    if(a>=100) return sg+a.toLocaleString('pt-BR',{maximumFractionDigits:0})+' mil';
-    if(a>=1)   return sg+a.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mil';
-    return sg+'R$ '+Math.round(a*1000).toLocaleString('pt-BR');
-  };
-  return {chart:{type:'bar',height:360,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
+  const vals=keys.map(x=>+(ind.series[x]/1000).toFixed(2));
+  const lbl=v=>{ if(v==null)return''; if(v===0)return'0'; const a=Math.abs(v),sg=v<0?'\u2212':'';
+    if(a>=100)return sg+a.toLocaleString('pt-BR',{maximumFractionDigits:0})+' mil';
+    if(a>=1)return sg+a.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mil';
+    return sg+'R$ '+Math.round(a*1000).toLocaleString('pt-BR'); };
+  mk(id,{chart:{fontFamily:'inherit',type:'bar',height:340,toolbar:{show:false},animations:{speed:300}},
     series:[{name:'Ajustes',data:vals}],
-    colors:[({value})=>value>=0?'#7EB6E3':COL.red],
-    plotOptions:{bar:{borderRadius:3,columnWidth:'62%',dataLabels:{position:'top'}}},
-    dataLabels:{enabled:true,offsetY:-20,
-      style:{fontSize:'10.5px',fontWeight:700,colors:[({value})=>value>=0?'#5B9BD5':COL.red]},
-      background:{enabled:true,foreColor:'#fff',borderRadius:4,padding:4,opacity:0.92,borderWidth:0.5,borderColor:COL.grid,dropShadow:{enabled:false}},
-      formatter:lbl},
-    xaxis:{categories:cats,labels:{rotate:-45,rotateAlways:true,style:{colors:COL.text2,fontSize:'10px',fontWeight:600}},axisTicks:{show:false},axisBorder:{color:COL.grid}},
-    yaxis:{min:-400,max:700,tickAmount:11,
-      labels:{style:{colors:COL.text2,fontSize:'10.5px'},formatter:v=>(v<0?'\u2212':'')+'R$ '+Math.abs(v).toLocaleString('pt-BR')+' mil'}},
-    annotations:{yaxis:[{y:0,borderColor:COL.text2,strokeDashArray:0,opacity:.7}]},
-    grid:{borderColor:COL.grid,xaxis:{lines:{show:false}},padding:{left:8,right:16,top:26}},
-    legend:{show:false},
-    tooltip:{theme:dark?'dark':'light',y:{formatter:v=>fmtRSfull(v*1000)}}};
+    colors:[({value})=>value>=0?'#5AA9DE':'#E4572E'],
+    plotOptions:{bar:{borderRadius:4,columnWidth:'62%',dataLabels:{position:'top'}}},
+    dataLabels:{enabled:true,offsetY:-20,style:{fontSize:'10px',fontWeight:700,colors:[({value})=>value>=0?'#1E6FC0':'#E4572E']},
+      background:{enabled:true,foreColor:'#fff',borderRadius:4,padding:4,opacity:.95,borderWidth:.5,borderColor:'#E3EAF0'},formatter:lbl},
+    xaxis:{categories:cats,labels:{rotate:-45,rotateAlways:true,style:{colors:'#5B6B78',fontSize:'10px',fontWeight:600}},axisTicks:{show:false}},
+    yaxis:{min:-400,max:700,tickAmount:11,labels:{style:{colors:'#5B6B78',fontSize:'10px'},formatter:v=>(v<0?'\u2212':'')+'R$ '+Math.abs(v).toLocaleString('pt-BR')+' mil'}},
+    annotations:{yaxis:[{y:0,borderColor:'#5B6B78',opacity:.7}]},
+    grid:{borderColor:'#EDF2F7',xaxis:{lines:{show:false}},padding:{left:8,right:16,top:26}},
+    legend:{show:false},tooltip:{theme:'light',y:{formatter:v=>fmtRSfull(v*1000)}}});
 }
-function renderCharts(){groupKeys(activeTab).forEach(drawOne);}
-function drawOne(k){
-  const ind=DATA[k];const el=document.getElementById('pc-'+k);if(!el)return;
-  if(charts[k])charts[k].destroy();
-  if(ind.half){charts[k]=new ApexCharts(el,inventarioOpt(ind));charts[k].render();return;}
-  const t=vizByKey[k];
-  const opt=t==='lines'?linesOpt(ind):t==='bars'?barsOpt(ind):t==='area'?areaOpt(ind):t==='heat'?heatOpt(ind):t==='acum'?acumOpt(ind):t==='acumbar'?acumBarOpt(ind):t==='yoy'?yoyOpt(ind):gaugeOpt(ind);
-  charts[k]=new ApexCharts(el,opt);charts[k].render();
-}
+function desenhar(id){
+  const ind=DATA[id], modo=modoDe(id), anoTopo=[...anosSel].sort().pop();
+  if(ind.half) return desenharInv(id);
 
-function yearSeries(ind,yrs){return yrs.map(y=>({name:y,data:MONTHS_idx().map(mi=>sv(ind,`${y}-${mi}`))}));}
-const metaAnno=ind=>(ind.unit==='rs'||ind.target==null)?{}:({yaxis:[{y:metaPlot(ind),borderColor:COL.text3,strokeDashArray:5,
-  label:{text:'Meta '+fmtVal(ind,ind.target),style:{background:COL.text3,color:'#fff',fontSize:'9px'},position:'right',textAnchor:'end'}}]});
-const baseXY=ind=>({
-  xaxis:{categories:MONTH_LABELS,labels:{style:{colors:COL.text2,fontSize:'11px'}},axisTicks:{show:false},axisBorder:{color:COL.grid},tooltip:{enabled:false}},
-  yaxis:Object.assign({labels:{style:{colors:COL.text2,fontSize:'10px'},formatter:axFmt(ind)}}, ind.yMin!=null?{min:ind.yMin,max:ind.yMax,tickAmount:Math.round(ind.yMax-ind.yMin)}:{forceNiceScale:true}),
-  grid:{borderColor:COL.grid,xaxis:{lines:{show:false}},padding:{left:6,right:46}},
-  tooltip:{theme:dark?'dark':'light',shared:true,intersect:false,y:{formatter:tipFmt(ind)}}});
-function endPoints(ind,yrs){
-  const pts=[];const n=yrs.length;
-  yrs.forEach((y,i)=>{
-    const arr=MONTHS_idx().map(mi=>sv(ind,`${y}-${mi}`));
-    let idx=-1;for(let j=arr.length-1;j>=0;j--){if(arr[j]!=null){idx=j;break;}}
-    if(idx<0)return;
-    pts.push({x:MONTH_LABELS[idx],y:arr[idx],
-      marker:{size:4.5,fillColor:YEAR_COL[y],strokeColor:COL.bg,strokeWidth:2},
-      label:{text:"’"+y.slice(2),borderWidth:0,offsetX:14,offsetY:(i-(n-1)/2)*15,
-        style:{background:YEAR_COL[y],color:'#fff',fontSize:'10px',fontWeight:700,padding:{left:5,right:5,top:2,bottom:2}}}});
-  });
-  return pts;
-}
-function linesOpt(ind){const yrs=visibleYears();
-  return Object.assign({chart:{type:'line',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300},zoom:{enabled:false}},
-    series:yearSeries(ind,yrs),colors:yrs.map(y=>YEAR_COL[y]),
-    stroke:{width:yrs.map(y=>y===refYear?3.6:2),curve:'smooth'},markers:{size:0,hover:{size:5}},
-    legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:Object.assign({},metaAnno(ind),quarterAnno(ind),{points:endPoints(ind,yrs)})},baseXY(ind));}
-function barsOpt(ind){const yrs=visibleYears();
-  const opt=Object.assign({chart:{type:'bar',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
-    series:yearSeries(ind,yrs),colors:yrs.map(y=>YEAR_COL[y]),
-    plotOptions:{bar:{borderRadius:2,columnWidth:'85%'}},dataLabels:{enabled:false},
-    legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:Object.assign({},metaAnno(ind),quarterAnno(ind))},baseXY(ind));
-  if(ind.showQuarters){
-    const s=rsScale(ind), q=[0,0,0,0];
-    MONTHS_idx().forEach((mm,i)=>{const v=ind.series[`${refYear}-${mm}`]; if(v!=null) q[Math.floor(i/3)]+=v;});
-    const f=x=>'R$'+((x/1e6)*s.mul).toLocaleString('pt-BR',{maximumFractionDigits:s.dt})+s.suf;
-    opt.subtitle={text:`Trimestres ${refYear==='2026'?'YTD 26':refYear} — Q1 ${f(q[0])} · Q2 ${f(q[1])} · Q3 ${f(q[2])} · Q4 ${f(q[3])}`,
-      align:'left',offsetY:2,style:{fontSize:'11px',color:COL.text2,fontWeight:600}};
+  if(modo==="gauge"){
+    const cur=anualDe(ind,anoTopo);
+    let fill; if(cur==null)fill=0;
+    else if(ind.target==null) fill = ind.unit==='%'? Math.min(100,cur*100) : 100;
+    else if(ind.dir==='up')   fill = ind.unit==='%'? Math.min(100,cur*100) : Math.min(100,ind.target/cur*100);
+    else if(ind.dir==='down') fill = Math.min(100,ind.target/(cur||ind.target)*100);
+    else                      fill = Math.min(100,cur/ind.target*100);
+    const s=status(ind,cur);
+    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:"radialBar",height:300},
+      colors:[ind.target!=null?STCOR[s]:YEAR_COL[anoTopo]],
+      plotOptions:{radialBar:{startAngle:-130,endAngle:130,hollow:{size:"62%"},track:{background:"#E8F2FB"},
+        dataLabels:{name:{offsetY:24,fontSize:"12px",color:"#5B6B78",formatter:()=> ind.target!=null?('Meta '+fmtMeta(ind)):'sem meta'},
+          value:{offsetY:-8,fontSize:"26px",fontWeight:700,color:"#12222F",formatter:()=>fmtVal(ind,cur)}}}},
+      series:[+(+fill).toFixed(1)],labels:[String(anoTopo)]});
   }
-  return opt;}
-function areaOpt(ind){
-  const prevYr=String(+refYear-1);
-  const ref={name:refYear+(refYear==='2026'?' (YTD)':''),type:'area',data:MONTHS_idx().map(mi=>sv(ind,`${refYear}-${mi}`))};
-  const prev={name:prevYr,type:'line',data:MONTHS_idx().map(mi=>sv(ind,`${prevYr}-${mi}`))};
-  return Object.assign({chart:{type:'area',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
-    series:[ref,prev],colors:[YEAR_COL[refYear]||COL.blue,COL.text3],
-    stroke:{width:[3,1.6],curve:'smooth',dashArray:[0,4]},
-    fill:{type:['gradient','solid'],gradient:{opacityFrom:.35,opacityTo:.03}},markers:{size:0,hover:{size:5}},
-    legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:Object.assign({},metaAnno(ind),quarterAnno(ind))},baseXY(ind));}
-function heatOpt(ind){
-  const yrs=visibleYears().slice().reverse();
-  const dec=ind.unit==='d'?1:(ind.target<0.2?2:1);
-  const series=yrs.map(y=>({name:y,data:MONTH_LABELS.map((lab,i)=>({x:lab,y:sv(ind,`${y}-${MONTHS_idx()[i]}`)}))}));
-  const m=metaPlot(ind);let ranges;
-  if(ind.dir==='up')      ranges=[{from:-1e6,to:m-2,color:COL.red},{from:m-2,to:m,color:COL.amber},{from:m,to:1e6,color:COL.green}];
-  else if(ind.dir==='down')ranges=[{from:-1e6,to:m,color:COL.green},{from:m,to:m*1.25,color:COL.amber},{from:m*1.25,to:1e6,color:COL.red}];
-  else                    ranges=[{from:-1e6,to:m-10,color:COL.amber},{from:m-10,to:m+5,color:COL.green},{from:m+5,to:1e6,color:COL.amber}];
-  return {chart:{type:'heatmap',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
-    series,
-    dataLabels:{enabled:true,style:{fontSize:'9.5px',colors:['#fff'],fontWeight:600},formatter:v=>v==null?'':v.toFixed(dec)},
-    plotOptions:{heatmap:{radius:3,enableShades:false,colorScale:{ranges}}},
-    stroke:{width:2,colors:[COL.bg]},
-    xaxis:{categories:MONTH_LABELS,labels:{style:{colors:COL.text2,fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},
-    yaxis:{labels:{style:{colors:COL.text2,fontSize:'11px'}}},
-    grid:{padding:{right:10}},
-    tooltip:{theme:dark?'dark':'light',y:{formatter:tipFmt(ind)}},legend:{show:false}};
-}
-/* série acumulada por ano (soma progressiva até o último mês informado) */
-function cumSeries(ind,yrs){
-  return yrs.map(y=>{
-    const raw=MONTHS_idx().map(mi=>ind.series[`${y}-${mi}`]);
-    let last=-1;for(let j=11;j>=0;j--){if(raw[j]!=null){last=j;break;}}
-    let c=0;
-    return {name:y,data:raw.map((v,i)=>{
-      if(i>last) return null;
-      c+=(v||0);
-      return ind.unit==='rs'?+(c/1e6).toFixed(2):+c.toFixed(2);
-    })};
-  });
-}
-function endPointsSeries(series,yoy){
-  const pts=[];const n=series.length;
-  const byName={}; series.forEach(s=>byName[s.name]=s.data);
-  series.forEach((s,i)=>{
-    const arr=s.data;let idx=-1;
-    for(let j=arr.length-1;j>=0;j--){if(arr[j]!=null){idx=j;break;}}
-    if(idx<0)return;
-    let txt="’"+s.name.slice(2);
-    if(yoy){ /* crescimento ano-a-ano no mesmo ponto (base YTD comparável) */
-      const prev=byName[String(+s.name-1)];
-      if(prev && prev[idx]!=null && prev[idx]!==0){
-        const g=(arr[idx]/prev[idx]-1)*100;
-        txt+=` ${g>=0?'+':''}${g.toFixed(1).replace('.',',')}%`;
-      }
+
+  if(modo==="heat"){
+    const yrs=[...anosSel].sort(); // ascendente: ApexCharts põe a última série (ano mais novo) na linha de cima
+    const series=yrs.map(y=>({name:y,data:MESES.map((lab,i)=>({x:lab,y:scale(ind,ind.series[`${y}-${MMI[i]}`])}))}));
+    let ranges;
+    if(ind.target!=null){ const m=scale(ind,ind.target);
+      if(ind.dir==='up')       ranges=[{from:-1e12,to:m*0.97,color:'#E4572E'},{from:m*0.97,to:m,color:'#E5A50A'},{from:m,to:1e12,color:'#1F9E6E'}];
+      else if(ind.dir==='down')ranges=[{from:-1e12,to:m,color:'#1F9E6E'},{from:m,to:m*1.15,color:'#E5A50A'},{from:m*1.15,to:1e12,color:'#E4572E'}];
+      else                     ranges=[{from:-1e12,to:m*0.94,color:'#E5A50A'},{from:m*0.94,to:m*1.06,color:'#1F9E6E'},{from:m*1.06,to:1e12,color:'#E5A50A'}];
+    } else { // sem meta -> escala azul por valor
+      const vals=series.flatMap(s=>s.data.map(d=>d.y)).filter(v=>v!=null);
+      const mn=Math.min(...vals),mx=Math.max(...vals),st=(mx-mn)/5||1;
+      const bl=["#DCEBF9","#A9CEEC","#6FAEDE","#2E7DC4","#155498"];
+      ranges=bl.map((c,k)=>({from:k===0?mn-1:mn+st*k,to:k===4?mx+1:mn+st*(k+1),color:c}));
     }
-    pts.push({x:MONTH_LABELS[idx],y:arr[idx],
-      marker:{size:4.5,fillColor:YEAR_COL[s.name],strokeColor:COL.bg,strokeWidth:2},
-      label:{text:txt,borderWidth:0,offsetX:16,offsetY:(i-(n-1)/2)*15,
-        style:{background:YEAR_COL[s.name],color:'#fff',fontSize:'10px',fontWeight:700,padding:{left:5,right:5,top:2,bottom:2}}}});
-  });
-  return pts;
-}
-function acumOpt(ind){
-  const yrs=visibleYears();const series=cumSeries(ind,yrs);
-  return Object.assign({chart:{type:'line',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300},zoom:{enabled:false}},
-    series,colors:yrs.map(y=>YEAR_COL[y]),
-    stroke:{width:yrs.map(y=>y===refYear?3.6:2),curve:'straight'},markers:{size:0,hover:{size:5}},
-    legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:Object.assign(metaAnno(ind),{points:endPointsSeries(series, ind.unit==='rs')})},baseXY(ind));
-}
-
-/* marcação de quarter (linhas verticais em Mar/Jun/Set/Dez) com o valor
-   ACUMULADO do ano naquele ponto — usado em Custo %TW e Custo %TW Acumulado */
-function quarterAnno(ind){
-  if(!ind.qAccFrom || !DATA[ind.qAccFrom]) return {};
-  const src=DATA[ind.qAccFrom], qEnds=['03','06','09','12'], xa=[];
-  qEnds.forEach((mm,qi)=>{
-    const v=src.series[`${refYear}-${mm}`];
-    if(v==null) return;
-    xa.push({x:MONTH_LABELS[+mm-1],strokeDashArray:4,borderColor:COL.text3,opacity:0.45,
-      label:{text:`Q${qi+1} · ${(v*100).toFixed(1).replace('.',',')}%`,orientation:'horizontal',position:'top',
-        borderColor:COL.text3,style:{background:COL.text3,color:'#fff',fontSize:'9px',fontWeight:700,padding:{left:4,right:4,top:2,bottom:2}}}});
-  });
-  return xa.length?{xaxis:xa}:{};
-}
-
-/* Acumulado em BARRAS (soma progressiva por ano) */
-function acumBarOpt(ind){
-  const yrs=visibleYears();const series=cumSeries(ind,yrs);
-  return Object.assign({chart:{type:'bar',height:300,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
-    series,colors:yrs.map(y=>YEAR_COL[y]),
-    plotOptions:{bar:{borderRadius:2,columnWidth:'88%'}},dataLabels:{enabled:false},
-    legend:{show:true,position:'top',horizontalAlign:'right',fontSize:'11px',labels:{colors:COL.text2},markers:{width:11,height:11,radius:3}},
-    annotations:metaAnno(ind)},baseXY(ind));
-}
-
-/* Comparativo ano-a-ano: 1 barra por ano + "caixinhas" com a variação % (mesmo período) */
-function yoyOpt(ind){
-  const yrs=visibleYears();
-  const s=ind.unit==='rs'?rsScale(ind):null;
-  const disp=v=>v==null?null:(ind.unit==='rs'?+(v/1e6).toFixed(2):(ind.unit==='d'?+v.toFixed(2):+(v*100).toFixed(2)));
-  const vals=yrs.map(y=>disp(ind.yearly[y]));
-  const cats=yrs.map(y=>y==='2026'?'YTD 26':y);
-  const points=[];
-  for(let i=1;i<yrs.length;i++){
-    const yc=yrs[i], yp=yrs[i-1]; let a,b;
-    if(ind.unit==='rs'){ const ms=monthsFilled(ind,yc); b=ytdSum(ind,yc,ms); a=ytdSum(ind,yp,ms); }
-    else { a=ind.yearly[yp]; b=ind.yearly[yc]; }
-    if(a!=null&&b!=null&&a!==0&&vals[i]!=null){
-      const g=((b/a)-1)*100, up=(ind.dir==='down')?g<0:g>0;
-      points.push({x:cats[i],y:vals[i],marker:{size:0},
-        label:{text:`${g>=0?'+':''}${g.toFixed(1).replace('.',',')}%`,offsetY:-6,borderWidth:0,
-          style:{background:up?COL.green:COL.red,color:'#fff',fontSize:'10px',fontWeight:700,padding:{left:6,right:6,top:3,bottom:3}}}});
-    }
+    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:"heatmap",height:300},
+      dataLabels:{enabled:false},stroke:{width:2,colors:["#fff"]},
+      plotOptions:{heatmap:{radius:4,enableShades:false,colorScale:{ranges}}},
+      series,xaxis:{categories:MESES,axisBorder:{show:false},axisTicks:{show:false}},
+      tooltip:{y:{formatter:v=>v==null?'—':fmtVal(ind,ind.unit==='%'?v/100:v)}}});
   }
-  const lblFmt=v=>v==null?'':(ind.unit==='rs'?'R$'+(v*(s?s.mul:1)).toLocaleString('pt-BR',{maximumFractionDigits:s?s.dax:0})+(s?s.suf:''):v.toFixed(1)+(ind.unit==='d'?'d':'%'));
-  return {chart:{type:'bar',height:320,toolbar:{show:false},fontFamily:'system-ui',animations:{enabled:true,speed:300}},
-    series:[{name:ind.label,data:vals}],colors:yrs.map(y=>YEAR_COL[y]),
-    plotOptions:{bar:{borderRadius:4,columnWidth:'55%',distributed:true,dataLabels:{position:'top'}}},
-    dataLabels:{enabled:true,offsetY:-22,style:{fontSize:'11px',fontWeight:700,colors:[COL.text2]},formatter:lblFmt},
-    xaxis:{categories:cats,labels:{style:{colors:COL.text2,fontSize:'12px',fontWeight:600}},axisTicks:{show:false},axisBorder:{color:COL.grid}},
-    yaxis:{labels:{show:false}},legend:{show:false},
-    grid:{borderColor:COL.grid,padding:{top:26,left:6,right:6},yaxis:{lines:{show:false}}},
-    annotations:{points},
-    tooltip:{theme:dark?'dark':'light',y:{formatter:tipFmt(ind)}}};
-}
 
-function gaugeOpt(ind){
-  const val=periodValue(ind,refYear);const m=ind.target;const s=status(ind,val);
-  let fill;
-  if(val==null) fill=0;
-  else if(ind.dir==='up')   fill=ind.unit==='%'?Math.min(100,val*100):Math.min(100,(m/val)*100);
-  else if(ind.dir==='down') fill=Math.min(100,(m/(val||m))*100);
-  else                      fill=ind.unit==='%'?Math.min(100,val*100):50;
-  return {chart:{type:'radialBar',height:300,fontFamily:'system-ui'},
-    series:[+fill.toFixed(1)],colors:[statusColor(s)],
-    plotOptions:{radialBar:{startAngle:-130,endAngle:130,hollow:{size:'60%'},
-      track:{background:COL.grid,strokeWidth:'100%'},
-      dataLabels:{name:{offsetY:24,fontSize:'12px',color:COL.text2,formatter:()=>'Meta '+fmtVal(ind,m)+' · '+STLABEL[s]},
-        value:{offsetY:-10,fontSize:'32px',fontWeight:700,color:COL.text,formatter:()=>fmtVal(ind,val)}}}},
-    stroke:{lineCap:'round'},labels:['']};
-}
-
-function render(){buildPeriod();buildYearBar();buildHealth();buildTabs();showTab();}
-
-/* =====================================================================
-   EXPLICAÇÃO DO INDICADOR  (o que mede, cálculo, como ler, por que importa)
-   ===================================================================== */
-function monthsOfYear(ind,yr){
-  return MONTHS_idx().map((mm,i)=>({mm,label:MONTH_LABELS[i],v:ind.series[`${yr}-${mm}`]}))
-                     .filter(o=>o.v!=null);
-}
-const INFO={
-  otif:{mede:'Percentual de pedidos entregues ao mesmo tempo no prazo (On Time) e completos (In Full).',
-        calc:'Calculado automaticamente: On Time (OTD) ÷ Fill Rate × 100. Editar On Time ou Fill Rate recalcula o OTIF.',
-        ler:'É o indicador-síntese de nível de serviço: uma queda significa falha em pelo menos uma das duas frentes (prazo ou completude).',
-        importa:'Resume a promessa ao cliente; impacta ruptura na ponta, multas contratuais e recompra.'},
-  ontime:{mede:'Percentual de pedidos entregues dentro da data prometida.',
-        calc:'Entregas dentro do prazo ÷ total de entregas.',
-        ler:'Isola a dimensão "prazo" do OTIF — útil para separar problema de pontualidade de problema de quantidade.',
-        importa:'Pontualidade sustenta a confiança do cliente e evita custos de reentrega e SLA.'},
-  infull:{mede:'Percentual de pedidos entregues completos, sem corte de itens ou quantidade.',
-        calc:'Pedidos atendidos integralmente ÷ total de pedidos.',
-        ler:'Isola a "completude" do OTIF; queda costuma apontar ruptura de estoque ou erro de separação.',
-        importa:'Pedido incompleto gera reenvio, custo extra de frete e insatisfação.'},
-  fillrate:{mede:'Percentual da demanda atendida a partir do estoque disponível (linhas/quantidades).',
-        calc:'Quantidade (ou linhas) atendida ÷ quantidade pedida.',
-        ler:'Mede a capacidade de atender com o que se tem em estoque, item a item.',
-        importa:'Fill rate baixo equivale a venda perdida e ruptura no ponto de venda.'},
-  custo_op:{mede:'Custo logístico total (T&W) mensal como % do faturamento.',
-        calc:'Calculado: Custo Total T&W ÷ Faturamento do mês (2025 em diante). Até 2024 usa o histórico manual.',
-        ler:'Quanto menor, melhor (meta ≤ 5,5%): alta sem crescimento proporcional de volume indica perda de eficiência.',
-        importa:'Pressiona diretamente a margem; é uma alavanca clara de resultado financeiro.'},
-  custo_tr_ac:{mede:'Custo de frete acumulado no ano como % do faturamento acumulado.',
-        calc:'Calculado: Σ Custo de Transporte ÷ Σ Faturamento, acumulados no ano (2025 em diante). Até 2024 usa o histórico manual.',
-        ler:'Por ser acumulado, suaviza picos mensais e revela a tendência consolidada do ano.',
-        importa:'Maior componente do custo logístico e principal alvo de negociação com transportadoras.'},
-  qualidade:{mede:'Percentual de pedidos/entregas com ocorrência de qualidade (avaria, troca, erro).',
-        calc:'Incidências de qualidade ÷ total de pedidos.',
-        ler:'Quanto menor, melhor; picos isolados costumam indicar problema de processo ou de transportadora.',
-        importa:'Gera retrabalho, devolução e desgaste de imagem com o cliente.'},
-  ocup:{mede:'Percentual de ocupação das posições/área do centro de distribuição.',
-        calc:'Posições ocupadas ÷ posições disponíveis.',
-        ler:'Indicador de FAIXA-ALVO (não "quanto maior, melhor"): muito baixo = capacidade ociosa; muito alto = risco e falta de flexibilidade operacional.',
-        importa:'Equilibra o custo do espaço com a eficiência da operação.'},
-  ira:{mede:'Acuracidade de inventário por quantidade: % de itens cuja quantidade física bate com o sistema.',
-        calc:'Itens com quantidade correta ÷ itens contados.',
-        ler:'Quanto maior, melhor; queda gera ruptura "fantasma" e erro na separação.',
-        importa:'É a base da confiabilidade do estoque e do planejamento de demanda.'},
-  ila:{mede:'Acuracidade de localização: % de itens armazenados no endereço (local) correto do sistema.',
-        calc:'Itens no local correto ÷ itens verificados.',
-        ler:'Complementa o IRA — quantidade certa, mas no lugar errado, também atrasa a separação.',
-        importa:'Sustenta a produtividade de picking e a acuracidade do inventário.'},
-  liberacao:{mede:'Tempo, em dias, entre receber o pedido e liberá-lo para separação/faturamento.',
-        calc:'Média de dias da entrada do pedido até a liberação.',
-        ler:'Quanto menor, melhor; um gargalo aqui empurra todo o lead time para frente.',
-        importa:'É o primeiro elo do prazo total percebido pelo cliente.'},
-  lead_ped:{mede:'Tempo total, em dias, do pedido até a entrega ao cliente.',
-        calc:'Média de dias entre a data do pedido e a data de entrega.',
-        ler:'Visão fim-a-fim do prazo; soma liberação, faturamento, expedição e transporte.',
-        importa:'É o prazo efetivamente sentido pelo cliente.'},
-  lead_nf:{mede:'Tempo, em dias, entre a emissão da NF e a entrega.',
-        calc:'Média de dias entre a emissão da nota e a entrega.',
-        ler:'Isola a etapa pós-faturamento (expedição + transporte).',
-        importa:'Mede a eficiência logística depois que a venda já foi registrada.'},
-  lead_tr:{mede:'Tempo de trânsito da transportadora, em dias (do embarque até a entrega).',
-        calc:'Média de dias entre embarque e entrega.',
-        ler:'Isola o desempenho do transporte; permite comparar regiões e transportadoras.',
-        importa:'Principal componente do prazo e alvo natural de SLA com os parceiros.'},
-  lead_exp:{mede:'Tempo, em dias, que o pedido leva dentro do CD até ser expedido.',
-        calc:'Média de dias entre a liberação e o embarque/expedição.',
-        ler:'Mede a operação interna do armazém, separada do transporte.',
-        importa:'Gargalo de expedição atrasa a entrega mesmo com transporte eficiente.'},
-  absent:{mede:'Percentual de ausências da equipe do operador logístico (OPL) sobre a jornada prevista.',
-        calc:'Horas/dias de ausência ÷ horas/dias previstos.',
-        ler:'Quanto menor, melhor; alta correlaciona com queda de produtividade e atrasos.',
-        importa:'Reduz capacidade operacional e eleva custo com horas extras.'},
-  turnover:{mede:'Rotatividade da equipe do operador logístico (OPL) no período.',
-        calc:'Desligamentos ÷ headcount médio.',
-        ler:'Quanto menor, melhor; alto turnover aumenta a curva de aprendizado e os erros.',
-        importa:'Afeta acuracidade, produtividade e custo de treinamento.'},
-  fat_rs:{mede:'Faturamento líquido mensal em reais (R$).',
-        calc:'Lançamento manual do valor faturado no mês.',
-        ler:'Use o modo Acumulado para comparar o ritmo do ano contra anos anteriores; o CAGR resume o crescimento médio anual composto.',
-        importa:'É a base de todos os indicadores relativos (%T&W, % devolução) e da leitura de escala da operação.'},
-  ctransp_rs:{mede:'Custo total de transporte (frete) mensal em reais (R$).',
-        calc:'Lançamento manual do custo de frete do mês.',
-        ler:'A curva acumulada mostra se o custo cresce mais rápido ou mais devagar que nos anos anteriores.',
-        importa:'Maior componente do custo logístico; alvo direto de negociação e otimização de malha.'},
-  ctw_rs:{mede:'Custo logístico total (Transporte + Warehouse) mensal em reais (R$).',
-        calc:'Lançamento manual do custo total T&W do mês.',
-        ler:'Comparado ao faturamento gera o Custo %TW (mensal e acumulado); a curva acumulada revela a trajetória do gasto no ano.',
-        importa:'Consolida todo o gasto logístico e alimenta o principal indicador de eficiência (Custo %TW).'},
-  dev_rs:{mede:'Valor devolvido pelos clientes no mês, em reais (R$).',
-        calc:'Lançamento manual do valor de devolução do mês.',
-        ler:'Em barras vê-se o pico mensal; em Acumulado, o total do ano contra anos anteriores.',
-        importa:'Reduz a receita líquida e consome logística reversa.'},
-  fatliq_rs:{mede:'Faturamento líquido de devoluções, em reais (R$).',
-        calc:'Calculado automaticamente: Faturamento − Devolução, mês a mês.',
-        ler:'É a receita efetivamente realizada; a curva acumulada compara o resultado líquido entre anos.',
-        importa:'Mostra o efeito real das devoluções sobre a receita.'},
-  devpct:{mede:'Percentual do faturamento que retorna como devolução.',
-        calc:'Calculado automaticamente: Devolução R$ ÷ Faturamento R$ do mês.',
-        ler:'Quanto menor, melhor; picos indicam problema comercial, de qualidade ou excesso de pedido.',
-        importa:'Normaliza a devolução pela receita, permitindo comparar meses e anos de tamanhos diferentes.'},
-  inventario:{mede:'Valor dos ajustes (R$) apurados nos inventários físicos, realizados por semestre (H1 e H2).',
-        calc:'Lançamento por inventário realizado: diferença em reais entre estoque físico e sistema.',
-        ler:'Barras acima de zero são ajustes positivos e abaixo de zero, negativos; quanto mais próximo de zero, mais confiável o estoque.',
-        importa:'Mede a perda financeira real do estoque e valida a acuracidade (IRA/ILA) na prática.'},
-  custo_op_ac:{mede:'Custo logístico total (T&W) acumulado no ano como % do faturamento acumulado.',
-        calc:'Calculado automaticamente: Σ Custo T&W ÷ Σ Faturamento, acumulados mês a mês dentro de cada ano.',
-        ler:'A curva já é acumulada: suaviza picos e revela a eficiência consolidada do ano (meta ≤ 5,5%).',
-        importa:'É o principal termômetro de eficiência logística sobre a receita.'}
-};
-function dirMeta(ind){
-  const m=fmtVal(ind,ind.target);
-  if(ind.dir==='up')   return `Quanto <b>maior</b>, melhor · meta <b>≥ ${m}</b>`;
-  if(ind.dir==='down') return `Quanto <b>menor</b>, melhor · meta <b>≤ ${m}</b>`;
-  return `Indicador de <b>faixa-alvo</b> · referência <b>~ ${m}</b>`;
-}
-function infoBox(k){
-  const ind=DATA[k], info=INFO[k]||{};
-  const R=(l,a)=>a?`<div class="bi-q"><span class="ql">${l}</span><span class="qa">${a}</span></div>`:'';
-  return `<details class="bi-box">
-    <summary class="bi-sum"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Sobre o indicador<span class="chev">›</span></summary>
-    <div class="bi-body">
-      ${R('O que mede',info.mede)}
-      ${R('Como é calculado',info.calc)}
-      ${R('Direção &amp; meta',dirMeta(ind))}
-      ${R('Como ler',info.ler)}
-      ${R('Por que importa',info.importa)}
-    </div>
-  </details>`;
-}
-
-/* =====================================================================
-   SUPABASE · AUTENTICAÇÃO E GATING DE ADMIN
-   (mesma config/storageKey da Torre — a sessão de login é compartilhada)
-   ===================================================================== */
-const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
-const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
-const STORE_PATH    = 'scorecard/dados.json';
-let sb=null, isAdmin=false;
-try{
-  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'torre-controle-auth'}
-  });
-}catch(e){ sb=null; }
-
-async function initAuth(){
-  if(!sb) return;
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    setAdmin(session && session.user && session.user.email===ADMIN_EMAIL);
-  }catch(e){ setAdmin(false); }
-  sb.auth.onAuthStateChange((_e,session)=>{
-    setAdmin(session && session.user && session.user.email===ADMIN_EMAIL);
-  });
-}
-function setAdmin(v){
-  isAdmin=!!v;
-  document.getElementById('admin-badge').classList.toggle('show',isAdmin);
-}
-
-/* ---- carga de overrides salvos no servidor (fallback = dados embarcados) ---- */
-async function loadOverrides(){
-  if(!sb) return false;
-  try{
-    const {data,error}=await sb.storage.from('dashboards').download(STORE_PATH);
-    if(error||!data) return false;
-    const loaded=JSON.parse(await data.text());
-    let changed=false;
-    Object.keys(loaded).forEach(k=>{
-      if(DATA[k] && !DATA[k].calc && !DATA[k].half && loaded[k] && loaded[k].series){
-        DATA[k].series=loaded[k].series;
-        recomputeDerived(k);
-        changed=true;
-      }
+  if(modo==="acum"){
+    const tipo = (ind.unit==='rs') ? 'soma' : 'media';
+    const series=anosOrd().map(y=>{ let s=0,n=0; const arr=[];
+      MMI.forEach((mm,i)=>{ const v=ind.series[`${y}-${mm}`]; if(v==null){arr.push(null);return;}
+        if(tipo==='soma'){s+=v;arr.push(scale(ind,s));} else {s+=v;n++;arr.push(scale(ind,s/n));} });
+      return {name:y,data:arr};
     });
-    if(changed) recomputeCalc();
-    return changed;
-  }catch(e){ return false; }
+    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:"line",height:300},
+      colors:anosOrd().map(a=>YEAR_COL[a]),stroke:{curve:CURVA,width:3,lineCap:"round"},
+      series,xaxis:{categories:MESES,axisBorder:{show:false},axisTicks:{show:false}},
+      yaxis:yCfg(ind),markers:{size:0,hover:{size:5}}});
+  }
+
+  const tipo=modo==="bars"?"bar":modo==="area"?"area":"line";
+  const series=anosOrd().map(y=>({name:y,data:MMI.map((mm,i)=>{const v=ind.series[`${y}-${mm}`];return v==null?null:+scale(ind,v).toFixed(ind.unit==='rs'?0:2);})}));
+  mk(id,{...baseOpts,chart:{...baseOpts.chart,type:tipo,height:300},
+    colors:anosOrd().map(a=>YEAR_COL[a]),
+    stroke:{curve:CURVA,width:tipo==="bar"?0:3,lineCap:"round"},
+    fill:tipo==="area"?{type:"gradient",gradient:{shadeIntensity:.3,opacityFrom:.32,opacityTo:.04}}:{opacity:1},
+    plotOptions:{bar:{borderRadius:7,columnWidth:"55%",borderRadiusApplication:"end"}},
+    series,xaxis:{categories:MESES,axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:yCfg(ind),markers:{size:0,hover:{size:5}},
+    annotations:metaAnn(ind),tooltip:{y:{formatter:v=>v==null?'—':fmtVal(ind,ind.unit==='%'?v/100:v)}}});
 }
 
-/* =====================================================================
-   EDITOR · Lançar / Atualizar Dados
-   ===================================================================== */
-const dec_=ind=>ind.unit==='d'?1:((ind.target!=null&&ind.target<0.2)?2:1);
-const toDisplay=(ind,v)=>v==null?'':(ind.unit==='rs'?(+v).toLocaleString('pt-BR',{maximumFractionDigits:2})
-  :ind.unit==='d'?(+v).toFixed(dec_(ind)):(v*100).toFixed(dec_(ind)));
-function fromDisplay(ind,str){
-  let s=String(str).trim();
-  if(s==='') return null;
-  if(ind.unit==='rs'){
-    s=s.replace(/\s|R\$/gi,'').replace(/\./g,'').replace(',','.');
-    const n=parseFloat(s); return isNaN(n)?null:+n.toFixed(2);
-  }
-  s=s.replace(/\s/g,'').replace(',','.');
-  const n=parseFloat(s); if(isNaN(n)) return null;
-  return ind.unit==='d'? +n.toFixed(2) : +(n/100).toFixed(4);
-}
+/* ============================================================ editor + metas */
+function toDisp(ind,v){ if(v==null||v==='')return ''; return ind.unit==='%'? +(v*100).toFixed(2) : +(+v).toFixed(ind.unit==='rs'?0:2); }
+function fromDisp(ind,s){ if(s===''||s==null)return null; const n=+s; if(isNaN(n))return null; return ind.unit==='%'? +(n/100).toFixed(4) : n; }
 
-/* recalcula os indicadores derivados a partir das bases em R$ */
-function recomputeCalc(){
-  const fat=DATA.fat_rs.series, dev=DATA.dev_rs.series,
-        ctw=DATA.ctw_rs.series, ctr=DATA.ctransp_rs.series;
-  /* Fat Líquido = Faturamento − Devolução */
-  const fl={};
-  Object.keys(fat).forEach(k=>{ if(fat[k]!=null) fl[k]=+(fat[k]-(dev[k]||0)).toFixed(2); });
-  DATA.fatliq_rs.series=fl;
-  /* % Devolução = Devolução ÷ Faturamento (mensal) */
-  const dp={};
-  Object.keys(fat).forEach(k=>{ if(fat[k]>0 && dev[k]!=null) dp[k]=+(dev[k]/fat[k]).toFixed(4); });
-  DATA.devpct.series=dp;
-  /* Custo Operacional %TW (mensal) = Custo T&W ÷ Faturamento.
-     Histórico manual até 2024; de 2025 calcula pelos R$ (fallback: manual). */
-  const op={};
-  Object.keys(MANUAL.custo_op).forEach(k=>{ if(k.slice(0,4)<CALC_FROM) op[k]=MANUAL.custo_op[k]; });
-  YEARS.filter(y=>y>=CALC_FROM).forEach(y=>MONTHS_idx().forEach(mm=>{
-    const k=`${y}-${mm}`;
-    if(fat[k]>0 && ctw[k]!=null) op[k]=+(ctw[k]/fat[k]).toFixed(4);
-    else if(MANUAL.custo_op[k]!=null) op[k]=MANUAL.custo_op[k];
-  }));
-  DATA.custo_op.series=op;
-  /* Custo de Transporte %T (Acum.) = Σ Transporte ÷ Σ Faturamento (dentro do ano).
-     Histórico manual até 2024; de 2025 calcula pelos R$. */
-  const tr={};
-  Object.keys(MANUAL.custo_tr_ac).forEach(k=>{ if(k.slice(0,4)<CALC_FROM) tr[k]=MANUAL.custo_tr_ac[k]; });
-  YEARS.filter(y=>y>=CALC_FROM).forEach(y=>{
-    let cf=0, cc=0;
-    MONTHS_idx().forEach(mm=>{
-      const k=`${y}-${mm}`;
-      if(fat[k]!=null && ctr[k]!=null){ cf+=fat[k]; cc+=ctr[k]; if(cf>0) tr[k]=+(cc/cf).toFixed(4); }
-      /* sem dados de transporte em 2025+ → fica vazio (corrige ao lançar) */
-    });
-  });
-  DATA.custo_tr_ac.series=tr;
-  /* Custo %TW Acumulado = Σ Custo T&W ÷ Σ Faturamento (dentro do ano) */
-  const ac={};
-  YEARS.forEach(y=>{
-    let cf=0, cc=0;
-    MONTHS_idx().forEach(mm=>{
-      const k=`${y}-${mm}`;
-      if(fat[k]!=null && ctw[k]!=null){ cf+=fat[k]; cc+=ctw[k]; if(cf>0) ac[k]=+(cc/cf).toFixed(4); }
-    });
-  });
-  DATA.custo_op_ac.series=ac;
-  ['fatliq_rs','devpct','custo_op','custo_tr_ac','custo_op_ac'].forEach(recomputeDerived);
-  recomputeOtif();
+function abrirModal(prefId){
+  const sInd=document.getElementById("edInd"),sAno=document.getElementById("edAno"),sFrom=document.getElementById("edProjFrom");
+  sInd.innerHTML=GROUPS().map(g=>`<optgroup label="${g}">`+indsDe(g).filter(id=>!DATA[id].half).map(id=>`<option value="${id}" ${id===prefId?'selected':''}>${DATA[id].label}</option>`).join("")+`</optgroup>`).join("");
+  const ys=YEARS(); sAno.innerHTML=ys.map(a=>`<option ${a===ys[ys.length-1]?'selected':''}>${a}</option>`).join("");
+  sFrom.innerHTML=MESES.map((m,i)=>`<option value="${i}">${m}</option>`).join(""); sFrom.value=String(Math.max(0,new Date().getMonth()));
+  montarTabela(); document.getElementById("overlay").classList.add("open");
 }
-const CALC_BASES=['fat_rs','ctransp_rs','ctw_rs','dev_rs'];
-function recomputeDerived(k){
-  const ind=DATA[k], ser=ind.series;
-  const ks=Object.keys(ser).filter(key=>ser[key]!=null).sort();
-  ind.yearly={};
-  if(ind.acc){ /* acumulado: o valor do ano é o do último mês informado */
-    const lastByY={};
-    ks.forEach(key=>{ lastByY[key.slice(0,4)]=ser[key]; });
-    Object.keys(lastByY).forEach(y=>{ ind.yearly[y]=+lastByY[y].toFixed(4); });
-  } else {
-    const byY={};
-    ks.forEach(key=>{ (byY[key.slice(0,4)]=byY[key.slice(0,4)]||[]).push(ser[key]); });
-    Object.keys(byY).forEach(y=>{ const a=byY[y]; const t=a.reduce((s,v)=>s+v,0);
-      ind.yearly[y]= ind.unit==='rs' ? +t.toFixed(2) : +(t/a.length).toFixed(4); });
-  }
-  if(ks.length){ ind.last_month=ks[ks.length-1]; ind.last_val=ser[ind.last_month]; }
+function fecharModal(){document.getElementById("overlay").classList.remove("open");}
+function montarTabela(){
+  const id=document.getElementById("edInd").value, ano=document.getElementById("edAno").value, ind=DATA[id];
+  // meta
+  const mi=document.getElementById("edMeta"); mi.value = ind.target==null?'' : (ind.unit==='%'? +(ind.target*100).toFixed(2):ind.target);
+  document.getElementById("edMetaUnit").textContent = ind.unit==='%'?'%':ind.unit==='d'?'dias':ind.unit==='rs'?'R$':'';
+  atualizaSig();
+  // grid
+  let head="<tr><th>Campo</th>"+MESES.map(m=>`<th>${m}</th>`).join("")+"</tr>";
+  let row=`<tr><th style="text-align:left">${ind.label} (${ind.unit==='%'?'%':ind.unit})</th>`+
+    MMI.map((mm,i)=>`<td><input data-m="${i}" type="number" step="any" value="${toDisp(ind,ind.series[`${ano}-${mm}`])}"></td>`).join("")+"</tr>";
+  document.getElementById("edTable").innerHTML=head+row;
 }
-function openEditor(){
-  if(!isAdmin) return;
-  const sel=document.getElementById('ed-ind');
-  if(!sel.options.length){
-    const editKeys=g=>groupKeys(g).filter(k=>!DATA[k].calc && !DATA[k].half);
-    sel.innerHTML=Object.keys(GROUPS).filter(g=>editKeys(g).length).map(g=>
-      `<optgroup label="${g}">`+editKeys(g).map(k=>`<option value="${k}">${DATA[k].label}</option>`).join('')+`</optgroup>`
-    ).join('');
-    const first=editKeys(activeTab)[0]||editKeys(Object.keys(GROUPS)[0])[0]; if(first) sel.value=first;
-  }
-  buildGrid();
-  document.getElementById('ed-modal').classList.add('on');
+function atualizaSig(){
+  const mi=document.getElementById("edMeta"), sig=document.getElementById("edMetaSig");
+  const has = mi.value!=='' && !isNaN(+mi.value);
+  sig.className="sig "+(has?"on":"off"); sig.innerHTML=`<i style="background:${has?'var(--ok)':'var(--ink-soft)'}"></i>${has?'meta ativa — linha no gráfico':'sem meta — nada no gráfico'}`;
 }
-function closeEditor(){ document.getElementById('ed-modal').classList.remove('on'); }
-function curKey(){ return document.getElementById('ed-ind').value; }
-function buildGrid(){
-  const k=curKey(), ind=DATA[k];
-  document.getElementById('ed-metainfo').textContent = ind.unit==='rs'
-    ? `reais (R$) · ${ind.dir==='down'?'menor é melhor':'maior é melhor'} · alimenta os indicadores calculados`
-    : `${ind.unit==='d'?'dias':'percentual (%)'} · meta ${fmtMeta(ind)} · ${ind.dir==='down'?'menor é melhor':ind.dir==='up'?'maior é melhor':'alvo central'}`;
-  const head=`<tr><th>Mês</th>${YEARS.map(y=>`<th>${y}</th>`).join('')}</tr>`;
-  const rows=MONTHS_idx().map((mm,i)=>{
-    const cells=YEARS.map(y=>{
-      const v=ind.series[`${y}-${mm}`];
-      return `<td><input id="cell-${y}-${mm}" value="${toDisplay(ind,v)}" inputmode="decimal" autocomplete="off"></td>`;
-    }).join('');
-    return `<tr><td class="ml">${MONTH_LABELS[i]}</td>${cells}</tr>`;
-  }).join('');
-  const gridEl=document.getElementById('ed-grid');
-  gridEl.classList.toggle('rs', ind.unit==='rs');
-  gridEl.innerHTML=head+rows;
-  document.getElementById('ed-hint').innerHTML =
-    ind.unit==='rs' ? 'Informe os valores em <b>reais</b> (ex.: 12.500.000,50 ou 12500000,50). Deixe em branco para remover o mês. Ao salvar, <b>Custo Operacional %TW</b>, <b>Custo %TW Acumulado</b>, <b>Custo de Transporte %T</b>, <b>Faturamento Líquido</b> e <b>% Devolução</b> são recalculados automaticamente (2025 em diante; histórico até 2024 é preservado).'
-    : ind.unit==='d' ? 'Informe os valores em <b>dias</b> (ex.: 9,6). Deixe em branco para remover o mês.'
-                     : 'Informe os valores em <b>percentual</b> (ex.: 95,5 = 95,5%). Deixe em branco para remover o mês.';
-  setStatus('');
-}
-function setStatus(msg,cls){
-  const el=document.getElementById('ed-status');
-  el.textContent=msg||''; el.className='ed-status'+(cls?' '+cls:'');
-}
-function readGridInto(k){
-  const ind=DATA[k];
-  YEARS.forEach(y=>MONTHS_idx().forEach(mm=>{
-    const inp=document.getElementById(`cell-${y}-${mm}`); if(!inp) return;
-    const v=fromDisplay(ind,inp.value); const key=`${y}-${mm}`;
+function aplicarEditor(){
+  const id=document.getElementById("edInd").value, ano=document.getElementById("edAno").value, ind=DATA[id];
+  // meta
+  const mv=document.getElementById("edMeta").value;
+  ind.target = mv===''||isNaN(+mv) ? null : fromDisp(ind,mv);
+  // série do ano
+  document.querySelectorAll("#edTable input[data-m]").forEach(inp=>{
+    const mm=MMI[+inp.dataset.m], key=`${ano}-${mm}`, v=fromDisp(ind,inp.value);
     if(v==null) delete ind.series[key]; else ind.series[key]=v;
-  }));
-  recomputeDerived(k);
-  if(k==='ontime'||k==='infull') recomputeOtif();
-  if(CALC_BASES.includes(k)) recomputeCalc();
-}
-function projetarProximo(){
-  const k=curKey(), ind=DATA[k];
-  const next=MONTHS_idx().find(mm=>{
-    const inp=document.getElementById(`cell-${refYear}-${mm}`);
-    return inp && inp.value.trim()==='';
   });
-  if(!next){ setStatus('Ano de '+refYear+' já está completo — nada a projetar.','bad'); return; }
-  const hist=YEARS.filter(y=>y<refYear).map(y=>ind.series[`${y}-${next}`]).filter(v=>v!=null);
-  let proj;
-  if(hist.length) proj=hist.reduce((a,b)=>a+b,0)/hist.length;
-  else { const ms=monthsOfYear(ind,refYear); proj=ms.length?ms.reduce((a,b)=>a+b.v,0)/ms.length:ind.target; }
-  const inp=document.getElementById(`cell-${refYear}-${next}`);
-  inp.value=toDisplay(ind,proj); inp.classList.add('proj');
-  const lab=MONTH_LABELS[+next-1];
-  setStatus(`Projeção de ${lab}/${refYear} = média histórica do mês. Revise e clique em Aplicar/Salvar.`,'good');
+  // recalcula OTIF se mexeu em ontime/infull
+  if(id==='ontime'||id==='infull') recomputeOtif();
+  return id;
 }
-function aplicarPreview(){
-  const k=curKey(); readGridInto(k);
-  buildHealth(); showTab();
-  setStatus('Pré-visualizado (ainda não salvo no servidor).','good');
+function preencherProjecao(){
+  const from=+document.getElementById("edProjFrom").value, inputs=[...document.querySelectorAll("#edTable input[data-m]")];
+  const vals=[];
+  for(let m=0;m<12;m++){ const inp=inputs[m];
+    if(m<from&&inp.value!==''){vals.push(+inp.value);}
+    else if(m>=from){ const k=Math.min(3,vals.length); const md=k?vals.slice(-k).reduce((s,v)=>s+v,0)/k:(vals.at(-1)||0);
+      const proj=+(md).toFixed(2); inp.value=proj; vals.push(proj); }
+    else if(inp.value!=='')vals.push(+inp.value);
+  }
+  toast("Projeção preenchida a partir de "+MESES[from]);
+}
+function exportar(){
+  aplicarEditor();
+  const blob=new Blob([JSON.stringify(DATA,null,0)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="dados.json"; a.click();
+  toast("dados.json exportado — suba no GitHub para publicar.");
 }
 async function salvarServidor(){
-  if(!isAdmin) return;
-  const k=curKey(); readGridInto(k); buildHealth(); showTab();
-  const btn=document.getElementById('ed-save'); btn.disabled=true;
-  setStatus('Salvando…');
-  if(!sb){ btn.disabled=false; setStatus('Sem conexão com o servidor. Use “Exportar JSON”.','bad'); return; }
+  aplicarEditor(); render(); document.getElementById("edStatus").textContent="Aplicado. Salvando…";
+  let key=""; try{key=localStorage.getItem("sc2-key")||"";}catch(e){}
+  if(!key){ key=prompt("Service key do Supabase (deixe vazio para só aplicar na sessão):")||""; if(key) try{localStorage.setItem("sc2-key",key);}catch(e){} }
+  if(!key){ document.getElementById("edStatus").textContent="Aplicado na sessão (sem salvar no servidor)."; toast("Aplicado na sessão. Use Exportar para publicar."); return; }
   try{
-    const blob=new Blob([JSON.stringify(DATA)],{type:'application/json'});
-    const {error}=await sb.storage.from('dashboards').upload(STORE_PATH,blob,
-      {upsert:true,contentType:'application/json',cacheControl:'0'});
-    if(error){ setStatus('Erro ao salvar: '+error.message,'bad'); }
-    else setStatus('✓ Salvo no servidor em '+new Date().toLocaleTimeString('pt-BR'),'good');
-  }catch(e){ setStatus('Erro: '+e.message,'bad'); }
-  btn.disabled=false;
+    const r=await fetch(`${SUPA_URL}/storage/v1/object/${STORE}`,{method:"POST",
+      headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json","x-upsert":"true"},body:JSON.stringify(DATA)});
+    if(!r.ok) throw new Error(r.status);
+    document.getElementById("edStatus").textContent="Salvo no Supabase ✓"; toast("Salvo no Supabase ✓"); fecharModal();
+  }catch(e){ document.getElementById("edStatus").textContent="Falha ao salvar ("+e.message+"). Use Exportar."; toast("Falha no Supabase — use Exportar dados.json"); }
 }
-function exportarJSON(){
-  const k=curKey(); readGridInto(k); buildHealth(); showTab();
-  const blob=new Blob([JSON.stringify(DATA)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='scorecard-dados.json';
-  a.click(); URL.revokeObjectURL(a.href);
-  setStatus('Arquivo exportado (scorecard-dados.json).','good');
-}
-window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeEditor(); });
-document.getElementById('ed-modal').addEventListener('click',e=>{ if(e.target.id==='ed-modal') closeEditor(); });
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);}
 
-/* ---- render inicial (após todas as definições) + bootstrap ---- */
-initAnos();
-recomputeCalc();
-render();
-(async function(){
-  await initAuth();
-  const changed=await loadOverrides();
-  if(changed) render();
-})();
+/* ---- carga real (override do embutido) ---- */
+async function carregar(){
+  let novo=null;
+  if(API_BASE){try{const r=await fetch(API_BASE+"/api/dados");if(r.ok)novo=await r.json();}catch(e){}}
+  if(!novo){try{const r=await fetch("./dados.json",{cache:"no-store"});if(r.ok)novo=await r.json();}catch(e){}}
+  if(!novo){try{const r=await fetch(`${SUPA_URL}/storage/v1/object/public/${STORE}`,{cache:"no-store"});if(r.ok)novo=await r.json();}catch(e){}}
+  if(novo && typeof novo==='object' && Object.keys(novo).length){ DATA=novo; }
+  if(!DATA.inventario) DATA.inventario=JSON.parse(JSON.stringify(INV_EMBED.inventario));
+  recomputeOtif();
+}
+
+/* ---- eventos ---- */
+document.getElementById("btnEdit").onclick=()=>abrirModal();
+document.getElementById("btnClose").onclick=fecharModal;
+document.getElementById("overlay").onclick=e=>{if(e.target.id==="overlay")fecharModal();};
+document.getElementById("edInd").onchange=montarTabela;
+document.getElementById("edAno").onchange=montarTabela;
+document.getElementById("edMeta").oninput=atualizaSig;
+document.getElementById("btnFillProj").onclick=preencherProjecao;
+document.getElementById("btnPreview").onclick=()=>{aplicarEditor();render();toast("Preview aplicado (não salvo)");};
+document.getElementById("btnExport").onclick=exportar;
+document.getElementById("btnSave").onclick=salvarServidor;
+document.getElementById("btnProj").onclick=()=>{abrirModal();setTimeout(preencherProjecao,60);};
+
+(async function(){ await carregar(); render(); })();
 </script>
 </body>
 </html>
