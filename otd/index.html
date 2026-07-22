@@ -10,11 +10,14 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.20-tv-otd-mensal', date: '27/05/2026' };
+window.__BUILD__ = { version: 'v9.21-tema-genomma', date: '22/07/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
@@ -26,13 +29,13 @@ window.__BUILD__ = { version: 'v9.20-tv-otd-mensal', date: '27/05/2026' };
   :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
 
 /* LOGIN */
 #screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
 .login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
 .login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.brand-icon{width:38px;height:38px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon{width:38px;height:38px;background:#0072BC;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .brand-name{font-size:14px;font-weight:700;color:var(--text)}
 .brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
@@ -41,9 +44,9 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .form-group{margin-bottom:14px}
 .form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
-.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.10)}
-.btn-primary{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
-.btn-primary:hover{background:#0C447C}
+.form-input:focus{border-color:#0072BC;box-shadow:0 0 0 3px rgba(0,114,188,.10)}
+.btn-primary{width:100%;padding:11px;background:#0072BC;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
+.btn-primary:hover{background:#004A87}
 .btn-primary:disabled{background:#888;cursor:not-allowed}
 .login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
 
@@ -51,25 +54,25 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 #screen-app{display:none}
 .topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .nav-brand{display:flex;align-items:center;gap:10px}
-.nav-icon{width:30px;height:30px;background:#185FA5;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-icon{width:30px;height:30px;background:#0072BC;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .nav-title{font-size:14px;font-weight:700}
 .nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
 .nav-right{display:flex;align-items:center;gap:10px}
 .user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
-.user-av{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.user-av{width:24px;height:24px;border-radius:50%;background:#0072BC;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
 .user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
 .btn-sm:hover{background:var(--bg2)}
 .nav-back{font-size:11px;padding:5px 12px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px}
 .nav-back:hover{background:var(--bg2)}
-.admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500}
+.admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#004A87;font-weight:500}
 
 /* TABS */
 .tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;display:flex;gap:0}
 .tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
 .tab:hover{color:var(--text)}
-.tab.on{color:#185FA5;border-bottom-color:#185FA5;font-weight:500}
+.tab.on{color:#0072BC;border-bottom-color:#0072BC;font-weight:500}
 
 /* CONTAINER */
 .container{max-width:1400px;margin:0 auto;padding:28px 32px}
@@ -82,7 +85,7 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .upload-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
 .upload-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
 .upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-.upload-box:hover,.upload-box.drag{border-color:#185FA5;background:#E6F1FB20}
+.upload-box:hover,.upload-box.drag{border-color:#0072BC;background:#E6F1FB20}
 .upload-box.done{border-color:#3B6D11;background:#EAF3DE20;border-style:solid}
 .upload-box.done .upload-box-icon{background:#EAF3DE}
 .upload-box.done .upload-box-icon svg{stroke:#3B6D11}
@@ -92,14 +95,14 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .upload-box-sub{font-size:11px;color:var(--text2)}
 .upload-box-status{font-size:10px;margin-top:8px;font-weight:500}
 .upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.btn-process{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
-.btn-process:hover{background:#0C447C}
+.btn-process{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#0072BC;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-process:hover{background:#004A87}
 .btn-process:disabled{background:#888;cursor:not-allowed}
 .process-log{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:12px;font-family:monospace;max-height:200px;overflow-y:auto;display:none}
 .log-line{padding:2px 0;color:var(--text2)}
 .log-line.ok{color:#3B6D11}
 .log-line.err{color:#A32D2D}
-.log-line.info{color:#185FA5}
+.log-line.info{color:#0072BC}
 
 /* HISTORY */
 .hist-table{width:100%;border-collapse:collapse;font-size:12px}
@@ -109,7 +112,7 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .hist-table tr:hover td{background:var(--bg2)}
 .badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block}
 .badge-ok{background:#EAF3DE;color:#3B6D11}
-.badge-proc{background:#E6F1FB;color:#185FA5}
+.badge-proc{background:#E6F1FB;color:#0072BC}
 .badge-err{background:#FCEBEB;color:#A32D2D}
 
 /* DASHBOARD */
@@ -120,10 +123,10 @@ body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);mi
 .kpi-lbl{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
 .kpi-val{font-size:22px;font-weight:700;line-height:1}
 .kpi-sub{font-size:10px;color:var(--text2);margin-top:4px}
-.kpi-grn .kpi-val{color:#3B6D11}.kpi-red .kpi-val{color:#A32D2D}.kpi-amb .kpi-val{color:#854F0B}.kpi-blu .kpi-val{color:#185FA5}
+.kpi-grn .kpi-val{color:#3B6D11}.kpi-red .kpi-val{color:#A32D2D}.kpi-amb .kpi-val{color:#854F0B}.kpi-blu .kpi-val{color:#0072BC}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:12px}
 .slabel{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.slabel-num{width:20px;height:20px;border-radius:50%;background:#E6F1FB;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0C447C;flex-shrink:0}
+.slabel-num{width:20px;height:20px;border-radius:50%;background:#E6F1FB;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#004A87;flex-shrink:0}
 .fbar{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:8px 14px;margin-bottom:12px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .fl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-right:2px;white-space:nowrap}
 .fdiv{width:0.5px;height:14px;background:var(--border2);margin:0 6px}
@@ -284,6 +287,61 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 /* back button (Genomma) */
 #tv-back-btn{display:none;position:fixed;top:24px;right:34px;z-index:9999;background:rgba(255,255,255,.92);color:#0072BC;border:1px solid #BCDCEE;border-radius:24px;padding:9px 20px;font-size:13px;font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing:.04em;cursor:pointer;backdrop-filter:blur(4px);transition:all .2s;box-shadow:0 8px 22px -12px rgba(0,74,135,.5)}
 #tv-back-btn:hover{background:#fff;border-color:#0072BC;transform:translateY(-1px)}
+
+/* ============ TEMA GENOMMA LAB (v9.21 — cores + fontes, sem mudanca funcional) ============ */
+:root{
+  --gnm-cyan:#00A7E7;--gnm-blue:#0072BC;--gnm-deep:#004A87;--gnm-navy:#0B2740;
+  --gnm-grad:linear-gradient(135deg,#00A7E7 0%,#0072BC 55%,#004A87 100%);
+}
+/* Tipografia — Montserrat para titulos e numeros, Inter para o resto */
+.nav-title,.login-title,.brand-name,.upload-title,.kpi-val,.stat-val,
+.login-card .login-title{font-family:'Montserrat',sans-serif}
+.kpi-lbl,.slabel,.fl,.form-label,.stat-lbl,table.dt th,.hist-table th,
+.reg-uf-title{font-family:'Montserrat',sans-serif;font-weight:700}
+.kpi-val{letter-spacing:-.01em}
+/* Header navy Genomma */
+.topnav{background:linear-gradient(90deg,#0B2740 0%,#004A87 60%,#0072BC 100%);border-bottom:none;box-shadow:0 4px 18px -8px rgba(0,74,135,.45)}
+.topnav .nav-title{color:#fff}
+.topnav .nav-sub{color:rgba(255,255,255,.65)}
+.topnav .nav-icon{background:var(--gnm-grad);box-shadow:0 4px 12px -4px rgba(0,167,231,.6)}
+.topnav .nav-back{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.28)}
+.topnav .nav-back:hover{background:rgba(255,255,255,.12)}
+.topnav .btn-sm{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.28)}
+.topnav .btn-sm:hover{background:rgba(255,255,255,.12)}
+.topnav .user-chip{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20)}
+.topnav .user-em{color:rgba(255,255,255,.85)}
+.topnav .user-av{background:var(--gnm-grad)}
+.topnav .admin-badge{background:rgba(0,167,231,.25);color:#fff}
+/* Abas — sublinhado em gradiente Genomma */
+.tabs{box-shadow:0 2px 10px -6px rgba(0,74,135,.18)}
+.tab{font-weight:500;letter-spacing:.01em}
+.tab.on{color:var(--gnm-deep);font-weight:700;border-bottom-width:3px;
+  border-image:linear-gradient(90deg,#00A7E7,#004A87) 1}
+.tab:hover{color:var(--gnm-blue)}
+/* Cards e KPIs — sombra suave e leve destaque */
+.kpi,.card,.upload-card,.fbar,.update-bar{box-shadow:0 6px 20px -14px rgba(0,74,135,.25)}
+.kpi{border-top:3px solid transparent;border-image:linear-gradient(90deg,#00A7E7,#004A87) 1;transition:transform .15s,box-shadow .15s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 10px 26px -12px rgba(0,74,135,.35)}
+.kpi-blu .kpi-val{color:var(--gnm-blue)}
+.slabel-num{background:var(--gnm-grad);color:#fff}
+/* Filtros — pill ativa em azul Genomma (mesmos botoes, so cor) */
+.fbtn.on{background:var(--gnm-grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px -5px rgba(0,114,188,.55)}
+.fbtn:hover{border-color:var(--gnm-blue);color:var(--gnm-blue)}
+/* Botoes principais em gradiente */
+.btn-primary,.btn-process{background:var(--gnm-grad)}
+.btn-primary:hover,.btn-process:hover{background:linear-gradient(135deg,#0090D0 0%,#005FA0 55%,#003A6B 100%)}
+.btn-process:disabled{background:#9aa7b1}
+/* Login */
+.brand-icon{background:var(--gnm-grad)}
+.login-card{border-top:4px solid transparent;border-image:linear-gradient(90deg,#00A7E7,#004A87) 1}
+.form-input:focus{border-color:var(--gnm-blue);box-shadow:0 0 0 3px rgba(0,167,231,.18)}
+/* Tabelas — cabecalho com tom Genomma sutil */
+table.dt th{color:#33536F}
+@media(prefers-color-scheme:dark){
+  table.dt th{color:#9db8cd}
+  .tab.on{color:#4FC3F7}
+}
+
 </style>
 </head>
 <body>
@@ -295,7 +353,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 <button id="tv-back-btn" onclick="(function(){document.body.classList.remove('tv-on');if(typeof tvAutoRefreshStop==='function')tvAutoRefreshStop();document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('on');if(t.textContent.trim().startsWith('OTD'))t.classList.add('on');});Object.values(TABS).forEach(s=>{const el=document.getElementById(s);if(el){el.classList.remove('on');el.style.display='none';}});const otd=document.getElementById('sec-otd');if(otd){otd.classList.add('on');otd.style.display='block';}})()">← Voltar ao painel</button>
 
 <!-- SELO DE VERSÃO (canto inferior direito) — fácil de ver para confirmar que a versão online é a certa -->
-<div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(24,95,165,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Clique para copiar a versão" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
+<div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(0,114,188,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Clique para copiar a versão" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
 <script>
 (function(){
   const b = document.getElementById('build-badge');
@@ -347,7 +405,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
     <div class="tab" onclick="switchTab('leadtime',this)">Lead Time</div>
-    <div class="tab" onclick="switchTab('tv',this)" style="background:linear-gradient(90deg,#1e3a8a,#3b82f6);color:#fff">📡 TV</div>
+    <div class="tab" onclick="switchTab('tv',this)" style="background:linear-gradient(90deg,#004A87,#00A7E7);color:#fff">📡 TV</div>
   </div>
 
   <div class="container">
@@ -381,7 +439,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
           <div style="display:flex; align-items:baseline; gap:30px; flex-wrap:wrap">
             <div>
               <div style="font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:.06em">Faturamento Bruto</div>
-              <div style="font-size:22px; font-weight:500; color:#185FA5; margin-top:2px" id="o-fat">—</div>
+              <div style="font-size:22px; font-weight:500; color:#0072BC; margin-top:2px" id="o-fat">—</div>
               <div style="font-size:10px; color:var(--text2)" id="o-fat-s">—</div>
             </div>
             <div style="border-left:0.5px solid var(--border); padding-left:30px">
@@ -399,7 +457,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#3B6D11; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">On Time</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Off Time</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#854F0B; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">CD</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#185FA5; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Trânsito</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#0072BC; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Trânsito</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Atraso</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#7A4FBF; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Tratativa</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#3787C7; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Ag. CTE</th>
@@ -411,7 +469,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3B6D11" id="o-on">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#A32D2D" id="o-off">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#854F0B" id="o-hub">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#185FA5" id="o-trs">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#0072BC" id="o-trs">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#A32D2D" id="o-trs-atr">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#7A4FBF" id="o-trat">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3787C7" id="o-agcte">—</span></td>
@@ -453,11 +511,11 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
           <div class="stat-row">
             <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-on">—</div><div class="stat-lbl">On Time</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o2-off">—</div><div class="stat-lbl">Off Time</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#185FA5" id="o2-val">—</div><div class="stat-lbl">Receita</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#0072BC" id="o2-val">—</div><div class="stat-lbl">Receita</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-otd">—</div><div class="stat-lbl">OTD</div></div>
             <div class="stat-bar-cell">
               <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px"><span>Entregas no periodo</span><span id="o2-pct">—</span></div>
-              <div style="height:8px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="o2-bar" style="height:100%;background:#185FA5;border-radius:3px;transition:width .5s"></div></div>
+              <div style="height:8px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="o2-bar" style="height:100%;background:#0072BC;border-radius:3px;transition:width .5s"></div></div>
             </div>
           </div>
           <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
@@ -467,7 +525,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
           <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Trânsito em Atraso, Tratativa, Ag. CTE, Trânsito Agenda e Previsão por Quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
             <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
-            <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#185FA5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#185FA5" id="o3-trs">—</div><div style="font-size:11px;color:#185FA5;margin-top:2px" id="o3-trs-val">—</div></div>
+            <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#0072BC;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#0072BC" id="o3-trs">—</div><div style="font-size:11px;color:#0072BC;margin-top:2px" id="o3-trs-val">—</div></div>
             <div class="status-hl" style="background:#FCEBEB"><div style="font-size:9px;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito em Atraso</div><div style="font-size:24px;font-weight:700;color:#A32D2D" id="o3-trs-atr">—</div><div style="font-size:11px;color:#A32D2D;margin-top:2px" id="o3-trs-atr-val">—</div></div>
             <div class="status-hl" style="background:#EFE6FB"><div style="font-size:9px;color:#7A4FBF;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Tratativa</div><div style="font-size:24px;font-weight:700;color:#7A4FBF" id="o3-trat">—</div><div style="font-size:11px;color:#7A4FBF;margin-top:2px" id="o3-trat-val">—</div></div>
             <div class="status-hl" style="background:#E6F0FB"><div style="font-size:9px;color:#3787C7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Ag. CTE</div><div style="font-size:24px;font-weight:700;color:#3787C7" id="o3-agcte">—</div><div style="font-size:11px;color:#3787C7;margin-top:2px" id="o3-agcte-val">—</div></div>
@@ -476,14 +534,14 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
-          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#185FA5">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#0072BC">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Em Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#0072BC">Em Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:8px">OTD = On Time / (On Time + Off Time). Pendentes não entram no OTD, mas indicam risco.</p>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#185FA5">Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
@@ -623,9 +681,9 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
               <th class="r" style="color:#A32D2D">Off Time</th>
               <th class="r">OTD%</th>
               <th class="r">Prazo Médio</th>
-              <th class="r" style="color:#185FA5">Receita Finalizada</th>
+              <th class="r" style="color:#0072BC">Receita Finalizada</th>
               <th class="r" style="color:#854F0B">CD</th>
-              <th class="r" style="color:#185FA5">Trânsito</th>
+              <th class="r" style="color:#0072BC">Trânsito</th>
               <th class="r" style="color:#A32D2D">Pend. Atraso</th>
               <th class="r" style="color:#7A4FBF">Tratativa</th>
               <th class="r" style="color:#3787C7">Ag. CTE</th>
@@ -642,7 +700,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
         <div id="transp-detalhe" style="display:none">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
             <div class="card">
-              <div class="slabel"><span class="slabel-num">2</span>Prazo médio por região — <span id="transp-sel-nome" style="color:#185FA5"></span></div>
+              <div class="slabel"><span class="slabel-num">2</span>Prazo médio por região — <span id="transp-sel-nome" style="color:#0072BC"></span></div>
               <div style="overflow-x:auto">
               <table class="dt">
                 <thead><tr>
@@ -737,9 +795,9 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
                 <th class="r" style="color:#A32D2D">Off Time</th>
                 <th class="r">OTD%</th>
                 <th class="r">Prazo Médio</th>
-                <th class="r" style="color:#185FA5">Receita Finalizada</th>
+                <th class="r" style="color:#0072BC">Receita Finalizada</th>
                 <th class="r" style="color:#854F0B">CD</th>
-                <th class="r" style="color:#185FA5">Trânsito</th>
+                <th class="r" style="color:#0072BC">Trânsito</th>
                 <th class="r" style="color:#A32D2D">Pend. Atraso</th>
                 <th class="r" style="color:#7A4FBF">Tratativa</th>
                 <th class="r" style="color:#3787C7">Ag. CTE</th>
@@ -2094,7 +2152,7 @@ function renderTransp(){
                        +(t.tratativa||0)+(t.ag_cte||0)+(t.transito_agenda||0), 0);
     const base = 'Apenas entregas finalizadas (On Time + Off Time). Prazo médio = dias entre emissão e entrega efetiva.';
     if(temDrill){
-      notaQ1.innerHTML = base + ' <span style="color:#185FA5;font-weight:600">Clique na transportadora para abrir as NFs pendentes.</span>';
+      notaQ1.innerHTML = base + ' <span style="color:#0072BC;font-weight:600">Clique na transportadora para abrir as NFs pendentes.</span>';
     } else if(pendGeral > 0){
       notaQ1.innerHTML = base + ' <span style="color:#854F0B;font-weight:600">⚠ Detalhe por NF indisponível nesta base — rode o atualizar.bat com o processar_otd.py novo para habilitar o drill-down.</span>';
       console.warn('[Transportadoras] dados.json sem o campo nfs_pend — drill-down desabilitado. Reprocesse a base (atualizar.bat).');
@@ -2124,7 +2182,7 @@ function renderTransp(){
     if(v==null) return 'var(--text2)';
     const n = parseFloat(v);
     if(isNaN(n)) return 'var(--text2)';
-    if(!inv) return n>=thr1?'#0C447C':n>=thr2?'#378ADD':'#E24B4A';
+    if(!inv) return n>=thr1?'#004A87':n>=thr2?'#378ADD':'#E24B4A';
     return n<=thr1?'#3B6D11':n<=thr2?'#854F0B':'#A32D2D';
   };
   document.getElementById('transp-kpis').innerHTML = kpis.map((k,i)=>`
@@ -2135,7 +2193,7 @@ function renderTransp(){
     </div>`).join('');
 
   // Main table
-  const otdC = v => v==null?'color:var(--text2)':v>=99?'color:#0C447C;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
+  const otdC = v => v==null?'color:var(--text2)':v>=99?'color:#004A87;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
   const maxFin = fin[0]?.fin || 1;
 
@@ -2157,9 +2215,9 @@ function renderTransp(){
       <td class="r" style="color:#A32D2D">${t.off}</td>
       <td class="r" style="${otdC(t.otd)}">${t.otd!=null?t.otd.toFixed(1)+'%':'—'}</td>
       <td class="r" style="${prazoC(t.prazo_medio)}">${t.prazo_medio!=null?t.prazo_medio.toFixed(1)+' dias':'—'}</td>
-      <td class="r" style="color:#185FA5;font-weight:500">${t.fin_val>0?fmtM(t.fin_val):'—'}</td>
+      <td class="r" style="color:#0072BC;font-weight:500">${t.fin_val>0?fmtM(t.fin_val):'—'}</td>
       <td class="r" style="color:#854F0B">${t.hub}</td>
-      <td class="r" style="color:#185FA5">${t.trs}</td>
+      <td class="r" style="color:#0072BC">${t.trs}</td>
       <td class="r" style="color:#A32D2D;font-weight:600">${t.trs_atr||0}</td>
       <td class="r" style="color:#7A4FBF">${t.tratativa||0}</td>
       <td class="r" style="color:#3787C7">${t.ag_cte||0}</td>
@@ -2167,7 +2225,7 @@ function renderTransp(){
       <td class="r" style="color:#A32D2D;font-weight:500">${valPendTotal>0?fmtM(valPendTotal):'—'}</td>
       <td style="min-width:80px;padding-right:10px">
         <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
-          <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#0C447C':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
+          <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#004A87':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
         </div>
         <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${totalNFsGeral} NFs</div>
       </td>
@@ -2200,7 +2258,7 @@ function renderTransp(){
 // separada e colorida por status. Renderizado sob demanda (lazy) ao expandir.
 const TRANSP_STATUS = [
   {k:'hub',             lbl:'CD — Ag. Expedição',   cor:'#854F0B', bg:'#FAEEDA'},
-  {k:'transito',        lbl:'Em Trânsito',          cor:'#185FA5', bg:'#E6F1FB'},
+  {k:'transito',        lbl:'Em Trânsito',          cor:'#0072BC', bg:'#E6F1FB'},
   {k:'transito_atr',    lbl:'Em Trânsito em Atraso',cor:'#A32D2D', bg:'#FCEBEB'},
   {k:'tratativa',       lbl:'Tratativa',            cor:'#7A4FBF', bg:'#EFE6FB'},
   {k:'ag_cte',          lbl:'Ag. CTE',              cor:'#3787C7', bg:'#E6F0FB'},
@@ -2373,7 +2431,7 @@ function renderClientesTabela(){
   const tPendVal = lista.reduce((s,c)=>s+(c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
                      +(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0),0);
   const otdGeral = tFin>0 ? (tOn/tFin*100) : null;
-  const corOTD = v => v==null?'var(--text2)':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
+  const corOTD = v => v==null?'var(--text2)':v>=99?'#004A87':v>=80?'#378ADD':'#E24B4A';
   document.getElementById('clientes-kpis').innerHTML =
      kpiBox('Clientes', total.toLocaleString('pt-BR'), 'na seleção atual', 'var(--text)')
     +kpiBox('OTD Geral', otdGeral!=null?otdGeral.toFixed(1)+'%':'—', tOn.toLocaleString('pt-BR')+' de '+tFin.toLocaleString('pt-BR')+' finalizadas', corOTD(otdGeral))
@@ -2381,7 +2439,7 @@ function renderClientesTabela(){
     +kpiBox('Em Trânsito em Atraso', tAtr.toLocaleString('pt-BR'), 'atenção imediata', '#A32D2D')
     +kpiBox('Valor Pendente', fmtM(tPendVal), 'a entregar', '#A32D2D');
 
-  const otdC   = v => v==null?'color:var(--text2)':v>=99?'color:#0C447C;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
+  const otdC   = v => v==null?'color:var(--text2)':v>=99?'color:#004A87;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
 
   window.__clientesNFs = {};
@@ -2405,9 +2463,9 @@ function renderClientesTabela(){
         +'<td class="r" style="color:'+((c.off||0)>0?'#A32D2D':'var(--text2)')+'">'+(c.off||0)+'</td>'
         +'<td class="r" style="'+otdC(c.otd)+'">'+(c.otd!=null?c.otd.toFixed(1)+'%':'—')+'</td>'
         +'<td class="r" style="'+prazoC(c.prazo_medio)+'">'+(c.prazo_medio!=null?c.prazo_medio.toFixed(1)+' dias':'—')+'</td>'
-        +'<td class="r" style="color:#185FA5;font-weight:500">'+((c.fin_val||0)>0?fmtM(c.fin_val):'—')+'</td>'
+        +'<td class="r" style="color:#0072BC;font-weight:500">'+((c.fin_val||0)>0?fmtM(c.fin_val):'—')+'</td>'
         +'<td class="r" style="color:#854F0B">'+((c.hub||0)>0?c.hub:'—')+'</td>'
-        +'<td class="r" style="color:#185FA5">'+((c.trs||0)>0?c.trs:'—')+'</td>'
+        +'<td class="r" style="color:#0072BC">'+((c.trs||0)>0?c.trs:'—')+'</td>'
         +'<td class="r" style="color:#A32D2D;font-weight:600">'+((c.trs_atr||0)>0?c.trs_atr:'—')+'</td>'
         +'<td class="r" style="color:#7A4FBF">'+((c.tratativa||0)>0?c.tratativa:'—')+'</td>'
         +'<td class="r" style="color:#3787C7">'+((c.ag_cte||0)>0?c.ag_cte:'—')+'</td>'
@@ -2415,7 +2473,7 @@ function renderClientesTabela(){
         +'<td class="r" style="color:#A32D2D;font-weight:500">'+(valPend>0?fmtM(valPend):'—')+'</td>'
         +'<td style="min-width:80px;padding-right:10px">'
           +'<div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">'
-          +'<div style="height:100%;width:'+(c.otd||0)+'%;background:'+((c.otd||0)>=99?'#0C447C':(c.otd||0)>=80?'#378ADD':'#E24B4A')+';border-radius:3px"></div></div>'
+          +'<div style="height:100%;width:'+(c.otd||0)+'%;background:'+((c.otd||0)>=99?'#004A87':(c.otd||0)>=80?'#378ADD':'#E24B4A')+';border-radius:3px"></div></div>'
           +'<div style="font-size:9px;color:var(--text2);margin-top:2px">'+(c._nfs||[]).length+' NF(s) na lista</div>'
         +'</td>'
         +'</tr>';
@@ -2428,7 +2486,7 @@ function renderClientesTabela(){
   const nota = document.getElementById('clientes-q1-nota');
   if(nota){
     nota.innerHTML = 'OTD e Prazo Médio consideram só entregas finalizadas. Valor Pendente = tudo que ainda não foi entregue.'
-      + ' <span style="color:#185FA5;font-weight:600">Clique no cliente para abrir as NFs.</span>'
+      + ' <span style="color:#0072BC;font-weight:600">Clique no cliente para abrir as NFs.</span>'
       + (clientesFilter_state.nfs==='aberto' ? ' <span style="color:#854F0B;font-weight:600">Filtro ativo: só NFs em aberto.</span>' : '');
   }
 
@@ -2562,7 +2620,7 @@ function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
   document.getElementById('transp-detalhe').style.display='block';
   document.getElementById('transp-sel-nome').textContent=nome;
 
-  const otdC = v => v==null?'color:var(--text2)':v>=99?'color:#0C447C;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
+  const otdC = v => v==null?'color:var(--text2)':v>=99?'color:#004A87;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
 
   // By region
@@ -2661,7 +2719,7 @@ function renderOffTime(){
   document.getElementById('offtime-kpis').innerHTML=
     '<div class="kpi kpi-red"><div class="kpi-lbl">Total Off Time</div><div class="kpi-val">'+totalOff.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas em atraso</div></div>'
    +'<div class="kpi kpi-grn"><div class="kpi-lbl">Total On Time</div><div class="kpi-val">'+totalOn.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas no prazo</div></div>'
-   +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#185FA5">'+otdPct+'%</div><div class="kpi-sub">'+totalFin+' finalizadas</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#0072BC">'+otdPct+'%</div><div class="kpi-sub">'+totalFin+' finalizadas</div></div>'
    +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">impacto financeiro</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D;font-size:20px">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>';
 
@@ -3425,7 +3483,7 @@ function renderInFull(){
   let rTop = '';
   inf.top_fracionados.slice(0,20).forEach((p,i) => {
     const corStatus = p.status === 'Em Trânsito em Atraso' ? '#A32D2D' :
-                      p.status === 'Em Trânsito' ? '#185FA5' :
+                      p.status === 'Em Trânsito' ? '#0072BC' :
                       p.status === 'Em Rota' ? '#854F0B' : '#3B6D11';
     rTop += '<tr>'
       +'<td style="color:var(--text3)">'+(i+1)+'</td>'
@@ -3591,7 +3649,7 @@ function renderInFullPedidos(){
     const start = (inFullPagePed-1)*INFULL_PER_PAGE;
     slice.forEach((p,i) => {
       const corStatus = p.status === 'Em Trânsito em Atraso' ? '#A32D2D' :
-                        p.status === 'Em Trânsito' ? '#185FA5' :
+                        p.status === 'Em Trânsito' ? '#0072BC' :
                         p.status === 'Em Rota' ? '#854F0B' : '#3B6D11';
       const corRom = p.n_romaneios === 1 ? '#3B6D11' : p.n_romaneios === 2 ? '#854F0B' : '#A32D2D';
       rows += '<tr>'
@@ -3810,8 +3868,8 @@ function fmtM(v){
   return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 }
 const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
-const MES_PALETTE=['#378ADD','#185FA5','#0C447C','#042C53','#85B7EB'];
-const REG_CORES={'Sudeste':'#185FA5','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
+const MES_PALETTE=['#378ADD','#0072BC','#004A87','#042C53','#85B7EB'];
+const REG_CORES={'Sudeste':'#0072BC','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
 const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 function renderOTD(payload){
@@ -4080,9 +4138,9 @@ function renderOTDChart(d){
   const iOtd=iFin>0?((iOn/iFin)*100).toFixed(1):(iFat>0?'—':'—');
 
   document.getElementById('emp-kpis').innerHTML=
-    '<div style="background:#E6F1FB20;border:0.5px solid #185FA544;border-radius:var(--radius);padding:12px 16px">'
-    +'<div style="font-size:10px;font-weight:600;color:#0C447C;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Genomma Lab</div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:24px;font-weight:700;color:#185FA5">'+fmtM(gFat)+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+gQtd.toLocaleString('pt-BR')+' NFs</div></div>'
+    '<div style="background:#E6F1FB20;border:0.5px solid #0072BC44;border-radius:var(--radius);padding:12px 16px">'
+    +'<div style="font-size:10px;font-weight:600;color:#004A87;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Genomma Lab</div>'
+    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:24px;font-weight:700;color:#0072BC">'+fmtM(gFat)+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+gQtd.toLocaleString('pt-BR')+' NFs</div></div>'
     +'</div>'
     +'<div style="background:#EAF3DE20;border:0.5px solid #3B6D1144;border-radius:var(--radius);padding:12px 16px">'
     +'<div style="font-size:10px;font-weight:600;color:#3B6D11;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Inovalab</div>'
@@ -4217,8 +4275,8 @@ function renderOTDChart(d){
     r3+='<tr><td>'+md.nome+'</td>'
       +'<td class="r" style="color:#854F0B">'+(mHub||'—')+'</td>'
       +'<td class="r" style="color:#854F0B">'+(mHubVal>0?fmtM(mHubVal):'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(mTrs||'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(mTrsVal>0?fmtM(mTrsVal):'—')+'</td>'
+      +'<td class="r" style="color:#0072BC">'+(mTrs||'—')+'</td>'
+      +'<td class="r" style="color:#0072BC">'+(mTrsVal>0?fmtM(mTrsVal):'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+(mTrsAtr||'—')+'</td>'
       +'<td class="r" style="color:#A32D2D">'+(mTrsAtrVal>0?fmtM(mTrsAtrVal):'—')+'</td>'
       +'<td class="r" style="color:#7A4FBF">'+(mTrat||'—')+'</td>'
@@ -4230,8 +4288,8 @@ function renderOTDChart(d){
   r3+='<tr class="tr-total"><td>Total Pendente</td>'
     +'<td class="r" style="color:#854F0B">'+hubAll+'</td>'
     +'<td class="r" style="color:#854F0B">'+fmtM(hubValAll)+'</td>'
-    +'<td class="r" style="color:#185FA5">'+trsAll+'</td>'
-    +'<td class="r" style="color:#185FA5">'+fmtM(trsValAll)+'</td>'
+    +'<td class="r" style="color:#0072BC">'+trsAll+'</td>'
+    +'<td class="r" style="color:#0072BC">'+fmtM(trsValAll)+'</td>'
     +'<td class="r" style="color:#A32D2D;font-weight:600">'+trsAtrAll+'</td>'
     +'<td class="r" style="color:#A32D2D">'+fmtM(trsAtrValAll)+'</td>'
     +'<td class="r" style="color:#7A4FBF">'+tratAll+'</td>'
@@ -4243,14 +4301,14 @@ function renderOTDChart(d){
 
   // ---- BLOCO 3b: Previsão por quarter ----
   const prevQ=d.prevQ||[];
-  const qColors={'Q1':'#185FA5','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
+  const qColors={'Q1':'#0072BC','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
   let rPrev='';
   prevQ.forEach(p=>{
     const cor=qColors[p.q]||'#888';
     rPrev+='<tr>'
       +'<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+p.q+'</strong></span></td>'
       +'<td class="r" style="color:#854F0B">'+(p.hub>0?p.hub:'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(p.transito>0?p.transito:'—')+'</td>'
+      +'<td class="r" style="color:#0072BC">'+(p.transito>0?p.transito:'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+((p.transito_atr||0)>0?p.transito_atr:'—')+'</td>'
       +'<td class="r" style="color:#7A4FBF">'+((p.tratativa||0)>0?p.tratativa:'—')+'</td>'
       +'<td class="r" style="color:#3787C7">'+((p.ag_cte||0)>0?p.ag_cte:'—')+'</td>'
@@ -4266,7 +4324,7 @@ function renderOTDChart(d){
   }),{qtd:0,valor:0,hub:0,trs:0,trs_atr:0,trat:0,agcte:0,tag:0});
   rPrev+='<tr class="tr-total"><td>Total Pendente</td>'
     +'<td class="r" style="color:#854F0B">'+(totPrev.hub||0)+'</td>'
-    +'<td class="r" style="color:#185FA5">'+(totPrev.trs||0)+'</td>'
+    +'<td class="r" style="color:#0072BC">'+(totPrev.trs||0)+'</td>'
     +'<td class="r" style="color:#A32D2D;font-weight:600">'+(totPrev.trs_atr||0)+'</td>'
     +'<td class="r" style="color:#7A4FBF">'+(totPrev.trat||0)+'</td>'
     +'<td class="r" style="color:#3787C7">'+(totPrev.agcte||0)+'</td>'
@@ -4291,9 +4349,9 @@ function renderOTDChart(d){
       console.log('[v9.13 DIAG] '+ex.n+': tratativa='+ex.tratativa+'/'+ex.tratativa_val+', ag_cte='+ex.ag_cte+'/'+ex.ag_cte_val+', tag='+ex.transito_agenda+'/'+ex.transito_agenda_val+', nao_val(do JSON)='+ex.nao_val);
     }
   }
-  const bc=v=>v===null?'#B5D4F4':v>=99?'#0C447C':v>=80?'#378ADD':'#E24B4A';
+  const bc=v=>v===null?'#B5D4F4':v>=99?'#004A87':v>=80?'#378ADD':'#E24B4A';
   document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
-    const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#0C447C;font-weight:600':'color:#A32D2D;font-weight:600';
+    const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#004A87;font-weight:600':'color:#A32D2D;font-weight:600';
     // v9.13: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
     // Recalculado no JS para funcionar com JSON de qualquer versão (mesmo antes do
     // Python ser rodado com a v9.7).
@@ -4306,7 +4364,7 @@ function renderOTDChart(d){
       +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
       +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
       +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
-      +'<td class="r" style="color:#185FA5">'+(t.trs>0?t.trs:'—')+'</td>'
+      +'<td class="r" style="color:#0072BC">'+(t.trs>0?t.trs:'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+((t.trs_atr||0)>0?t.trs_atr:'—')+'</td>'
       +'<td class="r" style="color:#7A4FBF">'+((t.tratativa||0)>0?t.tratativa:'—')+'</td>'
       +'<td class="r" style="color:#3787C7">'+((t.ag_cte||0)>0?t.ag_cte:'—')+'</td>'
@@ -4459,7 +4517,7 @@ function renderLeadTimes(){
       totalRow += fat;
       const tot = totalMes[m] || 0;
       const pct = tot > 0 ? fat/tot*100 : 0;
-      const color = pct >= 40 ? '#0C447C' : pct >= 20 ? '#185FA5' : 'var(--text)';
+      const color = pct >= 40 ? '#004A87' : pct >= 20 ? '#0072BC' : 'var(--text)';
       row += '<td class="r" style="color:'+color+'">'+(pct>0?pct.toFixed(1)+'%':'—')+'</td>';
     });
     const pctRow = totalGeral > 0 ? totalRow/totalGeral*100 : 0;
