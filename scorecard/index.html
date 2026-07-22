@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Scorecard Logístico — Torre de Controle</title>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --genomma-900:#0B2A55;--genomma-700:#134E86;--genomma:#185FA5;--genomma-500:#1E6FC0;
@@ -121,8 +122,9 @@
       <p class="hint">Edite os meses (na unidade exibida). "Pré-visualizar" aplica meta + valores nos gráficos sem salvar.</p>
       <div style="overflow:auto"><table class="month-table" id="edTable"></table></div>
     </div>
-    <footer><span class="hint" id="edStatus">—</span>
+    <footer><span class="hint" id="edStatus" style="flex:1;min-width:220px;line-height:1.5">—</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="background:var(--genomma-100);color:var(--genomma-900)" id="btnDiag">Testar conexão</button>
         <button class="btn btn-primary" style="background:var(--genomma-100);color:var(--genomma-900)" id="btnPreview">Pré-visualizar</button>
         <button class="btn btn-primary" style="background:var(--genomma-100);color:var(--genomma-900)" id="btnExport">Exportar dados.json</button>
         <button class="btn btn-primary" style="background:var(--genomma);color:#fff" id="btnSave">Salvar</button>
@@ -144,8 +146,36 @@ const INV_EMBED = {inventario:{label:'Inventário — Ajustes (R$)',group:'Estoq
   series:{'2016-H1':24790.23,'2016-H2':608365.66,'2017-H1':-325173.68,'2017-H2':28954.90,'2018-H1':-105380.29,'2018-H2':9025.10,'2019-H1':560609.65,'2019-H2':0,'2020-H1':386826.22,'2020-H2':0,'2021-H1':-172976.96,'2021-H2':54767.26,'2022-H1':-16816.47,'2022-H2':17096.47,'2023-H1':0,'2023-H2':-58.88,'2024-H1':0,'2024-H2':-1320.65,'2025-H1':0,'2025-H2':12.57}}};
 let DATA = Object.assign(JSON.parse(JSON.stringify(DATA_EMBED)), JSON.parse(JSON.stringify(INV_EMBED)));
 const API_BASE = "";                    // backend opcional
-const SUPA_URL = "https://ennsbpibfnuwlvtodukg.supabase.co";
-const STORE = "dashboards/scorecard/dados.json";
+/* ---- Supabase: mesma configuração do projeto original ---- */
+const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
+const BUCKET        = 'dashboards';
+const STORE_PATH    = 'scorecard/dados.json';
+let sb=null, isAdmin=false;
+try{
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'torre-controle-auth'}
+  });
+}catch(e){ sb=null; }
+async function initAuth(){
+  if(!sb) return;
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    isAdmin = !!(session && session.user && session.user.email===ADMIN_EMAIL);
+  }catch(e){ isAdmin=false; }
+  sb.auth.onAuthStateChange((_e,session)=>{
+    isAdmin = !!(session && session.user && session.user.email===ADMIN_EMAIL);
+    marcaAdmin();
+  });
+  marcaAdmin();
+}
+function marcaAdmin(){
+  const b=document.getElementById('btnSave'); if(!b) return;
+  b.title = isAdmin? 'Salvar no servidor (sessão de administrador ativa)'
+                   : 'Entrar para salvar no servidor';
+  b.textContent = isAdmin? 'Salvar' : 'Entrar e salvar';
+}
 const MESES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const MMI = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 const YEAR_COL = {'2021':'#9DD3EE','2022':'#5AA9DE','2023':'#2E7DC4','2024':'#1E6FC0','2025':'#1B4E8F','2026':'#0B2A55'};
@@ -669,7 +699,9 @@ function atualizaSig(){
   sig.className="sig "+(has?"on":"off"); sig.innerHTML=`<i style="background:${has?'var(--ok)':'var(--ink-soft)'}"></i>${has?'meta ativa — linha no gráfico':'sem meta — nada no gráfico'}`;
 }
 function aplicarEditor(){
-  const id=document.getElementById("edInd").value, ano=document.getElementById("edAno").value, ind=DATA[id];
+  const idEl=document.getElementById("edInd"), anoEl=document.getElementById("edAno");
+  const id=idEl&&idEl.value, ano=anoEl&&anoEl.value, ind=id?DATA[id]:null;
+  if(!ind||!ano) return null;   // modal não inicializado: nada a aplicar
   // meta
   const mv=document.getElementById("edMeta").value;
   ind.target = mv===''||isNaN(+mv) ? null : fromDisp(ind,mv);
@@ -701,17 +733,74 @@ function exportar(){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="dados.json"; a.click();
   toast("dados.json exportado — suba no GitHub para publicar.");
 }
+/* grava o JSON no Storage: tenta upload(upsert) e, se o objeto já existir, usa update() */
+async function gravarStorage(){
+  const blob=new Blob([JSON.stringify(DATA)],{type:'application/json'});
+  const opt={upsert:true,contentType:'application/json',cacheControl:'0'};
+  let {error}=await sb.storage.from(BUCKET).upload(STORE_PATH,blob,opt);
+  if(error){
+    const m=(error.message||'')+' '+(error.statusCode||'');
+    if(/exist|duplicate|409|400/i.test(m)){                    // objeto já existe -> update
+      const r2=await sb.storage.from(BUCKET).update(STORE_PATH,blob,opt);
+      if(!r2.error) return {ok:true,via:'update'};
+      error=r2.error;
+    }
+    return {ok:false,error};
+  }
+  return {ok:true,via:'upload'};
+}
+function explicaErro(e){
+  const m=(e&&e.message)||String(e), code=(e&&(e.statusCode||e.status))||'';
+  if(/row-level security|violates|policy/i.test(m))
+    return 'Sem permissão de escrita no bucket (política RLS). Ajuste a policy do bucket "'+BUCKET+'" no painel do Supabase para permitir INSERT/UPDATE ao usuário autenticado.';
+  if(/jwt|token|expired|invalid/i.test(m)) return 'Sessão expirada — clique novamente para entrar.';
+  if(/not found|404/i.test(m+code)) return 'Bucket "'+BUCKET+'" ou caminho não encontrado no Supabase.';
+  if(/401|403|unauthorized|forbidden/i.test(m+code)) return 'Não autorizado — é preciso estar logado como '+ADMIN_EMAIL+'.';
+  return m+(code?' (código '+code+')':'');
+}
 async function salvarServidor(){
-  aplicarEditor(); render(); document.getElementById("edStatus").textContent="Aplicado. Salvando…";
-  let key=""; try{key=localStorage.getItem("sc2-key")||"";}catch(e){}
-  if(!key){ key=prompt("Service key do Supabase (deixe vazio para só aplicar na sessão):")||""; if(key) try{localStorage.setItem("sc2-key",key);}catch(e){} }
-  if(!key){ document.getElementById("edStatus").textContent="Aplicado na sessão (sem salvar no servidor)."; toast("Aplicado na sessão. Use Exportar para publicar."); return; }
+  aplicarEditor(); render();
+  const st=document.getElementById("edStatus");
+  if(!sb){ st.textContent="SDK do Supabase não carregou — use Exportar dados.json."; toast("Sem conexão — use Exportar"); return; }
+  if(!isAdmin){
+    const email=prompt("E-mail de administrador:", ADMIN_EMAIL);
+    if(!email){ st.textContent="Alterações aplicadas na sessão (não salvas no servidor)."; return; }
+    const senha=prompt("Senha:");
+    if(!senha){ st.textContent="Alterações aplicadas na sessão (não salvas no servidor)."; return; }
+    st.textContent="Autenticando…";
+    const {error:errLogin}=await sb.auth.signInWithPassword({email:email.trim(),password:senha});
+    if(errLogin){ st.textContent="Falha no login: "+errLogin.message; toast("Login falhou"); return; }
+    isAdmin=true; marcaAdmin();
+  }
+  st.textContent="Salvando…";
   try{
-    const r=await fetch(`${SUPA_URL}/storage/v1/object/${STORE}`,{method:"POST",
-      headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json","x-upsert":"true"},body:JSON.stringify(DATA)});
-    if(!r.ok) throw new Error(r.status);
-    document.getElementById("edStatus").textContent="Salvo no Supabase ✓"; toast("Salvo no Supabase ✓"); fecharModal();
-  }catch(e){ document.getElementById("edStatus").textContent="Falha ao salvar ("+e.message+"). Use Exportar."; toast("Falha no Supabase — use Exportar dados.json"); }
+    const r=await gravarStorage();
+    if(!r.ok) throw r.error;
+    st.textContent="✓ Salvo no servidor ("+r.via+") às "+new Date().toLocaleTimeString('pt-BR');
+    toast("Salvo no Supabase ✓"); fecharModal();
+  }catch(e){
+    st.textContent="Não salvou: "+explicaErro(e);
+    toast("Falha ao salvar — veja a mensagem e use Exportar");
+  }
+}
+/* diagnóstico: mostra exatamente em que etapa está o problema */
+async function diagnosticar(){
+  const st=document.getElementById("edStatus"); const L=[];
+  L.push(sb?'SDK carregado: OK':'SDK carregado: FALHOU');
+  if(sb){
+    try{ const {data:{session}}=await sb.auth.getSession();
+      L.push(session? ('Sessão: '+session.user.email) : 'Sessão: NENHUMA (precisa entrar)');
+    }catch(e){ L.push('Sessão: erro '+e.message); }
+    try{ const {error}=await sb.storage.from(BUCKET).download(STORE_PATH);
+      L.push(error? ('Leitura do arquivo: FALHOU — '+explicaErro(error)) : 'Leitura do arquivo: OK');
+    }catch(e){ L.push('Leitura: erro '+e.message); }
+    try{ const r=await gravarStorage();
+      L.push(r.ok? ('Gravação: OK (via '+r.via+')') : ('Gravação: FALHOU — '+explicaErro(r.error)));
+    }catch(e){ L.push('Gravação: erro '+explicaErro(e)); }
+  }
+  st.innerHTML=L.join(' · ');
+  console.log('[Diagnóstico Supabase]\n'+L.join('\n'));
+  toast('Diagnóstico concluído — veja a mensagem');
 }
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);}
 
@@ -720,8 +809,17 @@ async function carregar(){
   let novo=null;
   if(API_BASE){try{const r=await fetch(API_BASE+"/api/dados");if(r.ok)novo=await r.json();}catch(e){}}
   if(!novo){try{const r=await fetch("./dados.json",{cache:"no-store"});if(r.ok)novo=await r.json();}catch(e){}}
-  if(!novo){try{const r=await fetch(`${SUPA_URL}/storage/v1/object/public/${STORE}`,{cache:"no-store"});if(r.ok)novo=await r.json();}catch(e){}}
   if(novo && typeof novo==='object' && Object.keys(novo).length){ DATA=novo; }
+  /* override do que foi salvo no servidor (mais recente que o repositório) */
+  if(sb){
+    try{
+      const {data,error}=await sb.storage.from(BUCKET).download(STORE_PATH);
+      if(!error && data){
+        const salvo=JSON.parse(await data.text());
+        if(salvo && typeof salvo==='object' && Object.keys(salvo).length) DATA=salvo;
+      }
+    }catch(e){}
+  }
   if(!DATA.inventario) DATA.inventario=JSON.parse(JSON.stringify(INV_EMBED.inventario));
   Object.entries(PED_EMBED).forEach(([k,v])=>{ if(!DATA[k]) DATA[k]=JSON.parse(JSON.stringify(v)); });
   recomputeOtif(); recomputeInfull(); recomputeRatios();
@@ -735,12 +833,13 @@ document.getElementById("edInd").onchange=montarTabela;
 document.getElementById("edAno").onchange=montarTabela;
 document.getElementById("edMeta").oninput=atualizaSig;
 document.getElementById("btnFillProj").onclick=preencherProjecao;
+document.getElementById("btnDiag").onclick=diagnosticar;
 document.getElementById("btnPreview").onclick=()=>{aplicarEditor();render();toast("Preview aplicado (não salvo)");};
 document.getElementById("btnExport").onclick=exportar;
 document.getElementById("btnSave").onclick=salvarServidor;
 document.getElementById("btnProj").onclick=()=>{abrirModal();setTimeout(preencherProjecao,60);};
 
-(async function(){ await carregar(); render(); })();
+(async function(){ await initAuth(); await carregar(); render(); })();
 </script>
 </body>
 </html>
