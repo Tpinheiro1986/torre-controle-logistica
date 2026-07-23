@@ -966,18 +966,32 @@ async function diagnosticar(){
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);}
 
 /* ---- carga real (override do embutido) ---- */
+/* Mescla o que está salvo no servidor com a base do repositório.
+   Regra: valores salvos pelo usuário prevalecem, MAS indicadores novos
+   publicados no repositório (ex.: um KPI recém-criado) não somem, e
+   propriedades novas (weekly, limite, calc...) são preservadas. */
+function mesclarDados(base, salvo){
+  if(!salvo || typeof salvo!=='object') return base;
+  const out=JSON.parse(JSON.stringify(base||{}));
+  Object.keys(salvo).forEach(k=>{
+    out[k] = (out[k] && typeof out[k]==='object')
+      ? Object.assign({}, out[k], salvo[k])   // repo preenche o que faltar
+      : salvo[k];
+  });
+  return out;
+}
 async function carregar(){
-  let novo=null;
-  if(API_BASE){try{const r=await fetch(API_BASE+"/api/dados");if(r.ok)novo=await r.json();}catch(e){}}
-  if(!novo){try{const r=await fetch("./dados.json",{cache:"no-store"});if(r.ok)novo=await r.json();}catch(e){}}
-  if(novo && typeof novo==='object' && Object.keys(novo).length){ DATA=novo; }
-  /* override do que foi salvo no servidor (mais recente que o repositório) */
+  let base=null;
+  if(API_BASE){try{const r=await fetch(API_BASE+"/api/dados");if(r.ok)base=await r.json();}catch(e){}}
+  if(!base){try{const r=await fetch("./dados.json?v="+Date.now(),{cache:"no-store"});if(r.ok)base=await r.json();}catch(e){}}
+  if(base && typeof base==='object' && Object.keys(base).length){ DATA=base; }
+  /* o que foi salvo no servidor prevalece nos valores, sem apagar novidades */
   if(sb){
     try{
       const {data,error}=await sb.storage.from(BUCKET).download(STORE_PATH);
       if(!error && data){
         const salvo=JSON.parse(await data.text());
-        if(salvo && typeof salvo==='object' && Object.keys(salvo).length) DATA=salvo;
+        if(salvo && typeof salvo==='object' && Object.keys(salvo).length) DATA=mesclarDados(DATA,salvo);
       }
     }catch(e){}
   }
