@@ -44,6 +44,14 @@
   .kpi .tag{position:absolute;top:12px;right:14px;font-size:10px;color:var(--ink-soft);background:var(--genomma-100);border-radius:20px;padding:2px 7px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .panel.full{grid-column:1/-1}
+  .wkbar{display:flex;gap:18px;flex-wrap:wrap;align-items:center;background:var(--genomma-100);
+    border:1px solid var(--genomma-200);border-radius:12px;padding:10px 14px;margin-bottom:10px}
+  .wkbar .it{display:flex;flex-direction:column;gap:1px}
+  .wkbar .it b{font-size:15px;color:var(--genomma-900);letter-spacing:-.3px}
+  .wkbar .it span{font-size:10.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+  .wkbar .sep{width:1px;height:26px;background:var(--genomma-200)}
+  .wkbar .pos{color:var(--ok)} .wkbar .neg{color:var(--alert)}
   .panel .head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;flex-wrap:wrap}
   .panel h3{margin:0;font-size:14px}.panel .sub{margin:2px 0 0;color:var(--ink-soft);font-size:12px}
   .metatag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:8px}
@@ -265,7 +273,9 @@ const SEMANAS = Array.from({length:53},(_,i)=>i+1);
 const WK = n => 'W'+String(n).padStart(2,'0');
 function semanasDoAno(ind,y){ return SEMANAS.filter(w=>ind.series[`${y}-${WK(w)}`]!=null); }
 function totalAno(ind,y){ return semanasDoAno(ind,y).reduce((a,w)=>a+ind.series[`${y}-${WK(w)}`],0); }
-function janelaAno(ind,y){ const s=semanasDoAno(ind,y); return s.length?[s[0],s[s.length-1]]:null; }
+function janelaAno(ind,y){ const s=semanasDoAno(ind,y); return s.length?[1,s[s.length-1]]:null; }
+/* última semana com dado no ano */
+function ultimaSemana(ind,y){ const s=semanasDoAno(ind,y); return s.length? s[s.length-1] : null; }
 /* soma de um ano restrita a uma janela de semanas (comparação justa de ano parcial) */
 function totalJanela(ind,y,ini,fim){
   return SEMANAS.filter(w=>w>=ini&&w<=fim&&ind.series[`${y}-${WK(w)}`]!=null)
@@ -273,11 +283,16 @@ function totalJanela(ind,y,ini,fim){
 }
 function anosSemanais(ind){ const s=new Set();
   Object.keys(ind.series).forEach(k=>s.add(k.slice(0,4))); return [...s].sort(); }
-/* último ano é parcial? */
-function ehParcial(ind,y){ const j=janelaAno(ind,y); if(!j) return false;
-  const anos=anosSemanais(ind); if(y!==anos[anos.length-1]) return false;
-  const ref=anos.length>1? semanasDoAno(ind,anos[anos.length-2]).length : 53;
-  return semanasDoAno(ind,y).length < ref; }
+/* ano em curso? compara a ÚLTIMA SEMANA lançada com a do ano de referência,
+   assim semanas em branco no meio (ou a semana 1 ausente) não impedem o
+   ano de ser reconhecido como fechado. */
+function ehParcial(ind,y){
+  const anos=anosSemanais(ind);
+  if(y!==anos[anos.length-1]) return false;          // anos anteriores: fechados
+  const uw=ultimaSemana(ind,y); if(uw==null) return true;
+  const ref=anos.length>1 ? (ultimaSemana(ind,anos[anos.length-2])||52) : 52;
+  return uw < Math.min(ref,52);            // 52 semanas já fecham o ano
+}
 
 /* último mês com dado (para os cards de razão) */
 function ultimoMesAno(ind,y){ let k=null; MMI.forEach(mm=>{ if(ind.series[`${y}-${mm}`]!=null) k=`${y}-${mm}`; }); return k; }
@@ -410,17 +425,17 @@ function renderKpis(){
       const anos=anosSemanais(ind).filter(y=>anosSel.includes(y));
       const y=(anos.length?anos:anosSemanais(ind)).slice(-1)[0];
       const yAnt=String(+y-1);
-      const j=janelaAno(ind,y), parcial=ehParcial(ind,y);
+      const uw=ultimaSemana(ind,y), parcial=ehParcial(ind,y);
       const cur=totalAno(ind,y);
-      const prev = parcial && j ? totalJanela(ind,yAnt,j[0],j[1]) : totalAno(ind,yAnt);
+      const prev = parcial && uw ? totalJanela(ind,yAnt,1,uw) : totalAno(ind,yAnt);
       let dTxt='—', cls='flat', seta='—';
       if(prev>0){ const p=(cur-prev)/prev*100; seta=p>0.05?'▲':p<-0.05?'▼':'—';
         cls = p>0.05?'up':p<-0.05?'warnc':'flat';
-        dTxt=(p>=0?'+':'')+p.toFixed(1)+'% vs '+yAnt+(parcial?' (mesmo período)':''); }
+        dTxt=(p>=0?'+':'')+p.toFixed(1)+'% vs '+yAnt+(parcial?' (até S'+uw+')':''); }
       const nSem=semanasDoAno(ind,y).length;
       box.insertAdjacentHTML("beforeend",`
         <div class="kpi" style="--barc:${YEAR_COL[y]||'var(--genomma)'}">
-          <div class="tag">${y}${parcial&&j?` · sem ${j[0]}–${j[1]}`:''}</div>
+          <div class="tag">${y}${parcial&&uw?` · até S${uw}`:''}</div>
           <div class="lbl">${ind.label}</div>
           <div class="val">${(cur/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}<small> Mi un</small></div>
           <span class="delta ${cls}">${seta} ${dTxt}</span>
@@ -511,15 +526,16 @@ function renderPanels(){
         : ind.unit==='rs'
         ? `<span class="metatag no"><i style="background:var(--ink-soft)"></i>informacional</span>`
         : `<span class="metatag no"><i style="background:var(--ink-soft)"></i>sem meta</span>`);
-    const modos = ind.weekly ? [["lines","Semanal"],["bars","Barras"],["area","Área"],["acum","Acumulado"],["yoy","Crescimento YoY"]]
+    const modos = ind.weekly ? [["lines","Semanal"],["bars","Barras"],["area","Área"],["acum","Acumulado"],["yoy","Crescimento"]]
       : ind.half ? [["bars","Barras"]] : id==='infull' ? [["combo","Combo"],...MODOS] : ind.unit==='rs' ? [["acum","Acumulado"],["lines","Linhas"],["bars","Barras"],["area","Área"]] : MODOS;
     box.insertAdjacentHTML("beforeend",`
-      <div class="panel" id="p_${id}">
+      <div class="panel${ind.weekly?' full':''}" id="p_${id}">
         <div class="head">
           <div><h3>${ind.label}${metaTag}</h3><p class="sub">${subTexto(ind)}</p></div>
           <div class="modes" data-ind="${id}">${modos.map(([m,l])=>`<button data-m="${m}" class="${modoDe(id)===m?'on':''}">${l}</button>`).join("")}</div>
         </div>
-        <div id="ch_${id}" style="height:300px"></div>
+        ${ind.weekly?'<div class="wkbar" id="wk_'+id+'"></div>':''}
+        <div id="ch_${id}" style="height:${ind.weekly?420:300}px"></div>
         <details class="about"><summary>Sobre o indicador</summary><p>${sobreTexto(ind,id)}</p></details>
       </div>`);
   });
@@ -530,7 +546,7 @@ function renderPanels(){
   list.forEach(desenhar);
 }
 function subTexto(ind){
-  if(ind.weekly) return 'Produção por semana · 53 semanas por ano';
+  if(ind.weekly) return 'Ano fechado compara o total; ano em curso compara até a mesma semana';
   if(ind.half) return 'Ajustes por semestre (H1/H2) · azul = positivo · vermelho = negativo';
   if(ind.limite) return `Limite máximo · não ultrapassar ${fmtMeta(ind)}`;
   return ind.target!=null ? `Meta ${fmtMeta(ind)}` : (ind.unit==='rs'?'Valores em R$':'');
@@ -657,6 +673,31 @@ function desenharInfull(id){
     markers:{size:0,hover:{size:5}},annotations:ann,
     tooltip:{shared:true,intersect:false,y:{formatter:(v,{seriesIndex})=>v==null?'—':(seriesIndex===2?v.toFixed(1)+'%':Math.round(v).toLocaleString('pt-BR')+' ped.')}}});
 }
+/* faixa de resumo acima do gráfico semanal */
+function faixaSemanal(id){
+  const box=document.getElementById('wk_'+id); if(!box) return;
+  const ind=DATA[id], anosT=anosSemanais(ind);
+  const ultimo=anosT[anosT.length-1];
+  const corte=ultimaSemana(ind,ultimo)||53;              // semana de corte comum
+  const y=(anosT.filter(a=>anosSel.includes(a)).slice(-1)[0])||ultimo;
+  const yAnt=String(+y-1), parcial=ehParcial(ind,y);
+  const ytdA=totalJanela(ind,y,1,corte), ytdB=anosT.includes(yAnt)?totalJanela(ind,yAnt,1,corte):0;
+  const pYtd = ytdB>0 ? (ytdA-ytdB)/ytdB*100 : null;
+  const totA=totalAno(ind,y), totB=anosT.includes(yAnt)?totalAno(ind,yAnt):0;
+  const pTot = (!parcial && totB>0) ? (totA-totB)/totB*100 : null;
+  const nSem=semanasDoAno(ind,y).length;
+  const mi=v=>(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' Mi';
+  const chip=(v)=>v==null?'<b>—</b>':`<b class="${v>=0?'pos':'neg'}">${(v>=0?'+':'')+v.toFixed(1)}%</b>`;
+  box.innerHTML=`
+    <div class="it"><b>${mi(ytdA)}</b><span>${y} · até a semana ${corte}</span></div>
+    <div class="it">${chip(pYtd)}<span>vs ${yAnt} até a semana ${corte}</span></div>
+    <div class="sep"></div>
+    <div class="it"><b>${parcial?'em curso':mi(totA)}</b><span>${y} · ano completo</span></div>
+    <div class="it">${chip(pTot)}<span>vs ${yAnt} ano completo</span></div>
+    <div class="sep"></div>
+    <div class="it"><b>${Math.round(totA/Math.max(1,nSem)).toLocaleString('pt-BR')}</b><span>média por semana</span></div>
+    <div class="it"><b>${nSem}</b><span>semanas com produção</span></div>`;
+}
 /* ---- Indicador SEMANAL: Semanal · Acumulado · Crescimento YoY ---- */
 function desenharSemanal(id){
   const ind=DATA[id], modo=modoDe(id);
@@ -664,58 +705,93 @@ function desenharSemanal(id){
   const anos=anosTodos.filter(y=>anosSel.includes(y));
   const uso=(anos.length?anos:anosTodos.slice(-2));
   const ordem=[...uso].sort().reverse();          // mais recente no topo
-  const cats=SEMANAS.map(w=>'S'+w);
+  const cats=SEMANAS.map(w=>String(w));
   const fmtU=v=>v==null?'—':Math.round(v).toLocaleString('pt-BR')+' un';
+  faixaSemanal(id);
+  /* eixo X legível: rótulo a cada 5 semanas */
+  const xLab={rotate:0,hideOverlappingLabels:false,style:{fontSize:'10px'},
+    formatter:v=>{const n=+v; return (n===1||n%5===0)?'S'+n:'';}};
 
-  if(modo==='yoy'){   // crescimento de um ano para o outro
+  if(modo==='yoy'){   // COMBO: volume (barras) + crescimento (linhas), nas duas bases
     const base=[...anosTodos].sort();
-    const labels=[], vals=[], notas=[];
-    for(let i=1;i<base.length;i++){
-      const a=base[i-1], b=base[i];
-      const parcial=ehParcial(ind,b), j=janelaAno(ind,b);
-      const tb=totalAno(ind,b);
-      const ta=parcial&&j? totalJanela(ind,a,j[0],j[1]) : totalAno(ind,a);
-      if(!ta) continue;
-      labels.push(b+' vs '+a); vals.push(+(((tb-ta)/ta)*100).toFixed(2));
-      notas.push(parcial&&j?`semanas ${j[0]}–${j[1]}`:'ano completo');
-    }
-    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:'bar',height:320},
-      colors:[({value})=>value>=0?'#1E6FC0':'#E4572E'],
-      plotOptions:{bar:{borderRadius:7,columnWidth:'50%',borderRadiusApplication:'end',dataLabels:{position:'top'}}},
-      dataLabels:{enabled:true,offsetY:-20,style:{fontSize:'11px',fontWeight:700,colors:[({value})=>value>=0?'#1E6FC0':'#E4572E']},
-        formatter:v=>(v>=0?'+':'')+v.toFixed(1)+'%'},
-      series:[{name:'Crescimento',data:vals}],
-      xaxis:{categories:labels,axisBorder:{show:false},axisTicks:{show:false}},
-      yaxis:{labels:{formatter:v=>v.toFixed(0)+'%'}},
-      annotations:{yaxis:[{y:0,borderColor:'#5B6B78',opacity:.7}]},
-      grid:{...baseOpts.grid,padding:{top:24}},legend:{show:false},
-      tooltip:{y:{formatter:(v,{dataPointIndex})=>(v>=0?'+':'')+v.toFixed(2)+'% · '+notas[dataPointIndex]}}});
+    const ultimo=base[base.length-1];
+    const corte=ultimaSemana(ind,ultimo)||53;          // semana de corte = ano em curso
+    const fechado=y=>!ehParcial(ind,y);
+    const ytd=y=>totalJanela(ind,y,1,corte);
+    const tot=y=>totalAno(ind,y);
+    const volYTD=[], volTot=[], crescYTD=[], crescTot=[];
+    base.forEach((y,i)=>{
+      const ant=i? base[i-1] : null;
+      volYTD.push(+(ytd(y)/1e6).toFixed(2));
+      volTot.push(fechado(y)? +(tot(y)/1e6).toFixed(2) : null);
+      crescYTD.push(ant&&ytd(ant)? +(((ytd(y)-ytd(ant))/ytd(ant))*100).toFixed(2) : null);
+      crescTot.push(ant&&fechado(y)&&fechado(ant)&&tot(ant)? +(((tot(y)-tot(ant))/tot(ant))*100).toFixed(2) : null);
+    });
+    const mi=v=>v==null?'—':v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' Mi un';
+    const pc=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(2)+'%';
+    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:'line',height:420},
+      colors:['#C7E0F4','#185FA5','#0B2A55','#E5A50A'],
+      series:[
+        {name:'Volume · ano completo',type:'column',data:volTot},
+        {name:`Volume · até a semana ${corte}`,type:'column',data:volYTD},
+        {name:`Crescimento até a semana ${corte}`,type:'line',data:crescYTD},
+        {name:'Crescimento do ano completo',type:'line',data:crescTot},
+      ],
+      stroke:{width:[0,0,3,3],curve:'straight',dashArray:[0,0,0,6],lineCap:'round'},
+      plotOptions:{bar:{borderRadius:6,columnWidth:'62%',borderRadiusApplication:'end'}},
+      markers:{size:[0,0,5,5],strokeWidth:2,strokeColors:'#fff',hover:{size:7}},
+      dataLabels:{enabled:true,enabledOnSeries:[2,3],
+        formatter:v=>v==null?'':(v>=0?'+':'')+v.toFixed(1)+'%',
+        style:{fontSize:'10px',fontWeight:700},
+        background:{enabled:true,foreColor:'#12222F',borderRadius:4,padding:4,opacity:.92,borderWidth:1,borderColor:'#E3EAF0'},
+        offsetY:-6},
+      xaxis:{categories:base,axisBorder:{show:false},axisTicks:{show:false},
+        labels:{style:{fontSize:'12px',fontWeight:700}}},
+      yaxis:[
+        {seriesName:'Volume · ano completo',title:{text:'Volume (milhões de unidades)',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}},
+         labels:{formatter:v=>v.toFixed(0)+' Mi'},min:0},
+        {seriesName:'Volume · ano completo',show:false},
+        {opposite:true,seriesName:`Crescimento até a semana ${corte}`,
+         title:{text:'Crescimento ano a ano (%)',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}},
+         labels:{formatter:v=>(v>=0?'+':'')+v.toFixed(0)+'%'}},
+        {opposite:true,seriesName:`Crescimento até a semana ${corte}`,show:false},
+      ],
+      annotations:{yaxis:[{y:0,yAxisIndex:2,borderColor:'#5B6B78',opacity:.55,
+        label:{text:'0%',style:{background:'#5B6B78',color:'#fff',fontSize:'9px'}}}]},
+      grid:{...baseOpts.grid,padding:{top:28,right:8}},
+      legend:{...baseOpts.legend,markers:{radius:4}},
+      tooltip:{shared:true,intersect:false,
+        y:{formatter:(v,{seriesIndex})=>seriesIndex<2?mi(v):pc(v)}}});
   }
 
   if(modo==='acum'){  // acumulado dentro de cada ano
     const series=ordem.map(y=>{ let s=0; const arr=SEMANAS.map(w=>{
       const v=ind.series[`${y}-${WK(w)}`]; if(v==null) return null; s+=v; return +s.toFixed(0); });
       return {name:y,data:arr}; });
-    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:'line',height:320},
+    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:'line',height:420},
       colors:ordem.map(y=>YEAR_COL[y]),stroke:{curve:CURVA,width:3,lineCap:'round'},
-      series,xaxis:{categories:cats,axisBorder:{show:false},axisTicks:{show:false},
-        labels:{rotate:0,hideOverlappingLabels:true}},
-      yaxis:{labels:{formatter:v=>(v/1e6).toFixed(1)+' Mi'}},
-      markers:{size:0,hover:{size:5}},tooltip:{y:{formatter:fmtU}}});
+      series,xaxis:{categories:cats,axisBorder:{show:false},axisTicks:{show:false},labels:xLab,
+        title:{text:'Semana do ano',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}}},
+      yaxis:{labels:{formatter:v=>(v/1e6).toFixed(0)+' Mi'},
+        title:{text:'Acumulado no ano',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}}},
+      markers:{size:0,hover:{size:5}},
+      tooltip:{shared:true,intersect:false,x:{formatter:v=>'Semana '+v},y:{formatter:fmtU}}});
   }
 
   const tipo = modo==='bars'?'bar':modo==='area'?'area':'line';
   const series=ordem.map(y=>({name:y,data:SEMANAS.map(w=>{
     const v=ind.series[`${y}-${WK(w)}`]; return v==null?null:+v.toFixed(0); })}));
-  mk(id,{...baseOpts,chart:{...baseOpts.chart,type:tipo,height:320},
+  mk(id,{...baseOpts,chart:{...baseOpts.chart,type:tipo,height:420},
     colors:ordem.map(y=>YEAR_COL[y]),
     stroke:{curve:CURVA,width:tipo==='bar'?0:2.5,lineCap:'round'},
     fill:tipo==='area'?{type:'gradient',gradient:{shadeIntensity:.3,opacityFrom:.3,opacityTo:.03}}:{opacity:1},
-    plotOptions:{bar:{borderRadius:3,columnWidth:'70%',borderRadiusApplication:'end'}},
-    series,xaxis:{categories:cats,axisBorder:{show:false},axisTicks:{show:false},
-      labels:{rotate:0,hideOverlappingLabels:true}},
-    yaxis:{labels:{formatter:v=>(v/1e6).toFixed(2)+' Mi'}},
-    markers:{size:0,hover:{size:5}},tooltip:{y:{formatter:fmtU}}});
+    plotOptions:{bar:{borderRadius:3,columnWidth:'75%',borderRadiusApplication:'end'}},
+    series,xaxis:{categories:cats,axisBorder:{show:false},axisTicks:{show:false},labels:xLab,
+      title:{text:'Semana do ano',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}}},
+    yaxis:{labels:{formatter:v=>(v/1e6).toFixed(2)+' Mi'},
+      title:{text:'Unidades na semana',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}}},
+    markers:{size:0,hover:{size:5}},
+    tooltip:{shared:true,intersect:false,x:{formatter:v=>'Semana '+v},y:{formatter:fmtU}}});
 }
 function desenhar(id){
   const ind=DATA[id], modo=modoDe(id), anoTopo=[...anosSel].sort().pop();
