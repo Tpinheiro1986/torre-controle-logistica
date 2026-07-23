@@ -764,17 +764,18 @@ function desenharSemanal(id){
         y:{formatter:(v,{seriesIndex})=>seriesIndex<2?mi(v):pc(v)}}});
   }
 
-  if(modo==='acum'){  // acumulado dentro de cada ano
+  if(modo==='acum'){  // acumulado dentro de cada ano — em barras
     const series=ordem.map(y=>{ let s=0; const arr=SEMANAS.map(w=>{
       const v=ind.series[`${y}-${WK(w)}`]; if(v==null) return null; s+=v; return +s.toFixed(0); });
       return {name:y,data:arr}; });
-    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:'line',height:420},
-      colors:ordem.map(y=>YEAR_COL[y]),stroke:{curve:CURVA,width:3,lineCap:'round'},
+    return mk(id,{...baseOpts,chart:{...baseOpts.chart,type:'bar',height:420},
+      colors:ordem.map(y=>YEAR_COL[y]),
+      plotOptions:{bar:{borderRadius:2,columnWidth:'88%',borderRadiusApplication:'end'}},
+      stroke:{width:0},dataLabels:{enabled:false},
       series,xaxis:{categories:cats,axisBorder:{show:false},axisTicks:{show:false},labels:xLab,
         title:{text:'Semana do ano',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}}},
       yaxis:{labels:{formatter:v=>(v/1e6).toFixed(0)+' Mi'},
         title:{text:'Acumulado no ano',style:{fontSize:'11px',fontWeight:600,color:'#5B6B78'}}},
-      markers:{size:0,hover:{size:5}},
       tooltip:{shared:true,intersect:false,x:{formatter:v=>'Semana '+v},y:{formatter:fmtU}}});
   }
 
