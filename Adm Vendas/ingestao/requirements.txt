@@ -1,0 +1,4 @@
+requests>=2.31
+pandas>=2.0
+xlrd>=2.0.1
+openpyxl>=3.1

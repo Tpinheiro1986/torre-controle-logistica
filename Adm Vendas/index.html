@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Torre de Controle — Logística</title>
+<script>
+window.__BUILD__ = { version: 'v9.4-scorecard', date: '23/06/2026' };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --radius:8px;--radius-lg:14px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px}
+
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand-icon{width:38px;height:38px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-size:14px;font-weight:700}
+.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none;transition:border-color .15s}
+.form-input:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.10)}
+.btn-primary{width:100%;padding:11px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
+.btn-primary:hover{background:#0C447C}
+.btn-primary:disabled{background:#888;cursor:not-allowed}
+.login-err{background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+
+#screen-app{display:none;min-height:100vh}
+.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-icon{width:30px;height:30px;background:#185FA5;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-title{font-size:14px;font-weight:700}
+.nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
+.user-av{width:24px;height:24px;border-radius:50%;background:#185FA5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.user-em{font-size:11px;color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
+.btn-sm:hover{background:var(--bg2)}
+.admin-badge{font-size:10px;padding:3px 8px;border-radius:12px;background:#E6F1FB;color:#0C447C;font-weight:500;cursor:pointer}
+
+.container{max-width:1100px;margin:0 auto;padding:40px 32px}
+.page-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:32px}
+
+.painel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:32px}
+.painel-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;cursor:pointer;text-decoration:none;color:var(--text);transition:box-shadow .15s,transform .15s;display:block}
+.painel-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.10);transform:translateY(-2px)}
+.painel-card.disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.painel-card.feature{border:1px solid #185FA5;box-shadow:0 4px 18px rgba(24,95,165,.12)}
+.painel-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.painel-icon svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.painel-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.painel-sub{font-size:11px;color:var(--text2);line-height:1.5}
+.painel-badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500;margin-top:10px}
+.badge-live{background:#EAF3DE;color:#3B6D11}
+.badge-soon{background:#F0F0EE;color:#9b9b97}
+
+.upload-section{display:none;margin-top:16px}
+.upload-section.on{display:block}
+.upload-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:14px}
+.upload-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.upload-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
+.upload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.upload-box{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-box:hover,.upload-box.drag{border-color:#185FA5;background:#E6F1FB20}
+.upload-box.done{border-color:#3B6D11;background:#EAF3DE20;border-style:solid}
+.upload-box.done .upload-box-icon{background:#EAF3DE}
+.upload-box.done .upload-box-icon svg{stroke:#3B6D11}
+.upload-box-icon{width:40px;height:40px;background:var(--bg2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.upload-box-icon svg{width:20px;height:20px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.upload-box-title{font-size:12px;font-weight:500;margin-bottom:3px}
+.upload-box-sub{font-size:10px;color:var(--text2)}
+.upload-box-status{font-size:10px;margin-top:6px;font-weight:500}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.btn-process{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#185FA5;color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-process:hover{background:#0C447C}
+.btn-process:disabled{background:#888;cursor:not-allowed}
+.process-log{background:var(--bg2);border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:12px;font-family:monospace;max-height:220px;overflow-y:auto;display:none}
+.log-line{padding:2px 0;color:var(--text2)}
+.log-line.ok{color:#3B6D11}
+.log-line.err{color:#A32D2D}
+.log-line.info{color:#185FA5}
+.hist-table{width:100%;border-collapse:collapse;font-size:12px}
+.hist-table th{padding:7px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.hist-table td{padding:8px 12px;border-bottom:0.5px solid var(--border)}
+.hist-table tr:last-child td{border-bottom:none}
+.badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block}
+.badge-ok{background:#EAF3DE;color:#3B6D11}
+
+@media(max-width:800px){.painel-grid{grid-template-columns:1fr 1fr}.container{padding:24px 16px}}
+@media(max-width:500px){.painel-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="build-badge" style="position:fixed;bottom:8px;right:10px;z-index:999;background:rgba(24,95,165,.92);color:#fff;font-family:monospace;font-size:10px;padding:3px 8px;border-radius:10px;cursor:pointer;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.15)" title="Versao da Torre principal" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent)">v?</div>
+<script>
+(function(){
+  const b = document.getElementById('build-badge');
+  const v = (window.__BUILD__ && window.__BUILD__.version) || '?';
+  const d = (window.__BUILD__ && window.__BUILD__.date) || '?';
+  if(v.indexOf('__BUILD')===0) b.textContent = 'TORRE-DEV';
+  else b.textContent = 'TORRE ' + v + ' · ' + d;
+})();
+</script>
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="brand-name">Torre de Controle</div><div class="brand-sub">Logística · Genomma Lab</div></div>
+    </div>
+    <div class="login-title">Bem-vindo</div>
+    <div class="login-sub">Acesse com seu e-mail corporativo.</div>
+    <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="l-email" placeholder="seu@genommalab.com"/></div>
+    <div class="form-group"><label class="form-label">Senha</label><input class="form-input" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app">
+  <div class="topnav">
+    <div class="nav-brand">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div><div class="nav-title">Torre de Controle</div><div class="nav-sub">Logística · Genomma Lab</div></div>
+    </div>
+    <div class="nav-right">
+      <span class="admin-badge" id="admin-badge" style="display:none" onclick="toggleUpload()">⬆ Upload de Bases</span>
+      <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-title">Painéis de Indicadores</div>
+    <div class="page-sub">Selecione um painel para visualizar os indicadores de logística.</div>
+
+    <div class="painel-grid">
+
+      <!-- SCORECARD-CARD -->
+      <a class="painel-card feature" href="scorecard/index.html">
+        <div class="painel-icon" style="background:#0C447C">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div class="painel-name">Scorecard Logístico</div>
+        <div class="painel-sub">Visão gerencial consolidada · 18 indicadores · 6 dimensões · 2021–2026</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+      <a class="painel-card" href="otd/index.html">
+        <div class="painel-icon" style="background:#185FA5">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="painel-name">OTD — Entregas</div>
+        <div class="painel-sub">On Time Delivery · Transportadoras · Off Time por Cliente</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+      <a class="painel-card" href="custo-servir/index.html">
+        <div class="painel-icon" style="background:#1D9E75">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="painel-name">Custo de Servir</div>
+        <div class="painel-sub">CTE emitido · Frete · Custo por NF · Transportadora</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+      <a class="painel-card" href="simulador-frete/index.html">
+        <div class="painel-icon" style="background:#C9700B">
+          <svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M8 21H3v-5"/><path d="M3 21l7-7"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <div class="painel-name">Simulador de Frete</div>
+        <div class="painel-sub">Cotação comparativa · Origem × Destino · Peso/NF</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+      <!-- SIMULADOR-SOP-CARD -->
+      <a class="painel-card" href="simulador-sop/index.html">
+        <div class="painel-icon" style="background:#7030A0">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div class="painel-name">S&OP - Forecast | % Ocupação</div>
+        <div class="painel-sub">Ocupação de PP · Genomma × Inovalab · Mensal/Semanal</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+      <!-- AUDITORIA-CARD -->
+      <a class="painel-card" href="painel-fiscal_1/auditoria/index.html">
+        <div class="painel-icon" style="background:#0E8C8C">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        </div>
+        <div class="painel-name">Auditoria Fiscal</div>
+        <div class="painel-sub">NF-e × CT-e · Transportador · Natureza · Faturamento · 2026</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+      <!-- ADM-VENDAS-CARD -->
+      <a class="painel-card" href="adm-vendas/index.html">
+        <div class="painel-icon" style="background:#E0A426">
+          <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        </div>
+        <div class="painel-name">ADM de Vendas</div>
+        <div class="painel-sub">Carteira de pedidos · Alocação · Operação · Fill Rate · ESPD022 diário</div>
+        <span class="painel-badge badge-live">● Ao vivo</span>
+      </a>
+
+
+
+      <div class="painel-card disabled">
+        <div class="painel-icon" style="background:#888">
+          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="painel-name">Estoque</div>
+        <div class="painel-sub">Posição de estoque · Cobertura · Giro</div>
+        <span class="painel-badge badge-soon">Em breve</span>
+      </div>
+
+      <div class="painel-card disabled">
+        <div class="painel-icon" style="background:#888">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="painel-name">Nível de Serviço</div>
+        <div class="painel-sub">Fill rate · Pedidos completos · Rupturas</div>
+        <span class="painel-badge badge-soon">Em breve</span>
+      </div>
+
+      <div class="painel-card disabled">
+        <div class="painel-icon" style="background:#888">
+          <svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 006 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0015 6.7l3-2.7"/></svg>
+        </div>
+        <div class="painel-name">Devoluções / Avarias</div>
+        <div class="painel-sub">Motivos · Valor · Transportadora</div>
+        <span class="painel-badge badge-soon">Em breve</span>
+      </div>
+
+      <div class="painel-card disabled">
+        <div class="painel-icon" style="background:#888">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="painel-name">Produtividade</div>
+        <div class="painel-sub">Expedição · Separação · Recebimento</div>
+        <span class="painel-badge badge-soon">Em breve</span>
+      </div>
+    </div>
+
+    <!-- UPLOAD SECTION (admin) -->
+    <div class="upload-section" id="upload-section">
+      <div class="upload-card">
+        <div class="upload-title">Upload de bases de dados</div>
+        <div class="upload-sub">Faça upload dos arquivos Excel para atualizar os indicadores automaticamente. Cada base é processada e salva no servidor.</div>
+        <div class="upload-grid">
+
+          <div class="upload-box" id="box-otd" ondragover="ev(event,'otd',1)" ondragleave="ev(event,'otd',0)" ondrop="drop(event,'otd')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'otd')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="upload-box-title">OTD — Entregas</div>
+            <div class="upload-box-sub">notas_sintetico.xlsx</div>
+            <div class="upload-box-status" id="st-otd" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
+
+          <div class="upload-box" id="box-est" ondragover="ev(event,'est',1)" ondragleave="ev(event,'est',0)" ondrop="drop(event,'est')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'est')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+            <div class="upload-box-title">Estoque</div>
+            <div class="upload-box-sub">base-estoque.xlsx</div>
+            <div class="upload-box-status" id="st-est" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
+
+          <div class="upload-box" id="box-ns" ondragover="ev(event,'ns',1)" ondragleave="ev(event,'ns',0)" ondrop="drop(event,'ns')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'ns')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="upload-box-title">Nível de Serviço</div>
+            <div class="upload-box-sub">base-nivel-servico.xlsx</div>
+            <div class="upload-box-status" id="st-ns" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
+
+          <div class="upload-box" id="box-dev" ondragover="ev(event,'dev',1)" ondragleave="ev(event,'dev',0)" ondrop="drop(event,'dev')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'dev')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 006 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0015 6.7l3-2.7"/></svg></div>
+            <div class="upload-box-title">Devoluções / Avarias</div>
+            <div class="upload-box-sub">base-devolucoes.xlsx</div>
+            <div class="upload-box-status" id="st-dev" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
+
+          <div class="upload-box" id="box-prod" ondragover="ev(event,'prod',1)" ondragleave="ev(event,'prod',0)" ondrop="drop(event,'prod')">
+            <input type="file" accept=".xlsx,.csv" onchange="pick(this,'prod')">
+            <div class="upload-box-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="upload-box-title">Produtividade</div>
+            <div class="upload-box-sub">base-produtividade.xlsx</div>
+            <div class="upload-box-status" id="st-prod" style="color:var(--text3)">Aguardando arquivo...</div>
+          </div>
+
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button class="btn-process" id="btn-load-server" onclick="carregarDoServidorEProcessar()" style="margin-right:8px;background:#1a472a">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Carregar do Servidor e Processar
+          </button>
+          <button class="btn-process" id="btn-process" onclick="processarTodos()" disabled>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Processar e atualizar indicadores
+          </button>
+          <span style="font-size:11px;color:var(--text2)" id="process-status"></span>
+        </div>
+        <div class="process-log" id="process-log"></div>
+      </div>
+
+      <div class="upload-card">
+        <div class="upload-title">Histórico de atualizações</div>
+        <div class="upload-sub" style="margin-bottom:14px">Últimas bases processadas nesta sessão</div>
+        <div style="overflow-x:auto"><table class="hist-table">
+          <thead><tr><th>Data/Hora</th><th>Indicador</th><th>Arquivo</th><th>Registros</th><th>Status</th></tr></thead>
+          <tbody id="hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Nenhum upload realizado ainda</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// ============================================================
+const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
+
+const {createClient} = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'torre-controle-auth'}
+});
+
+// ============================================================
+// AUTH
+// ============================================================
+let currentUser = null;
+
+async function checkSession(){
+  try{
+    if(window.location.hash&&window.location.hash.includes('access_token')){
+      await new Promise(r=>setTimeout(r,800));
+      window.history.replaceState(null,'',window.location.pathname);
+    }
+    const {data:{session},error}=await sb.auth.getSession();
+    if(error||!session){showLogin();return;}
+    showApp(session.user);
+  }catch(e){showLogin();}
+}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const btn=document.getElementById('btn-login');
+  const err=document.getElementById('login-err');
+  err.style.display='none';
+  if(!email||!pass){showErr(err,'Preencha e-mail e senha.');return;}
+  btn.disabled=true; btn.textContent='Entrando…';
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){
+      let msg=error.message;
+      if(msg.includes('Invalid login')||msg.includes('invalid_credentials')) msg='E-mail ou senha incorretos.';
+      else if(msg.includes('Email not confirmed')) msg='Confirme seu e-mail antes de entrar.';
+      showErr(err,msg); btn.disabled=false; btn.textContent='Entrar';
+    } else { showApp(data.user); }
+  }catch(e){
+    showErr(err,'Erro: '+e.message); btn.disabled=false; btn.textContent='Entrar';
+  }
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  document.getElementById('screen-app').style.display='none';
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('l-pass').value='';
+  document.getElementById('login-err').style.display='none';
+}
+
+function showLogin(){
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('screen-app').style.display='none';
+}
+
+function showApp(user){
+  currentUser=user;
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').style.display='block';
+  document.getElementById('user-av').textContent=user.email.slice(0,2).toUpperCase();
+  document.getElementById('user-em').textContent=user.email;
+  const isAdmin=user.email===ADMIN_EMAIL;
+  if(isAdmin) document.getElementById('admin-badge').style.display='inline-block';
+}
+
+function showErr(el,msg){el.textContent=msg;el.style.display='block';}
+
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN'&&session&&!currentUser) showApp(session.user);
+  else if(event==='SIGNED_OUT') showLogin();
+});
+checkSession();
+
+// ============================================================
+// TOGGLE UPLOAD (admin)
+// ============================================================
+function toggleUpload(){
+  const s=document.getElementById('upload-section');
+  s.classList.toggle('on');
+}
+
+// ============================================================
+// FILE UPLOAD HELPERS
+// ============================================================
+const files={otd:null,est:null,ns:null,dev:null,prod:null};
+
+function ev(e,type,on){e.preventDefault();document.getElementById('box-'+type).classList[on?'add':'remove']('drag');}
+function drop(e,type){e.preventDefault();document.getElementById('box-'+type).classList.remove('drag');const f=e.dataTransfer.files[0];if(f)pick2(f,type);}
+function pick(input,type){if(input.files[0])pick2(input.files[0],type);}
+function pick2(file,type){
+  files[type]=file;
+  const box=document.getElementById('box-'+type);
+  box.classList.add('done');
+  document.getElementById('st-'+type).textContent='✓ '+file.name;
+  document.getElementById('st-'+type).style.color='#3B6D11';
+  document.getElementById('btn-process').disabled=false;
+}
+
+// ============================================================
+// PROCESS
+// ============================================================
+function log(msg,type=''){
+  const box=document.getElementById('process-log');
+  box.style.display='block';
+  const line=document.createElement('div');
+  line.className='log-line '+(type||'');
+  line.textContent='['+new Date().toLocaleTimeString('pt-BR')+'] '+msg;
+  box.appendChild(line);
+  box.scrollTop=box.scrollHeight;
+}
+
+function readExcel(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        res(XLSX.utils.sheet_to_json(ws,{defval:null}));
+      }catch(err){rej(err);}
+    };
+    reader.onerror=rej;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+async function processarTodos(){
+  const btn=document.getElementById('btn-process');
+  btn.disabled=true;
+  document.getElementById('process-log').innerHTML='';
+  document.getElementById('process-status').textContent='';
+
+  if(files.otd){
+    log('Processando OTD...','info');
+    try{
+      await processOTD(files.otd);
+    }catch(e){log('Erro OTD: '+e.message,'err');}
+  }
+
+  log('Tudo concluído!','ok');
+  document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
+  btn.disabled=false;
+}
+
+function addHistorico(indicador,arquivo,regs){
+  const tbody=document.getElementById('hist-tbody');
+  const row=document.createElement('tr');
+  row.innerHTML=`<td>${new Date().toLocaleString('pt-BR')}</td><td>${indicador}</td><td style="font-size:10px">${arquivo}</td><td>${regs||'—'}</td><td><span class="badge badge-ok">✓ Salvo</span></td>`;
+  if(tbody.querySelector('td[colspan]')) tbody.innerHTML='';
+  tbody.insertBefore(row,tbody.firstChild);
+}
+
+// ============================================================
+// PROCESS OTD — versão CORRETA com 3 naturezas, Romaneio, trs_atr
+// (mesma lógica do painel OTD - garante compatibilidade total)
+// ============================================================
+const REGIOES_MAP={
+  'AC':'Norte','AM':'Norte','AP':'Norte','PA':'Norte','RO':'Norte','RR':'Norte','TO':'Norte',
+  'AL':'Nordeste','BA':'Nordeste','CE':'Nordeste','MA':'Nordeste','PB':'Nordeste',
+  'PE':'Nordeste','PI':'Nordeste','RN':'Nordeste','SE':'Nordeste',
+  'DF':'Centro-Oeste','GO':'Centro-Oeste','MS':'Centro-Oeste','MT':'Centro-Oeste',
+  'ES':'Sudeste','MG':'Sudeste','RJ':'Sudeste','SP':'Sudeste',
+  'PR':'Sul','RS':'Sul','SC':'Sul'
+};
+
+const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+
+  // === PATCH v8.2: Filtro de Pedido válido ===
+  function pedidoValido(v){
+    if(v==null) return false;
+    const s=String(v).trim();
+    if(s===''||s==='0'||s==='0.0'||s.toLowerCase()==='null'||s.toLowerCase()==='nan') return false;
+    const n=parseFloat(s);
+    if(!isNaN(n)&&n===0) return false;
+    return true;
+  }
+  function getPedido(r){ return col(r,'Pedido','Nr Pedido','Numero Pedido'); }
+
+  // Naturezas no escopo do relatório (acordadas com a operação):
+//   • VENDA DE MERCADORIA ADQUIRIDA  → entra em vendas (compõe OTD)
+//   • VENDA DE PRODUCAO              → entra em vendas (compõe OTD)
+//   • REMESSA EM BONIFICACAO, DOACAO OU BRINDE → entra em bonificação (somada à parte)
+// As demais naturezas (TRANSFERENCIA, AMOSTRA, OUTRA SAIDA) ficam fora do relatório.
+const NATUREZAS_ESCOPO=[
+  'REMESSA EM BONIFICACAO, DOACAO OU BRINDE',
+  'VENDA DE MERCADORIA ADQUIRIDA',
+  'VENDA DE PRODUCAO'
+];
+const VENDAS_NAT=['VENDA DE MERCADORIA ADQUIRIDA','VENDA DE PRODUCAO'];
+const BONIF_NAT='REMESSA EM BONIFICACAO, DOACAO OU BRINDE';
+
+function col(r,...names){
+  for(const n of names){if(r[n]!==undefined&&r[n]!==null)return r[n];}
+  const keys=Object.keys(r);
+  for(const n of names){
+    const base=n.replace(/[^a-zA-Z0-9 ]/g,'').toLowerCase().substring(0,8);
+    const found=keys.find(k=>k.replace(/[^a-zA-Z0-9 ]/g,'').toLowerCase().includes(base));
+    if(found&&r[found]!==undefined)return r[found];
+  }
+  return null;
+}
+
+function pd(v){
+  if(!v)return null;
+  if(v instanceof Date)return isNaN(v)?null:v;
+  if(typeof v==='number')return new Date(Math.round((v-25569)*86400*1000));
+  const d=new Date(v);return isNaN(d)?null:d;
+}
+
+// Classifica a NF segundo os 4 status oficiais + regra de Romaneio.
+// Regra: notas SEM romaneio que ainda NÃO foram entregues = CD (Hub).
+//        notas COM romaneio (ou em atraso) = Trânsito.
+function classificar(status, romaneio){
+  const s=String(status||'').trim();
+  const temRom = romaneio!=null && String(romaneio).trim()!=='' && String(romaneio).trim()!=='0';
+  if(s==='Entregue no Prazo')        return 'on_time';
+  if(s==='Entregue em Atraso')       return 'off_time';
+  if(s==='Ainda Em Trânsito em Atraso') return 'transito_atr';
+  if(s==='Ainda Pendente'){
+    return temRom ? 'transito' : 'hub';
+  }
+  if(s==='Aguardando Embarque') return 'hub';
+  if(s.includes('Pendente'))    return temRom ? 'transito' : 'hub';
+  return 'outros';
+}
+
+async function processOTD(file){
+  log('Lendo arquivo...','info');
+  const rows=await readExcel(file);
+  log('Linhas: '+rows.length,'info');
+
+  const processed=rows.map(r=>{
+    const fixed={};
+    Object.keys(r).forEach((k,i)=>{fixed[k.replace(/<[^>]*>/g,'').trim()||('col_'+i)]=r[k];});
+    return fixed;
+  });
+
+  const getUF=r=>String(col(r,'UF Destino','UF Dest','UF_Destino')||'');
+  const getValor=r=>parseFloat(String(col(r,'Valor Total','Valor Nota','ValorTotal','valor_total')||0).replace(',','.'))||0;
+  const getNat=r=>String(col(r,'Natureza da Operação','Natureza da Operacao','Natureza_da_Operacao')||'');
+  const getStatus=r=>String(col(r,'Status da Entrega','Status_da_Entrega')||'');
+  const getTransp=r=>String(col(r,'Transportador')||'').substring(0,32);
+  const getEmp=r=>String(col(r,'Embarcador')||'').toUpperCase().includes('INOVALAB')?'INOVALAB':'GENOMMA';
+  const getDE=r=>pd(col(r,'Data Emissão','Data Emissao','Data_Emissao'));
+  const getDent=r=>pd(col(r,'Data Entrega','Data Entregue','Data_Entrega'));
+  const getPrev=r=>pd(col(r,'Previsão de Entrega','Previsao de Entrega','Previsao_de_Entrega'));
+  const getDemb=r=>pd(col(r,'Data Embarque','Data de Embarque','Data Embarcado','Data_Embarque','DataEmbarque','Embarque'));
+  // Tipo Ent. formato "6+1" → soma das parcelas em dias
+  function getTipoEntregaDias(r){
+    const v = col(r,'Tipo Entrega','Tipo de Entrega','Tipo Ent','Tipo Ent.','Tipo_Entrega');
+    if(v == null || v === '') return null;
+    if(typeof v === 'number') return (v >= 0 && v <= 60) ? v : null;
+    const s = String(v).trim();
+    if(!s) return null;
+    if(s.includes('+')){
+      const partes = s.split('+').map(p => parseFloat(p.replace(',','.').trim()));
+      if(partes.every(p => !isNaN(p))){
+        const total = partes.reduce((a,b) => a+b, 0);
+        return (total >= 0 && total <= 60) ? total : null;
+      }
+      return null;
+    }
+    const n = parseFloat(s.replace(',','.'));
+    return (!isNaN(n) && n >= 0 && n <= 60) ? n : null;
+  }
+  const getCidade=r=>String(col(r,'Cidade Destino','Cidade Dest','Cidade','Municipio Destino','Município Destino','Municipio','Município')||'');
+  const getCliente=r=>{
+    const v=col(r,'Destinatário','Destinatario','Cliente','Nome Cliente','Razão Social Destino','Razao Social Destino','Nome Destinatário','Nome Destinatario','Dest','RazaoSocialDest','Razao Social','Razão Social');
+    const s=String(v||'').trim();
+    if(s&&s!=='null')return s.substring(0,60);
+    const nf=col(r,'Número NF','Numero NF','NF','Nota Fiscal');
+    return nf?'NF '+String(nf).substring(0,15):'Cliente não identificado';
+  };
+  const getRomaneio=r=>{
+    const v=col(r,'Romaneio','Romaneio NF');
+    if(v==null) return '';
+    const s=String(v).trim();
+    return (s==='' || s==='0' || s.toLowerCase()==='null') ? '' : s;
+  };
+  function getDiasAtraso(r){
+    const dent=getDent(r), prev=getPrev(r);
+    if(!dent||!prev) return null;
+    const diff=Math.round((dent-prev)/(1000*60*60*24));
+    return diff>0?diff:null;
+  }
+  function getDiasAtrasoPendente(r){
+    const dat=col(r,'Dias Atraso','Dias_Atraso');
+    if(dat!=null && dat!==''){
+      const n=Math.abs(parseFloat(String(dat).replace(',','.')));
+      if(!isNaN(n) && n>0) return Math.round(n);
+    }
+    const prev=getPrev(r);
+    if(!prev) return null;
+    const hoje=new Date();
+    const diff=Math.round((hoje-prev)/(1000*60*60*24));
+    return diff>0?diff:null;
+  }
+
+  // FILTRO POR NATUREZA - 3 naturezas no escopo
+  const totalAntesFiltroPedido = processed.length;  
+  const comPedido = processed.filter(r => pedidoValido(getPedido(r)));  
+  const semPedidoCount = totalAntesFiltroPedido - comPedido.length;
+  if(typeof log==='function') log('NFs descartadas por Pedido vazio/zero: '+semPedidoCount,'info'); 
+  const escopo = comPedido.filter(r=>NATUREZAS_ESCOPO.includes(getNat(r)));
+  const vendas = escopo.filter(r=>VENDAS_NAT.includes(getNat(r)));
+  const bonifs = escopo.filter(r=>getNat(r)===BONIF_NAT);
+  const fora   = comPedido.filter(r=>!NATUREZAS_ESCOPO.includes(getNat(r)));
+  log('Notas no escopo: '+escopo.length+' (vendas: '+vendas.length+' | bonif: '+bonifs.length+')','info');
+  log('Fora do escopo (descartadas): '+fora.length,'info');
+
+  // Meses (vendas)
+  const meses={};
+  vendas.forEach(r=>{
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    const de=getDE(r); if(!de)return;
+    const mes=de.getMonth()+1;
+    const val=getValor(r);
+    const emp=getEmp(r);
+    if(!meses[mes])meses[mes]={
+      fat:0,fat_genomma:0,fat_inovalab:0,qtd:0,qtd_genomma:0,qtd_inovalab:0,
+      on:0,off:0,hub:0,trs:0,trs_atr:0,
+      on_val:0,off_val:0,hub_val:0,trs_val:0,trs_atr_val:0,
+      on_genomma:0,off_genomma:0,on_inovalab:0,off_inovalab:0,
+      nome:NOME_MES[mes]||('M'+mes)
+    };
+    const m=meses[mes];
+    m.fat+=val;m.qtd++;
+    if(emp==='GENOMMA'){m.fat_genomma+=val;m.qtd_genomma++;}else{m.fat_inovalab+=val;m.qtd_inovalab++;}
+    if(tipo==='on_time'){m.on++;m.on_val+=val;
+      if(emp==='GENOMMA')m.on_genomma++;else m.on_inovalab++;
+    } else if(tipo==='off_time'){m.off++;m.off_val+=val;
+      if(emp==='GENOMMA')m.off_genomma++;else m.off_inovalab++;
+    } else if(tipo==='hub'){m.hub++;m.hub_val+=val;}
+    else if(tipo==='transito'){m.trs++;m.trs_val+=val;}
+    else if(tipo==='transito_atr'){m.trs_atr++;m.trs_atr_val+=val;}
+  });
+  Object.keys(meses).forEach(m=>{
+    ['fat','fat_genomma','fat_inovalab','on_val','off_val','hub_val','trs_val','trs_atr_val'].forEach(k=>{meses[m][k]=Math.round(meses[m][k]*100)/100;});
+  });
+
+  // Hub/trs/trs_atr ALL — TODO o escopo (vendas + bonif) para consistência com prevQ
+  let totalHubAll=0,totalTrsAll=0,totalTrsAtrAll=0;
+  let totalHubValAll=0,totalTrsValAll=0,totalTrsAtrValAll=0;
+  escopo.forEach(r=>{
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    const val=getValor(r);
+    if(tipo==='hub'){totalHubAll++;totalHubValAll+=val;}
+    else if(tipo==='transito'){totalTrsAll++;totalTrsValAll+=val;}
+    else if(tipo==='transito_atr'){totalTrsAtrAll++;totalTrsAtrValAll+=val;}
+  });
+
+  // Bonificações — quebrado por status
+  const bonif_mes={};
+  bonifs.forEach(r=>{
+    const de=getDE(r); if(!de)return;
+    const mes=de.getMonth()+1;
+    const val=getValor(r);
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    if(!bonif_mes[mes]) bonif_mes[mes]={
+      fat:0,qtd:0,
+      on:0,off:0,hub:0,trs:0,trs_atr:0,
+      on_val:0,off_val:0,hub_val:0,trs_val:0,trs_atr_val:0
+    };
+    const b=bonif_mes[mes];
+    b.fat+=val; b.qtd++;
+    if(tipo==='on_time'){b.on++;b.on_val+=val;}
+    else if(tipo==='off_time'){b.off++;b.off_val+=val;}
+    else if(tipo==='hub'){b.hub++;b.hub_val+=val;}
+    else if(tipo==='transito'){b.trs++;b.trs_val+=val;}
+    else if(tipo==='transito_atr'){b.trs_atr++;b.trs_atr_val+=val;}
+  });
+  Object.keys(bonif_mes).forEach(m=>{
+    ['fat','on_val','off_val','hub_val','trs_val','trs_atr_val'].forEach(k=>{bonif_mes[m][k]=Math.round(bonif_mes[m][k]*100)/100;});
+  });
+
+  // Transportadoras
+  const transpMap={};
+  vendas.forEach(r=>{
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    const val=getValor(r);
+    const t=getTransp(r); if(!t)return;
+    const uf=getUF(r);
+    const reg=REGIOES_MAP[uf]||'Outros';
+    if(!transpMap[t])transpMap[t]={
+      n:t,fin:0,on:0,off:0,
+      hub:0,trs:0,trs_atr:0,
+      hub_val:0,trs_val:0,trs_atr_val:0,nao_val:0,
+      dias_sum:0,dias_n:0,
+      uf_map:{},reg_map:{}
+    };
+    if(tipo==='on_time'||tipo==='off_time'){
+      transpMap[t].fin++;
+      if(tipo==='on_time')transpMap[t].on++;else transpMap[t].off++;
+      const de=getDE(r);const dent=getDent(r);
+      if(de&&dent){const dias=Math.round((dent-de)/(1000*60*60*24));
+        if(dias>=0&&dias<=60){
+          transpMap[t].dias_sum+=dias;transpMap[t].dias_n++;
+          if(!transpMap[t].uf_map[uf])transpMap[t].uf_map[uf]={uf,reg,fin:0,on:0,off:0,dias_sum:0,dias_n:0};
+          transpMap[t].uf_map[uf].fin++;transpMap[t].uf_map[uf][tipo==='on_time'?'on':'off']++;
+          transpMap[t].uf_map[uf].dias_sum+=dias;transpMap[t].uf_map[uf].dias_n++;
+          if(!transpMap[t].reg_map[reg])transpMap[t].reg_map[reg]={reg,fin:0,on:0,off:0,dias_sum:0,dias_n:0};
+          transpMap[t].reg_map[reg].fin++;transpMap[t].reg_map[reg][tipo==='on_time'?'on':'off']++;
+          transpMap[t].reg_map[reg].dias_sum+=dias;transpMap[t].reg_map[reg].dias_n++;
+        }
+      }
+    }
+    else if(tipo==='hub'){transpMap[t].hub++;transpMap[t].hub_val+=val;transpMap[t].nao_val+=val;}
+    else if(tipo==='transito'){transpMap[t].trs++;transpMap[t].trs_val+=val;transpMap[t].nao_val+=val;}
+    else if(tipo==='transito_atr'){transpMap[t].trs_atr++;transpMap[t].trs_atr_val+=val;transpMap[t].nao_val+=val;}
+  });
+  const transpList=Object.values(transpMap).map(t=>({
+    ...t,
+    otd:t.fin>0?Math.round(t.on/t.fin*1000)/10:null,
+    prazo_medio:t.dias_n>0?Math.round(t.dias_sum/t.dias_n*10)/10:null,
+    hub_val:Math.round(t.hub_val*100)/100,
+    trs_val:Math.round(t.trs_val*100)/100,
+    trs_atr_val:Math.round(t.trs_atr_val*100)/100,
+    nao_val:Math.round(t.nao_val*100)/100,
+    ufs:Object.values(t.uf_map).map(u=>({...u,otd:u.fin>0?Math.round(u.on/u.fin*1000)/10:null,prazo_medio:u.dias_n>0?Math.round(u.dias_sum/u.dias_n*10)/10:null})).sort((a,b)=>b.fin-a.fin),
+    regs:Object.values(t.reg_map).map(rg=>({...rg,otd:rg.fin>0?Math.round(rg.on/rg.fin*1000)/10:null,prazo_medio:rg.dias_n>0?Math.round(rg.dias_sum/rg.dias_n*10)/10:null})).sort((a,b)=>b.fin-a.fin)
+  })).sort((a,b)=>b.fin-a.fin);
+
+  // prevQ - inclui transito_atr
+  const Q_ENDS={Q1:new Date('2026-03-31'),Q2:new Date('2026-06-30'),Q3:new Date('2026-09-30'),Q4:new Date('2026-12-31')};
+  function getPQ(ts){
+    if(!ts) return 'Sem previsão';
+    const d=pd(ts); if(!d) return 'Sem previsão';
+    if(d<=Q_ENDS.Q1) return 'Q1';
+    if(d<=Q_ENDS.Q2) return 'Q2';
+    if(d<=Q_ENDS.Q3) return 'Q3';
+    return 'Q4';
+  }
+  const prevQ={};
+  escopo.filter(r=>{
+    const t=classificar(getStatus(r), getRomaneio(r));
+    return t==='hub' || t==='transito' || t==='transito_atr';
+  }).forEach(r=>{
+    const pq=getPQ(getPrev(r));const val=getValor(r);
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    if(!prevQ[pq])prevQ[pq]={q:pq,qtd:0,valor:0,hub:0,transito:0,transito_atr:0};
+    prevQ[pq].qtd++;prevQ[pq].valor+=val;
+    if(tipo==='hub')prevQ[pq].hub++;
+    else if(tipo==='transito_atr')prevQ[pq].transito_atr++;
+    else prevQ[pq].transito++;
+  });
+  const prevQLista=Object.values(prevQ).map(p=>({...p,valor:Math.round(p.valor*100)/100}))
+    .sort((a,b)=>['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(a.q)-['Q1','Q2','Q3','Q4','Sem previsão'].indexOf(b.q));
+
+  // Regiões
+  const regMap={};const diasRegMap={};
+  vendas.forEach(r=>{
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    const uf=getUF(r);const reg=REGIOES_MAP[uf]||'Outros';const val=getValor(r);
+    const diasDec=Math.abs(parseFloat(String(col(r,'Dias Decorridos','Dias_Decorridos')||0))||0);
+    if(tipo==='transito' || tipo==='transito_atr'){
+      if(!regMap[reg])regMap[reg]={r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
+      regMap[reg].atr_qtd++;regMap[reg].atr_val+=val;regMap[reg].dias_sum+=diasDec;
+      if(!regMap[reg].ufs[uf])regMap[reg].ufs[uf]={u:uf,n:0,val:0,d_sum:0};
+      regMap[reg].ufs[uf].n++;regMap[reg].ufs[uf].val+=val;regMap[reg].ufs[uf].d_sum+=diasDec;
+    }
+    if(tipo==='on_time'||tipo==='off_time'){
+      const de=getDE(r);const dent=getDent(r);
+      if(de&&dent){const dias=Math.round((dent-de)/(1000*60*60*24));
+        if(dias>=0&&dias<=60){
+          const mes=de.getMonth()+1;
+          if(!diasRegMap[reg])diasRegMap[reg]={};
+          if(!diasRegMap[reg][mes])diasRegMap[reg][mes]={sum:0,n:0};
+          diasRegMap[reg][mes].sum+=dias;diasRegMap[reg][mes].n++;
+        }
+      }
+    }
+  });
+  const dias_mes={};
+  Object.keys(diasRegMap).forEach(reg=>{dias_mes[reg]={};Object.keys(diasRegMap[reg]).forEach(m=>{const {sum,n}=diasRegMap[reg][m];dias_mes[reg][parseInt(m)]=n>0?Math.round(sum/n*10)/10:0;});});
+  const regioes=['Sudeste','Nordeste','Centro-Oeste','Norte','Sul'].map(reg=>{
+    const rm=regMap[reg]||{r:reg,atr_qtd:0,atr_val:0,dias_sum:0,ufs:{}};
+    const ufs=Object.values(rm.ufs||{}).map(u=>({u:u.u,n:u.n,val:Math.round(u.val*100)/100,d:u.n>0?Math.round(u.d_sum/u.n*10)/10:0})).sort((a,b)=>b.n-a.n).slice(0,6);
+    const drm=diasRegMap[reg]||{};let entSum=0,entN=0;Object.values(drm).forEach(v=>{entSum+=v.sum;entN+=v.n;});
+    return{r:reg,atr_qtd:rm.atr_qtd,atr_val:Math.round(rm.atr_val*100)/100,dias_atr:rm.atr_qtd>0?Math.round(rm.dias_sum/rm.atr_qtd*10)/10:0,media_ent:entN>0?Math.round(entSum/entN*10)/10:0,mediana:0,ufs};
+  });
+
+  // Empresa total
+  const empresa_total={GENOMMA:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0,trs_atr:0},INOVALAB:{fat:0,qtd:0,on:0,off:0,hub:0,trs:0,trs_atr:0}};
+  vendas.forEach(r=>{
+    const emp=getEmp(r);const tipo=classificar(getStatus(r), getRomaneio(r));const val=getValor(r);
+    empresa_total[emp].fat+=val;empresa_total[emp].qtd++;
+    if(tipo==='on_time')empresa_total[emp].on++;
+    else if(tipo==='off_time')empresa_total[emp].off++;
+    else if(tipo==='hub')empresa_total[emp].hub++;
+    else if(tipo==='transito')empresa_total[emp].trs++;
+    else if(tipo==='transito_atr')empresa_total[emp].trs_atr++;
+  });
+  Object.keys(empresa_total).forEach(e=>{empresa_total[e].fat=Math.round(empresa_total[e].fat*100)/100;});
+
+  // clientesOff - inclui Off Time E Em Trânsito em Atraso, com campo "situacao"
+  const clienteOffMap={};
+  const allOffRows=escopo.filter(r=>{
+    const t=classificar(getStatus(r), getRomaneio(r));
+    return t==='off_time' || t==='transito_atr';
+  });
+  log('Off Time + Em Trânsito em Atraso: '+allOffRows.length,'info');
+
+  allOffRows.forEach(r=>{
+    const cliente=getCliente(r);const uf=getUF(r);const reg=REGIOES_MAP[uf]||'Outros';
+    const cidade=getCidade(r);const val=getValor(r);const de=getDE(r);
+    const tipo=classificar(getStatus(r), getRomaneio(r));
+    const diasAtr = (tipo==='off_time') ? getDiasAtraso(r) : getDiasAtrasoPendente(r);
+    const mes=de?de.getMonth()+1:0;const transp=getTransp(r);
+    const key=cliente+'|'+uf+'|'+(cidade||'')+'|'+tipo;
+    if(!clienteOffMap[key]) clienteOffMap[key]={
+      cliente,cidade,uf,regiao:reg,
+      qtd:0,valor:0,dias_sum:0,dias_n:0,dias_max:0,
+      transp,mes_nome:de?(NOME_MES[mes]||('M'+mes)):'',
+      situacao: tipo==='off_time' ? 'Entregue em Atraso' : 'Em Trânsito em Atraso'
+    };
+    const c=clienteOffMap[key];
+    c.qtd++;c.valor+=val;
+    if(diasAtr!=null){
+      c.dias_sum+=diasAtr;c.dias_n++;
+      if(diasAtr>c.dias_max) c.dias_max=diasAtr;
+    }
+  });
+  const clientesOff=Object.values(clienteOffMap).map(c=>({
+    ...c,
+    valor:Math.round(c.valor*100)/100,
+    dias_medio:c.dias_n>0?Math.round(c.dias_sum/c.dias_n*10)/10:null
+  })).sort((a,b)=>b.qtd-a.qtd);
+  log('Clientes com atraso: '+clientesOff.length,'info');
+
+  // ============================================================
+  // NOVOS INDICADORES: Lead Times, Faturamento por Região, Impacto Agenda
+  // ============================================================
+  const REGS_LT = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+
+  // --- (A) Faturamento por Região × Mês -----------------------
+  const fatRegMes = {};
+  REGS_LT.forEach(reg => { fatRegMes[reg] = {}; });
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    if(!reg || !fatRegMes[reg]) return;
+    const de = getDE(r);
+    if(!de) return;
+    const mes = de.getMonth() + 1;
+    const val = getValor(r);
+    if(!fatRegMes[reg][mes]) fatRegMes[reg][mes] = { fat: 0, qtd: 0 };
+    fatRegMes[reg][mes].fat += val;
+    fatRegMes[reg][mes].qtd++;
+  });
+  Object.keys(fatRegMes).forEach(reg => {
+    Object.keys(fatRegMes[reg]).forEach(m => {
+      fatRegMes[reg][m].fat = Math.round(fatRegMes[reg][m].fat * 100) / 100;
+    });
+  });
+
+  // --- (B) Lead Times por Região + Total Brasil ---------------
+  const ltReg = {};
+  REGS_LT.forEach(reg => {
+    ltReg[reg] = { total_sum:0, total_n:0, exp_sum:0, exp_n:0, trans_sum:0, trans_n:0 };
+  });
+  const ltBR = { total_sum:0, total_n:0, exp_sum:0, exp_n:0, trans_sum:0, trans_n:0 };
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    const de   = getDE(r);
+    const demb = getDemb(r);
+    const dent = getDent(r);
+    if(de && dent){
+      const dias = Math.round((dent - de) / 86400000);
+      if(dias >= 0 && dias <= 90){
+        ltBR.total_sum += dias; ltBR.total_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].total_sum += dias; ltReg[reg].total_n++; }
+      }
+    }
+    if(de && demb){
+      const dias = Math.round((demb - de) / 86400000);
+      if(dias >= 0 && dias <= 60){
+        ltBR.exp_sum += dias; ltBR.exp_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].exp_sum += dias; ltReg[reg].exp_n++; }
+      }
+    }
+    if(demb && dent){
+      const dias = Math.round((dent - demb) / 86400000);
+      if(dias >= 0 && dias <= 90){
+        ltBR.trans_sum += dias; ltBR.trans_n++;
+        if(reg && ltReg[reg]){ ltReg[reg].trans_sum += dias; ltReg[reg].trans_n++; }
+      }
+    }
+  });
+  const avgLT = (s,n) => n > 0 ? Math.round(s/n*10)/10 : null;
+  const lead_times_regiao = REGS_LT.map(reg => {
+    const lt = ltReg[reg];
+    return {
+      regiao: reg,
+      lt_total: avgLT(lt.total_sum, lt.total_n),
+      lt_exp:   avgLT(lt.exp_sum,   lt.exp_n),
+      lt_trans: avgLT(lt.trans_sum, lt.trans_n),
+      n_total: lt.total_n, n_exp: lt.exp_n, n_trans: lt.trans_n
+    };
+  });
+  const lead_time_brasil = {
+    lt_total: avgLT(ltBR.total_sum, ltBR.total_n),
+    lt_exp:   avgLT(ltBR.exp_sum,   ltBR.exp_n),
+    lt_trans: avgLT(ltBR.trans_sum, ltBR.trans_n),
+    n_total: ltBR.total_n, n_exp: ltBR.exp_n, n_trans: ltBR.trans_n
+  };
+
+  // --- (C) Impacto Agenda --------------------------------------
+  const impactoMap = {};
+  REGS_LT.forEach(reg => {
+    impactoMap[reg] = { qtd_avaliadas:0, qtd_com_impacto:0, soma_dias:0, max_dias:0, valor_impactado:0 };
+  });
+  escopo.forEach(r => {
+    const uf = getUF(r);
+    const reg = REGIOES_MAP[uf];
+    if(!reg || !impactoMap[reg]) return;
+    const demb = getDemb(r);
+    const dent = getDent(r);
+    const tipoDias = getTipoEntregaDias(r);
+    if(!demb || !dent || tipoDias == null) return;
+    const previsaoReal = new Date(demb.getTime());
+    previsaoReal.setDate(previsaoReal.getDate() + Math.round(tipoDias) + 2);
+    impactoMap[reg].qtd_avaliadas++;
+    if(dent > previsaoReal){
+      const diasImpacto = Math.round((dent - previsaoReal) / 86400000);
+      if(diasImpacto > 0 && diasImpacto <= 120){
+        const ia = impactoMap[reg];
+        ia.qtd_com_impacto++;
+        ia.soma_dias += diasImpacto;
+        ia.valor_impactado += getValor(r);
+        if(diasImpacto > ia.max_dias) ia.max_dias = diasImpacto;
+      }
+    }
+  });
+  const impacto_agenda = REGS_LT.map(reg => {
+    const ia = impactoMap[reg];
+    return {
+      regiao: reg,
+      qtd_avaliadas: ia.qtd_avaliadas,
+      qtd_com_impacto: ia.qtd_com_impacto,
+      pct_impacto: ia.qtd_avaliadas > 0 ? Math.round(ia.qtd_com_impacto / ia.qtd_avaliadas * 1000) / 10 : 0,
+      dias_medio: ia.qtd_com_impacto > 0 ? Math.round(ia.soma_dias / ia.qtd_com_impacto * 10) / 10 : 0,
+      dias_max: ia.max_dias,
+      valor_impactado: Math.round(ia.valor_impactado * 100) / 100
+    };
+  });
+  log('Lead Times Brasil — total='+lead_time_brasil.lt_total+'d, exp='+lead_time_brasil.lt_exp+'d, trans='+lead_time_brasil.lt_trans+'d','info');
+  log('Impacto Agenda — NFs avaliadas: '+impacto_agenda.reduce((s,i)=>s+i.qtd_avaliadas,0),'info');
+
+  const payload={
+    meses,bonif_mes,otd:transpList,regioes,dias_mes,
+    prevQ:prevQLista,empresa_total,clientesOff,
+    totalHubAll,totalTrsAll,totalTrsAtrAll,
+    totalHubValAll:Math.round(totalHubValAll*100)/100,
+    totalTrsValAll:Math.round(totalTrsValAll*100)/100,
+    totalTrsAtrValAll:Math.round(totalTrsAtrValAll*100)/100,
+    fat_regiao_mes: fatRegMes,
+    lead_times_regiao,
+    lead_time_brasil,
+    impacto_agenda,
+    atualizado:new Date().toLocaleString('pt-BR'),
+    base_nome:file.name,
+    total_nfs:vendas.length,
+    total_bonif:bonifs.length,
+    total_escopo:escopo.length,
+    total_fora_escopo:fora.length
+  };
+
+  log('Salvando no Supabase...','info');
+  const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+  const {error}=await sb.storage.from('dashboards').upload('otd/dados.json',blob,{upsert:true,contentType:'application/json',cacheControl:'0'});
+  if(error){log('Aviso: '+error.message,'err');}
+  else {log('✓ Salvo: otd/dados.json','ok');}
+  log('OTD concluído: escopo '+escopo.length+' NFs (vendas '+vendas.length+' + bonif '+bonifs.length+'). Fora descartadas: '+fora.length,'ok');
+  addHistorico('OTD',file.name,escopo.length);
+  log('Tudo concluído!','ok');
+  document.getElementById('process-status').textContent='✓ Atualizado em '+new Date().toLocaleTimeString('pt-BR');
+}
+
+// ============================================================
+// CARREGAR DO SERVIDOR E PROCESSAR (adicionado pelo consolidador)
+// ============================================================
+async function carregarDoServidorEProcessar(){
+  const session = (await sb.auth.getSession()).data.session;
+  if(!session){
+    log('Voce precisa estar logado.','err');
+    alert('Faca login primeiro.');
+    return;
+  }
+  const btnLoad = document.getElementById('btn-load-server');
+  const btnProc = document.getElementById('btn-process');
+  if(btnLoad){ btnLoad.disabled = true; btnLoad.textContent = ' Baixando do servidor...'; }
+  log('Baixando historico_mestre.xlsx do servidor...','info');
+  try{
+    const { data, error } = await sb.storage.from('dashboards').download('otd/historico_mestre.xlsx');
+    if(error){
+      log('Erro ao baixar do servidor: '+error.message,'err');
+      log('Verifique se o consolidador ja rodou hoje (atualizar.bat).','err');
+      if(btnLoad){ btnLoad.disabled = false; btnLoad.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Carregar do Servidor e Processar'; }
+      return;
+    }
+    log('✓ Baixado: '+(data.size/1024).toFixed(1)+' KB','ok');
+    const file = new File([data], 'historico_mestre.xlsx',
+                          {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    // Reusa a logica existente que registra o arquivo no slot 'otd'
+    pick2(file, 'otd');
+    log('Iniciando processamento...','info');
+    // Chama o processamento padrao do painel
+    await processarTodos();
+  }catch(e){
+    log('Erro inesperado: '+e.message,'err');
+  }finally{
+    if(btnLoad){
+      btnLoad.disabled = false;
+      btnLoad.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Carregar do Servidor e Processar';
+    }
+  }
+}
+</script>
+</body>
+</html>
