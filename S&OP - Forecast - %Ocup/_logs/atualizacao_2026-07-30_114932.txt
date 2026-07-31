@@ -1,0 +1,12 @@
+
+==================================================================
+  TORRE DE CONTROLE - ATUALIZADOR S&OP / S&OE
+==================================================================
+Pasta de entrada : C:\Users\thiago.pinheiro\OneDrive - genommalabinternacional\Área de Trabalho\Codigo\torre-controle-logistica\S&OP - Forecast - %Ocup\_entrada
+Ano / horizonte  : 2026 / 2026
+Instalando bibliotecas faltantes: xlrd
+Bibliotecas instaladas.
+
+Nenhum arquivo em _entrada.
+Cole ali as planilhas (S&OP, Forecast Pedidos, Estoque, Cadastro,
+relatorio FT4003) e/ou um index.html novo, e rode de novo.

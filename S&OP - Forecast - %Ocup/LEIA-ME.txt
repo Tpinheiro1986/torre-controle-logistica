@@ -1,0 +1,114 @@
+================================================================
+ TORRE DE CONTROLE - ATUALIZADOR AUTOMATICO  (S&OP / S&OE)
+================================================================
+
+O QUE ELE FAZ
+-------------
+Voce cola as planilhas na pasta _entrada e da um duplo clique em
+ATUALIZAR.bat. Ele identifica sozinho o que e cada arquivo, grava
+tudo no Supabase e, se voce tambem colar um index.html novo,
+publica o painel no GitHub.
+
+
+INSTALACAO (so na primeira vez)
+-------------------------------
+1) Descompacte tudo nesta pasta:
+   ...\torre-controle-logistica\S&OP - Forecast - %Ocup\
+
+2) Instale o Python (se ainda nao tiver):
+   https://www.python.org/downloads/windows/
+   >>> MARQUE "Add python.exe to PATH" na primeira tela <<<
+
+3) Rode uma vez o sop_faturamento_real.sql no SQL Editor do Supabase.
+   Sem isso a parte de faturamento nao funciona.
+
+4) Confira o campo "repo_local" no config.json. Ele deve apontar para
+   a pasta do repositorio (aquela que tem a subpasta .git).
+
+
+USO NO DIA A DIA
+----------------
+1) Cole na pasta _entrada:
+      - a planilha de S&OP / Forecast / Estoque / Cadastro
+      - o relatorio FT4003 (Nota Fiscal)
+      - um index.html novo, se houver
+   Pode colar todos juntos, em qualquer ordem, com qualquer nome.
+
+2) Duplo clique em ATUALIZAR.bat
+
+3) Confira o resumo na tela e responda S
+
+4) Digite a senha do Supabase (ela NAO fica salva em lugar nenhum)
+
+5) Pronto. Abra o painel e de Ctrl+Shift+R.
+
+
+ANTES DE VALER, DA PARA ENSAIAR
+-------------------------------
+Duplo clique em SIMULAR.bat: ele le os arquivos e mostra exatamente
+o que faria, sem gravar nada e sem publicar. Use sempre que estiver
+em duvida se um arquivo novo vai ser lido do jeito certo.
+
+
+COMO ELE RECONHECE CADA ARQUIVO
+-------------------------------
+Nao e pelo nome do arquivo, e pelo conteudo das colunas:
+
+  COD ITEM + QTDE + DATA ............. Faturamento real (FT4003)
+  Cod Item + Und p/ Pallet CD ........ Cadastro SKU
+  Item + Qtd Liquida ................. Estoque Atual
+  Codigo + SKU + Abril ............... S&OP (saidas)
+  Codigo + SKU + MAI-26 .............. Forecast Pedidos (entradas)
+
+Uma planilha com varias abas e lida aba por aba. O arquivo
+Forecas_Q2_Q3_Q4.xlsx, por exemplo, alimenta quatro tabelas de
+uma vez so.
+
+
+REGRAS DE SEGURANCA QUE ELE SEGUE
+---------------------------------
+- So substitui os MESES presentes nos arquivos. Os outros meses
+  continuam intactos no banco.
+- Cadastro e Estoque entram por upsert: nada e apagado.
+- Antes de sobrescrever o index.html, guarda uma copia .bak no repo.
+- Mostra o resumo e espera a sua confirmacao antes de gravar.
+- A senha e pedida na hora e nunca gravada em disco.
+- Todo o que foi feito fica registrado na pasta _logs.
+- Os arquivos ja processados vao para _processados\AAAA-MM-DD_HHMM\
+  (nao ficam soltos para nao serem importados duas vezes).
+
+
+PONTO DE ATENCAO: ESTOQUE
+-------------------------
+O painel usa, para cada SKU, a foto de estoque mais recente. Se o seu
+arquivo de estoque tiver menos SKUs que o painel, os que faltarem
+continuam com a foto antiga. O atualizador avisa quantos e quais sao
+antes de gravar. O ideal e sempre exportar o estoque completo.
+
+
+PONTO DE ATENCAO: CADASTRO
+--------------------------
+O cadastro completo tem cerca de 660 itens, mas o painel trabalha com
+os que tem plano, estoque ou faturamento. Por padrao o atualizador
+importa so esses. Para trazer o cadastro inteiro, mude no config.json:
+   "cadastro_somente_relevantes": false
+
+
+SE DER ERRO
+-----------
+A janela nao fecha sozinha: leia a mensagem. O detalhe completo fica
+na pasta _logs, no arquivo com a data e a hora da tentativa.
+
+  "Python nao encontrado"
+      Instale o Python marcando "Add python.exe to PATH".
+
+  "nao consegui autenticar"
+      Senha errada, ou o e-mail do config.json nao e o admin.
+
+  "a tabela sop_faturamento_real nao existe"
+      Rode o sop_faturamento_real.sql no Supabase.
+
+  "git push falhou"
+      Os dados JA foram gravados no Supabase; so a publicacao do
+      index.html ficou pendente. Abra a pasta do repositorio e rode
+      "git push" na mao, ou suba o arquivo pelo site do GitHub.

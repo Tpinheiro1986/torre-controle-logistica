@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<title>Simulador S&OP / Forecast — Torre de Controle</title>
+<script>window.__BUILD__ = { version: 'sim-v2.0', date: '30/07/2026' };</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script id="SEED_DATA" type="application/json">{"parametros":{"cap_genomma":2608,"cap_inovalab":2044,"safety_pct":0.9,"entrada_s1":0.2,"entrada_s2":0.4,"entrada_s3":0.3,"entrada_s4":0.1,"entrada_s5":0.0},"skus":[{"cod_item":"1031087","descricao":"Asepxia Barra Detox 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"17898636190871","status_supply":"Linha"},{"cod_item":"1031084","descricao":"Asepxia Barra Enxofre 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"17898949409554","status_supply":"Linha"},{"cod_item":"1031082","descricao":"Asepxia Barra Esfoliante 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"17898949409530","status_supply":"Linha"},{"cod_item":"1031086","descricao":"Asepxia Barra Forte 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"17898949409561","status_supply":"Linha"},{"cod_item":"1031083","descricao":"Asepxia Barra Neutro 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"17898949409516","status_supply":"Desativado"},{"cod_item":"1031085","descricao":"Asepxia Barra Suavizante/Cremoso 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"17898949409547","status_supply":"Linha"},{"cod_item":"1008900","descricao":"Asepxia Detox Sabonete Barra Kit 3un - 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1694,"upp_override":null,"upp_efetiva":1694,"gtin14":"17898636194299","status_supply":"Desativado"},{"cod_item":"1009000","descricao":"Asepxia Enxofre Sabonete Barra Kit 3un - 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1694,"upp_override":null,"upp_efetiva":1694,"gtin14":"17898636194312","status_supply":"Desativado"},{"cod_item":"1008800","descricao":"Asepxia Esfoliante Sabonete Barra  Kit 3un - 80g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1694,"upp_override":null,"upp_efetiva":1694,"gtin14":"17898636194305","status_supply":"Simulador"},{"cod_item":"600119","descricao":"Asepxia Gel Secativo","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":7584,"upp_override":null,"upp_efetiva":7584,"gtin14":"17898636190833","status_supply":"Linha"},{"cod_item":"1031045","descricao":"Asepxia Limpeza Esfoliante Carvão Detox","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4200,"upp_override":null,"upp_efetiva":4200,"gtin14":"17798140253355","status_supply":"Linha"},{"cod_item":"600108","descricao":"Asepxia Maquiagem Pó Marfim","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":3420,"upp_override":null,"upp_efetiva":3420,"gtin14":"17898636190727","status_supply":"Desativado"},{"cod_item":"1031046","descricao":"Asepxia Máscara Peel off Carvão Detox","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":5800,"upp_override":null,"upp_efetiva":5800,"gtin14":"17798140253362","status_supply":"Linha"},{"cod_item":"1031079","descricao":"Asepxia Protetor Solar Gen 40g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4536,"upp_override":null,"upp_efetiva":4536,"gtin14":"17898636192561","status_supply":"Desativado"},{"cod_item":"1031068","descricao":"Asepxia Sab Líq Limpeza Profunda 150 mL","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1944,"upp_override":null,"upp_efetiva":1944,"gtin14":"17898636192448","status_supply":"Linha"},{"cod_item":"1031069","descricao":"Asepxia Sab Líq Limpeza Profunda 300 mL","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1320,"upp_override":null,"upp_efetiva":1320,"gtin14":"17898636192462","status_supply":"Linha"},{"cod_item":"1009200","descricao":"Asepxia Sabonete Barra Corporal Neutro 85g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"27898636194500","status_supply":"Simulador"},{"cod_item":"1009500","descricao":"Asepxia Sabonete Barra Corporal Neutro 85g c/ 4 unidades","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1200,"upp_override":null,"upp_efetiva":1200,"gtin14":"17898636194534","status_supply":"Simulador"},{"cod_item":"1009100","descricao":"Asepxia Sabonete Barra Corporal Regenerador 85g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"27898636194494","status_supply":"Simulador"},{"cod_item":"1009400","descricao":"Asepxia Sabonete Barra Corporal Regenerador 85g c/ 4unidades","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1200,"upp_override":null,"upp_efetiva":1200,"gtin14":"17898636194527","status_supply":"Simulador"},{"cod_item":"1009300","descricao":"Asepxia Sabonete Barra Corporal Suavizante 85g","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":4840,"upp_override":null,"upp_efetiva":4840,"gtin14":"27898636194517","status_supply":"Simulador"},{"cod_item":"1009600","descricao":"Asepxia Sabonete Barra Corporal Suavizante 85g c/ 4 unidades","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1200,"upp_override":null,"upp_efetiva":1200,"gtin14":"17898636194541","status_supply":"Simulador"},{"cod_item":"600160","descricao":"Asepxia Sabonete Liquido Esfoliante 100ml","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":3996,"upp_override":null,"upp_efetiva":3996,"gtin14":"17898636191076","status_supply":"Desativado"},{"cod_item":"1031070","descricao":"Asepxia Sabonete Líquido Detox 150 mL","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":1944,"upp_override":null,"upp_efetiva":1944,"gtin14":"17898636192455","status_supply":"Linha"},{"cod_item":"1031078","descricao":"Asepxia Sérum Corretor Pele Oleosa 30mL","marca":"10 - Asepxia","empresa":"GENOMMA","upp_cadastro":3264,"upp_override":null,"upp_efetiva":3264,"gtin14":"17898636192554","status_supply":"Desativado"},{"cod_item":"3009900","descricao":"Next 10 capsulas","marca":"101 - Next Antigripal","empresa":"GENOMMA","upp_cadastro":5940,"upp_override":null,"upp_efetiva":5940,"gtin14":"17898636192813","status_supply":"Desativado"},{"cod_item":"600280","descricao":"Next 100 capsulas","marca":"101 - Next Antigripal","empresa":"GENOMMA","upp_cadastro":640,"upp_override":null,"upp_efetiva":640,"gtin14":"17898636191977","status_supply":"Desativado"},{"cod_item":"3031037","descricao":"Next Defen-C 1g Vitamina C + Zinco 10 un AI","marca":"103 - Next Vitamina","empresa":"GENOMMA","upp_cadastro":6000,"upp_override":null,"upp_efetiva":6000,"gtin14":"27898636192223","status_supply":"Desativado"},{"cod_item":"4406100","descricao":"Liris Calm 10 mL","marca":"105 - Liris","empresa":"GENOMMA","upp_cadastro":4800,"upp_override":null,"upp_efetiva":4800,"gtin14":"17898636194275","status_supply":"Lancamento"},{"cod_item":"4406000","descricao":"Liris Carmelose Sódica 10 mL 5mg/mL","marca":"105 - Liris","empresa":"GENOMMA","upp_cadastro":7680,"upp_override":null,"upp_efetiva":7680,"gtin14":"27898636192186","status_supply":"Linha"},{"cod_item":"4406200","descricao":"Liris Power 10 mL","marca":"105 - Liris","empresa":"GENOMMA","upp_cadastro":6720,"upp_override":null,"upp_efetiva":6720,"gtin14":"17898636194282","status_supply":"Lancamento"},{"cod_item":"4406300","descricao":"Liris Protect 10 mL","marca":"105 - Liris","empresa":"GENOMMA","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":"17898636194398","status_supply":"Simulador"},{"cod_item":"5010100","descricao":"Nina Melatonina 0,21mg 10 mL AI","marca":"106 - Nina","empresa":"GENOMMA","upp_cadastro":4800,"upp_override":null,"upp_efetiva":4800,"gtin14":"17898636192806","status_supply":"Desativado"},{"cod_item":"5010200","descricao":"Nina Melatonina 0,21mg 120cpr","marca":"106 - Nina","empresa":"GENOMMA","upp_cadastro":2400,"upp_override":null,"upp_efetiva":2400,"gtin14":"17898636193148","status_supply":"Desativado"},{"cod_item":"1108900","descricao":"Cicatricure Creme Contorno dos Olhos 15g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":5040,"upp_override":null,"upp_efetiva":5040,"gtin14":"17898636190925","status_supply":"Linha"},{"cod_item":"1109300","descricao":"Cicatricure Creme Corporal 250g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2448,"upp_override":null,"upp_efetiva":2448,"gtin14":"17898636191045","status_supply":"Linha"},{"cod_item":"1109200","descricao":"Cicatricure Creme FPS 30 Diurno 50g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3348,"upp_override":null,"upp_efetiva":3348,"gtin14":"17898949409844","status_supply":"Linha"},{"cod_item":"1109000","descricao":"Cicatricure Creme para Rugas 30g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":4480,"upp_override":null,"upp_efetiva":4480,"gtin14":"17898636190970","status_supply":"Linha"},{"cod_item":"1109100","descricao":"Cicatricure Creme para Rugas 50g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2688,"upp_override":null,"upp_efetiva":2688,"gtin14":"17898949409639","status_supply":"Linha"},{"cod_item":"1110200","descricao":"Cicatricure Eye Cream for Face 30g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":4320,"upp_override":null,"upp_efetiva":4320,"gtin14":"17898636193100","status_supply":"Desativado"},{"cod_item":"1110400","descricao":"Cicatricure Gel 30g - Horizontal","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":8200,"upp_override":null,"upp_efetiva":8200,"gtin14":"17898949409622","status_supply":"Linha"},{"cod_item":"1110500","descricao":"Cicatricure Gel 60g - Horizontal","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3840,"upp_override":null,"upp_efetiva":3840,"gtin14":"27898949409766","status_supply":"Linha"},{"cod_item":"1131009","descricao":"Cicatricure Gold Lift Dia 50 g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3072,"upp_override":null,"upp_efetiva":3072,"gtin14":"17898636192004","status_supply":"Linha"},{"cod_item":"1131008","descricao":"Cicatricure Gold Lift Noite 50 g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3072,"upp_override":null,"upp_efetiva":3072,"gtin14":"17898636191991","status_supply":"Linha"},{"cod_item":"1131080","descricao":"Cicatricure GoldLift Serum Firmador 30mL","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2496,"upp_override":null,"upp_efetiva":2496,"gtin14":"17898636192592","status_supply":"Linha"},{"cod_item":"1109600","descricao":"Cicatricure Maternity Corporal 250mL","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":1728,"upp_override":null,"upp_efetiva":1728,"gtin14":"17898636190918","status_supply":"Linha"},{"cod_item":"1111500","descricao":"Cicatricure Neuro-zen 50g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3072,"upp_override":null,"upp_efetiva":3072,"gtin14":"17898636194350","status_supply":"Lancamento"},{"cod_item":"1110900","descricao":"Cicatricure Porcelana Gel Creme Facial 50g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3072,"upp_override":null,"upp_efetiva":3072,"gtin14":"17898636194053","status_supply":"Lancamento"},{"cod_item":"1110700","descricao":"Cicatricure Porcelana Limpeza Facial 3 em 1 150ml","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":1944,"upp_override":null,"upp_efetiva":1944,"gtin14":"17898636194046","status_supply":"Lancamento"},{"cod_item":"1110800","descricao":"Cicatricure Porcelana Peeling Facial 30ml","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2880,"upp_override":null,"upp_efetiva":2880,"gtin14":"17898636194060","status_supply":"Lancamento"},{"cod_item":"1131072","descricao":"Cicatricure Prot Solar FPS50 Matte 40g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":4032,"upp_override":null,"upp_efetiva":4032,"gtin14":"17898636192486","status_supply":"Linha"},{"cod_item":"1110000","descricao":"Cicatricure Protetor Solar FPS 50 com cor 40g - clara","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3600,"upp_override":null,"upp_efetiva":3600,"gtin14":"17898636193117","status_supply":"Linha"},{"cod_item":"1111000","descricao":"Cicatricure Protetor Solar FPS 50 com cor 40g - escura","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":4032,"upp_override":null,"upp_efetiva":4032,"gtin14":"17898636194237","status_supply":"Linha"},{"cod_item":"1110100","descricao":"Cicatricure Protetor Solar FPS 50 com cor 40g - média","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3600,"upp_override":null,"upp_efetiva":3600,"gtin14":"17898636193124","status_supply":"Linha"},{"cod_item":"1111400","descricao":"Cicatricure Regeneplast 30g","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3840,"upp_override":null,"upp_efetiva":3840,"gtin14":"17898636194343","status_supply":"Lancamento"},{"cod_item":"1108800","descricao":"Cicatricure Sérum Clareador Facial 30mL","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2880,"upp_override":null,"upp_efetiva":2880,"gtin14":"17898636190703","status_supply":"Linha"},{"cod_item":"1110300","descricao":"Cicatricure Sérum Facial Antissinais - 30 mL","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":3600,"upp_override":null,"upp_efetiva":3600,"gtin14":"17898636193308","status_supply":"Desativado"},{"cod_item":"1111700","descricao":"Cicatricure Sérum Neuro-zen 30mL","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2880,"upp_override":null,"upp_efetiva":2880,"gtin14":"17898636194626","status_supply":"Lancamento"},{"cod_item":"1109700","descricao":"Cicatricure Água Micelar 200 mL","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":2700,"upp_override":null,"upp_efetiva":2700,"gtin14":"17898636190024","status_supply":"Linha"},{"cod_item":"1109800","descricao":"Cicatricure Água Micelar 380 ml","marca":"20 - Cicatricure","empresa":"GENOMMA","upp_cadastro":1260,"upp_override":null,"upp_efetiva":1260,"gtin14":"17898636191809","status_supply":"Desativado"},{"cod_item":"600170","descricao":"DiabetTX Creme Hidratante Plus 10% Uréia 250g","marca":"30 - Diabetx","empresa":"GENOMMA","upp_cadastro":1296,"upp_override":null,"upp_efetiva":1296,"gtin14":"17898636191342","status_supply":"Linha"},{"cod_item":"600083","descricao":"Goicoechea Diabetx BR","marca":"30 - Diabetx","empresa":"GENOMMA","upp_cadastro":1368,"upp_override":null,"upp_efetiva":1368,"gtin14":"17898636190512","status_supply":"Linha"},{"cod_item":"600151","descricao":"Proctan - UQ","marca":"300 - Proctan","empresa":"GENOMMA","upp_cadastro":4320,"upp_override":null,"upp_efetiva":4320,"gtin14":"27898949409469","status_supply":"Linha"},{"cod_item":"3300100","descricao":"Proctan 25g c/ 10 Luvas","marca":"300 - Proctan","empresa":"GENOMMA","upp_cadastro":4320,"upp_override":null,"upp_efetiva":4320,"gtin14":"17898636193629","status_supply":"Linha"},{"cod_item":"91114","descricao":"LaKesia Antimicótico 30 mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":2800,"upp_override":null,"upp_efetiva":2800,"gtin14":"17898949409455","status_supply":"Linha"},{"cod_item":"2331054","descricao":"LaKesia Creme Ultra Hidratante 10% 50mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":4320,"upp_override":null,"upp_efetiva":4320,"gtin14":"17898636192332","status_supply":"Desativado"},{"cod_item":"2331059","descricao":"LaKesia Duo Esmalte Cacau 9mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":8112,"upp_override":null,"upp_efetiva":8112,"gtin14":"17898636192417","status_supply":"Desativado"},{"cod_item":"2331056","descricao":"LaKesia Duo Esmalte Framboesa 9mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":8112,"upp_override":null,"upp_efetiva":8112,"gtin14":"17898949409004","status_supply":"Desativado"},{"cod_item":"2331058","descricao":"LaKesia Duo Esmalte Lichia 9mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":8112,"upp_override":null,"upp_efetiva":8112,"gtin14":"17898636192400","status_supply":"Desativado"},{"cod_item":"2331057","descricao":"LaKesia Duo Esmalte Quinoa 9mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":8112,"upp_override":null,"upp_efetiva":8112,"gtin14":"17898636192394","status_supply":"Desativado"},{"cod_item":"600146","descricao":"LaKesia Sérum Fortalecedor 7ml","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":6000,"upp_override":null,"upp_efetiva":6000,"gtin14":"17898636191052","status_supply":"Linha"},{"cod_item":"2310300","descricao":"Lakesia Duo Esmalte Pink Pitaya 9ml","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":8112,"upp_override":null,"upp_efetiva":8112,"gtin14":"17898636192950","status_supply":"Desativado"},{"cod_item":"2310400","descricao":"Lakesia Duo Esmalte Roxo BlueBerry 9mL","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":8112,"upp_override":null,"upp_efetiva":8112,"gtin14":"17898636192967","status_supply":"Desativado"},{"cod_item":"2310900","descricao":"LakesiaMedical Esmalte 3g","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":1728,"upp_override":null,"upp_efetiva":1728,"gtin14":"17898636194244","status_supply":"Lancamento"},{"cod_item":"2310800","descricao":"LakesiaPÉS Creme Antifúngico 20g","marca":"310 - La Kesia","empresa":"GENOMMA","upp_cadastro":5000,"upp_override":null,"upp_efetiva":5000,"gtin14":"17898636193940","status_supply":"Linha"},{"cod_item":"101111","descricao":"Pointts Antiverrugas 80 ml","marca":"320 - Pointts","empresa":"GENOMMA","upp_cadastro":2322,"upp_override":null,"upp_efetiva":2322,"gtin14":"10650240006361","status_supply":"Linha"},{"cod_item":"2931071","descricao":"MEDICASP X 130ML BR","marca":"330 - Medicasp","empresa":"GENOMMA","upp_cadastro":1680,"upp_override":null,"upp_efetiva":1680,"gtin14":"17898949409745","status_supply":"Linha"},{"cod_item":"600194","descricao":"Expectovic Xarope Expectorante 120ml","marca":"350 - Expectovic","empresa":"GENOMMA","upp_cadastro":1500,"upp_override":null,"upp_efetiva":1500,"gtin14":"17898636190789","status_supply":"Linha"},{"cod_item":"600125","descricao":"Lomecan Creme 3 dias 20g","marca":"360 - Lomecan","empresa":"GENOMMA","upp_cadastro":2560,"upp_override":null,"upp_efetiva":2560,"gtin14":"17898636191328","status_supply":"Linha"},{"cod_item":"5100100","descricao":"Expulsatox Adulto XPE 100mL","marca":"380 - Expulsatox","empresa":"GENOMMA","upp_cadastro":1920,"upp_override":null,"upp_efetiva":1920,"gtin14":"17898636194169","status_supply":"Lancamento"},{"cod_item":"5100200","descricao":"Expulsatox Infantil XPE 100mL","marca":"380 - Expulsatox","empresa":"GENOMMA","upp_cadastro":1920,"upp_override":null,"upp_efetiva":1920,"gtin14":"17898636194176","status_supply":"Lancamento"},{"cod_item":"2100200","descricao":"Goicoechea Algodão Creme Corporal Pele Extra Seca 400 mL","marca":"40 - Goicoechea","empresa":"GENOMMA","upp_cadastro":912,"upp_override":null,"upp_efetiva":912,"gtin14":"10650240075633","status_supply":"Desativado"},{"cod_item":"600089","descricao":"Goicoechea Creme Arnica e Camomila 350g","marca":"40 - Goicoechea","empresa":"GENOMMA","upp_cadastro":1368,"upp_override":null,"upp_efetiva":1368,"gtin14":"17898636190574","status_supply":"Linha"},{"cod_item":"600090","descricao":"Goicoechea Creme Centella Asiática 350g","marca":"40 - Goicoechea","empresa":"GENOMMA","upp_cadastro":1368,"upp_override":null,"upp_efetiva":1368,"gtin14":"17898636190581","status_supply":"Linha"},{"cod_item":"600084","descricao":"Goicoechea Creme Frutas Vermelhas 350g","marca":"40 - Goicoechea","empresa":"GENOMMA","upp_cadastro":1368,"upp_override":null,"upp_efetiva":1368,"gtin14":"17898636190529","status_supply":"Linha"},{"cod_item":"4041118","descricao":"Tio Nacho  Shampoo Cachos 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":null,"status_supply":"Simulador"},{"cod_item":"4041119","descricao":"Tio Nacho Condicionador Cachos 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":null,"status_supply":"Simulador"},{"cod_item":"4041114","descricao":"Tio Nacho Creme para Pentear 180 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2880,"upp_override":null,"upp_efetiva":2880,"gtin14":"17898636194558","status_supply":"Simulador"},{"cod_item":"4041120","descricao":"Tio Nacho Creme para Pentear Cachos 200 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":null,"status_supply":"Simulador"},{"cod_item":"4048000","descricao":"Tio Nacho Kit Antigrisalho 415mL+200mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1008,"upp_override":null,"upp_efetiva":1008,"gtin14":"17898636194404","status_supply":"KIT"},{"cod_item":"4041117","descricao":"Tio Nacho Leave-in 200mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2604,"upp_override":null,"upp_efetiva":2604,"gtin14":"17898636194589","status_supply":"Simulador"},{"cod_item":"4041115","descricao":"Tio Nacho Máscara 250g","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2040,"upp_override":null,"upp_efetiva":2040,"gtin14":"17898636194565","status_supply":"Simulador"},{"cod_item":"4041116","descricao":"Tio Nacho Óleo Finalizador 50mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":8400,"upp_override":null,"upp_efetiva":8400,"gtin14":"17898636194572","status_supply":"Simulador"},{"cod_item":"4041021","descricao":"Tío Nacho Anti-idade Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17798140251955","status_supply":"Linha"},{"cod_item":"4041020","descricao":"Tío Nacho Anti-idade Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898949409714","status_supply":"Linha"},{"cod_item":"4044200","descricao":"Tío Nacho Anticaspa 2 em 1 Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636194268","status_supply":"Lancamento"},{"cod_item":"4044100","descricao":"Tío Nacho Anticaspa Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636194251","status_supply":"Lancamento"},{"cod_item":"4042011","descricao":"Tío Nacho Clareador Condicionador 200 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2484,"upp_override":null,"upp_efetiva":2484,"gtin14":"17898636191366","status_supply":"Linha"},{"cod_item":"4041011","descricao":"Tío Nacho Clareador Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636190321","status_supply":"Linha"},{"cod_item":"4042010","descricao":"Tío Nacho Clareador Shampoo 200 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2484,"upp_override":null,"upp_efetiva":2484,"gtin14":"17898636191403","status_supply":"Desativado"},{"cod_item":"4041010","descricao":"Tío Nacho Clareador Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898949409721","status_supply":"Linha"},{"cod_item":"4041031","descricao":"Tío Nacho Coco Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636191618","status_supply":"Desativado"},{"cod_item":"4041030","descricao":"Tío Nacho Coco Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636191601","status_supply":"Desativado"},{"cod_item":"4044400","descricao":"Tío Nacho Condicionador Antigrisalho 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193964","status_supply":"Lancamento"},{"cod_item":"4043500","descricao":"Tío Nacho Condicionador Fortalecedor 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193575","status_supply":"Linha"},{"cod_item":"4042001","descricao":"Tío Nacho Engrossador Condicionador 200 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2484,"upp_override":null,"upp_efetiva":2484,"gtin14":"17898636191373","status_supply":"Linha"},{"cod_item":"4041001","descricao":"Tío Nacho Engrossador Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898949409936","status_supply":"Linha"},{"cod_item":"4042000","descricao":"Tío Nacho Engrossador Shampoo 200 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2484,"upp_override":null,"upp_efetiva":2484,"gtin14":"17898636191380","status_supply":"Linha"},{"cod_item":"4041000","descricao":"Tío Nacho Engrossador Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898949409929","status_supply":"Linha"},{"cod_item":"4043000","descricao":"Tío Nacho Engrossador Spray 120 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":3600,"upp_override":null,"upp_efetiva":3600,"gtin14":"17898949409912","status_supply":"Linha"},{"cod_item":"4041050","descricao":"Tío Nacho Ervas Milenares Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898949409738","status_supply":"Linha"},{"cod_item":"4044000","descricao":"Tío Nacho Ginseng Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193896","status_supply":"Linha"},{"cod_item":"4043900","descricao":"Tío Nacho Ginseng Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193902","status_supply":"Linha"},{"cod_item":"4043200","descricao":"Tío Nacho Kit Clareador SH 415 ml + Cond 200 ml","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1008,"upp_override":null,"upp_efetiva":1008,"gtin14":"17898636191830","status_supply":"KIT"},{"cod_item":"4043100","descricao":"Tío Nacho Kit Engrossador SH 415 ml + Cond 200 ml","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1008,"upp_override":null,"upp_efetiva":1008,"gtin14":"17898636191588","status_supply":"KIT"},{"cod_item":"4049000","descricao":"Tío Nacho Kit Ginseng SH 415 mL + Cond 415mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":735,"upp_override":null,"upp_efetiva":735,"gtin14":"17898636194411","status_supply":"KIT"},{"cod_item":"4043300","descricao":"Tío Nacho Kit Reconstrutor SH 415 mL + Cond 200 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1008,"upp_override":null,"upp_efetiva":1008,"gtin14":"17898636192851","status_supply":"KIT"},{"cod_item":"4045000","descricao":"Tío Nacho Kit Ultra-hidratante SH 415 ml + Cond 415 ml","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":735,"upp_override":null,"upp_efetiva":735,"gtin14":"17898636194206","status_supply":"Desativado"},{"cod_item":"4041061","descricao":"Tío Nacho Purificador Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193353","status_supply":"Desativado"},{"cod_item":"4041060","descricao":"Tío Nacho Purificador Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193346","status_supply":"Desativado"},{"cod_item":"4041041","descricao":"Tío Nacho Reconstrutor Condicionador 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636192158","status_supply":"Linha"},{"cod_item":"4043040","descricao":"Tío Nacho Reconstrutor LeaveIn 100 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":2880,"upp_override":null,"upp_efetiva":2880,"gtin14":"17898636192349","status_supply":"Linha"},{"cod_item":"4041040","descricao":"Tío Nacho Reconstrutor Shampoo 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636192141","status_supply":"Linha"},{"cod_item":"4044300","descricao":"Tío Nacho Shampoo Antigrisalho 415 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":1764,"upp_override":null,"upp_efetiva":1764,"gtin14":"17898636193957","status_supply":"Lancamento"},{"cod_item":"4043800","descricao":"Tío Nacho Shampoo Antiqueda Clareador 950 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":840,"upp_override":null,"upp_efetiva":840,"gtin14":"17898636193933","status_supply":"Linha"},{"cod_item":"4043600","descricao":"Tío Nacho Shampoo Antiqueda Engrossador 950 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":840,"upp_override":null,"upp_efetiva":840,"gtin14":"17898636193919","status_supply":"Linha"},{"cod_item":"4043700","descricao":"Tío Nacho Shampoo Antiqueda Fortalecedor 950 mL","marca":"50 - Tio Nacho","empresa":"GENOMMA","upp_cadastro":840,"upp_override":null,"upp_efetiva":840,"gtin14":"17898636193926","status_supply":"Linha"},{"cod_item":"5200100","descricao":"Novamil Rice 400g","marca":"500 - Novamil","empresa":"GENOMMA","upp_cadastro":1008,"upp_override":null,"upp_efetiva":1008,"gtin14":"17898636194435","status_supply":"Importação"},{"cod_item":"5300100","descricao":"Renovaflora Probiótico 10 caps","marca":"390 - Renovaflora","empresa":"INOVALAB","upp_cadastro":4050,"upp_override":null,"upp_efetiva":4050,"gtin14":"17898636194473","status_supply":"Lançamento"},{"cod_item":"6003100","descricao":"SOROX GO Frutas Vermelhas 11,5g","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":null,"status_supply":"Simulador"},{"cod_item":"6003000","descricao":"SOROX GO Limão 11,5g","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":null,"status_supply":"Simulador"},{"cod_item":"6002900","descricao":"SOROX GO Tangerina 11,5g","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":null,"upp_override":null,"upp_efetiva":2000,"gtin14":null,"status_supply":"Desativado"},{"cod_item":"6001900","descricao":"Sorox Abacaxi com Hortelã  550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193971","status_supply":"Inovalab"},{"cod_item":"6000800","descricao":"Sorox Abacaxi com Hortelã 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193971","status_supply":"Desativado"},{"cod_item":"6000900","descricao":"Sorox Frutas Amarelas 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636194183","status_supply":"Lancamento"},{"cod_item":"6002000","descricao":"Sorox Frutas Amarelas 550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636194183","status_supply":"Inovalab"},{"cod_item":"6001800","descricao":"Sorox Frutas Vermelhas   550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193889","status_supply":"Inovalab"},{"cod_item":"6001200","descricao":"Sorox Frutas Vermelhas 550mL FS Pack 4","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1344,"upp_override":null,"upp_efetiva":1344,"gtin14":"27898636193886","status_supply":"Desativado"},{"cod_item":"6000700","descricao":"Sorox Frutas Vermelhas 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193889","status_supply":"Desativado"},{"cod_item":"6001600","descricao":"Sorox Limão  550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193490","status_supply":"Inovalab"},{"cod_item":"6000500","descricao":"Sorox Limão 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193490","status_supply":"Desativado"},{"cod_item":"6002100","descricao":"Sorox Morango com Laranja  550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636194190","status_supply":"Inovalab"},{"cod_item":"6001000","descricao":"Sorox Morango com Laranja 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636194190","status_supply":"Desativado"},{"cod_item":"6001100","descricao":"Sorox Tangerina 550mL FS Pack 4","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1344,"upp_override":null,"upp_efetiva":1344,"gtin14":"27898636193503","status_supply":"Desativado"},{"cod_item":"6000400","descricao":"Sorox Tangerina 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193506","status_supply":"Desativado"},{"cod_item":"6001500","descricao":"Sorox Tangerina 550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193506","status_supply":"Inovalab"},{"cod_item":"6001700","descricao":"Sorox Uva  550mL FS Pack 6  Inovalab","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193513","status_supply":"Inovalab"},{"cod_item":"6000600","descricao":"Sorox Uva 550mL FS Pack 6","marca":"400 - Sorox","empresa":"INOVALAB","upp_cadastro":1332,"upp_override":null,"upp_efetiva":1332,"gtin14":"17898636193513","status_supply":"Desativado"}],"saidas":{"1031087":{"1":25710.0,"2":51850.0,"3":98800.0,"4":15780.0,"5":30800.0,"6":109752.0,"7":20241.0,"8":40481.0,"9":74215.0,"10":19278.0,"11":57835.0,"12":51409.0},"1031084":{"1":27990.0,"2":57040.0,"3":124440.0,"4":26200.0,"5":40788.0,"6":108458.0,"7":26513.0,"8":53027.0,"9":97216.0,"10":25874.0,"11":77621.0,"12":68996.0},"1031082":{"1":21930.0,"2":44650.0,"3":90840.0,"4":21860.0,"5":36190.0,"6":79417.0,"7":17867.0,"8":35733.0,"9":65511.0,"10":19200.0,"11":57600.0,"12":51200.0},"1031086":{"1":16330.0,"2":27040.0,"3":69930.0,"4":8460.0,"5":15686.0,"6":47126.0,"7":11250.0,"8":22500.0,"9":41250.0,"10":11250.0,"11":33750.0,"12":30000.0},"1031083":{"1":12780.0,"2":17040.0,"3":36990.0},"1031085":{"1":11850.0,"2":16710.0,"3":36860.0,"4":5140.0,"5":7612.0,"6":36248.0,"7":7350.0,"8":14700.0,"9":26950.0},"1008900":{"1":385.0,"2":189.0,"3":133.0},"1009000":{"1":633.5,"2":329.0,"3":283.5},"1008800":{"1":392.0,"2":147.0,"3":206.5},"600119":{"1":5226.0,"2":23118.0,"3":35436.0,"4":9648.0,"5":5412.0,"6":28113.0,"7":6000.0,"8":12000.0,"9":22000.0,"10":6000.0,"11":18000.0,"12":16000.0},"1031045":{"1":2900.0,"2":2100.0,"3":11100.0,"4":1500.0,"5":2200.0,"6":12206.0,"7":2100.0,"8":4200.0,"9":7700.0,"10":2100.0,"11":6300.0,"12":5600.0},"600108":{"1":180.0,"2":432.0,"3":504.0},"1031046":{"1":2600.0,"2":3650.0,"3":7712.5,"4":1025.0,"5":1430.0,"6":9157.0,"7":1583.0,"8":3167.0,"9":5806.0,"10":1500.0,"11":4500.0,"12":4000.0},"1031079":{"1":870.0,"2":3396.0,"3":3768.0},"1031068":{"1":5298.0,"2":6846.0,"3":14916.0,"4":2484.0,"5":3234.0,"6":11806.0,"7":2400.0,"8":4800.0,"9":8800.0,"10":2400.0,"11":7200.0,"12":6400.0},"1031069":{"1":1080.0,"2":1608.0,"3":3510.0},"1009200":{"6":116579.0,"7":44066.0,"8":88133.0,"9":161576.0,"10":44066.0,"11":132198.0,"12":117510.0},"1009500":{"6":60974.44,"7":16401.0,"8":32803.0,"9":60139.0,"10":16401.0,"11":49204.0,"12":43737.0},"1009100":{"6":116580.0,"7":44066.0,"8":88133.0,"9":161576.0,"10":44066.0,"11":132198.0,"12":117510.0},"1009400":{"6":60974.44,"7":16401.0,"8":32803.0,"9":60139.0,"10":16401.0,"11":49204.0,"12":43737.0},"1009300":{"6":116579.0,"7":44066.0,"8":88132.0,"9":161576.0,"10":44066.0,"11":132198.0,"12":117510.0},"1009600":{"6":60974.44,"7":16401.0,"8":32803.0,"9":60138.0,"10":16401.0,"11":49204.0,"12":43737.0},"600160":{"1":5592.0,"2":5334.0,"3":9630.0},"1031070":{"1":4326.0,"2":5196.0,"3":9840.0,"4":1584.0,"5":1465.2,"6":8039.8,"7":1798.0,"8":3597.0,"9":6594.0,"10":1549.0,"11":4648.0,"12":4131.0},"1031078":{"1":462.0,"2":516.0,"3":4878.0},"3009900":{"2":99.0,"3":99.0},"600280":{"1":80.0},"3031037":{"1":6120.0},"4406100":{"4":3240.0,"5":3300.0,"6":7445.0,"7":3967.0,"8":7933.0,"9":14544.0,"10":4133.0,"11":12400.0,"12":11022.0},"4406000":{"1":26368.0,"2":89792.0,"3":111488.0,"4":4096.0,"5":16896.0,"6":49608.0,"7":23125.0,"8":46250.0,"9":84791.0,"10":23917.0,"11":71750.0,"12":63778.0},"4406200":{"4":1620.0,"5":1782.0,"6":864.0,"7":2800.0,"8":5600.0,"9":10267.0,"10":3883.0,"11":11650.0,"12":10356.0},"4406300":{"7":2934.0,"8":5868.0,"9":10758.0,"10":7236.0,"11":21708.0,"12":19296.0},"5010100":{"1":624.0,"2":1512.0,"3":2880.0},"5010200":{"1":475.0,"2":350.0,"3":400.0},"1108900":{"1":2736.0,"2":6678.0,"3":12222.0,"4":4248.0,"5":6890.4,"6":27898.6,"7":4500.0,"8":9000.0,"9":16500.0,"10":4500.0,"11":13500.0,"12":12000.0},"1109300":{"1":6216.0,"2":13290.0,"3":24594.0,"4":5136.0,"5":9556.8,"6":45347.2,"7":6900.0,"8":13800.0,"9":25300.0,"10":9367.0,"11":28100.0,"12":24978.0},"1109200":{"1":5052.0,"2":11196.0,"3":20238.0,"4":4356.0,"5":12091.2,"6":30222.8,"7":7565.0,"8":15129.0,"9":27737.0,"10":7650.0,"11":22950.0,"12":20400.0},"1109000":{"1":9800.0,"2":19336.0,"3":35064.0,"4":11824.0,"5":17371.2,"6":91743.8,"7":16824.0,"8":33647.0,"9":61687.0,"10":14997.0,"11":44991.0,"12":39992.0},"1109100":{"1":7520.0,"2":19600.0,"3":38160.0,"4":11952.0,"5":23601.6,"6":85626.4,"7":15800.0,"8":31600.0,"9":57933.0,"10":15750.0,"11":47250.0,"12":42000.0},"1110200":{"1":2304.0,"2":3306.0,"3":7440.0},"1110400":{"1":24640.0,"2":46430.0,"3":79390.0,"4":19980.0,"5":33198.0,"6":111073.0,"7":28583.0,"8":57167.0,"9":104806.0,"10":27036.0,"11":81107.0,"12":72095.0},"1110500":{"1":14048.0,"2":21880.0,"3":37808.0,"4":9040.0,"5":8360.0,"6":43532.0,"7":14077.0,"8":28154.0,"9":51615.0,"10":12055.0,"11":36165.0,"12":32146.0},"1131009":{"1":2898.0,"2":6144.0,"3":9690.0,"4":6288.0,"5":7801.2,"6":15312.8,"7":2577.0,"8":5154.0,"9":9449.0,"10":3345.0,"11":10035.0,"12":8920.0},"1131008":{"1":3468.0,"2":4740.0,"3":9534.0,"4":2976.0,"5":5332.8,"6":15322.2,"7":2825.0,"8":5650.0,"9":10358.0,"10":3300.0,"11":9900.0,"12":8800.0},"1131080":{"1":576.0,"2":1614.0,"3":2046.0,"4":204.0,"5":52.8},"1109600":{"1":2220.0,"2":5838.0,"3":8358.0,"4":5556.0,"5":1676.4,"6":22285.6,"7":3600.0,"8":7200.0,"9":13200.0,"10":4500.0,"11":13500.0,"12":12000.0},"1111500":{"4":1380.0,"5":3154.8,"6":5465.2,"7":1500.0,"8":3000.0,"9":5500.0,"10":1500.0,"11":4500.0,"12":4000.0},"1110900":{"1":240.0,"2":1410.0,"3":600.0,"5":52.8,"6":5213.2,"7":2117.0,"8":4233.0,"9":7761.0,"10":1800.0,"11":5400.0,"12":4800.0},"1110700":{"1":1830.0,"2":1428.0,"3":1980.0},"1110800":{"1":273.0,"2":462.0,"3":162.0},"1131072":{"1":5172.0,"2":8184.0,"3":15360.0,"4":4296.0,"5":9939.6,"6":22873.4,"7":10583.0,"8":21167.0,"9":38805.0,"10":12700.0,"11":38100.0,"12":33867.0},"1110000":{"1":4290.0,"2":6342.0,"3":8826.0,"4":3012.0,"5":4870.8,"6":1211.2,"7":3750.0,"8":7500.0,"9":13750.0,"10":9917.0,"11":29750.0,"12":26444.0},"1111000":{"4":132.0,"5":184.8,"6":183.2,"7":150.0,"8":300.0,"9":550.0,"10":150.0,"11":450.0,"12":400.0},"1110100":{"1":3282.0,"2":6612.0,"3":8304.0,"4":5520.0,"5":8791.2,"6":13574.8,"7":4500.0,"8":9000.0,"9":16500.0,"10":9125.0,"11":27375.0,"12":24333.0},"1111400":{"4":5968.0,"5":985.6,"6":8046.4,"7":2700.0,"8":5400.0,"9":9900.0,"10":3750.0,"11":11250.0,"12":10000.0},"1108800":{"1":3900.0,"2":7044.0,"3":8673.0,"4":3654.0,"5":3953.4,"6":7093.6,"7":2783.0,"8":5567.0,"9":10206.0,"10":2850.0,"11":8550.0,"12":7600.0},"1110300":{"1":558.0,"2":768.0,"3":984.0},"1111700":{"6":25000.0,"7":8400.0,"8":16800.0,"9":30800.0,"10":9150.0,"11":27450.0,"12":24400.0},"1109700":{"1":13908.0,"2":29712.0,"3":30348.0,"4":10164.0,"5":10837.2,"6":74587.8,"7":12750.0,"8":25500.0,"9":46750.0,"10":12750.0,"11":38250.0,"12":34000.0},"1109800":{"1":1446.0,"2":2910.0,"3":4182.0,"4":72.0},"600170":{"1":3624.0,"2":16560.0,"3":18960.0,"4":8784.0,"5":11616.0,"6":43311.0,"7":12000.0,"8":24000.0,"9":44000.0,"10":3000.0,"11":9000.0,"12":8000.0},"600083":{"1":8778.0,"2":19830.0,"3":47574.0,"4":12564.0,"5":17186.4,"6":82604.6,"7":27750.0,"8":55500.0,"9":101750.0,"10":7500.0,"11":22500.0,"12":20000.0},"600151":{"1":35496.0,"2":143352.0,"3":163512.0,"4":28608.0,"5":96254.4,"6":125389.6,"7":37883.0,"8":75767.0,"9":138905.0,"10":39300.0,"11":117900.0,"12":104800.0},"3300100":{"1":27696.0,"2":30672.0,"3":62832.0,"4":10704.0,"5":21753.6,"6":78740.4,"7":18625.0,"8":37250.0,"9":68291.0,"10":19642.0,"11":58925.0,"12":52378.0},"91114":{"1":38115.0,"2":80740.0,"3":125300.0,"4":9240.0,"5":43131.0,"6":34504.0,"7":14700.0,"8":29400.0,"9":53900.0,"10":25950.0,"11":77850.0,"12":69200.0},"2331054":{"1":624.0,"2":414.0,"3":9888.0},"2331059":{"1":169.0,"2":1605.5,"3":676.0},"2331056":{"1":2197.0,"2":2028.0,"3":422.5},"2331058":{"1":169.0,"2":1098.5,"3":760.5},"2331057":{"1":422.5,"2":1690.0,"3":3971.5},"600146":{"1":5225.0,"2":8550.0,"3":9025.0,"4":2000.0,"5":3245.0,"6":3911.0,"7":2392.0,"8":4784.0,"9":8770.0,"10":2542.0,"11":7625.0,"12":6778.0},"2310300":{"1":84.5,"3":5408.0},"2310400":{"1":84.5,"3":6337.5},"2310900":{"4":12768.0,"5":13041.6,"6":9190.4,"7":6000.0,"8":12000.0,"9":22000.0,"10":7500.0,"11":22500.0,"12":20000.0},"2310800":{"1":3150.0,"2":6750.0,"3":30050.0,"4":4100.0,"5":3410.0,"6":5690.0,"7":3333.0,"8":6667.0,"9":12222.0,"10":3750.0,"11":11250.0,"12":10000.0},"101111":{"1":3063.0,"2":3462.0,"3":3768.0,"4":1416.0,"5":6210.6,"6":5589.4,"7":1926.0,"8":3852.0,"9":7062.0,"10":2400.0,"11":7201.0,"12":6401.0},"2931071":{"1":1240.0,"2":11355.0,"3":10260.0,"4":2960.0,"5":4312.0,"6":23153.0,"7":3900.0,"8":7800.0,"9":14300.0,"10":1567.0,"11":4700.0,"12":4178.0},"600194":{"1":2375.0,"2":6650.0,"3":48725.0,"4":5100.0,"5":7920.0,"6":112295.0,"7":12750.0,"8":25500.0,"9":46750.0,"10":2250.0,"11":6750.0,"12":6000.0},"600125":{"1":3520.0,"2":4720.0,"3":8000.0,"4":2240.0,"5":3168.0,"6":5000.0,"7":1500.0,"8":3000.0,"9":5500.0,"10":1500.0,"11":4500.0,"12":4000.0},"5100100":{"3":26580.0,"4":930.0,"5":1419.0,"6":12651.0,"7":2250.0,"8":4500.0,"9":8250.0,"10":1500.0,"11":4500.0,"12":4000.0},"5100200":{"2":10200.0,"3":10515.0,"4":480.0,"5":2310.0,"6":9210.0,"7":1800.0,"8":3600.0,"9":6600.0,"10":450.0,"11":1350.0,"12":1200.0},"2100200":{},"600089":{"1":7452.0,"2":10626.0,"3":17862.0,"4":4572.0,"5":6032.4,"6":20068.6,"7":4350.0,"8":8700.0,"9":15950.0,"10":5550.0,"11":16650.0,"12":14800.0},"600090":{"1":2778.0,"2":4302.0,"3":7182.0,"4":1176.0,"5":1729.2,"6":4648.8,"7":1350.0,"8":2700.0,"9":4950.0,"10":2250.0,"11":6750.0,"12":6000.0},"600084":{"1":1248.0,"2":2940.0,"3":5022.0,"4":600.0,"5":1597.2,"6":6302.8,"7":1275.0,"8":2550.0,"9":4675.0},"4041118":{"10":9041.0,"11":27122.0,"12":24108.0},"4041119":{"10":3432.0,"11":10295.0,"12":9151.0},"4041114":{"6":68894.4,"7":6014.0,"8":12027.0,"9":22050.0,"10":6014.0,"11":18041.0,"12":16036.0},"4041120":{"10":8469.0,"11":25406.0,"12":22583.0},"4048000":{"4":9810.0,"5":4356.0,"6":15834.0,"7":4077.0,"8":8154.0,"9":14950.0,"10":3500.0,"11":10500.0,"12":9334.0},"4041117":{"6":44274.4,"7":3446.0,"8":6892.0,"9":12635.0,"10":3446.0,"11":10338.0,"12":9189.0},"4041115":{"6":55514.4,"7":7835.0,"8":15670.0,"9":28729.0,"10":7835.0,"11":23506.0,"12":20894.0},"4041116":{"6":66914.4,"7":5325.0,"8":10650.0,"9":19525.0,"10":5325.0,"11":15975.0,"12":14200.0},"4041021":{"1":984.0,"2":1920.0,"3":5400.0,"4":1212.0,"5":884.4,"6":6855.6,"7":750.0,"8":1500.0,"9":2750.0},"4041020":{"1":2418.0,"2":5694.0,"3":15570.0,"4":2352.0,"5":3801.6,"6":18846.4,"7":300.0,"8":600.0,"9":1100.0},"4044200":{"4":3480.0,"5":2508.0,"6":7583.0,"7":3200.0,"8":6400.0,"9":11733.0,"10":1150.0,"11":3450.0,"12":3067.0},"4044100":{"2":18666.0,"3":32916.0,"4":3768.0,"5":7510.8,"6":10721.2,"7":4314.0,"8":8627.0,"9":15817.0,"10":2475.0,"11":7425.0,"12":6600.0},"4042011":{"1":342.0,"2":894.0,"3":2499.0},"4041011":{"1":4230.0,"2":4968.0,"3":13158.0,"4":2892.0,"5":4857.6,"6":19508.4,"7":3606.0,"8":7212.0,"9":13222.0,"10":3678.0,"11":11034.0,"12":9808.0},"4042010":{"1":459.0,"2":1833.0,"3":5874.0},"4041010":{"1":11064.0,"2":15654.0,"3":36624.0,"4":6564.0,"5":7101.6,"6":15200.4,"7":10013.0,"8":20026.0,"9":36714.0,"10":9229.0,"11":27687.0,"12":24611.0},"4041031":{"1":570.0,"2":1086.0,"3":2118.0},"4041030":{"1":1122.0,"2":1674.0,"3":2988.0},"4044400":{"1":6480.0,"2":17100.0,"3":11352.0,"4":2976.0,"5":3339.6,"6":20776.4,"7":4500.0,"8":9000.0,"9":16500.0,"10":6042.0,"11":18125.0,"12":16111.0},"4043500":{"1":3036.0,"2":3018.0,"3":6414.0,"4":1452.0,"5":2838.0,"6":10431.0,"7":1633.0,"8":3267.0,"9":5989.0,"10":1950.0,"11":5850.0,"12":5200.0},"4042001":{"1":492.0,"2":2217.0,"3":6210.0,"4":786.0,"5":1537.8,"6":9767.2,"7":1616.0,"8":3231.0,"9":5924.0,"10":1588.0,"11":4764.0,"12":4234.0},"4041001":{"1":9714.0,"2":11100.0,"3":31380.0,"4":5292.0,"5":10771.2,"6":34458.8,"7":9792.0,"8":19583.0,"9":35902.0,"10":9000.0,"11":27000.0,"12":24000.0},"4042000":{"1":1506.0,"2":4197.0,"3":10683.0,"4":2478.0,"5":2857.8,"6":19512.2,"7":3549.0,"8":7098.0,"9":13012.0,"10":3450.0,"11":10350.0,"12":9200.0},"4041000":{"1":18336.0,"2":36174.0,"3":84336.0,"4":17184.0,"5":30162.0,"6":110127.0,"7":29875.0,"8":59750.0,"9":109541.0,"10":27750.0,"11":83250.0,"12":74000.0},"4043000":{"1":660.0,"2":3760.0,"3":4580.0,"4":1280.0,"5":2046.0,"6":8172.0,"7":1800.0,"8":3600.0,"9":6600.0,"10":2400.0,"11":7200.0,"12":6400.0},"4041050":{"1":6684.0,"2":14934.0,"3":38898.0,"4":6696.0,"5":13741.2,"6":35554.8,"7":9583.0,"8":19167.0,"9":35139.0,"10":9592.0,"11":28775.0,"12":25578.0},"4044000":{"1":498.0,"2":840.0,"3":990.0,"4":864.0,"5":2376.0,"6":5275.0,"7":1350.0,"8":2700.0,"9":4950.0,"10":1350.0,"11":4050.0,"12":3600.0},"4043900":{"1":1962.0,"2":2970.0,"3":3606.0,"4":2640.0,"5":4804.8,"6":21695.2,"7":3600.0,"8":7200.0,"9":13200.0,"10":3600.0,"11":10800.0,"12":9600.0},"4043200":{"1":6267.0,"2":11745.0,"3":20064.0,"4":7242.0,"5":6765.0,"6":24993.0,"7":6214.0,"8":12428.0,"9":22785.0,"10":7200.0,"11":21600.0,"12":19200.0},"4043100":{"1":25761.0,"2":18672.0,"3":41064.0,"4":27510.0,"5":33376.2,"6":59113.8,"7":18000.0,"8":36000.0,"9":66000.0,"10":18000.0,"11":54000.0,"12":48000.0},"4049000":{},"4043300":{"1":9561.0,"2":8343.0,"3":25653.0,"4":3522.0,"5":7398.6,"6":27812.4,"7":6300.0,"8":12600.0,"9":23100.0,"10":6300.0,"11":18900.0,"12":16800.0},"4045000":{"2":200.0,"3":3930.0},"4041061":{"1":1332.0,"2":504.0,"3":942.0},"4041060":{"1":750.0,"2":1374.0,"3":4158.0},"4041041":{"1":1860.0,"2":4368.0,"3":9090.0,"4":1320.0,"5":1887.6,"6":3809.4,"7":1650.0,"8":3300.0,"9":6050.0,"10":1650.0,"11":4950.0,"12":4400.0},"4043040":{"1":972.0,"2":2328.0,"3":2352.0,"4":1788.0,"5":2494.8,"6":8158.2,"7":1800.0,"8":3600.0,"9":6600.0,"10":1800.0,"11":5400.0,"12":4800.0},"4041040":{"1":4608.0,"2":8154.0,"3":19032.0,"4":4068.0,"5":6428.4,"6":18629.6,"7":4200.0,"8":8400.0,"9":15400.0,"10":4200.0,"11":12600.0,"12":11200.0},"4044300":{"1":22560.0,"2":33570.0,"3":34128.0,"4":11340.0,"5":16539.6,"6":95615.4,"7":16800.0,"8":33600.0,"9":61600.0,"10":20592.0,"11":61775.0,"12":54911.0},"4043800":{"1":537.0,"2":378.0,"3":231.0,"4":798.0,"5":970.2,"6":2494.8,"7":667.0,"8":1334.0,"9":2445.0,"10":583.0,"11":1750.0,"12":1556.0},"4043600":{"1":1785.0,"2":1473.0,"3":282.0,"4":3024.0,"5":3042.6,"6":12719.4,"7":1967.0,"8":3933.0,"9":7211.0,"10":2250.0,"11":6750.0,"12":6000.0},"4043700":{"1":27.0,"2":9.0,"3":1188.0,"4":738.0,"5":778.8,"6":3599.2,"7":500.0,"8":1000.0,"9":1834.0,"10":583.0,"11":1750.0,"12":1556.0},"5200100":{"6":25000.0,"7":3750.0,"8":7500.0,"9":13750.0,"10":4500.0,"11":13500.0,"12":12000.0},"5300100":{"4":6450.0,"5":11990.0,"6":21560.0,"7":5250.0,"8":10500.0,"9":19250.0,"10":8250.0,"11":24750.0,"12":22000.0},"6003100":{"10":22881.0,"11":68644.0,"12":61017.0},"6003000":{"10":18305.0,"11":54915.0,"12":48814.0},"6002900":{"10":20593.0,"11":61780.0,"12":54915.0},"6001900":{"1":52590.0,"2":103209.0,"3":174447.0,"4":48198.0,"5":54397.2,"6":20226.8,"7":32084.0,"8":64167.0,"9":117640.0,"10":81817.0,"11":245450.0,"12":218178.0},"6000800":{},"6000900":{},"6002000":{"1":15567.0,"2":25119.0,"3":36747.0,"4":29808.0,"5":31198.2,"6":31684.8,"7":9167.0,"8":18334.0,"9":33612.0,"10":29500.0,"11":88500.0,"12":78666.0},"6001800":{"1":116457.0,"2":58020.0,"3":261171.0,"4":109104.0,"5":89832.6,"6":227272.4,"7":51000.0,"8":102000.0,"9":187000.0,"10":111000.0,"11":333001.0,"12":296001.0},"6001200":{},"6000700":{},"6001600":{"1":71028.0,"2":92913.0,"3":195405.0,"4":67314.0,"5":78262.8,"6":123294.2,"7":34917.0,"8":69833.0,"9":128027.0,"10":85459.0,"11":256376.0,"12":227890.0},"6000500":{},"6002100":{"1":16911.0,"2":29982.0,"3":43365.0,"4":63648.0,"5":51579.0,"6":89107.0,"7":18250.0,"8":36500.0,"9":66917.0,"10":48750.0,"11":146250.0,"12":130000.0},"6001000":{},"6001100":{},"6000400":{},"6001500":{"1":91398.0,"2":135303.0,"3":237582.0,"4":87264.0,"5":90565.2,"6":199925.8,"7":41167.0,"8":82334.0,"9":150945.0,"10":119583.0,"11":358750.0,"12":318889.0},"6001700":{"1":86310.0,"2":127836.0,"3":254970.0,"4":86844.0,"5":105217.2,"6":212468.8,"7":51500.0,"8":103000.0,"9":188834.0,"10":118333.0,"11":355000.0,"12":315556.0},"6000600":{}},"entradas":{"1031087":{"5":137500.0,"8":150000.0},"1031084":{"8":150000.0,"11":150000.0},"1031082":{"7":150000.0,"11":150000.0},"1031086":{"8":150000.0},"1031083":{},"1031085":{},"1008900":{},"1009000":{},"1008800":{},"600119":{"5":30000.0,"6":60000.0},"1031045":{"7":20000.0,"10":20000.0},"600108":{},"1031046":{"8":20000.0},"1031079":{},"1031068":{"6":20000.0,"7":20000.0,"11":20000.0},"1031069":{},"1009200":{"6":450000.0,"8":100000.0,"10":150000.0},"1009500":{"6":187500.0,"9":50000.0,"10":50000.0},"1009100":{"6":300000.0,"8":150000.0,"10":150000.0},"1009400":{"6":150000.0,"9":50000.0,"10":50000.0},"1009300":{"6":300000.0,"8":150000.0,"10":150000.0},"1009600":{"6":150000.0,"9":50000.0,"10":50000.0},"600160":{},"1031070":{"6":20000.0,"11":20000.0},"1031078":{},"3009900":{},"600280":{},"3031037":{},"4406100":{"8":20000.0,"10":80000.0},"4406000":{"6":96000.0,"7":96000.0,"8":96000.0,"10":96000.0},"4406200":{"8":20000.0,"10":40000.0},"4406300":{"7":60000.0},"5010100":{},"5010200":{},"1108900":{"7":50000.0,"11":50000.0},"1109300":{"6":23480.0,"7":25000.0,"8":25000.0,"9":25000.0,"10":25000.0,"11":25000.0},"1109200":{"6":50000.0,"7":50000.0,"10":50000.0},"1109000":{"6":100000.0,"7":50000.0,"8":50000.0,"10":50000.0,"11":50000.0},"1109100":{"5":50000.0,"6":50000.0,"7":50000.0,"8":50000.0,"10":50000.0,"11":50000.0},"1110200":{},"1110400":{"5":120000.0,"6":120000.0,"7":120000.0,"8":60000.0,"10":60000.0,"11":60000.0},"1110500":{"6":75000.0,"8":75000.0,"10":75000.0},"1131009":{"6":25000.0,"8":25000.0,"11":25000.0},"1131008":{"6":25000.0,"10":25000.0},"1131080":{},"1109600":{"6":28000.0,"8":28000.0,"10":28000.0},"1111500":{"6":20000.0},"1110900":{"6":20000.0},"1110700":{},"1110800":{},"1131072":{"6":30000.0,"7":60000.0,"9":120000.0},"1110000":{"5":20000.0,"7":40000.0,"9":60000.0},"1111000":{},"1110100":{"6":20000.0,"7":40000.0,"9":40000.0},"1111400":{"6":5500.0},"1108800":{"5":20000.0,"7":20000.0,"11":20000.0},"1110300":{},"1111700":{"6":60000.0,"8":40000.0,"10":40000.0},"1109700":{"6":20000.0,"10":80000.0},"1109800":{},"600170":{"6":40000.0,"8":40000.0,"9":20000.0},"600083":{"6":116412.0,"7":84000.0,"8":84000.0},"600151":{"6":239772.0,"9":74348.0,"10":74348.0,"11":74348.0,"12":74348.0},"3300100":{"6":74348.0,"7":167283.0,"8":74348.0,"10":74348.0},"91114":{"10":90000.0,"11":90000.0},"2331054":{},"2331059":{},"2331056":{},"2331058":{},"2331057":{},"600146":{"8":50000.0},"2310300":{},"2310400":{},"2310900":{"6":16000.0,"7":49998.0},"2310800":{"10":44000.0},"101111":{"7":23220.0},"2931071":{"6":40000.0,"10":20000.0},"600194":{"6":150000.0,"8":50000.0},"600125":{"9":19000.0},"5100100":{},"5100200":{},"2100200":{},"600089":{"6":20000.0,"7":20000.0,"9":20000.0,"10":20000.0},"600090":{"7":20000.0,"11":20000.0},"600084":{},"4041118":{"9":80000.0},"4041119":{"9":30000.0},"4041114":{"6":80000.0,"7":30000.0,"9":30000.0},"4041120":{"9":70000.0},"4048000":{"10":40000.0},"4041117":{"6":50000.0,"7":20000.0,"9":20000.0},"4041115":{"6":80000.0,"7":30000.0,"9":40000.0},"4041116":{"6":70000.0,"7":30000.0,"9":40000.0},"4041021":{"6":10000.0},"4041020":{},"4044200":{},"4044100":{},"4042011":{},"4041011":{"7":30000.0,"10":20000.0},"4042010":{},"4041010":{"5":9881.0,"7":40000.0,"10":40000.0},"4041031":{},"4041030":{},"4044400":{},"4043500":{"7":20000.0},"4042001":{"5":20000.0,"10":20000.0},"4041001":{"5":4476.0,"7":40000.0,"8":20000.0,"9":20000.0,"10":40000.0},"4042000":{"7":20000.0,"10":20000.0},"4041000":{"5":40000.0,"6":30000.0,"7":80000.0,"8":100000.0,"9":100000.0,"10":80000.0,"11":100000.0},"4043000":{},"4041050":{"5":23000.0,"9":20000.0,"10":40000.0,"11":20000.0},"4044000":{},"4043900":{"5":14344.0},"4043200":{"6":20000.0,"7":30000.0,"10":50000.0},"4043100":{"5":21378.0,"6":30000.0,"7":90000.0,"8":20000.0,"10":100000.0},"4049000":{},"4043300":{"6":20000.0,"7":40000.0,"10":30000.0},"4045000":{},"4041061":{},"4041060":{},"4041041":{"7":20000.0},"4043040":{"7":24108.0},"4041040":{"10":19988.0},"4044300":{},"4043800":{"6":10000.0},"4043600":{"6":5318.0,"8":20000.0,"11":10000.0},"4043700":{},"5200100":{"6":91200.0,"8":45600.0},"5300100":{"7":60000.0,"9":60000.0},"6003100":{},"6003000":{},"6002900":{},"6001900":{"7":100000.0,"8":100000.0,"9":100000.0,"10":200000.0,"11":200000.0,"12":100000.0},"6000800":{},"6000900":{},"6002000":{"6":55000.0,"7":80000.0,"9":100000.0,"11":100000.0},"6001800":{"6":210000.0,"7":400000.0,"8":100000.0,"9":100000.0,"10":200000.0,"11":200000.0,"12":300000.0},"6001200":{},"6000700":{},"6001600":{"5":104661.0,"7":200000.0,"8":100000.0,"9":100000.0,"10":200000.0,"11":200000.0,"12":100000.0},"6000500":{},"6002100":{"6":105000.0,"7":70000.0,"8":100000.0,"9":100000.0,"10":100000.0,"11":100000.0,"12":100000.0},"6001000":{},"6001100":{},"6000400":{},"6001500":{"7":200000.0,"8":100000.0,"9":200000.0,"10":200000.0,"11":200000.0,"12":200000.0},"6001700":{"6":210000.0,"7":300000.0,"8":200000.0,"9":200000.0,"10":200000.0,"11":200000.0,"12":200000.0},"6000600":{}},"estoque":{"1031087":108500.0,"1031084":216960.0,"1031082":139220.0,"1031086":124380.0,"1031083":140.0,"1031085":85140.0,"1008900":0.0,"1009000":0.0,"1008800":70.0,"600119":0.0,"1031045":15075.0,"600108":0.0,"1031046":16150.0,"1031079":0.0,"1031068":8580.0,"1031069":2496.0,"1009200":0.0,"1009500":0.0,"1009100":0.0,"1009400":0.0,"1009300":0.0,"1009600":0.0,"600160":24.0,"1031070":9732.0,"1031078":0.0,"3009900":0.0,"600280":0.0,"3031037":0.0,"4406100":165360.0,"4406000":155264.0,"4406200":107880.0,"4406300":0.0,"5010100":0.0,"5010200":0.0,"1108900":34380.0,"1109300":22284.0,"1109200":31020.0,"1109000":59776.0,"1109100":58192.0,"1110200":36.0,"1110400":49640.0,"1110500":50208.0,"1131009":4620.0,"1131008":15636.0,"1131080":3156.0,"1109600":0.0,"1111500":38328.0,"1110900":19500.0,"1110700":42768.0,"1110800":42558.0,"1131072":8808.0,"1110000":5664.0,"1111000":22368.0,"1110100":1812.0,"1111400":156848.0,"1108800":18276.0,"1110300":0.0,"1111700":0.0,"1109700":171132.0,"1109800":60.0,"600170":66588.0,"600083":125436.0,"600151":284928.0,"3300100":115776.0,"91114":205280.0,"2331054":0.0,"2331059":0.0,"2331056":0.0,"2331058":0.0,"2331057":0.0,"600146":18200.0,"2310300":0.0,"2310400":0.0,"2310900":41688.0,"2310800":50500.0,"101111":19212.0,"2931071":29410.0,"600194":44500.0,"600125":21920.0,"5100100":178680.0,"5100200":99660.0,"2100200":204.0,"600089":30216.0,"600090":19164.0,"600084":13116.0,"4041118":0.0,"4041119":0.0,"4041114":0.0,"4041120":0.0,"4048000":86436.0,"4041117":0.0,"4041115":0.0,"4041116":0.0,"4041021":1404.0,"4041020":39468.0,"4044200":158052.0,"4044100":187944.0,"4042011":5298.0,"4041011":31344.0,"4042010":6.0,"4041010":118092.0,"4041031":0.0,"4041030":0.0,"4044400":165780.0,"4043500":22932.0,"4042001":7368.0,"4041001":68604.0,"4042000":37068.0,"4041000":116640.0,"4043000":28800.0,"4041050":95916.0,"4044000":15384.0,"4043900":34140.0,"4043200":15282.0,"4043100":24114.0,"4049000":9285.0,"4043300":24150.0,"4045000":0.0,"4041061":0.0,"4041060":0.0,"4041041":11508.0,"4043040":12012.0,"4041040":61716.0,"4044300":293052.0,"4043800":14940.0,"4043600":13512.0,"4043700":10800.0,"5200100":0.0,"5300100":35000.0,"6003100":0.0,"6003000":0.0,"6002900":0.0,"6001900":243984.0,"6000800":288.0,"6000900":108.0,"6002000":59544.0,"6001800":181560.0,"6001200":0.0,"6000700":1092.0,"6001600":307152.0,"6000500":0.0,"6002100":102744.0,"6001000":0.0,"6001100":0.0,"6000400":0.0,"6001500":543846.0,"6001700":220188.0,"6000600":1944.0},"curva":{"GENOMMA":{"1":[0.014449,0.019537,0.033904,0.050573,0.037051,0.054455,0.046007,0.094357,0.135666,0.15758,0.157498,0.122222,0.076702],"2":[0.010639,0.027438,0.036649,0.028601,0.031218,0.098133,0.09765,0.079829,0.07166,0.123868,0.181779,0.155471,0.057065],"3":[0.02547,0.03002,0.042966,0.047464,0.026182,0.080062,0.041387,0.070232,0.090053,0.146022,0.177534,0.15327,0.069337],"4":[0.029876,0.038171,0.033605,0.023366,0.039424,0.070785,0.09196,0.147798,0.134482,0.149368,0.156588,0.055264,0.029313]},"INOVALAB":{"1":[0.002192,0.025109,0.038614,0.064617,0.038361,0.03434,0.041386,0.061581,0.122221,0.085914,0.11277,0.155925,0.216971],"2":[0.017845,0.026491,0.032162,0.046555,0.054236,0.061016,0.079261,0.124364,0.133889,0.071982,0.13444,0.196418,0.021342],"3":[0.0178,0.023753,0.014303,0.007399,0.027494,0.014822,0.026269,0.015658,0.029143,0.168834,0.177027,0.281373,0.196124],"4":[0.004407,0.114538,0.057456,0.03015,0.014619,0.071116,0.073419,0.119558,0.156723,0.174371,0.138642,0.043782,0.001219]}}}</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b97;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --radius:8px;--radius-lg:14px;
+  --primary:#7030A0; --primary-d:#552477;
+  --green:#1D9E75; --green-d:#0F6E56; --green-bg:#E1F5EE;
+  --blue:#378ADD; --blue-d:#185FA5; --blue-bg:#E6F1FB;
+  --red:#A32D2D; --red-d:#791F1F; --red-bg:#FCEBEB;
+  --orange:#BA7517; --orange-d:#633806; --orange-bg:#FAEEDA;
+  --gray-bg:#E8E8E8; --gray-text:#595959;
+  --q1:#F4CCCC; --q2:#FCE5CD; --q3:#D9EAD3; --q4:#CFE2F3;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2b;--text:#f0ede6;--text2:#a0a09a;--text3:#6b6b67;--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.16);--gray-bg:#3a3a37;--gray-text:#a0a09a;}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:var(--bg3);color:var(--text);min-height:100vh;font-size:13px}
+
+/* LOGIN */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--bg);border:0.5px solid var(--border);border-radius:18px;padding:44px 48px;width:100%;max-width:420px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.brand-icon{width:38px;height:38px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2}
+.brand-name{font-size:14px;font-weight:700}
+.brand-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.form-input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-size:13px;outline:none}
+.form-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(112,48,160,.10)}
+.btn-primary{width:100%;padding:11px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-primary:hover{background:var(--primary-d)}
+.login-err{background:var(--red-bg);color:var(--red);border:0.5px solid #F7C1C1;border-radius:var(--radius);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+
+/* APP */
+#screen-app{display:none;min-height:100vh}
+.topnav{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-back{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);text-decoration:none;padding:5px 10px;border:0.5px solid var(--border2);border-radius:14px;background:var(--bg2)}
+.nav-back:hover{background:var(--bg3)}
+.nav-icon{width:30px;height:30px;background:var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.nav-icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+.nav-title{font-size:14px;font-weight:700}
+.nav-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:10px}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 4px}
+.user-av{width:24px;height:24px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.user-em{font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:14px;border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
+
+/* TABS */
+.tabs{background:var(--bg);border-bottom:0.5px solid var(--border);padding:0 28px;display:flex;gap:0;overflow-x:auto;position:sticky;top:54px;z-index:99}
+.tab{padding:12px 18px;font-size:12px;font-weight:500;color:var(--text2);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-edit::after{content:'✎';margin-left:6px;color:#FFB400;font-size:11px}
+
+/* CONTENT */
+.container{max-width:100%;padding:24px 28px}
+.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:16px}
+.panel-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panel-sub{font-size:11px;color:var(--text2);margin-bottom:14px}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
+.kpi-label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.kpi-value{font-size:22px;font-weight:600}
+.kpi-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.kpi.warn{background:var(--orange-bg)}
+.kpi.warn .kpi-label,.kpi.warn .kpi-sub{color:var(--orange-d)}
+.kpi.warn .kpi-value{color:var(--orange-d)}
+.kpi.danger{background:var(--red-bg)}
+.kpi.danger .kpi-label,.kpi.danger .kpi-sub{color:var(--red-d)}
+.kpi.danger .kpi-value{color:var(--red-d)}
+
+/* CAPACITY BOX */
+.cap-box{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);margin-bottom:14px;font-size:12px}
+.cap-item{display:flex;align-items:center;gap:6px}
+.cap-input{width:80px;padding:4px 8px;background:#FFF2CC;border:0.5px solid #DEC270;border-radius:4px;font-size:12px;color:#0000FF;font-weight:600}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:6px 9px;text-align:left;border-bottom:0.5px solid var(--border);white-space:nowrap}
+th{background:#1F3864;color:#fff;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;z-index:2}
+th.q1{background:#A03030;color:#fff}
+th.q2{background:#B25E10;color:#fff}
+th.q3{background:#0F6E56;color:#fff}
+th.q4{background:#185FA5;color:#fff}
+tr:hover td{background:var(--bg2)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.center{text-align:center}
+.editable{background:#FFF2CC;color:#0000FF;font-weight:600}
+.editable input,.editable select{background:transparent;border:none;outline:none;font-weight:600;color:#0000FF;font-size:12px;width:100%;font-family:inherit}
+.editable input:focus{background:#fff;border:1px solid var(--primary)}
+.hist{background:var(--gray-bg);color:var(--gray-text)}
+.badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block}
+.badge-ok{background:var(--green-bg);color:var(--green-d)}
+.badge-warn{background:var(--orange-bg);color:var(--orange-d)}
+.badge-danger{background:var(--red-bg);color:var(--red-d)}
+.badge-genomma{background:var(--blue-bg);color:var(--blue-d)}
+.badge-inovalab{background:var(--green-bg);color:var(--green-d)}
+.badge-desativado{background:var(--red-bg);color:var(--red-d);font-weight:600}
+.row-overflow td{background:#FCEBEB !important}
+
+/* FILTRO */
+.filtro-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:8px 10px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius)}
+.filtro-campo{position:relative;flex:1 1 260px;min-width:200px;display:flex;align-items:center}
+.filtro-ico{position:absolute;left:9px;font-size:11px;opacity:.55;pointer-events:none}
+.filtro-input{width:100%;padding:7px 10px 7px 27px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:12px;outline:none;font-family:inherit}
+.filtro-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(112,48,160,.10)}
+.filtro-sel{padding:7px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:12px;outline:none;font-family:inherit;cursor:pointer}
+.btn-limpar{font-size:11px;padding:6px 12px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg);color:var(--text2);cursor:pointer;font-family:inherit}
+.btn-limpar:hover{background:var(--bg3)}
+.filtro-cnt{font-size:11px;color:var(--text2);margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* TOTALIZADOR */
+tfoot tr.tot-row td{position:sticky;bottom:0;background:#D9E1F2;color:#1F3864;font-weight:700;border-top:1.5px solid #1F3864;z-index:3}
+tfoot tr.tot-row:hover td{background:#D9E1F2}
+tfoot tr.tot-row td.tot-lbl{text-align:right;text-transform:uppercase;font-size:10px;letter-spacing:.05em}
+@media(prefers-color-scheme:dark){
+  tfoot tr.tot-row td,tfoot tr.tot-row:hover td{background:#2b3a55;color:#dce6f7;border-top-color:#5b7cb0}
+}
+
+/* MODO (S&OE) */
+.modo-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.modo-btn{font-size:11px;padding:6px 14px;border-radius:14px;border:0.5px solid var(--border2);background:var(--bg);color:var(--text2);cursor:pointer;font-family:inherit}
+.modo-btn:hover{background:var(--bg2)}
+.modo-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.chk-bar{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);margin-left:8px;cursor:pointer}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text2)}
+.empty-state .es-ico{font-size:38px;margin-bottom:12px}
+.empty-state .es-t{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px}
+.empty-state .es-s{font-size:12px;max-width:560px;margin:0 auto 18px;line-height:1.6}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:7px 14px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s;text-decoration:none}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-d)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover{background:var(--green-d)}
+
+/* CELL COLORS */
+.cell-green{background:#C6EFCE;color:#0F6E56;font-weight:600}
+.cell-yellow{background:#FCE5A0;color:#633806;font-weight:600}
+.cell-red{background:#F4C7C3;color:#791F1F;font-weight:600}
+.cell-gray{background:#E8E8E8;color:#595959;font-weight:600}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--text2);font-size:13px}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+.alert{padding:12px 16px;border-radius:var(--radius);font-size:12px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px}
+.alert-warn{background:var(--orange-bg);color:var(--orange-d);border-left:3px solid var(--orange)}
+.alert-danger{background:var(--red-bg);color:var(--red-d);border-left:3px solid var(--red)}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state svg{width:48px;height:48px;stroke:var(--text3);fill:none;stroke-width:1.5;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <div><div class="brand-name">Torre de Controle</div><div class="brand-sub">Simulador S&OP / Forecast</div></div>
+    </div>
+    <div class="login-title">Entrar</div>
+    <div class="login-sub">Use sua conta da Torre de Controle.</div>
+    <div class="form-group"><label class="form-label">E-mail</label><input id="l-email" type="email" class="form-input" autocomplete="email"></div>
+    <div class="form-group"><label class="form-label">Senha</label><input id="l-pass" type="password" class="form-input" autocomplete="current-password"></div>
+    <button id="btn-login" class="btn-primary" onclick="doLogin()">Entrar</button>
+    <div id="login-err" class="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app">
+  <div class="topnav">
+    <div class="nav-brand">
+      <a href="../index.html" class="nav-back">← Painéis</a>
+      <div class="nav-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <div><div class="nav-title">Simulador S&OP / Forecast</div><div class="nav-sub">Ocupação de PP · Genomma × Inovalab · 2026</div></div>
+    </div>
+    <div class="nav-right">
+      <button class="btn-sm" onclick="reloadAll()">Recarregar</button>
+      <div class="user-chip"><div class="user-av" id="user-av">--</div><div class="user-em" id="user-em">---</div></div>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="container">
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// ============================================================
+const SUPABASE_URL  = 'https://ennsbpibfnuwlvtodukg.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_ExShUMyhsoGRab_RdySuZg_1uqONyI5';
+const ADMIN_EMAIL   = 'thiago_balao@yahoo.com.br';
+
+const {createClient} = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'torre-controle-auth'}
+});
+
+let currentUser = null;
+let isAdmin = false;
+
+// ============================================================
+// CONSTANTES DE NEGÓCIO
+// ============================================================
+const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const QUARTER_OF_MES = [1,1,1,2,2,2,3,3,3,4,4,4];
+const QCOLOR = ['','#A03030','#B25E10','#0F6E56','#185FA5'];
+
+// Calendário 4-4-5 por quarter (totaliza 52 semanas)
+const CALENDARIO = [
+  {mes:'Janeiro',  nsem:4, idx:1, q:1},
+  {mes:'Fevereiro',nsem:4, idx:2, q:1},
+  {mes:'Março',    nsem:5, idx:3, q:1},
+  {mes:'Abril',    nsem:4, idx:4, q:2},
+  {mes:'Maio',     nsem:4, idx:5, q:2},
+  {mes:'Junho',    nsem:5, idx:6, q:2},
+  {mes:'Julho',    nsem:4, idx:7, q:3},
+  {mes:'Agosto',   nsem:4, idx:8, q:3},
+  {mes:'Setembro', nsem:5, idx:9, q:3},
+  {mes:'Outubro',  nsem:4, idx:10,q:4},
+  {mes:'Novembro', nsem:4, idx:11,q:4},
+  {mes:'Dezembro', nsem:5, idx:12,q:4},
+];
+const MAPA_SEMANAS = (function(){
+  const arr = [];
+  let posQ = 0, qPrev = 0;
+  CALENDARIO.forEach(({mes, nsem, idx, q}) => {
+    if(q !== qPrev){ posQ = 0; qPrev = q; }
+    for(let s = 1; s <= nsem; s++){
+      posQ++;
+      arr.push({mesIdx:idx, mesAbr:MESES_ABR[idx-1], semNoMes:s, q, posNoQ:posQ,
+                label:`${MESES_ABR[idx-1]}-S${s}`});
+    }
+  });
+  return arr;
+})();
+// MAPA_SEMANAS tem 52 entradas: índice 0..21 = histórico (Jan-Mai), 21..51 = simulação (Jun-Dez)
+const PRIMEIRA_SIM = MAPA_SEMANAS.findIndex(s => s.mesIdx === 6);
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  parametros: {cap_genomma:2408, cap_inovalab:2244, safety_pct:0.90,
+               entrada_s1:1.0, entrada_s2:0, entrada_s3:0, entrada_s4:0, entrada_s5:0},
+  skus: [],          // [{cod_item, descricao, marca, empresa, upp_cadastro, upp_override, upp_efetiva, status_supply, gtin14}]
+  estoque: {},       // {cod_item: qty_un}
+  saidas: {},        // {cod_item: {1..12: qty_un}}
+  entradas: {},      // {cod_item: {1..12: qty_un}}
+  curva: {},         // {empresa: {quarter: [pct_sem1, pct_sem2, ..., pct_sem13]}}
+  real: {},          // {cod_item: {1..12: {venda, bonif}}}  ← faturamento real (S&OE)
+  loading: true,
+  activeTab: 'painel',
+  filtros: {},       // {aba: {q, empresa, status}}
+  soeModo: 'real',   // plano | real | desvio | ader
+  soeBonif: false,   // incluir bonificação/brinde no "real"
+  soeSemReal: false  // banco sem tabela sop_faturamento_real
+};
+
+// CFOPs de saída — classificação para leitura do relatório FT4003 (Nota Fiscal)
+const CFOP_VENDA = [5101,5102,5103,5104,5105,5106,5109,5110,5401,5402,5403,5405,
+                    6101,6102,6103,6104,6105,6106,6107,6108,6109,6110,6401,6402,6403,6404];
+const CFOP_BONIF = [5910,5911,5949,6910,6911,6949];
+
+// ============================================================
+// AUTH
+// ============================================================
+async function checkSession(){
+  try{
+    if(window.location.hash && window.location.hash.includes('access_token')){
+      await new Promise(r=>setTimeout(r,800));
+      window.history.replaceState(null,'',window.location.pathname);
+    }
+    const {data:{session}} = await sb.auth.getSession();
+    if(!session){ showLogin(); return; }
+    showApp(session.user);
+  }catch(e){ showLogin(); }
+}
+
+async function doLogin(){
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const btn   = document.getElementById('btn-login');
+  const err   = document.getElementById('login-err');
+  err.style.display = 'none';
+  if(!email || !pass){ showErr(err,'Preencha e-mail e senha.'); return; }
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try{
+    const {data, error} = await sb.auth.signInWithPassword({email, password:pass});
+    if(error){
+      let msg = error.message;
+      if(msg.includes('Invalid login')) msg = 'E-mail ou senha incorretos.';
+      showErr(err, msg); btn.disabled=false; btn.textContent='Entrar';
+    } else { showApp(data.user); }
+  }catch(e){
+    showErr(err,'Erro: '+e.message); btn.disabled=false; btn.textContent='Entrar';
+  }
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('screen-app').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+}
+
+function showLogin(){
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('screen-app').style.display = 'none';
+}
+
+async function showApp(user){
+  currentUser = user;
+  isAdmin = user.email === ADMIN_EMAIL;
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'block';
+  document.getElementById('user-av').textContent = user.email.slice(0,2).toUpperCase();
+  document.getElementById('user-em').textContent = user.email;
+  renderTabs();
+  await loadAll();
+  switchTab('painel');
+}
+
+function showErr(el,msg){el.textContent=msg;el.style.display='block';}
+
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN' && session && !currentUser) showApp(session.user);
+  else if(event==='SIGNED_OUT') showLogin();
+});
+
+// ============================================================
+// CARREGAR DADOS DO SUPABASE
+// ============================================================
+// ============================================================
+// SEED — dados iniciais embutidos no HTML (do Excel)
+// Usado quando o Supabase ainda está vazio (1ª publicação)
+// ============================================================
+function lerSeed(){
+  try{
+    const tag = document.getElementById('SEED_DATA');
+    if(!tag) return null;
+    return JSON.parse(tag.textContent);
+  }catch(e){ console.warn('Seed inválido:', e); return null; }
+}
+
+function aplicarSeed(seed){
+  // Parametros
+  Object.assign(state.parametros, seed.parametros || {});
+  // SKUs (mantém formato da tabela)
+  state.skus = (seed.skus || []).map(s => ({
+    ...s,
+    upp_efetiva: s.upp_override || s.upp_cadastro || 2000
+  }));
+  // Saidas/entradas
+  state.saidas = {};
+  Object.entries(seed.saidas || {}).forEach(([cod, meses]) => {
+    state.saidas[cod] = {};
+    Object.entries(meses).forEach(([m, v]) => state.saidas[cod][parseInt(m)] = parseFloat(v) || 0);
+  });
+  state.entradas = {};
+  Object.entries(seed.entradas || {}).forEach(([cod, meses]) => {
+    state.entradas[cod] = {};
+    Object.entries(meses).forEach(([m, v]) => state.entradas[cod][parseInt(m)] = parseFloat(v) || 0);
+  });
+  // Estoque
+  state.estoque = {};
+  Object.entries(seed.estoque || {}).forEach(([cod, v]) => state.estoque[cod] = parseFloat(v) || 0);
+  // Curva
+  state.curva = {GENOMMA:{1:[],2:[],3:[],4:[]}, INOVALAB:{1:[],2:[],3:[],4:[]}};
+  Object.entries(seed.curva || {}).forEach(([emp, qmap]) => {
+    if(!state.curva[emp]) state.curva[emp] = {1:[],2:[],3:[],4:[]};
+    Object.entries(qmap).forEach(([q, arr]) => {
+      const a = (arr || []).map(v => parseFloat(v) || 0);
+      while(a.length < 13) a.push(0);
+      state.curva[emp][parseInt(q)] = a;
+    });
+  });
+}
+
+async function gravarSeedNoSupabase(seed){
+  if(!isAdmin){ console.warn('[seed] não é admin, abortando'); return false; }
+
+  const check = (label, result) => {
+    if(result?.error){
+      console.error(`[seed] ✗ ${label}:`, result.error.message, result.error);
+      throw new Error(`${label}: ${result.error.message}`);
+    }
+    console.log(`[seed] ✓ ${label}`);
+    return result;
+  };
+
+  try{
+    // 1. Parametros (sop_meta)
+    const metaPayload = Object.entries(seed.parametros).map(([chave, valor]) => ({
+      chave, valor: String(valor), user_email: currentUser.email
+    }));
+    check('parametros (sop_meta)',
+      await sb.from('sop_meta').upsert(metaPayload, {onConflict:'chave'}));
+
+    // 2. SKUs
+    const skuPayload = seed.skus.map(s => ({
+      cod_item: s.cod_item,
+      descricao: s.descricao || '',
+      marca: s.marca || '',
+      empresa: s.empresa || 'GENOMMA',
+      upp_cadastro: s.upp_cadastro || null,
+      upp_override: s.upp_override || null,
+      upp_efetiva: s.upp_override || s.upp_cadastro || 2000,
+      gtin14: s.gtin14 || null,
+      status_supply: s.status_supply || null
+    }));
+    check(`SKUs (${skuPayload.length} linhas)`,
+      await sb.from('sop_sku').upsert(skuPayload, {onConflict:'cod_item'}));
+
+    // 3. Plano de saídas
+    const saidaPayload = [];
+    Object.entries(seed.saidas).forEach(([cod, meses]) => {
+      Object.entries(meses).forEach(([m, v]) => {
+        const ym = `2026-${String(m).padStart(2,'0')}-01`;
+        if(v > 0) saidaPayload.push({cod_item: cod, year_month: ym, qty_un: v, horizonte: '2026'});
+      });
+    });
+    check('limpar sop_plano_saida',
+      await sb.from('sop_plano_saida').delete().eq('horizonte','2026'));
+    if(saidaPayload.length){
+      // Inserir em lotes de 500 para evitar payload muito grande
+      for(let i = 0; i < saidaPayload.length; i += 500){
+        const lote = saidaPayload.slice(i, i+500);
+        check(`saídas lote ${i/500+1}/${Math.ceil(saidaPayload.length/500)}`,
+          await sb.from('sop_plano_saida').insert(lote));
+      }
+    }
+
+    // 4. Plano de entradas
+    const entPayload = [];
+    Object.entries(seed.entradas).forEach(([cod, meses]) => {
+      Object.entries(meses).forEach(([m, v]) => {
+        const ym = `2026-${String(m).padStart(2,'0')}-01`;
+        if(v > 0) entPayload.push({cod_item: cod, year_month: ym, qty_un: v, horizonte: '2026'});
+      });
+    });
+    check('limpar sop_plano_entrada',
+      await sb.from('sop_plano_entrada').delete().eq('horizonte','2026'));
+    if(entPayload.length){
+      for(let i = 0; i < entPayload.length; i += 500){
+        const lote = entPayload.slice(i, i+500);
+        check(`entradas lote ${i/500+1}/${Math.ceil(entPayload.length/500)}`,
+          await sb.from('sop_plano_entrada').insert(lote));
+      }
+    }
+
+    // 5. Estoque (foto de hoje)
+    const today = new Date().toISOString().slice(0,10);
+    const estPayload = Object.entries(seed.estoque).map(([cod, v]) => ({
+      cod_item: cod, snapshot_date: today, qty_un: v
+    }));
+    if(estPayload.length){
+      check(`estoque (${estPayload.length} linhas)`,
+        await sb.from('sop_estoque').upsert(estPayload, {onConflict:'cod_item,snapshot_date'}));
+    }
+
+    // 6. Curva
+    const curvaPayload = [];
+    Object.entries(seed.curva).forEach(([emp, qmap]) => {
+      Object.entries(qmap).forEach(([q, arr]) => {
+        arr.forEach((pct, i) => {
+          if(pct > 0) curvaPayload.push({
+            empresa: emp, quarter: parseInt(q),
+            semana_no_quarter: i + 1, pct
+          });
+        });
+      });
+    });
+    check('limpar sop_curva_quarter',
+      await sb.from('sop_curva_quarter').delete().gte('quarter', 1));
+    if(curvaPayload.length){
+      check(`curva (${curvaPayload.length} linhas)`,
+        await sb.from('sop_curva_quarter').insert(curvaPayload));
+    }
+
+    // 7. Marca seed como carregado
+    check('marcar seed_loaded_at',
+      await sb.from('sop_meta').upsert({
+        chave: 'seed_loaded_at',
+        valor: new Date().toISOString(),
+        user_email: currentUser.email
+      }, {onConflict:'chave'}));
+
+    console.log('[seed] ✅ TUDO GRAVADO COM SUCESSO');
+    return true;
+  }catch(e){
+    console.error('[seed] ❌ Falha:', e.message);
+    return false;
+  }
+}
+
+async function loadAll(){
+  state.loading = true;
+  renderActiveTab();
+  try{
+    // Helper: faz paginação manual para passar do limite max-rows do PostgREST.
+    // O Supabase tem hard cap de 1000 por request mesmo com .range(0,N) maior.
+    // Solução: chamar várias vezes em lotes de 1000 até esvaziar.
+    async function selectAll(builderFn, batchSize = 1000) {
+      const all = [];
+      let from = 0;
+      let pageNum = 0;
+      while(true){
+        const builder = builderFn();  // reconstrói query a cada lote
+        const {data, error} = await builder.range(from, from + batchSize - 1);
+        if(error){
+          console.error('[selectAll] erro:', error);
+          return {data: all, error};
+        }
+        if(!data || data.length === 0) break;
+        all.push(...data);
+        pageNum++;
+        if(data.length < batchSize) break;  // último lote
+        from += batchSize;
+        if(pageNum > 50){  // proteção contra loop infinito
+          console.warn('[selectAll] interrompido em 50 páginas (50k linhas)');
+          break;
+        }
+      }
+      return {data: all, error: null};
+    }
+
+    const [meta, skus, saidas, entradas, estoque, curva] = await Promise.all([
+      selectAll(() => sb.from('sop_meta').select('*')),
+      selectAll(() => sb.from('sop_sku').select('*').order('empresa').order('marca').order('descricao')),
+      selectAll(() => sb.from('sop_plano_saida').select('*').eq('horizonte','2026').order('cod_item')),
+      selectAll(() => sb.from('sop_plano_entrada').select('*').eq('horizonte','2026').order('cod_item')),
+      selectAll(() => sb.from('sop_estoque').select('*').order('snapshot_date',{ascending:false})),
+      selectAll(() => sb.from('sop_curva_quarter').select('*'))
+    ]);
+
+    // Faturamento real (S&OE) — tabela opcional: se não existir, a aba avisa
+    state.real = {};
+    state.soeSemReal = false;
+    try{
+      const real = await selectAll(() => sb.from('sop_faturamento_real').select('*').eq('horizonte','2026'));
+      if(real.error){
+        state.soeSemReal = true;
+        console.warn('[loadAll] sop_faturamento_real indisponível:', real.error.message);
+      } else {
+        (real.data || []).forEach(r => {
+          const m = parseInt(String(r.year_month).slice(5,7));
+          if(!m) return;
+          if(!state.real[r.cod_item]) state.real[r.cod_item] = {};
+          state.real[r.cod_item][m] = {
+            venda: parseFloat(r.qty_un) || 0,
+            bonif: parseFloat(r.qty_bonif) || 0
+          };
+        });
+        console.log('[loadAll] Faturamento real:', (real.data||[]).length, 'pontos');
+      }
+    }catch(e){
+      state.soeSemReal = true;
+      console.warn('[loadAll] sop_faturamento_real indisponível:', e.message);
+    }
+
+    // Detectar Supabase vazio (qualquer das 3 tabelas centrais)
+    const skusVazio    = !skus.data    || skus.data.length    === 0;
+    const saidasVazio  = !saidas.data  || saidas.data.length  === 0;
+    const estoqueVazio = !estoque.data || estoque.data.length === 0;
+    const bancoVazio = skusVazio || saidasVazio || estoqueVazio;
+
+    console.log('[loadAll] SKUs no banco:', skus.data?.length || 0,
+                '| Saídas:', saidas.data?.length || 0,
+                '| Entradas:', entradas.data?.length || 0,
+                '| Estoque:', estoque.data?.length || 0,
+                '| Curva:', curva.data?.length || 0,
+                '| Banco vazio?', bancoVazio);
+
+    if(bancoVazio){
+      // Banco vazio (total ou parcial) → aplicar seed embutido
+      const seed = lerSeed();
+      if(seed){
+        console.log('[loadAll] ▶ Aplicando seed embutido (banco vazio/incompleto)');
+        aplicarSeed(seed);
+        state._usandoSeed = true;
+        // Se admin: tentar gravar no Supabase para virar fonte de verdade
+        if(isAdmin){
+          console.log('[loadAll] ▶ Admin detectado, gravando seed no Supabase...');
+          const gravou = await gravarSeedNoSupabase(seed);
+          if(gravou){
+            console.log('[loadAll] ✓ Seed gravado no Supabase com sucesso');
+            state._usandoSeed = false;
+          } else {
+            console.warn('[loadAll] ⚠ Falha ao gravar seed (RLS? policies?)');
+          }
+        } else {
+          console.log('[loadAll] ℹ Não-admin, seed apenas em memória');
+        }
+        state.loading = false;
+        renderActiveTab();
+        return;
+      } else {
+        console.warn('[loadAll] ⚠ Banco vazio mas seed não encontrado!');
+      }
+    }
+
+    // Parametros
+    if(meta.data){
+      meta.data.forEach(m => {
+        if(m.chave === 'cap_genomma')  state.parametros.cap_genomma  = parseFloat(m.valor);
+        if(m.chave === 'cap_inovalab') state.parametros.cap_inovalab = parseFloat(m.valor);
+        if(m.chave === 'safety_pct')   state.parametros.safety_pct   = parseFloat(m.valor);
+        for(let i = 1; i <= 5; i++){
+          if(m.chave === `entrada_s${i}`) state.parametros[`entrada_s${i}`] = parseFloat(m.valor);
+        }
+      });
+    }
+
+    // SKUs
+    state.skus = (skus.data || []).map(s => ({
+      ...s,
+      upp_efetiva: s.upp_override || s.upp_cadastro || 2000
+    }));
+
+    // Saidas e entradas: indexar por SKU e mês
+    state.saidas = {};
+    (saidas.data || []).forEach(s => {
+      const mes = parseInt(s.year_month.slice(5,7));
+      if(!state.saidas[s.cod_item]) state.saidas[s.cod_item] = {};
+      state.saidas[s.cod_item][mes] = parseFloat(s.qty_un) || 0;
+    });
+    state.entradas = {};
+    (entradas.data || []).forEach(s => {
+      const mes = parseInt(s.year_month.slice(5,7));
+      if(!state.entradas[s.cod_item]) state.entradas[s.cod_item] = {};
+      state.entradas[s.cod_item][mes] = parseFloat(s.qty_un) || 0;
+    });
+
+    // Estoque: pegar a foto mais recente de cada SKU
+    state.estoque = {};
+    (estoque.data || []).forEach(s => {
+      if(state.estoque[s.cod_item] === undefined){
+        state.estoque[s.cod_item] = parseFloat(s.qty_un) || 0;
+      }
+    });
+
+    // Curva
+    state.curva = {GENOMMA:{1:[],2:[],3:[],4:[]}, INOVALAB:{1:[],2:[],3:[],4:[]}};
+    (curva.data || []).forEach(c => {
+      if(!state.curva[c.empresa]) state.curva[c.empresa] = {1:[],2:[],3:[],4:[]};
+      if(!state.curva[c.empresa][c.quarter]) state.curva[c.empresa][c.quarter] = [];
+      state.curva[c.empresa][c.quarter][c.semana_no_quarter - 1] = parseFloat(c.pct);
+    });
+    // Garantir 13 posições por curva
+    ['GENOMMA','INOVALAB'].forEach(e => {
+      [1,2,3,4].forEach(q => {
+        const arr = state.curva[e][q] || [];
+        while(arr.length < 13) arr.push(0);
+        state.curva[e][q] = arr;
+      });
+    });
+
+    state.loading = false;
+    renderActiveTab();
+  }catch(e){
+    console.error(e);
+    // Em caso de erro grave no Supabase, tentar usar seed como fallback final
+    const seed = lerSeed();
+    if(seed){
+      console.warn('Supabase indisponível, usando seed embutido');
+      aplicarSeed(seed);
+      state.loading = false;
+      renderActiveTab();
+      return;
+    }
+    state.loading = false;
+    document.getElementById('content').innerHTML =
+      `<div class="alert alert-danger">Erro ao carregar dados: ${e.message}</div>`;
+  }
+}
+
+async function reloadAll(){ await loadAll(); }
+
+// ============================================================
+// MOTOR DE SIMULAÇÃO
+// ============================================================
+function calcularPP(estoqueUN, upp){
+  if(estoqueUN <= 0) return 0;
+  return Math.ceil(estoqueUN / upp);
+}
+
+function simulacaoMensal(usarReal){
+  // Retorna {cod_item: [eop_jan, eop_fev, ..., eop_dez]}
+  // Janeiro a Maio: estoque atual constante (foto)
+  // Junho em diante: simulação real
+  // usarReal=true → nos meses já faturados usa a SAÍDA REAL no lugar do S&OP (visão S&OE)
+  const fechados = usarReal ? mesesComReal() : [];
+  const out = {};
+  state.skus.forEach(sku => {
+    const cod = sku.cod_item;
+    const upp = sku.upp_efetiva;
+    const estIni = state.estoque[cod] || 0;
+    const eop = new Array(12).fill(0);
+    // Jan-Mai = estoque atual
+    for(let m = 0; m < 5; m++) eop[m] = estIni;
+    // Junho em diante
+    let prev = estIni;
+    for(let m = 5; m < 12; m++){  // m=5 (Junho) ... 11 (Dezembro)
+      const ent = (state.entradas[cod] && state.entradas[cod][m+1]) || 0;
+      let sai = (state.saidas[cod]  && state.saidas[cod][m+1])  || 0;
+      if(fechados.indexOf(m+1) >= 0) sai = realDe(cod, m+1);
+      const novo = Math.max(prev + ent - sai, 0);
+      eop[m] = novo;
+      prev = novo;
+    }
+    out[cod] = eop;
+  });
+  return out;
+}
+
+function simulacaoSemanal(){
+  // Aplica curva por quarter, distribuindo entrada na semana
+  const out = {};
+  state.skus.forEach(sku => {
+    const cod = sku.cod_item;
+    const upp = sku.upp_efetiva;
+    const estIni = state.estoque[cod] || 0;
+    const eop = new Array(52).fill(0);
+    // Histórico (sem 1..PRIMEIRA_SIM): estoque constante
+    for(let w = 0; w < PRIMEIRA_SIM; w++) eop[w] = estIni;
+
+    // Simulação real começa em w = PRIMEIRA_SIM (Jun-S1)
+    let prev = estIni;
+    for(let w = PRIMEIRA_SIM; w < 52; w++){
+      const info = MAPA_SEMANAS[w];
+      const q = info.q;
+      const mesIdx = info.mesIdx;
+      const semNoMes = info.semNoMes;
+      const posNoQ = info.posNoQ;
+
+      // Saída do quarter inteiro × % curva
+      const meses_do_q = [(q-1)*3+1, (q-1)*3+2, (q-1)*3+3];
+      const saidaQ = meses_do_q.reduce((s, mi) =>
+        s + ((state.saidas[cod] && state.saidas[cod][mi]) || 0), 0);
+      const pctCurva = (state.curva[sku.empresa] && state.curva[sku.empresa][q] &&
+                       state.curva[sku.empresa][q][posNoQ - 1]) || 0;
+      const saidaSemana = saidaQ * pctCurva;
+
+      // Entrada do mês × % entrada da semana_no_mes
+      const entMes = (state.entradas[cod] && state.entradas[cod][mesIdx]) || 0;
+      const pctEntrada = state.parametros[`entrada_s${semNoMes}`] || 0;
+      const entradaSemana = entMes * pctEntrada;
+
+      const novo = Math.max(prev + entradaSemana - saidaSemana, 0);
+      eop[w] = novo;
+      prev = novo;
+    }
+    out[cod] = eop;
+  });
+  return out;
+}
+
+function agregadoMensal(simul){
+  // Retorna por empresa: PP por mês [12]
+  const out = {GENOMMA: new Array(12).fill(0), INOVALAB: new Array(12).fill(0)};
+  state.skus.forEach(sku => {
+    const emp = sku.empresa;
+    const upp = sku.upp_efetiva;
+    const eop = simul[sku.cod_item] || [];
+    for(let m = 0; m < 12; m++){
+      out[emp][m] += calcularPP(eop[m] || 0, upp);
+    }
+  });
+  return out;
+}
+
+function agregadoSemanal(simul){
+  const out = {GENOMMA: new Array(52).fill(0), INOVALAB: new Array(52).fill(0)};
+  state.skus.forEach(sku => {
+    const emp = sku.empresa;
+    const upp = sku.upp_efetiva;
+    const eop = simul[sku.cod_item] || [];
+    for(let w = 0; w < 52; w++){
+      out[emp][w] += calcularPP(eop[w] || 0, upp);
+    }
+  });
+  return out;
+}
+
+function getStatus(pct, isHist){
+  if(isHist) return 'OK';
+  if(pct >= 1)    return 'OVERFLOW';
+  if(pct >= 0.9)  return 'ATENÇÃO';
+  return 'OK';
+}
+
+function statusClass(s){
+  if(s === 'OVERFLOW') return 'cell-red';
+  if(s === 'ATENÇÃO')  return 'cell-yellow';
+  if(s === 'OK')       return 'cell-green';
+  return '';
+}
+
+function fmt(n){
+  if(n === null || n === undefined || n === '') return '';
+  return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:0});
+}
+function pct(n){
+  if(n === null || n === undefined) return '';
+  return (n * 100).toFixed(1) + '%';
+}
+
+// ============================================================
+// MOTOR S&OE — comparação S&OP (plano) × Faturamento real
+// ============================================================
+
+// Quantidade real de um SKU num mês (venda + bonificação, se ligada)
+function realDe(cod, mes){
+  const r = state.real[cod] && state.real[cod][mes];
+  if(!r) return 0;
+  return (r.venda || 0) + (state.soeBonif ? (r.bonif || 0) : 0);
+}
+
+function planoDe(cod, mes){
+  return (state.saidas[cod] && state.saidas[cod][mes]) || 0;
+}
+
+// Meses que já têm faturamento lançado = meses "fechados" para o S&OE
+function mesesComReal(){
+  const out = [];
+  for(let m = 1; m <= 12; m++){
+    let t = 0;
+    for(const c in state.real){
+      const r = state.real[c][m];
+      if(r) t += (r.venda || 0) + (r.bonif || 0);
+    }
+    if(t > 0) out.push(m);
+  }
+  return out;
+}
+
+// Consolidado do S&OE: por empresa e total, apenas nos meses fechados
+function resumoSOE(){
+  const fechados = mesesComReal();
+  const base = () => ({plano:0, real:0, mesesPlano:new Array(13).fill(0), mesesReal:new Array(13).fill(0), absErro:0});
+  const out = {GENOMMA: base(), INOVALAB: base(), TOTAL: base(), fechados};
+  state.skus.forEach(s => {
+    const emp = out[s.empresa] ? s.empresa : 'GENOMMA';
+    for(let m = 1; m <= 12; m++){
+      const p = planoDe(s.cod_item, m);
+      const r = realDe(s.cod_item, m);
+      out[emp].mesesPlano[m] += p;  out.TOTAL.mesesPlano[m] += p;
+      out[emp].mesesReal[m]  += r;  out.TOTAL.mesesReal[m]  += r;
+      if(fechados.indexOf(m) >= 0){
+        out[emp].plano += p;  out.TOTAL.plano += p;
+        out[emp].real  += r;  out.TOTAL.real  += r;
+        out[emp].absErro += Math.abs(r - p);  out.TOTAL.absErro += Math.abs(r - p);
+      }
+    }
+  });
+  ['GENOMMA','INOVALAB','TOTAL'].forEach(k => {
+    const o = out[k];
+    o.desvio   = o.real - o.plano;
+    o.aderencia = o.plano > 0 ? o.real / o.plano : null;
+    o.acuracia  = o.plano > 0 ? Math.max(0, 1 - o.absErro / o.plano) : null;
+  });
+  return out;
+}
+
+function nomeMeses(lista){
+  return lista.map(m => MESES_ABR[m-1]).join(', ');
+}
+
+// ============================================================
+// FILTRO RÁPIDO + TOTALIZADOR  (v2.0)
+// ------------------------------------------------------------
+// O filtro NÃO re-renderiza a tabela: ele apenas esconde/mostra
+// as <tr> já montadas e recalcula o rodapé. Por isso não trava
+// a cada letra digitada.
+// ============================================================
+const STATUS_OPTS = ['Linha','Lançamento','Simulador','KIT','Importação','Inovalab','Desativado'];
+const _debTimer = {};
+
+function esc(s){
+  return String(s === null || s === undefined ? '' : s)
+    .replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function _f(aba){
+  if(!state.filtros[aba]) state.filtros[aba] = {q:'', empresa:'', status:''};
+  return state.filtros[aba];
+}
+
+function chaveBusca(s){
+  return ((s.cod_item||'') + ' ' + (s.descricao||'') + ' ' + (s.marca||'') + ' ' +
+          (s.empresa||'') + ' ' + (s.status_supply||'')).toLowerCase();
+}
+
+function filtroBar(aba, o){
+  o = o || {};
+  const f = _f(aba);
+  return `
+  <div class="filtro-bar">
+    <div class="filtro-campo">
+      <span class="filtro-ico">🔎</span>
+      <input id="q-${aba}" class="filtro-input" type="text" autocomplete="off" spellcheck="false"
+             placeholder="${esc(o.ph || 'Filtrar por código, descrição ou marca…')}"
+             value="${esc(f.q)}"
+             oninput="onFiltroInput('${aba}', this.value)">
+    </div>
+    <select class="filtro-sel" onchange="onFiltroSel('${aba}','empresa',this.value)">
+      <option value="">Todas as empresas</option>
+      <option value="GENOMMA" ${f.empresa==='GENOMMA'?'selected':''}>Genomma</option>
+      <option value="INOVALAB" ${f.empresa==='INOVALAB'?'selected':''}>Inovalab</option>
+    </select>
+    ${o.semStatus ? '' : `<select class="filtro-sel" onchange="onFiltroSel('${aba}','status',this.value)">
+      <option value="">Todos os status</option>
+      ${STATUS_OPTS.map(s=>`<option value="${s}" ${f.status===s?'selected':''}>${s}</option>`).join('')}
+    </select>`}
+    <button class="btn-limpar" onclick="limparFiltro('${aba}')">Limpar</button>
+    <span class="filtro-cnt" id="cnt-${aba}"></span>
+  </div>`;
+}
+
+// Debounce curto: digita livre, filtra ~130ms depois da última tecla.
+function onFiltroInput(aba, val){
+  _f(aba).q = val;
+  clearTimeout(_debTimer[aba]);
+  _debTimer[aba] = setTimeout(() => requestAnimationFrame(() => aplicarFiltro(aba)), 130);
+}
+
+function onFiltroSel(aba, campo, val){
+  _f(aba)[campo] = val;
+  aplicarFiltro(aba);
+}
+
+function limparFiltro(aba){
+  state.filtros[aba] = {q:'', empresa:'', status:''};
+  const inp = document.getElementById('q-'+aba);
+  if(inp) inp.value = '';
+  const sels = document.querySelectorAll('.filtro-bar .filtro-sel');
+  sels.forEach(s => { if(s.getAttribute('onchange').indexOf(`'${aba}'`) >= 0) s.value = ''; });
+  aplicarFiltro(aba);
+  if(inp) inp.focus();
+}
+
+function aplicarFiltro(aba){
+  const tbl = document.getElementById('tbl-'+aba);
+  if(!tbl || !tbl.tBodies.length) return;
+  const f = _f(aba);
+  const termos = f.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const tb = tbl.tBodies[0];
+  const rows = tb.rows;
+  let vis = 0;
+
+  // Destaca do fluxo de layout durante o loop (1 reflow em vez de N)
+  const prevDisp = tb.style.display;
+  tb.style.display = 'none';
+  for(let i = 0; i < rows.length; i++){
+    const tr = rows[i];
+    const hay = tr.dataset.f || '';
+    let ok = true;
+    for(let t = 0; t < termos.length; t++){
+      if(hay.indexOf(termos[t]) < 0){ ok = false; break; }
+    }
+    if(ok && f.empresa) ok = (tr.dataset.empresa === f.empresa);
+    if(ok && f.status)  ok = ((tr.dataset.status || '') === f.status);
+    tr.style.display = ok ? '' : 'none';
+    if(ok) vis++;
+  }
+  tb.style.display = prevDisp;
+
+  const cnt = document.getElementById('cnt-'+aba);
+  if(cnt){
+    const filtrando = termos.length || f.empresa || f.status;
+    cnt.textContent = filtrando ? `${fmt(vis)} de ${fmt(rows.length)} SKUs` : `${fmt(rows.length)} SKUs`;
+  }
+  atualizarTotais(aba);
+}
+
+// Monta a linha de TOTAL do rodapé.
+// sumCols = índices (0-based) das colunas que devem ser somadas.
+function totRow(nCols, sumCols, label, labelSpan, extras){
+  labelSpan = labelSpan || 1;
+  extras = extras || {};   // {colIdx: {tot:'ratio', num:i, den:j}}
+  let h = `<tr class="tot-row"><td class="tot-lbl" colspan="${labelSpan}">${label}</td>`;
+  for(let c = labelSpan; c < nCols; c++){
+    if(extras[c]){
+      const e = extras[c];
+      h += `<td class="num" data-tot="ratio" data-num="${e.num}" data-den="${e.den}"></td>`;
+    } else if(sumCols.indexOf(c) >= 0){
+      h += `<td class="num" data-tot="1" data-col="${c}"></td>`;
+    } else {
+      h += `<td></td>`;
+    }
+  }
+  return h + '</tr>';
+}
+
+// Soma apenas as linhas VISÍVEIS. Cada <td> somável carrega data-v="numero".
+function atualizarTotais(aba){
+  const tbl = document.getElementById('tbl-'+aba);
+  if(!tbl || !tbl.tFoot || !tbl.tBodies.length) return;
+  const foot = tbl.tFoot.querySelector('tr.tot-row');
+  if(!foot) return;
+  const somas = {}, somasP = {}, somasR = {};
+  const rows = tbl.tBodies[0].rows;
+  for(let i = 0; i < rows.length; i++){
+    const tr = rows[i];
+    if(tr.style.display === 'none') continue;
+    const tds = tr.cells;
+    for(let c = 0; c < tds.length; c++){
+      const td = tds[c];
+      const d = td.dataset.v;
+      if(d !== undefined && d !== '') somas[c] = (somas[c] || 0) + (parseFloat(d) || 0);
+      if(td.dataset.p !== undefined) somasP[c] = (somasP[c] || 0) + (parseFloat(td.dataset.p) || 0);
+      if(td.dataset.r !== undefined) somasR[c] = (somasR[c] || 0) + (parseFloat(td.dataset.r) || 0);
+    }
+  }
+  foot.querySelectorAll('td[data-tot]').forEach(td => {
+    const t = td.dataset.tot;
+    if(t === 'ratio'){
+      const num = somas[+td.dataset.num] || 0, den = somas[+td.dataset.den] || 0;
+      td.textContent = den > 0 ? pct(num/den) : '—';
+    } else if(t === 'ratio2'){
+      const c = +td.dataset.col;
+      const p = somasP[c] || 0, r = somasR[c] || 0;
+      td.textContent = p > 0 ? pct(r/p) : '—';
+    } else {
+      td.textContent = fmt(somas[+td.dataset.col] || 0);
+    }
+  });
+}
+
+// ============================================================
+// TABS
+// ============================================================
+const TABS = [
+  {id:'painel',     label:'📊 Painel',           edit:false},
+  {id:'cadastro',   label:'Cadastro SKU',        edit:true},
+  {id:'sop',        label:'S&OP',                edit:true},
+  {id:'forecast',   label:'Forecast Pedidos',    edit:true},
+  {id:'estoque',    label:'Estoque Atual',       edit:true},
+  {id:'curva',      label:'Curva por Quarter',   edit:true},
+  {id:'parametros', label:'⚙ Parâmetros',        edit:true},
+  {id:'sim-mensal', label:'Sim. Mensal',         edit:false},
+  {id:'sim-semanal',label:'Sim. Semanal',        edit:false},
+  {id:'soe',        label:'🎯 S&OE — Execução',  edit:true},
+];
+
+function renderTabs(){
+  const html = TABS.map(t =>
+    `<button class="tab ${t.edit?'tab-edit':''}" data-tab="${t.id}" onclick="switchTab('${t.id}')">${t.label}</button>`
+  ).join('');
+  document.getElementById('tabs').innerHTML = html;
+}
+
+function switchTab(tabId){
+  state.activeTab = tabId;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+  renderActiveTab();
+}
+
+function renderActiveTab(){
+  if(state.loading){
+    document.getElementById('content').innerHTML =
+      `<div class="loading"><div class="spinner"></div>Carregando dados...</div>`;
+    return;
+  }
+  const map = {
+    'painel': renderPainel,
+    'cadastro': renderCadastro,
+    'sop': renderSOP,
+    'forecast': renderForecast,
+    'estoque': renderEstoque,
+    'curva': renderCurva,
+    'parametros': renderParametros,
+    'sim-mensal': renderSimMensal,
+    'sim-semanal': renderSimSemanal,
+    'soe': renderSOE,
+  };
+  (map[state.activeTab] || renderPainel)();
+}
+
+// ============================================================
+// RENDER: PAINEL
+// ============================================================
+function renderPainel(){
+  const simM = simulacaoMensal();
+  const simW = simulacaoSemanal();
+  const aggM = agregadoMensal(simM);
+  const aggW = agregadoSemanal(simW);
+  const capG = state.parametros.cap_genomma;
+  const capI = state.parametros.cap_inovalab;
+
+  // KPIs
+  const picoMG = Math.max(...aggM.GENOMMA.slice(5));
+  const picoMI = Math.max(...aggM.INOVALAB.slice(5));
+  const picoSG = Math.max(...aggW.GENOMMA.slice(PRIMEIRA_SIM));
+  const picoSI = Math.max(...aggW.INOVALAB.slice(PRIMEIRA_SIM));
+  const ovfMG = aggM.GENOMMA.slice(5).filter(v => v/capG >= 1).length;
+  const ovfMI = aggM.INOVALAB.slice(5).filter(v => v/capI >= 1).length;
+  const ovfSG = aggW.GENOMMA.slice(PRIMEIRA_SIM).filter(v => v/capG >= 1).length;
+  const ovfSI = aggW.INOVALAB.slice(PRIMEIRA_SIM).filter(v => v/capI >= 1).length;
+  const idxPicoSG = aggW.GENOMMA.indexOf(picoSG);
+  const idxPicoSI = aggW.INOVALAB.indexOf(picoSI);
+
+  let html = '';
+
+  // Banner se está usando seed em memória (sem persistência)
+  if(state._usandoSeed){
+    html += `
+    <div class="alert alert-warn" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>⚠ <strong>Dados em memória (seed embutido).</strong> O banco Supabase está vazio ou inacessível.
+      ${isAdmin
+        ? 'Edições não vão persistir até que o seed seja salvo no banco.'
+        : 'Peça ao admin (' + ADMIN_EMAIL + ') para acessar a página — ele gravará os dados no banco automaticamente.'}</div>
+      ${isAdmin ? `<button class="btn btn-primary" onclick="forcarGravarSeed()">📥 Gravar dados no banco agora</button>` : ''}
+    </div>`;
+  }
+
+  // Banner se tem SKUs mas faltam dados de S&OP, Forecast ou Estoque
+  if(!state._usandoSeed && (state.skus.length > 0)){
+    const semSaidas = Object.keys(state.saidas).length === 0;
+    const semEntradas = Object.keys(state.entradas).length === 0;
+    const semEstoque = Object.keys(state.estoque).length === 0;
+    if(semSaidas || semEntradas || semEstoque){
+      html += `
+      <div class="alert alert-warn" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>⚠ <strong>Dados incompletos no banco.</strong>
+        ${semEstoque ? 'Estoque vazio. ' : ''}
+        ${semSaidas ? 'S&OP vazio. ' : ''}
+        ${semEntradas ? 'Forecast vazio. ' : ''}
+        ${isAdmin ? 'Clique no botão ao lado para reaplicar os dados do Excel.' : 'Avise o admin (' + ADMIN_EMAIL + ').'}</div>
+        ${isAdmin ? `<button class="btn btn-primary" onclick="forcarGravarSeed()">📥 Reaplicar dados do Excel</button>` : ''}
+      </div>`;
+    }
+  }
+
+  html += `
+    <!-- Capacidades editáveis -->
+    <div class="cap-box">
+      <div class="cap-item"><strong>Capacidade Genomma:</strong>
+        <input type="number" class="cap-input" value="${capG}" ${isAdmin?'':'disabled'}
+               onchange="saveParam('cap_genomma', this.value)"> PP</div>
+      <div class="cap-item"><strong>Capacidade Inovalab:</strong>
+        <input type="number" class="cap-input" value="${capI}" ${isAdmin?'':'disabled'}
+               onchange="saveParam('cap_inovalab', this.value)"> PP</div>
+      <div class="cap-item"><strong>Safety %:</strong>
+        <input type="number" class="cap-input" value="${(state.parametros.safety_pct*100).toFixed(0)}" step="1" min="0" max="100" ${isAdmin?'':'disabled'}
+               onchange="saveParam('safety_pct', this.value/100)">%</div>
+      <div class="cap-item" style="margin-left:auto;color:var(--text2);font-size:11px">
+        ${isAdmin ? '✏ Você pode editar (admin)' : '🔒 Somente leitura'}
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi ${ovfMG>0?'danger':(picoMG/capG>=0.9?'warn':'')}">
+        <div class="kpi-label">Genomma · pico mensal</div>
+        <div class="kpi-value">${fmt(picoMG)} <span style="font-size:12px;font-weight:400">PP</span></div>
+        <div class="kpi-sub">${pct(picoMG/capG)} · ${ovfMG} meses em overflow</div>
+      </div>
+      <div class="kpi ${ovfSG>0?'danger':(picoSG/capG>=0.9?'warn':'')}">
+        <div class="kpi-label">Genomma · pico semanal</div>
+        <div class="kpi-value">${fmt(picoSG)} <span style="font-size:12px;font-weight:400">PP</span></div>
+        <div class="kpi-sub">${pct(picoSG/capG)} · ${MAPA_SEMANAS[idxPicoSG]?.label||'-'} · ${ovfSG} semanas overflow</div>
+      </div>
+      <div class="kpi ${ovfMI>0?'danger':(picoMI/capI>=0.9?'warn':'')}">
+        <div class="kpi-label">Inovalab · pico mensal</div>
+        <div class="kpi-value">${fmt(picoMI)} <span style="font-size:12px;font-weight:400">PP</span></div>
+        <div class="kpi-sub">${pct(picoMI/capI)} · ${ovfMI} meses em overflow</div>
+      </div>
+      <div class="kpi ${ovfSI>0?'danger':(picoSI/capI>=0.9?'warn':'')}">
+        <div class="kpi-label">Inovalab · pico semanal</div>
+        <div class="kpi-value">${fmt(picoSI)} <span style="font-size:12px;font-weight:400">PP</span></div>
+        <div class="kpi-sub">${pct(picoSI/capI)} · ${MAPA_SEMANAS[idxPicoSI]?.label||'-'} · ${ovfSI} semanas overflow</div>
+      </div>
+    </div>
+  `;
+
+  // Gráfico mensal
+  html += `
+    <div class="panel">
+      <div class="panel-title">Projeção Mensal — PP por empresa</div>
+      <div class="panel-sub">Jan-Mai = histórico (foto do estoque atual) · Jun-Dez = simulação</div>
+      <div style="position:relative;height:280px"><canvas id="chartM"></canvas></div>
+    </div>
+  `;
+
+  // Tabela mensal por empresa
+  html += `<div class="panel"><div class="panel-title">Detalhe Mensal</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th>Empresa</th><th>Métrica</th>
+        ${MESES_PT.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${MESES_ABR[i]}</th>`).join('')}
+        <th>Pico</th><th>Mês</th></tr></thead><tbody>`;
+  ['GENOMMA','INOVALAB'].forEach(emp => {
+    const cap = emp === 'GENOMMA' ? capG : capI;
+    const ppArr = aggM[emp];
+    const pctArr = ppArr.map(v => v/cap);
+    const stArr = pctArr.map((p,i) => getStatus(p, i < 5));
+    const pico = Math.max(...ppArr.slice(5));
+    const idx = ppArr.indexOf(pico);
+    html += `<tr><td rowspan="3" class="center"><strong>${emp}</strong></td>
+      <td>PP</td>${ppArr.map(v=>`<td class="num"><strong>${fmt(v)}</strong></td>`).join('')}
+      <td class="num"><strong>${fmt(pico)}</strong></td><td class="center"><strong>${MESES_ABR[idx]}</strong></td></tr>`;
+    html += `<tr><td>% ocup.</td>${pctArr.map((p,i)=>{
+      const cls = i < 5 ? 'cell-gray' : statusClass(stArr[i]);
+      return `<td class="num ${cls}">${pct(p)}</td>`;
+    }).join('')}<td></td><td></td></tr>`;
+    html += `<tr><td>Status</td>${stArr.map((s,i)=>{
+      const cls = i < 5 ? 'cell-gray' : statusClass(s);
+      return `<td class="center ${cls}">${s}</td>`;
+    }).join('')}<td></td><td></td></tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  // Gráfico semanal
+  html += `
+    <div class="panel">
+      <div class="panel-title">Projeção Semanal — PP por empresa (52 semanas)</div>
+      <div class="panel-sub">Sem 1-21 = histórico · Sem 22-52 = simulação com curva por quarter</div>
+      <div style="position:relative;height:300px"><canvas id="chartS"></canvas></div>
+    </div>
+  `;
+
+  // Resumo executivo
+  html += `<div class="panel"><div class="panel-title">Resumo executivo</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Indicador</th><th>Genomma</th><th>Inovalab</th></tr></thead>
+      <tbody>
+        <tr><td>Pico mensal (PP)</td><td class="num">${fmt(picoMG)}</td><td class="num">${fmt(picoMI)}</td></tr>
+        <tr><td>Pico semanal (PP)</td><td class="num">${fmt(picoSG)}</td><td class="num">${fmt(picoSI)}</td></tr>
+        <tr><td>Diferença semanal vs mensal</td><td class="num">+${fmt(picoSG-picoMG)}</td><td class="num">+${fmt(picoSI-picoMI)}</td></tr>
+        <tr><td>Meses em overflow</td><td class="num">${ovfMG}</td><td class="num">${ovfMI}</td></tr>
+        <tr><td>Semanas em overflow</td><td class="num">${ovfSG}</td><td class="num">${ovfSI}</td></tr>
+      </tbody>
+    </table></div></div>`;
+
+  document.getElementById('content').innerHTML = html;
+
+  // Charts
+  drawChart('chartM', MESES_ABR, aggM.GENOMMA, aggM.INOVALAB, capG, capI, 'bar');
+  drawChart('chartS', MAPA_SEMANAS.map(s=>s.label), aggW.GENOMMA, aggW.INOVALAB, capG, capI, 'line');
+}
+
+function drawChart(canvasId, labels, dataG, dataI, capG, capI, type){
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const colG = dataG.map((v,i) => {
+    if(type==='line') return '#378ADD';
+    if(i<5) return '#9EBED9';  // histórico, mais claro
+    return v >= capG ? '#A32D2D' : (v/capG >= 0.9 ? '#EF9F27' : '#378ADD');
+  });
+  const colI = dataI.map((v,i) => {
+    if(type==='line') return '#1D9E75';
+    if(i<5) return '#A0CEB8';
+    return v >= capI ? '#A32D2D' : (v/capI >= 0.9 ? '#EF9F27' : '#1D9E75');
+  });
+  new Chart(ctx, {
+    type: type,
+    data: {
+      labels,
+      datasets: [
+        {label:'Genomma', data:dataG, backgroundColor:colG, borderColor:'#378ADD', borderWidth:type==='line'?2:0, pointRadius:type==='line'?2:0, tension:0.15, fill:false},
+        {label:'Inovalab', data:dataI, backgroundColor:colI, borderColor:'#1D9E75', borderWidth:type==='line'?2:0, borderDash:type==='line'?[4,2]:[], pointRadius:type==='line'?2:0, tension:0.15, fill:false},
+        {label:'Cap Genomma', type:'line', data:Array(labels.length).fill(capG), borderColor:'#185FA5', borderDash:[6,4], borderWidth:1.2, pointRadius:0, fill:false},
+        {label:'Cap Inovalab', type:'line', data:Array(labels.length).fill(capI), borderColor:'#0F6E56', borderDash:[6,4], borderWidth:1.2, pointRadius:0, fill:false},
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:(ctx)=>{
+          const cap = ctx.dataset.label.includes('Genomma') ? capG : capI;
+          if(ctx.dataset.label.startsWith('Cap')) return `${ctx.dataset.label}: ${cap}`;
+          return `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('pt-BR')} PP (${(ctx.parsed.y/cap*100).toFixed(1)}%)`;
+        }}}},
+      scales:{
+        y:{beginAtZero:true,ticks:{font:{size:10}}},
+        x:{ticks:{font:{size:9},maxRotation: type==='line'?60:0,minRotation: type==='line'?60:0}}
+      }
+    }
+  });
+}
+
+// ============================================================
+// RENDER: CADASTRO SKU
+// ============================================================
+function renderCadastro(){
+  let totalDesativados = 0, comEstoque = 0, unBlock = 0, ppBlock = 0;
+  state.skus.forEach(s => {
+    if(s.status_supply === 'Desativado'){
+      totalDesativados++;
+      const estoq = state.estoque[s.cod_item] || 0;
+      if(estoq > 0){
+        comEstoque++;
+        unBlock += estoq;
+        ppBlock += calcularPP(estoq, s.upp_efetiva);
+      }
+    }
+  });
+
+  let html = `
+    <div class="panel">
+      <div class="panel-title">Cadastro SKU
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="baixarTemplate('cadastro')">📥 Baixar template</button>
+          <button class="btn btn-primary" onclick="document.getElementById('upload-cadastro').click()" ${isAdmin?'':'disabled'}>📤 Upload XLSX</button>
+          <input type="file" id="upload-cadastro" accept=".xlsx" style="display:none" onchange="uploadAba('cadastro', this)">
+        </div>
+      </div>
+      ${totalDesativados > 0 ? `
+        <div class="alert ${comEstoque>0?'alert-danger':'alert-warn'}">
+          <span>⚠️</span>
+          <div><strong>${totalDesativados} SKUs desativados</strong> · ${comEstoque} ainda com estoque ·
+          <strong>${fmt(unBlock)} UN bloqueadas em ${ppBlock} PP do CD</strong></div>
+        </div>` : ''}
+      ${filtroBar('cadastro')}
+      <div class="tbl-wrap"><table id="tbl-cadastro">
+        <thead><tr>
+          <th>Cod Item</th><th>Descrição</th><th>Marca</th><th>Empresa</th>
+          <th>UPP Cad.</th><th>UPP Override</th><th>UPP Efetiva</th>
+          <th>Status Supply</th><th>Est. UN (desat.)</th><th>PP (desat.)</th>
+        </tr></thead><tbody>`;
+  state.skus.forEach((s, i) => {
+    const estoq = state.estoque[s.cod_item] || 0;
+    const isDesat = s.status_supply === 'Desativado';
+    const ppDesat = isDesat && estoq > 0 ? calcularPP(estoq, s.upp_efetiva) : 0;
+    html += `<tr data-cod="${esc(s.cod_item)}" data-f="${esc(chaveBusca(s))}" data-empresa="${esc(s.empresa)}" data-status="${esc(s.status_supply||'')}">
+      <td><strong>${esc(s.cod_item)}</strong></td>
+      <td title="${esc(s.descricao)}">${esc((s.descricao||'').slice(0,40))}</td>
+      <td>${esc(s.marca)}</td>
+      <td><span class="badge badge-${s.empresa.toLowerCase()}">${esc(s.empresa)}</span></td>
+      <td class="num">${fmt(s.upp_cadastro)}</td>
+      <td class="num ${isAdmin?'editable':''}">${isAdmin
+        ? `<input type="number" value="${s.upp_override||''}" placeholder="—" onchange="saveSKU('${esc(s.cod_item)}','upp_override',this.value)">`
+        : fmt(s.upp_override)}</td>
+      <td class="num"><strong>${fmt(s.upp_efetiva)}</strong></td>
+      <td class="center ${isAdmin?'editable':''}">${isAdmin
+        ? `<select onchange="saveSKU('${esc(s.cod_item)}','status_supply',this.value)">
+            <option value="">—</option>
+            ${STATUS_OPTS.map(o=>`<option value="${o}" ${s.status_supply===o?'selected':''}>${o}</option>`).join('')}
+          </select>`
+        : `<span class="${isDesat?'badge badge-desativado':''}">${esc(s.status_supply||'—')}</span>`}</td>
+      <td class="num" data-v="${isDesat?estoq:0}">${isDesat ? `<span style="color:#A32D2D">${fmt(estoq)}</span>` : ''}</td>
+      <td class="num" data-v="${ppDesat}">${isDesat && estoq>0 ? `<strong style="color:#A32D2D">${ppDesat}</strong>` : ''}</td>
+    </tr>`;
+  });
+  html += `</tbody><tfoot>${totRow(10, [8,9], 'Total do filtro', 8)}</tfoot></table></div></div>`;
+  document.getElementById('content').innerHTML = html;
+  aplicarFiltro('cadastro');
+}
+
+// ============================================================
+// RENDER: S&OP / FORECAST (mesma estrutura)
+// ============================================================
+function renderPlano(title, dadosRef, tableKey, abaKey){
+  // Colunas: 0 Cod | 1 Desc | 2 Empresa | 3 Status | 4 UPP | 5..16 meses | 17..20 Q | 21 Total
+  const somaveis = [];
+  for(let c = 5; c <= 21; c++) somaveis.push(c);
+
+  let html = `
+    <div class="panel">
+      <div class="panel-title">${title}
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="baixarTemplate('${abaKey}')">📥 Baixar template</button>
+          <button class="btn btn-primary" onclick="document.getElementById('upload-${abaKey}').click()" ${isAdmin?'':'disabled'}>📤 Upload XLSX</button>
+          <input type="file" id="upload-${abaKey}" accept=".xlsx" style="display:none" onchange="uploadAba('${abaKey}', this)">
+        </div>
+      </div>
+      ${filtroBar(abaKey)}
+      <div class="tbl-wrap"><table id="tbl-${abaKey}">
+        <thead><tr>
+          <th>Cod Item</th><th>Descrição</th><th>Empresa</th>
+          <th>Status Supply</th><th>UPP Cadastro</th>
+          ${MESES_PT.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${MESES_ABR[i]}</th>`).join('')}
+          <th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Total</th>
+        </tr></thead><tbody>`;
+  state.skus.forEach(s => {
+    const dados = dadosRef[s.cod_item] || {};
+    const vals = MESES_PT.map((_,i) => dados[i+1] || 0);
+    const totQ = [0,0,0,0];
+    vals.forEach((v,i) => totQ[QUARTER_OF_MES[i]-1] += v);
+    const totAno = vals.reduce((a,b)=>a+b,0);
+    const isDesat = s.status_supply === 'Desativado';
+    html += `<tr data-cod="${esc(s.cod_item)}" data-f="${esc(chaveBusca(s))}" data-empresa="${esc(s.empresa)}" data-status="${esc(s.status_supply||'')}">
+      <td><strong>${esc(s.cod_item)}</strong></td>
+      <td title="${esc(s.descricao)}">${esc((s.descricao||'').slice(0,30))}</td>
+      <td><span class="badge badge-${s.empresa.toLowerCase()}">${esc(s.empresa)}</span></td>
+      <td class="center"><span class="${isDesat?'badge badge-desativado':''}">${esc(s.status_supply||'—')}</span></td>
+      <td class="num">${fmt(s.upp_cadastro)}</td>
+      ${vals.map((v,i)=>`<td class="num c-mes ${isAdmin?'editable':''}" data-v="${v}">${isAdmin
+        ? `<input type="number" value="${v||''}" placeholder="0" onchange="savePlano('${tableKey}','${esc(s.cod_item)}',${i+1},this.value,this)">`
+        : fmt(v)}</td>`).join('')}
+      ${totQ.map(t=>`<td class="num c-q" data-v="${t}"><strong>${fmt(t)}</strong></td>`).join('')}
+      <td class="num c-tot" data-v="${totAno}"><strong>${fmt(totAno)}</strong></td>
+    </tr>`;
+  });
+  html += `</tbody><tfoot>${totRow(22, somaveis, 'Total do filtro', 5)}</tfoot></table></div></div>`;
+  document.getElementById('content').innerHTML = html;
+  aplicarFiltro(abaKey);
+}
+
+// Atualiza uma linha do S&OP/Forecast sem re-renderizar a tabela inteira
+function atualizarLinhaPlano(tr, dadosRef, cod){
+  if(!tr) return;
+  const dados = dadosRef[cod] || {};
+  const vals = MESES_PT.map((_,i) => dados[i+1] || 0);
+  const mesTds = tr.querySelectorAll('td.c-mes');
+  vals.forEach((v,i) => { if(mesTds[i]) mesTds[i].dataset.v = v; });
+  const totQ = [0,0,0,0];
+  vals.forEach((v,i) => totQ[QUARTER_OF_MES[i]-1] += v);
+  const qTds = tr.querySelectorAll('td.c-q');
+  totQ.forEach((t,i) => { if(qTds[i]){ qTds[i].dataset.v = t; qTds[i].innerHTML = '<strong>'+fmt(t)+'</strong>'; } });
+  const totAno = vals.reduce((a,b)=>a+b,0);
+  const tTd = tr.querySelector('td.c-tot');
+  if(tTd){ tTd.dataset.v = totAno; tTd.innerHTML = '<strong>'+fmt(totAno)+'</strong>'; }
+}
+
+function renderSOP(){
+  renderPlano('S&OP — Saídas mensais (UN)', state.saidas, 'sop_plano_saida', 'sop');
+}
+function renderForecast(){
+  renderPlano('Forecast Pedidos — Entradas mensais (UN)', state.entradas, 'sop_plano_entrada', 'forecast');
+}
+
+// ============================================================
+// RENDER: ESTOQUE ATUAL
+// ============================================================
+function renderEstoque(){
+  // Colunas: 0 Cod | 1 Desc | 2 Empresa | 3 Status | 4 Estoque | 5 Dem.média | 6 Dias | 7 UPP | 8 PP
+  let html = `
+    <div class="panel">
+      <div class="panel-title">Estoque Atual — Foto do dia
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="baixarTemplate('estoque')">📥 Baixar template</button>
+          <button class="btn btn-primary" onclick="document.getElementById('upload-estoque').click()" ${isAdmin?'':'disabled'}>📤 Upload XLSX</button>
+          <input type="file" id="upload-estoque" accept=".xlsx" style="display:none" onchange="uploadAba('estoque', this)">
+        </div>
+      </div>
+      ${filtroBar('estoque')}
+      <div class="tbl-wrap"><table id="tbl-estoque">
+        <thead><tr>
+          <th>Cod Item</th><th>Descrição</th><th>Empresa</th><th>Status Supply</th>
+          <th>Estoque (UN)</th><th>Dem. média mensal</th>
+          <th>Dias de cobertura</th><th>UPP</th><th>PP hoje</th>
+        </tr></thead><tbody>`;
+  state.skus.forEach(s => {
+    const est = state.estoque[s.cod_item] || 0;
+    const saidas = state.saidas[s.cod_item] || {};
+    const demMedia = Object.values(saidas).reduce((a,b)=>a+b, 0) / 12;
+    const dias = demMedia > 0 ? est / (demMedia/30) : 0;
+    const pp = calcularPP(est, s.upp_efetiva);
+    const diasCls = dias < 30 ? 'color:#A32D2D;font-weight:600' : (dias > 180 ? 'color:#633806;font-weight:600' : '');
+    const isDesat = s.status_supply === 'Desativado';
+    html += `<tr data-cod="${esc(s.cod_item)}" data-f="${esc(chaveBusca(s))}" data-empresa="${esc(s.empresa)}" data-status="${esc(s.status_supply||'')}">
+      <td><strong>${esc(s.cod_item)}</strong></td>
+      <td title="${esc(s.descricao)}">${esc((s.descricao||'').slice(0,40))}</td>
+      <td><span class="badge badge-${s.empresa.toLowerCase()}">${esc(s.empresa)}</span></td>
+      <td class="center"><span class="${isDesat?'badge badge-desativado':''}">${esc(s.status_supply||'—')}</span></td>
+      <td class="num c-est ${isAdmin?'editable':''}" data-v="${est}">${isAdmin
+        ? `<input type="number" value="${est||0}" onchange="saveEstoque('${esc(s.cod_item)}',this.value,this)">`
+        : fmt(est)}</td>
+      <td class="num" data-v="${demMedia}">${fmt(demMedia)}</td>
+      <td class="num c-dias" style="${diasCls}">${Math.round(dias)}</td>
+      <td class="num">${fmt(s.upp_efetiva)}</td>
+      <td class="num c-pp" data-v="${pp}"><strong>${fmt(pp)}</strong></td>
+    </tr>`;
+  });
+  html += `</tbody><tfoot>${totRow(9, [4,5,8], 'Total do filtro', 4)}</tfoot></table></div></div>`;
+  document.getElementById('content').innerHTML = html;
+  aplicarFiltro('estoque');
+}
+
+function atualizarLinhaEstoque(tr, cod){
+  if(!tr) return;
+  const sku = state.skus.find(s => s.cod_item === cod);
+  if(!sku) return;
+  const est = state.estoque[cod] || 0;
+  const saidas = state.saidas[cod] || {};
+  const demMedia = Object.values(saidas).reduce((a,b)=>a+b, 0) / 12;
+  const dias = demMedia > 0 ? est / (demMedia/30) : 0;
+  const pp = calcularPP(est, sku.upp_efetiva);
+  const tdEst = tr.querySelector('td.c-est'); if(tdEst) tdEst.dataset.v = est;
+  const tdDias = tr.querySelector('td.c-dias');
+  if(tdDias){
+    tdDias.textContent = Math.round(dias);
+    tdDias.style.cssText = dias < 30 ? 'color:#A32D2D;font-weight:600' : (dias > 180 ? 'color:#633806;font-weight:600' : '');
+  }
+  const tdPP = tr.querySelector('td.c-pp');
+  if(tdPP){ tdPP.dataset.v = pp; tdPP.innerHTML = '<strong>'+fmt(pp)+'</strong>'; }
+}
+
+// ============================================================
+// RENDER: CURVA POR QUARTER
+// ============================================================
+function renderCurva(){
+  let html = `
+    <div class="panel">
+      <div class="panel-title">Curva semanal por Quarter
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="baixarTemplate('curva')">📥 Baixar template</button>
+          <button class="btn btn-primary" onclick="document.getElementById('upload-curva').click()" ${isAdmin?'':'disabled'}>📤 Upload XLSX</button>
+          <input type="file" id="upload-curva" accept=".xlsx" style="display:none" onchange="uploadAba('curva', this)">
+        </div>
+      </div>
+      <div class="panel-sub">% das saídas do quarter em cada semana (13 semanas). Cada linha deve somar 100%. Calibrado com histórico 2024+2025.</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Empresa</th><th>Quarter</th>
+          ${Array.from({length:13},(_,i)=>`<th>Sem ${i+1}</th>`).join('')}
+          <th>Soma</th></tr></thead><tbody>`;
+  ['GENOMMA','INOVALAB'].forEach(emp => {
+    [1,2,3,4].forEach(q => {
+      const curva = (state.curva[emp] && state.curva[emp][q]) || new Array(13).fill(0);
+      const soma = curva.reduce((a,b)=>a+b,0);
+      html += `<tr>
+        <td><span class="badge badge-${emp.toLowerCase()}">${emp}</span></td>
+        <td class="center" style="background:${['','#F4CCCC','#FCE5CD','#D9EAD3','#CFE2F3'][q]};font-weight:600">Q${q}</td>
+        ${curva.map((v,i)=>`<td class="num ${isAdmin?'editable':''}">${isAdmin
+          ? `<input type="number" step="0.01" value="${(v*100).toFixed(2)}" onchange="saveCurva('${emp}',${q},${i+1},this.value/100)">`
+          : (v*100).toFixed(2)+'%'}</td>`).join('')}
+        <td class="num"><strong>${(soma*100).toFixed(1)}%</strong></td>
+      </tr>`;
+    });
+  });
+  html += `</tbody></table></div></div>`;
+
+  // Nota sobre %entrada (foi movida para Parametros)
+  html += `<div class="panel" style="background:var(--bg2);padding:14px 18px">
+    <div style="font-size:12px;color:var(--text2);font-style:italic">
+      💡 A distribuição da entrada na semana foi movida para a aba <strong>⚙ Parâmetros</strong>.
+    </div>
+  </div>`;
+
+  document.getElementById('content').innerHTML = html;
+}
+
+// ============================================================
+// RENDER: PARAMETROS
+// ============================================================
+function renderParametros(){
+  const p = state.parametros;
+  const somaE = [1,2,3,4,5].reduce((a,i)=>a+p[`entrada_s${i}`],0);
+  let html = `
+    <div class="panel">
+      <div class="panel-title">Parâmetros do Simulador</div>
+      <div class="panel-sub">Edite as células amarelas. Todas as abas (PAINEL, simulação) consultam estes valores.</div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-size:13px;font-weight:600;color:#1F3864;margin-bottom:10px">CAPACIDADE DO ARMAZÉM (posições-palete)</div>
+        <div class="tbl-wrap" style="max-width:560px"><table>
+          <tbody>
+            <tr><td style="width:200px">Genomma</td>
+              <td class="num ${isAdmin?'editable':''}">${isAdmin
+                ? `<input type="number" value="${p.cap_genomma}" onchange="saveParam('cap_genomma', this.value)">`
+                : fmt(p.cap_genomma)}</td>
+              <td style="width:160px;color:var(--text2)">PP</td></tr>
+            <tr><td>Inovalab</td>
+              <td class="num ${isAdmin?'editable':''}">${isAdmin
+                ? `<input type="number" value="${p.cap_inovalab}" onchange="saveParam('cap_inovalab', this.value)">`
+                : fmt(p.cap_inovalab)}</td>
+              <td style="color:var(--text2)">PP</td></tr>
+            <tr><td>Safety %</td>
+              <td class="num ${isAdmin?'editable':''}">${isAdmin
+                ? `<input type="number" step="1" min="0" max="100" value="${(p.safety_pct*100).toFixed(0)}" onchange="saveParam('safety_pct', this.value/100)">`
+                : (p.safety_pct*100).toFixed(0)+'%'}</td>
+              <td style="color:var(--text2);font-style:italic">(zona amarela = atenção)</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1F3864;margin-bottom:6px">% DISTRIBUIÇÃO DA ENTRADA NO MÊS (Forecast Pedidos)</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px">Define em qual semana do mês o pedido recebido entra no estoque.</div>
+        <div style="font-size:11px;color:var(--text2);font-style:italic;margin-bottom:10px">100% em S1 = container chega na 1ª semana (pior caso de pico). 20/40/30/10 = entrada distribuída.</div>
+        <div class="tbl-wrap" style="max-width:560px"><table>
+          <tbody>
+            ${[1,2,3,4,5].map(i => {
+              const v = p[`entrada_s${i}`];
+              return `<tr><td style="width:200px">Semana ${i}</td>
+                <td class="num ${isAdmin?'editable':''}">${isAdmin
+                  ? `<input type="number" step="0.01" value="${(v*100).toFixed(2)}" onchange="saveParam('entrada_s${i}', this.value/100)">`
+                  : (v*100).toFixed(2)+'%'}</td>
+                <td></td></tr>`;
+            }).join('')}
+            <tr style="background:#D9E1F2">
+              <td><strong>Soma</strong></td>
+              <td class="num"><strong style="${Math.abs(somaE-1)>0.001?'color:#A32D2D':''}">${(somaE*100).toFixed(1)}%</strong></td>
+              <td style="color:var(--text2);font-size:11px">${Math.abs(somaE-1)>0.001?'⚠ deve somar 100%':'✓'}</td>
+            </tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>`;
+  document.getElementById('content').innerHTML = html;
+}
+
+// ============================================================
+// RENDER: SIM MENSAL / SEMANAL — detalhe por SKU
+// ============================================================
+function renderSimMensal(){
+  const sim = simulacaoMensal();
+  // Colunas: 0 Cod | 1 Desc | 2 Empresa | 3 UPP | 4..15 UN | 16..27 PP
+  const somaveis = [];
+  for(let c = 4; c <= 27; c++) somaveis.push(c);
+  let html = `<div class="panel"><div class="panel-title">Simulação Mensal — Estoque UN e PP por SKU</div>
+    <div class="panel-sub">Jan-Mai = histórico · Jun-Dez = simulação</div>
+    ${filtroBar('sim-mensal')}
+    <div class="tbl-wrap"><table id="tbl-sim-mensal"><thead><tr>
+      <th>Cod Item</th><th>Descrição</th><th>Empresa</th><th>UPP</th>
+      ${MESES_ABR.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${m} UN</th>`).join('')}
+      ${MESES_ABR.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${m} PP</th>`).join('')}
+    </tr></thead><tbody>`;
+  state.skus.forEach(s => {
+    const eop = sim[s.cod_item] || new Array(12).fill(0);
+    const pps = eop.map(v => calcularPP(v, s.upp_efetiva));
+    html += `<tr data-cod="${esc(s.cod_item)}" data-f="${esc(chaveBusca(s))}" data-empresa="${esc(s.empresa)}" data-status="${esc(s.status_supply||'')}">
+      <td><strong>${esc(s.cod_item)}</strong></td>
+      <td title="${esc(s.descricao)}">${esc((s.descricao||'').slice(0,28))}</td>
+      <td><span class="badge badge-${s.empresa.toLowerCase()}">${esc(s.empresa)}</span></td>
+      <td class="num">${fmt(s.upp_efetiva)}</td>
+      ${eop.map((v,i)=>`<td class="num ${i<5?'hist':''}" data-v="${v}">${fmt(v)}</td>`).join('')}
+      ${pps.map((v,i)=>`<td class="num ${i<5?'hist':''}" data-v="${v}"><strong>${fmt(v)}</strong></td>`).join('')}
+    </tr>`;
+  });
+  html += `</tbody><tfoot>${totRow(28, somaveis, 'Total do filtro', 4)}</tfoot></table></div></div>`;
+  document.getElementById('content').innerHTML = html;
+  aplicarFiltro('sim-mensal');
+}
+
+function renderSimSemanal(){
+  const sim = simulacaoSemanal();
+  // Colunas: 0 Cod | 1 Empresa | 2..53 semanas (PP)
+  const somaveis = [];
+  for(let c = 2; c < 2 + 52; c++) somaveis.push(c);
+  let html = `<div class="panel"><div class="panel-title">Simulação Semanal — PP por SKU × 52 semanas</div>
+    <div class="panel-sub">Aplicada curva por quarter. Sem 1-21 = histórico (estoque foto) · Sem 22-52 = simulação.</div>
+    ${filtroBar('sim-semanal')}
+    <div class="tbl-wrap"><table id="tbl-sim-semanal"><thead><tr>
+      <th>Cod Item</th><th>Empresa</th>
+      ${MAPA_SEMANAS.map((s,i)=>`<th class="q${s.q}" style="font-size:9px">${s.label}</th>`).join('')}
+    </tr></thead><tbody>`;
+  state.skus.forEach(s => {
+    const eop = sim[s.cod_item] || new Array(52).fill(0);
+    const pps = eop.map(v => calcularPP(v, s.upp_efetiva));
+    html += `<tr data-cod="${esc(s.cod_item)}" data-f="${esc(chaveBusca(s))}" data-empresa="${esc(s.empresa)}" data-status="${esc(s.status_supply||'')}">
+      <td><strong>${esc(s.cod_item)}</strong></td>
+      <td><span class="badge badge-${s.empresa.toLowerCase()}">${esc(s.empresa.slice(0,3))}</span></td>
+      ${pps.map((v,i)=>`<td class="num ${i<PRIMEIRA_SIM?'hist':''}" style="font-size:11px" data-v="${v}">${v||''}</td>`).join('')}
+    </tr>`;
+  });
+  html += `</tbody><tfoot>${totRow(54, somaveis, 'Total PP do filtro', 2)}</tfoot></table></div></div>`;
+  document.getElementById('content').innerHTML = html;
+  aplicarFiltro('sim-semanal');
+}
+
+// ============================================================
+// RENDER: S&OE — EXECUÇÃO DO S&OP
+// ============================================================
+const _chartsSOE = {};
+
+function setSoeModo(m){ state.soeModo = m; renderSOE(); }
+function toggleSoeBonif(v){ state.soeBonif = !!v; renderSOE(); }
+
+const SQL_SOE = `create table if not exists public.sop_faturamento_real (
+  cod_item    text not null,
+  year_month  date not null,
+  horizonte   text not null default '2026',
+  qty_un      numeric not null default 0,   -- venda
+  qty_bonif   numeric not null default 0,   -- bonificação / brinde
+  fonte       text,
+  updated_at  timestamptz default now(),
+  primary key (cod_item, year_month, horizonte)
+);
+alter table public.sop_faturamento_real enable row level security;
+create policy "leitura autenticada" on public.sop_faturamento_real
+  for select to authenticated using (true);
+create policy "escrita admin" on public.sop_faturamento_real
+  for all to authenticated
+  using (auth.jwt() ->> 'email' = 'thiago_balao@yahoo.com.br')
+  with check (auth.jwt() ->> 'email' = 'thiago_balao@yahoo.com.br');`;
+
+function renderSOE(){
+  const fechados = mesesComReal();
+  const temReal = fechados.length > 0;
+
+  const cab = `
+    <div class="panel">
+      <div class="panel-title">S&OE — Execução do S&OP
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="baixarTemplate('soe')">📥 Baixar template</button>
+          <button class="btn btn-primary" onclick="document.getElementById('upload-soe').click()" ${isAdmin?'':'disabled'}>📤 Upload faturamento</button>
+          <input type="file" id="upload-soe" accept=".xlsx,.xls" style="display:none" onchange="uploadAba('soe', this)">
+        </div>
+      </div>
+      <div class="panel-sub">Compara o <strong>S&OP (plano de saída)</strong> com o <strong>faturamento real</strong>, mês a mês.
+      Aceita o template pivotado <em>ou</em> o relatório de Nota Fiscal (FT4003) direto do ERP.</div>`;
+
+  if(state.soeSemReal){
+    document.getElementById('content').innerHTML = cab + `
+      <div class="alert alert-danger" style="margin-top:12px">
+        <span>⚠️</span>
+        <div><strong>A tabela <code>sop_faturamento_real</code> ainda não existe no Supabase.</strong>
+        Rode o SQL abaixo no editor SQL do projeto e recarregue a página.</div>
+      </div>
+      <pre style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:14px;font-size:11px;overflow:auto;white-space:pre-wrap">${esc(SQL_SOE)}</pre>
+      </div>`;
+    return;
+  }
+
+  if(!temReal){
+    document.getElementById('content').innerHTML = cab + `
+      <div class="empty-state">
+        <div class="es-ico">🎯</div>
+        <div class="es-t">Nenhum faturamento lançado ainda</div>
+        <div class="es-s">Suba o relatório <strong>FT4003 (Nota Fiscal)</strong> do ERP — o simulador filtra os CFOPs de venda,
+        agrupa por SKU e mês e cruza automaticamente com o S&OP. Ou baixe o template pivotado e preencha à mão.</div>
+        <button class="btn btn-primary" onclick="document.getElementById('upload-soe').click()" ${isAdmin?'':'disabled'}>📤 Subir faturamento agora</button>
+      </div></div>`;
+    return;
+  }
+
+  const R = resumoSOE();
+  const capG = state.parametros.cap_genomma, capI = state.parametros.cap_inovalab;
+
+  // ---------- KPIs ----------
+  const kpiCls = (a) => a === null ? '' : (a >= 0.95 && a <= 1.05 ? '' : (a >= 0.8 && a <= 1.2 ? 'warn' : 'danger'));
+  let html = cab + `</div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Meses fechados</div>
+        <div class="kpi-value">${fechados.length}</div>
+        <div class="kpi-sub">${nomeMeses(fechados)}</div></div>
+      <div class="kpi"><div class="kpi-label">Plano S&OP (acum.)</div>
+        <div class="kpi-value">${fmt(R.TOTAL.plano)}</div><div class="kpi-sub">UN nos meses fechados</div></div>
+      <div class="kpi"><div class="kpi-label">Faturamento real (acum.)</div>
+        <div class="kpi-value">${fmt(R.TOTAL.real)}</div>
+        <div class="kpi-sub">${state.soeBonif ? 'venda + bonificação' : 'somente venda'}</div></div>
+      <div class="kpi ${kpiCls(R.TOTAL.aderencia)}"><div class="kpi-label">Aderência ao plano</div>
+        <div class="kpi-value">${R.TOTAL.aderencia===null?'—':pct(R.TOTAL.aderencia)}</div>
+        <div class="kpi-sub">${R.TOTAL.desvio >= 0 ? '+' : ''}${fmt(R.TOTAL.desvio)} UN vs plano</div></div>
+      <div class="kpi ${R.TOTAL.acuracia !== null && R.TOTAL.acuracia < 0.7 ? 'warn' : ''}">
+        <div class="kpi-label">Acurácia do forecast</div>
+        <div class="kpi-value">${R.TOTAL.acuracia===null?'—':pct(R.TOTAL.acuracia)}</div>
+        <div class="kpi-sub">1 − erro absoluto / plano</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Aderência por empresa</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Empresa</th><th>Plano (UN)</th><th>Real (UN)</th><th>Desvio (UN)</th><th>Aderência</th><th>Acurácia</th></tr></thead>
+        <tbody>
+        ${['GENOMMA','INOVALAB','TOTAL'].map(k => {
+          const o = R[k];
+          const cls = o.aderencia === null ? '' : (o.aderencia >= 0.95 && o.aderencia <= 1.05 ? 'cell-green' : (o.aderencia >= 0.8 && o.aderencia <= 1.2 ? 'cell-yellow' : 'cell-red'));
+          return `<tr${k==='TOTAL'?' style="background:#D9E1F2;font-weight:700"':''}>
+            <td><strong>${k==='TOTAL'?'TOTAL':k.charAt(0)+k.slice(1).toLowerCase()}</strong></td>
+            <td class="num">${fmt(o.plano)}</td>
+            <td class="num">${fmt(o.real)}</td>
+            <td class="num" style="color:${o.desvio<0?'#A32D2D':'#0F6E56'}">${o.desvio>=0?'+':''}${fmt(o.desvio)}</td>
+            <td class="num ${cls}">${o.aderencia===null?'—':pct(o.aderencia)}</td>
+            <td class="num">${o.acuracia===null?'—':pct(o.acuracia)}</td>
+          </tr>`;
+        }).join('')}
+        </tbody></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Plano × Real por mês (UN)</div>
+      <div style="height:280px"><canvas id="chartSOE"></canvas></div>
+    </div>`;
+
+  // ---------- Impacto na ocupação ----------
+  const aggPlano = agregadoMensal(simulacaoMensal(false));
+  const aggExec  = agregadoMensal(simulacaoMensal(true));
+  const linhaImpacto = (emp, cap) => {
+    const p = aggPlano[emp], e = aggExec[emp];
+    const picoP = Math.max(...p.slice(5)), picoE = Math.max(...e.slice(5));
+    const mesP = MESES_PT[p.indexOf(picoP)], mesE = MESES_PT[e.indexOf(picoE)];
+    const dif = picoE - picoP;
+    const cls = picoE >= cap ? 'cell-red' : (picoE/cap >= state.parametros.safety_pct ? 'cell-yellow' : 'cell-green');
+    return `<tr>
+      <td><strong>${emp.charAt(0)+emp.slice(1).toLowerCase()}</strong></td>
+      <td class="num">${fmt(cap)}</td>
+      <td class="num">${fmt(picoP)}</td><td>${mesP}</td>
+      <td class="num ${cls}">${fmt(picoE)}</td><td>${mesE}</td>
+      <td class="num" style="color:${dif>0?'#A32D2D':(dif<0?'#0F6E56':'')}">${dif>0?'+':''}${fmt(dif)}</td>
+      <td class="num">${pct(picoE/cap)}</td>
+    </tr>`;
+  };
+  html += `
+    <div class="panel">
+      <div class="panel-title">Impacto da execução na ocupação de PP</div>
+      <div class="panel-sub">Cenário <strong>Execução</strong> = simulação refeita usando a <strong>saída real</strong> nos meses já faturados
+      (${nomeMeses(fechados)}) e o S&OP nos meses seguintes. Se o real ficou abaixo do plano, sobra estoque e o pico de PP sobe.</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Empresa</th><th>Capacidade</th><th>Pico PP (plano)</th><th>Mês</th>
+        <th>Pico PP (execução)</th><th>Mês</th><th>Δ PP</th><th>% da capacidade</th></tr></thead>
+        <tbody>${linhaImpacto('GENOMMA', capG)}${linhaImpacto('INOVALAB', capI)}</tbody>
+      </table></div>
+    </div>`;
+
+  // ---------- Detalhe por SKU ----------
+  const modo = state.soeModo;
+  const modos = [['plano','Plano S&OP'],['real','Faturamento real'],['desvio','Desvio (Real − Plano)'],['ader','Aderência %']];
+  // Colunas: 0 Cod | 1 Desc | 2 Empresa | 3..14 meses | 15 Plano ac | 16 Real ac | 17 Desvio | 18 Ader
+  html += `
+    <div class="panel">
+      <div class="panel-title">Detalhe por SKU</div>
+      <div class="modo-bar">
+        ${modos.map(([k,l])=>`<button class="modo-btn ${modo===k?'active':''}" onclick="setSoeModo('${k}')">${l}</button>`).join('')}
+        <label class="chk-bar"><input type="checkbox" ${state.soeBonif?'checked':''} onchange="toggleSoeBonif(this.checked)"> incluir bonificação/brinde no real</label>
+      </div>
+      ${filtroBar('soe')}
+      <div class="tbl-wrap"><table id="tbl-soe">
+        <thead><tr>
+          <th>Cod Item</th><th>Descrição</th><th>Empresa</th>
+          ${MESES_ABR.map((m,i)=>`<th class="q${QUARTER_OF_MES[i]}">${m}</th>`).join('')}
+          <th>Plano acum.</th><th>Real acum.</th><th>Desvio</th><th>Aderência</th>
+        </tr></thead><tbody>`;
+
+  state.skus.forEach(s => {
+    const cod = s.cod_item;
+    let pAc = 0, rAc = 0;
+    const cels = [];
+    for(let m = 1; m <= 12; m++){
+      const p = planoDe(cod, m), r = realDe(cod, m);
+      const aberto = fechados.indexOf(m) < 0;
+      if(!aberto){ pAc += p; rAc += r; }
+      let v = 0, txt = '', cls = '';
+      if(modo === 'plano'){ v = p; txt = p ? fmt(p) : ''; }
+      else if(modo === 'real'){ v = r; txt = aberto ? '' : (r ? fmt(r) : '0'); }
+      else if(modo === 'desvio'){ v = aberto ? 0 : (r - p); txt = aberto ? '' : ((v>0?'+':'')+fmt(v)); if(!aberto && v<0) cls='cell-red'; else if(!aberto && v>0) cls='cell-green'; }
+      else { // ader
+        if(aberto || p <= 0){ txt = aberto ? '' : '—'; }
+        else { const a = r/p; txt = pct(a); cls = (a>=0.95&&a<=1.05)?'cell-green':((a>=0.8&&a<=1.2)?'cell-yellow':'cell-red'); }
+      }
+      const attr = modo === 'ader'
+        ? ` data-p="${aberto?0:p}" data-r="${aberto?0:r}"`
+        : ` data-v="${v}"`;
+      cels.push(`<td class="num ${aberto?'hist':''} ${cls}"${attr}>${txt}</td>`);
+    }
+    const dev = rAc - pAc;
+    const ad  = pAc > 0 ? rAc/pAc : null;
+    const adCls = ad === null ? '' : ((ad>=0.95&&ad<=1.05)?'cell-green':((ad>=0.8&&ad<=1.2)?'cell-yellow':'cell-red'));
+    html += `<tr data-cod="${esc(cod)}" data-f="${esc(chaveBusca(s))}" data-empresa="${esc(s.empresa)}" data-status="${esc(s.status_supply||'')}">
+      <td><strong>${esc(cod)}</strong></td>
+      <td title="${esc(s.descricao)}">${esc((s.descricao||'').slice(0,30))}</td>
+      <td><span class="badge badge-${s.empresa.toLowerCase()}">${esc(s.empresa)}</span></td>
+      ${cels.join('')}
+      <td class="num" data-v="${pAc}"><strong>${fmt(pAc)}</strong></td>
+      <td class="num" data-v="${rAc}"><strong>${fmt(rAc)}</strong></td>
+      <td class="num" data-v="${dev}" style="color:${dev<0?'#A32D2D':'#0F6E56'}">${dev>=0?'+':''}${fmt(dev)}</td>
+      <td class="num ${adCls}">${ad===null?'—':pct(ad)}</td>
+    </tr>`;
+  });
+
+  // rodapé
+  let foot = `<tr class="tot-row"><td class="tot-lbl" colspan="3">Total do filtro</td>`;
+  for(let c = 3; c <= 14; c++){
+    foot += (modo === 'ader')
+      ? `<td class="num" data-tot="ratio2" data-col="${c}"></td>`
+      : `<td class="num" data-tot="1" data-col="${c}"></td>`;
+  }
+  foot += `<td class="num" data-tot="1" data-col="15"></td>`;
+  foot += `<td class="num" data-tot="1" data-col="16"></td>`;
+  foot += `<td class="num" data-tot="1" data-col="17"></td>`;
+  foot += `<td class="num" data-tot="ratio" data-num="16" data-den="15"></td></tr>`;
+
+  html += `</tbody><tfoot>${foot}</tfoot></table></div>
+      <div style="font-size:11px;color:var(--text2);margin-top:8px">
+        Meses em cinza ainda não têm faturamento lançado e ficam fora do acumulado.
+      </div>
+    </div>`;
+
+  document.getElementById('content').innerHTML = html;
+  aplicarFiltro('soe');
+  drawChartSOE('chartSOE', R);
+}
+
+function drawChartSOE(canvasId, R){
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  if(_chartsSOE[canvasId]){ _chartsSOE[canvasId].destroy(); }
+  const plano = R.TOTAL.mesesPlano.slice(1);
+  const real  = R.TOTAL.mesesReal.slice(1);
+  const corReal = real.map((v,i) => {
+    if(R.fechados.indexOf(i+1) < 0) return '#D5D5D2';
+    const p = plano[i];
+    if(!p) return '#7030A0';
+    const a = v/p;
+    return (a>=0.95&&a<=1.05) ? '#1D9E75' : ((a>=0.8&&a<=1.2) ? '#EF9F27' : '#A32D2D');
+  });
+  _chartsSOE[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: MESES_ABR,
+      datasets: [
+        {label:'Plano S&OP', data:plano, backgroundColor:'#C7B0DC', borderColor:'#7030A0', borderWidth:0},
+        {label:'Faturamento real', data:real, backgroundColor:corReal, borderWidth:0}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}},
+        tooltip:{callbacks:{label:(c)=>{
+          const i = c.dataIndex;
+          const p = plano[i], r = real[i];
+          if(c.dataset.label === 'Plano S&OP') return `Plano: ${fmt(p)} UN`;
+          if(R.fechados.indexOf(i+1) < 0) return 'Mês ainda sem faturamento';
+          return `Real: ${fmt(r)} UN` + (p>0 ? ` · aderência ${pct(r/p)}` : '');
+        }}}
+      },
+      scales:{ y:{beginAtZero:true,ticks:{font:{size:10}}}, x:{ticks:{font:{size:10}}} }
+    }
+  });
+}
+
+// ============================================================
+// SAVE (Supabase) — só admin
+// ============================================================
+
+// Força reaplicar seed do Excel embutido no HTML (admin only)
+async function forcarGravarSeed(){
+  if(!isAdmin){ alert('Apenas o admin pode reaplicar os dados.'); return; }
+  const seed = lerSeed();
+  if(!seed){ alert('Seed não encontrado no HTML.'); return; }
+  if(!confirm('Isso vai SUBSTITUIR todos os dados de SKU/S&OP/Forecast/Estoque/Curva no banco com os dados do Excel embutido. Continuar?')) return;
+
+  // Mostrar feedback de carregamento
+  const content = document.getElementById('content');
+  const original = content.innerHTML;
+  content.innerHTML = `<div class="loading"><div class="spinner"></div>Gravando dados do Excel no Supabase…</div>`;
+
+  try{
+    const gravou = await gravarSeedNoSupabase(seed);
+    if(gravou){
+      alert('✓ Dados do Excel gravados no banco com sucesso! Recarregando…');
+      state._usandoSeed = false;
+      await loadAll();
+    } else {
+      content.innerHTML = original;
+      alert('✗ Falha ao gravar. Verifique se as tabelas existem no Supabase e se as policies de RLS permitem escrita para ' + ADMIN_EMAIL + '. Veja o console (F12) para detalhes.');
+    }
+  }catch(e){
+    content.innerHTML = original;
+    alert('Erro: ' + e.message);
+    console.error(e);
+  }
+}
+
+async function saveParam(chave, valor){
+  if(!isAdmin) return alert('Apenas o admin pode editar.');
+  state.parametros[chave] = parseFloat(valor);
+  await sb.from('sop_meta').upsert({chave, valor: String(valor), user_email: currentUser.email}, {onConflict:'chave'});
+  // Re-renderiza qualquer aba que dependa de parâmetros
+  renderActiveTab();
+}
+
+async function saveSKU(cod_item, campo, valor){
+  if(!isAdmin) return;
+  const sku = state.skus.find(s => s.cod_item === cod_item);
+  if(!sku) return;
+  if(campo === 'upp_override'){
+    const v = parseInt(valor) || null;
+    sku.upp_override = v;
+    sku.upp_efetiva = v || sku.upp_cadastro || 2000;
+    await sb.from('sop_sku').update({upp_override: v, upp_efetiva: sku.upp_efetiva}).eq('cod_item', cod_item);
+  } else if(campo === 'status_supply'){
+    sku.status_supply = valor || null;
+    await sb.from('sop_sku').update({status_supply: valor || null}).eq('cod_item', cod_item);
+    renderActiveTab();  // re-renderizar para atualizar alertas de Desativado
+  }
+}
+
+async function savePlano(tabela, cod_item, mes, valor, el){
+  if(!isAdmin) return;
+  const v = parseFloat(valor) || 0;
+  const ref = tabela === 'sop_plano_saida' ? state.saidas : state.entradas;
+  if(!ref[cod_item]) ref[cod_item] = {};
+  ref[cod_item][mes] = v;
+  // Atualiza a linha e o total do filtro sem remontar a tabela
+  if(el){
+    const tr = el.closest('tr');
+    const aba = tabela === 'sop_plano_saida' ? 'sop' : 'forecast';
+    atualizarLinhaPlano(tr, ref, cod_item);
+    atualizarTotais(aba);
+  }
+  const ym = `2026-${String(mes).padStart(2,'0')}-01`;
+  if(v > 0){
+    await sb.from(tabela).upsert({cod_item, year_month: ym, qty_un: v, horizonte:'2026'},
+      {onConflict:'cod_item,year_month,horizonte'});
+  } else {
+    await sb.from(tabela).delete().eq('cod_item', cod_item).eq('year_month', ym).eq('horizonte','2026');
+  }
+}
+
+async function saveEstoque(cod_item, valor, el){
+  if(!isAdmin) return;
+  const v = parseFloat(valor) || 0;
+  state.estoque[cod_item] = v;
+  if(el){
+    atualizarLinhaEstoque(el.closest('tr'), cod_item);
+    atualizarTotais('estoque');
+  }
+  const today = new Date().toISOString().slice(0,10);
+  await sb.from('sop_estoque').upsert({cod_item, snapshot_date: today, qty_un: v},
+    {onConflict:'cod_item,snapshot_date'});
+}
+
+async function saveCurva(empresa, quarter, semana, valor){
+  if(!isAdmin) return;
+  const v = parseFloat(valor) || 0;
+  if(!state.curva[empresa]) state.curva[empresa] = {};
+  if(!state.curva[empresa][quarter]) state.curva[empresa][quarter] = new Array(13).fill(0);
+  state.curva[empresa][quarter][semana - 1] = v;
+  await sb.from('sop_curva_quarter').upsert(
+    {empresa, quarter, semana_no_quarter: semana, pct: v},
+    {onConflict:'empresa,quarter,semana_no_quarter'});
+  renderActiveTab();
+}
+
+// ============================================================
+// TEMPLATE DOWNLOAD / UPLOAD
+// ============================================================
+// Converte célula de data (Date, serial Excel ou texto) → {ano, mes}
+function lerData(v){
+  if(v === null || v === undefined || v === '') return null;
+  if(v instanceof Date && !isNaN(v)) return {ano: v.getFullYear(), mes: v.getMonth()+1};
+  if(typeof v === 'number'){
+    // Serial Excel (base 30/12/1899)
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    if(isNaN(d)) return null;
+    return {ano: d.getUTCFullYear(), mes: d.getUTCMonth()+1};
+  }
+  const s = String(v).trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);            // 2026-06-15
+  if(m) return {ano:+m[1], mes:+m[2]};
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/); // 15/06/2026
+  if(m){ let a = +m[3]; if(a < 100) a += 2000; return {ano:a, mes:+m[2]}; }
+  const d = new Date(s);
+  return isNaN(d) ? null : {ano:d.getFullYear(), mes:d.getMonth()+1};
+}
+
+// Normaliza um rótulo de coluna para comparação tolerante
+function normCol(t){
+  return String(t === null || t === undefined ? '' : t)
+    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+}
+
+// Índice da coluna numa linha de cabeçalho (array), por qualquer um dos nomes
+function acharIdx(header, nomes){
+  const alvos = nomes.map(normCol);
+  for(let i = 0; i < header.length; i++){
+    if(alvos.indexOf(normCol(header[i])) >= 0) return i;
+  }
+  return -1;
+}
+
+// Localiza uma coluna pelo nome, ignorando caixa/acentos/espaços
+function acharCol(obj, nomes){
+  const norm = t => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  const chaves = Object.keys(obj);
+  for(const n of nomes){
+    const alvo = norm(n);
+    const k = chaves.find(c => norm(c) === alvo);
+    if(k) return k;
+  }
+  return null;
+}
+
+function baixarTemplate(aba){
+  let data = [], filename = '', sheetName = '';
+
+  if(aba === 'cadastro'){
+    sheetName = 'Cadastro SKU';
+    filename = 'template_cadastro_sku.xlsx';
+    data = state.skus.map(s => ({
+      'Cod Item': s.cod_item, 'Descrição': s.descricao, 'Marca': s.marca, 'Empresa': s.empresa,
+      'UPP Cadastro': s.upp_cadastro, 'UPP Override': s.upp_override,
+      'Status Supply': s.status_supply, 'GTIN14': s.gtin14
+    }));
+  } else if(aba === 'sop' || aba === 'forecast'){
+    sheetName = aba === 'sop' ? 'S&OP' : 'Forecast Pedidos';
+    filename = `template_${aba}.xlsx`;
+    const ref = aba === 'sop' ? state.saidas : state.entradas;
+    data = state.skus.map(s => {
+      const row = {'Cod Item': s.cod_item, 'Descrição': s.descricao, 'Empresa': s.empresa};
+      MESES_PT.forEach((m,i) => row[m] = (ref[s.cod_item] && ref[s.cod_item][i+1]) || 0);
+      return row;
+    });
+  } else if(aba === 'estoque'){
+    sheetName = 'Estoque Atual';
+    filename = 'template_estoque.xlsx';
+    data = state.skus.map(s => ({
+      'Cod Item': s.cod_item, 'Descrição': s.descricao, 'Empresa': s.empresa,
+      'Status Supply': s.status_supply, 'Estoque Atual (UN)': state.estoque[s.cod_item] || 0
+    }));
+  } else if(aba === 'soe'){
+    sheetName = 'Faturamento Real';
+    filename = 'template_soe_faturamento_real.xlsx';
+    data = state.skus.map(s => {
+      const row = {'Cod Item': s.cod_item, 'Descrição': s.descricao, 'Empresa': s.empresa};
+      MESES_PT.forEach((m,i) => {
+        const r = state.real[s.cod_item] && state.real[s.cod_item][i+1];
+        row[m] = r ? (r.venda || 0) : 0;
+      });
+      return row;
+    });
+  } else if(aba === 'curva'){
+    sheetName = 'Curva por Quarter';
+    filename = 'template_curva.xlsx';
+    ['GENOMMA','INOVALAB'].forEach(emp => {
+      [1,2,3,4].forEach(q => {
+        const row = {'Empresa': emp, 'Quarter': `Q${q}`};
+        const curva = (state.curva[emp] && state.curva[emp][q]) || [];
+        for(let s = 1; s <= 13; s++) row[`Sem ${s}`] = (curva[s-1] || 0);
+        data.push(row);
+      });
+    });
+  }
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, filename);
+}
+
+async function uploadAba(aba, input){
+  if(!isAdmin){ alert('Apenas admin pode subir arquivos.'); return; }
+  const file = input.files[0];
+  if(!file) return;
+  if(!confirm(`Upload de ${aba}? Os dados serão substituídos no banco.`)) return;
+  try{
+    const reader = new FileReader();
+    const buf = await new Promise((res,rej)=>{
+      reader.onload = e => res(e.target.result);
+      reader.onerror = rej;
+      reader.readAsArrayBuffer(file);
+    });
+    // O FileReader devolve ArrayBuffer; o SheetJS espera Uint8Array quando type='array'.
+    // Sem essa conversão, arquivos .xls antigos (OLE2/BIFF) são lidos como bytes crus.
+    const bytes = (buf instanceof ArrayBuffer) ? new Uint8Array(buf) : buf;
+    const wb = XLSX.read(bytes, {type:'array', cellDates:true});
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    // O relatório de Nota Fiscal tem dezenas de milhares de linhas: lemos como
+    // matriz (arrays) em vez de objetos, que é muito mais leve na memória.
+    const rows = (aba === 'soe') ? [] : XLSX.utils.sheet_to_json(sheet, {defval:null});
+
+    if(aba === 'cadastro'){
+      const payload = rows.filter(r => r['Cod Item']).map(r => ({
+        cod_item: String(r['Cod Item']),
+        descricao: r['Descrição'] || r['Descricao'] || '',
+        marca: r['Marca'] || '',
+        empresa: r['Empresa'] || 'GENOMMA',
+        upp_cadastro: parseInt(r['UPP Cadastro']) || null,
+        upp_override: parseInt(r['UPP Override']) || null,
+        upp_efetiva: parseInt(r['UPP Override']) || parseInt(r['UPP Cadastro']) || 2000,
+        status_supply: r['Status Supply'] || null,
+        gtin14: r['GTIN14'] ? String(r['GTIN14']) : null
+      }));
+      await sb.from('sop_sku').upsert(payload, {onConflict:'cod_item'});
+      alert(`✓ ${payload.length} SKUs atualizados.`);
+    } else if(aba === 'sop' || aba === 'forecast'){
+      const tabela = aba === 'sop' ? 'sop_plano_saida' : 'sop_plano_entrada';
+
+      // Parser numérico brasileiro: aceita "1.234,56", "778,8", "1234.56", número direto
+      const parseNum = (v) => {
+        if(v === null || v === undefined || v === '') return 0;
+        if(typeof v === 'number') return v;
+        // Remove pontos de milhar e troca vírgula por ponto decimal
+        const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      };
+
+      // Coletar todos cod_item presentes no upload + valores > 0
+      const codsNoUpload = new Set();
+      const payload = [];
+      const stats = {GENOMMA: {linhas: 0, valor: 0}, INOVALAB: {linhas: 0, valor: 0}, OUTROS: {linhas: 0, valor: 0}};
+
+      rows.filter(r => r['Cod Item'] && r['Cod Item'] !== 'TOTAL').forEach(r => {
+        const cod = String(r['Cod Item']).trim();
+        codsNoUpload.add(cod);
+        // Detectar empresa pelo VLOOKUP no state ou direto na linha
+        let emp = r['Empresa'];
+        if(!emp){
+          const sku = state.skus.find(s => s.cod_item === cod);
+          emp = sku?.empresa || 'OUTROS';
+        }
+        if(!stats[emp]) stats[emp] = {linhas: 0, valor: 0};
+
+        MESES_PT.forEach((mes, i) => {
+          const v = parseNum(r[mes]);
+          if(v > 0){
+            payload.push({
+              cod_item: cod,
+              year_month: `2026-${String(i+1).padStart(2,'0')}-01`,
+              qty_un: v,
+              horizonte: '2026'
+            });
+            stats[emp].linhas++;
+            stats[emp].valor += v;
+          }
+        });
+      });
+
+      const cods = Array.from(codsNoUpload);
+      console.log(`[upload-${aba}] SKUs no arquivo: ${cods.length}, payload: ${payload.length} linhas com valor > 0`);
+      console.log(`[upload-${aba}] Por empresa:`, stats);
+
+      // Apaga só os cod_item que estão no upload (preserva os outros)
+      // Em lotes de 100 para evitar URL muito longa
+      for(let i = 0; i < cods.length; i += 100){
+        const lote = cods.slice(i, i+100);
+        const {error: dErr} = await sb.from(tabela).delete()
+          .eq('horizonte', '2026').in('cod_item', lote);
+        if(dErr) console.error(`[upload-${aba}] delete lote ${i/100+1}:`, dErr);
+      }
+
+      // Insere em lotes de 500
+      let inseridos = 0;
+      for(let i = 0; i < payload.length; i += 500){
+        const lote = payload.slice(i, i+500);
+        const {error: iErr} = await sb.from(tabela).insert(lote);
+        if(iErr){
+          console.error(`[upload-${aba}] insert lote ${i/500+1}:`, iErr);
+          throw new Error(`Falha ao inserir lote ${i/500+1}: ${iErr.message}`);
+        }
+        inseridos += lote.length;
+      }
+
+      // Resumo amigável
+      const resumoLinhas = Object.entries(stats)
+        .filter(([_, s]) => s.linhas > 0)
+        .map(([emp, s]) => `${emp}: ${s.linhas} pontos (${s.valor.toLocaleString('pt-BR',{maximumFractionDigits:0})} UN)`)
+        .join('\n');
+      alert(`✓ Upload concluído!\n\n` +
+            `Tabela: ${tabela}\n` +
+            `SKUs no arquivo: ${cods.length}\n` +
+            `Pontos inseridos: ${inseridos}\n\n` +
+            `Por empresa:\n${resumoLinhas || '(nenhum valor > 0 no arquivo!)'}`);
+    } else if(aba === 'estoque'){
+      const today = new Date().toISOString().slice(0,10);
+      const parseNum = (v) => {
+        if(v === null || v === undefined || v === '') return 0;
+        if(typeof v === 'number') return v;
+        const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      };
+      const payload = rows.filter(r => r['Cod Item']).map(r => ({
+        cod_item: String(r['Cod Item']).trim(),
+        snapshot_date: today,
+        qty_un: parseNum(r['Estoque Atual (UN)'])
+      }));
+      const {error} = await sb.from('sop_estoque').upsert(payload, {onConflict:'cod_item,snapshot_date'});
+      if(error) throw error;
+      alert(`✓ ${payload.length} linhas de estoque atualizadas.`);
+    } else if(aba === 'soe'){
+      // Lê como matriz: [ [cabeçalho...], [linha...], ... ]
+      const matriz = XLSX.utils.sheet_to_json(sheet, {header:1, blankrows:false, defval:null});
+      if(!matriz.length) throw new Error('Planilha vazia.');
+
+      // Acha a linha de cabeçalho nas 15 primeiras linhas
+      let hIdx = -1, H = null;
+      for(let i = 0; i < Math.min(15, matriz.length); i++){
+        const linha = matriz[i] || [];
+        if(acharIdx(linha, ['COD ITEM','Cod Item','Código','Codigo','Item']) >= 0){ hIdx = i; H = linha; break; }
+      }
+      if(hIdx < 0) throw new Error('Não encontrei a coluna de código do item (COD ITEM / Cod Item) no arquivo.');
+
+      const iCod  = acharIdx(H, ['COD ITEM','Cod Item','Código','Codigo','Item']);
+      const iQtd  = acharIdx(H, ['QTDE','Qtde','Quantidade','Qtd']);
+      const iData = acharIdx(H, ['DATA','Dt Emissao','Dt Emissão','Data Emissao','Data']);
+      const iCfop = acharIdx(H, ['CFOP']);
+      const bruto = (iQtd >= 0 && iData >= 0);   // relatório FT4003, linha a linha
+
+      const parseNum = (v) => {
+        if(v === null || v === undefined || v === '') return 0;
+        if(typeof v === 'number') return v;
+        const s = String(v).trim().replace(/\./g, '').replace(',', '.');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+      };
+
+      const acum = {};   // acum[cod][mes] = {venda, bonif}
+      const add = (cod, mes, venda, bonif) => {
+        if(!acum[cod]) acum[cod] = {};
+        if(!acum[cod][mes]) acum[cod][mes] = {venda:0, bonif:0};
+        acum[cod][mes].venda += venda;
+        acum[cod][mes].bonif += bonif;
+      };
+
+      const mesesTocados = {};
+      let ignoradasCfop = 0, ignoradasData = 0, linhasLidas = 0;
+      const desconhecidos = {};
+      const cadastro = {};
+      state.skus.forEach(s => cadastro[s.cod_item] = 1);
+
+      if(bruto){
+        for(let i = hIdx + 1; i < matriz.length; i++){
+          const L = matriz[i];
+          if(!L) continue;
+          const bruta = L[iCod];
+          if(bruta === null || bruta === undefined || bruta === '') continue;
+          const cod = String(bruta).trim();
+          if(!cod || cod.toUpperCase().indexOf('ICMS') === 0) continue;
+          const dt = lerData(L[iData]);
+          if(!dt || dt.ano !== 2026){ ignoradasData++; continue; }
+          const cfop = iCfop >= 0 ? Math.round(parseNum(L[iCfop])) : 0;
+          const ehBonif = CFOP_BONIF.indexOf(cfop) >= 0;
+          const ehVenda = CFOP_VENDA.indexOf(cfop) >= 0;
+          if(iCfop >= 0 && !ehVenda && !ehBonif){ ignoradasCfop++; continue; }
+          const q = parseNum(L[iQtd]);
+          if(!q) continue;
+          add(cod, dt.mes, ehBonif ? 0 : q, ehBonif ? q : 0);
+          mesesTocados[dt.mes] = 1;
+          linhasLidas++;
+          if(!cadastro[cod]) desconhecidos[cod] = 1;
+        }
+      } else {
+        // Template pivotado: Cod Item + colunas de mês
+        const idxMes = MESES_PT.map((m,k) => acharIdx(H, [m, MESES_ABR[k]]));
+        if(idxMes.every(x => x < 0)) throw new Error('Não encontrei colunas de mês (Janeiro…Dezembro) nem colunas de quantidade/data.');
+        for(let i = hIdx + 1; i < matriz.length; i++){
+          const L = matriz[i];
+          if(!L) continue;
+          const bruta = L[iCod];
+          if(bruta === null || bruta === undefined || bruta === '') continue;
+          const cod = String(bruta).trim();
+          if(!cod || cod === 'TOTAL') continue;
+          idxMes.forEach((ci, k) => {
+            if(ci < 0) return;
+            const v = parseNum(L[ci]);
+            if(!v) return;
+            add(cod, k+1, v, 0);
+            mesesTocados[k+1] = 1;
+            linhasLidas++;
+          });
+          if(!cadastro[cod]) desconhecidos[cod] = 1;
+        }
+      }
+
+      const meses = Object.keys(mesesTocados).map(Number).sort((a,b)=>a-b);
+      if(!meses.length) throw new Error('Nenhuma quantidade válida encontrada no arquivo.');
+
+      const payload = [];
+      let totV = 0, totB = 0, nSkus = 0;
+      for(const cod in acum){
+        nSkus++;
+        for(const m in acum[cod]){
+          const o = acum[cod][m];
+          totV += o.venda; totB += o.bonif;
+          payload.push({
+            cod_item: cod,
+            year_month: `2026-${String(m).padStart(2,'0')}-01`,
+            horizonte: '2026',
+            qty_un: Math.round(o.venda * 1000) / 1000,
+            qty_bonif: Math.round(o.bonif * 1000) / 1000,
+            fonte: bruto ? 'FT4003' : 'template'
+          });
+        }
+      }
+
+      // Substitui apenas os meses presentes no arquivo (preserva os demais)
+      for(let k = 0; k < meses.length; k++){
+        const ym = `2026-${String(meses[k]).padStart(2,'0')}-01`;
+        const {error: dErr} = await sb.from('sop_faturamento_real').delete()
+          .eq('horizonte','2026').eq('year_month', ym);
+        if(dErr) throw new Error('Falha ao limpar '+ym+': '+dErr.message);
+      }
+      let inseridos = 0;
+      for(let i = 0; i < payload.length; i += 500){
+        const lote = payload.slice(i, i+500);
+        const {error: iErr} = await sb.from('sop_faturamento_real').insert(lote);
+        if(iErr) throw new Error('Falha ao inserir lote '+(i/500+1)+': '+iErr.message);
+        inseridos += lote.length;
+      }
+
+      const listaDesc = Object.keys(desconhecidos);
+      const aviso = listaDesc.length
+        ? `\n\n⚠ ${listaDesc.length} código(s) fora do Cadastro SKU — ficam de fora do comparativo:\n` +
+          listaDesc.slice(0,10).join(', ') + (listaDesc.length > 10 ? ' …' : '')
+        : '';
+
+      alert(`✓ Faturamento importado!\n\n` +
+            `Formato: ${bruto ? 'Relatório de Nota Fiscal (FT4003)' : 'Template pivotado'}\n` +
+            `Linhas aproveitadas: ${fmt(linhasLidas)}\n` +
+            (bruto ? `Ignoradas por CFOP (transferência, remessa, industrialização): ${fmt(ignoradasCfop)}\n` +
+                     `Ignoradas por data fora de 2026: ${fmt(ignoradasData)}\n` : '') +
+            `Meses atualizados: ${meses.map(m=>MESES_ABR[m-1]).join(', ')}\n` +
+            `SKUs: ${fmt(nSkus)} · pontos gravados: ${fmt(inseridos)}\n\n` +
+            `Venda: ${fmt(totV)} UN\nBonificação/brinde: ${fmt(totB)} UN` + aviso);
+    } else if(aba === 'curva'){    } else if(aba === 'curva'){
+      const payload = [];
+      rows.forEach(r => {
+        const emp = r['Empresa']; const q = parseInt(String(r['Quarter']).replace('Q',''));
+        if(!emp || !q) return;
+        for(let s = 1; s <= 13; s++){
+          const v = parseFloat(r[`Sem ${s}`]) || 0;
+          if(v > 0) payload.push({empresa: emp, quarter: q, semana_no_quarter: s, pct: v});
+        }
+      });
+      await sb.from('sop_curva_quarter').delete().gte('quarter', 1);
+      await sb.from('sop_curva_quarter').insert(payload);
+      alert(`✓ Curva atualizada (${payload.length} linhas).`);
+    }
+    input.value = '';
+    await loadAll();
+  }catch(e){
+    alert('Erro: ' + e.message);
+    console.error(e);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+checkSession();
+</script>
+</body>
+</html>

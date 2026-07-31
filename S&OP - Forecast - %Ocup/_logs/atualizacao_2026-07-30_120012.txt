@@ -1,0 +1,37 @@
+
+==================================================================
+  TORRE DE CONTROLE - ATUALIZADOR S&OP / S&OE
+==================================================================
+Pasta de entrada : C:\Users\thiago.pinheiro\OneDrive - genommalabinternacional\Área de Trabalho\Codigo\torre-controle-logistica\S&OP - Forecast - %Ocup\_entrada
+Ano / horizonte  : 2026 / 2026
+
+==================================================================
+  1. LENDO ARQUIVOS
+==================================================================
+
+> Layout Nota Fiscal_FT4003.xls
+  aba "Plan1" -> Faturamento (FT4003)
+     linhas aproveitadas : 48.108
+     ignoradas por CFOP  : 604
+     ignoradas por data  : 2
+     venda        : 15.564.584 UN
+     bonificacao  : 1.000.348 UN
+
+==================================================================
+  2. CONECTANDO NO SUPABASE
+==================================================================
+Usuario: thiago_balao@yahoo.com.br
+Autenticado.
+SKUs hoje no painel: 148
+
+==================================================================
+  3. O QUE VAI SER FEITO
+==================================================================
+  * Faturamento real    -> sop_faturamento_real: 725 pontos, substitui os meses JAN,FEV,MAR,ABR,MAI,JUN,JUL
+
+Regra: so os meses presentes nos arquivos sao substituidos.
+Os demais meses continuam intactos no banco.
+
+
+ERRO: a tabela sop_faturamento_real nao existe no Supabase.
+Rode o arquivo sop_faturamento_real.sql no SQL Editor e tente de novo.
