@@ -483,10 +483,22 @@ function renderKpis(){
       return;
     }
     const ehUltimo = !!RATIOS[id] || id==='custo_op_ac';
-    let cur, prev, refTag=anoAtual, notaRef='', baseTxt='';
+    let cur, prev, refTag=anoAtual, notaRef='', baseTxt='', parcialAviso='';
     const mesesCur = MMI.filter(mm=>ind.series[`${anoAtual}-${mm}`]!=null);
     if(ehUltimo){
-      const kAtual=ultimoMesAno(ind,anoAtual);
+      /* razões dependem do faturamento; um mês só é "fechado" quando o
+         faturamento dele é coerente com o ano (não é um mês em curso ainda
+         parcial). Usamos como piso 40% da média mensal do faturamento do ano. */
+      const fatS=(DATA.fat_rs||{series:{}}).series;
+      const fmes=MMI.map(mm=>fatS[`${anoAtual}-${mm}`]).filter(v=>v!=null);
+      const mediaFat=fmes.length? fmes.reduce((a,b)=>a+b,0)/fmes.length : 0;
+      const piso=mediaFat*0.4;
+      const fechado=mm=>{ const f=fatS[`${anoAtual}-${mm}`]; return f!=null && f>=piso; };
+      let kAtual=null, kBruto=null;
+      MMI.forEach(mm=>{ const key=`${anoAtual}-${mm}`;
+        if(ind.series[key]!=null){ kBruto=key; if(fechado(mm)) kAtual=key; } });
+      if(!kAtual) kAtual=kBruto;                     // fallback: nada fechado ainda
+      if(kBruto && kAtual && kBruto!==kAtual) parcialAviso=' · '+MESES[+kBruto.slice(5)-1]+' em andamento';
       cur = kAtual? ind.series[kAtual] : null;
       if(kAtual){ const kPrev=`${anoAnt}-${kAtual.slice(5)}`; prev = ind.series[kPrev]!=null?ind.series[kPrev]:null;
         refTag = MESES[+kAtual.slice(5)-1]+'/'+anoAtual.slice(2); notaRef=(id==='custo_op_ac'?'acum':'mês'); baseTxt='mesmo mês de '+anoAnt; }
@@ -517,8 +529,8 @@ function renderKpis(){
                   : s==='warn'?(comparaMeta?(ind.limite?'acima do limite':'atenção'):(ind.dir==='up'?'abaixo do ano anterior':'acima do ano anterior'))
                   : s==='bad'?'fora':'—';
     const metaLine = comparaMeta
-      ? `<div class="hint" style="margin-top:5px">${ind.limite?'Limite':'Meta'} ${fmtMeta(ind)} · <b style="color:${STCOR[s]}">${palavra}</b></div>`
-      : `<div class="hint" style="margin-top:5px">${baseTxt? (notaRef==='acum'?'Acumulado do ano · ':'')+'<b style="color:'+STCOR[s]+'">'+palavra+'</b>' :'Sem meta cadastrada'}</div>`;
+      ? `<div class="hint" style="margin-top:5px">${ind.limite?'Limite':'Meta'} ${fmtMeta(ind)} · <b style="color:${STCOR[s]}">${palavra}</b>${parcialAviso}</div>`
+      : `<div class="hint" style="margin-top:5px">${baseTxt? (notaRef==='acum'?'Acumulado do ano · ':'')+'<b style="color:'+STCOR[s]+'">'+palavra+'</b>'+parcialAviso :'Sem meta cadastrada'}</div>`;
     box.insertAdjacentHTML("beforeend",`
       <div class="kpi" style="--barc:${STCOR[s]!=='var(--ink-soft)'?STCOR[s]:(YEAR_COL[anoAtual]||'var(--genomma)')}">
         <div class="tag">${refTag}</div>
