@@ -505,19 +505,8 @@ function renderKpis(){
     let cur, prev, refTag=anoAtual, notaRef='', baseTxt='', parcialAviso='';
     const mesesCur = MMI.filter(mm=>ind.series[`${anoAtual}-${mm}`]!=null);
     if(ehUltimo){
-      /* razões dependem do faturamento; um mês só é "fechado" quando o
-         faturamento dele é coerente com o ano (não é um mês em curso ainda
-         parcial). Usamos como piso 40% da média mensal do faturamento do ano. */
-      const fatS=(DATA.fat_rs||{series:{}}).series;
-      const fmes=MMI.map(mm=>fatS[`${anoAtual}-${mm}`]).filter(v=>v!=null);
-      const mediaFat=fmes.length? fmes.reduce((a,b)=>a+b,0)/fmes.length : 0;
-      const piso=mediaFat*0.4;
-      const fechado=mm=>{ const f=fatS[`${anoAtual}-${mm}`]; return f!=null && f>=piso; };
-      let kAtual=null, kBruto=null;
-      MMI.forEach(mm=>{ const key=`${anoAtual}-${mm}`;
-        if(ind.series[key]!=null){ kBruto=key; if(fechado(mm)) kAtual=key; } });
-      if(!kAtual) kAtual=kBruto;                     // fallback: nada fechado ainda
-      if(kBruto && kAtual && kBruto!==kAtual) parcialAviso=' · '+MESES[+kBruto.slice(5)-1]+' em andamento';
+      /* último mês lançado — mês lançado é mês fechado, sem interpretação */
+      const kAtual=ultimoMesAno(ind,anoAtual);
       cur = kAtual? ind.series[kAtual] : null;
       if(kAtual){ const kPrev=`${anoAnt}-${kAtual.slice(5)}`; prev = ind.series[kPrev]!=null?ind.series[kPrev]:null;
         refTag = MESES[+kAtual.slice(5)-1]+'/'+anoAtual.slice(2); notaRef=(id==='custo_op_ac'?'acum':'mês'); baseTxt='mesmo mês de '+anoAnt; }
