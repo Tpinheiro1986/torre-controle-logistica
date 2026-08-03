@@ -258,6 +258,21 @@ const PED_EMBED = {
 };
 
 /* recalcula as razões a partir dos R$ reais */
+/* Faturamento Líquido = Faturamento − Devolução (recalculado dos R$ reais) */
+function recomputeFatliq(){
+  const fl=DATA.fatliq_rs, fat=DATA.fat_rs, dev=DATA.dev_rs;
+  if(!fl||!fat||!dev) return;
+  const s={};
+  Object.keys(fat.series).forEach(k=>{
+    const f=fat.series[k], d=dev.series[k];
+    if(f!=null) s[k]=+((f-(d||0)).toFixed(2));
+  });
+  fl.series=s; fl.calc='Faturamento − Devolução';
+  const yy={}; Object.keys(s).forEach(k=>{const y=k.slice(0,4);yy[y]=(yy[y]||0)+s[k];});
+  fl.yearly=yy;
+  const ult=Object.keys(s).sort().pop();
+  if(ult){ fl.last_month=ult; fl.last_val=s[ult]; }
+}
 function recomputeRatios(){
   Object.entries(RATIOS).forEach(([id,r])=>{
     const ind=DATA[id]; if(!ind||!DATA[r.num]||!DATA[r.den]) return;
@@ -549,6 +564,7 @@ function subTexto(ind){
   if(ind.weekly) return 'Ano fechado compara o total; ano em curso compara até a mesma semana';
   if(ind.half) return 'Ajustes por semestre (H1/H2) · azul = positivo · vermelho = negativo';
   if(ind.limite) return `Limite máximo · não ultrapassar ${fmtMeta(ind)}`;
+  if(ind.calc && ind.unit==='rs') return `Calculado · ${ind.calc}`;
   return ind.target!=null ? `Meta ${fmtMeta(ind)}` : (ind.unit==='rs'?'Valores em R$':'');
 }
 /* Resumo curto de cada indicador (exibido em "Sobre o indicador") */
@@ -950,7 +966,7 @@ function aplicarEditor(){
   });
   // recalcula OTIF se mexeu em ontime/infull
   if(id==='ontime'||id==='fillrate') recomputeOtif();
-  if(['ctw_rs','ctransp_rs','dev_rs','fat_rs'].includes(id)) recomputeRatios();
+  if(['ctw_rs','ctransp_rs','dev_rs','fat_rs'].includes(id)){ recomputeFatliq(); recomputeRatios(); }
   if(['ped_tot','ped_frac'].includes(id)) recomputeInfull();
   return id;
 }
@@ -1074,7 +1090,7 @@ async function carregar(){
   }
   if(!DATA.inventario) DATA.inventario=JSON.parse(JSON.stringify(INV_EMBED.inventario));
   Object.entries(PED_EMBED).forEach(([k,v])=>{ if(!DATA[k]) DATA[k]=JSON.parse(JSON.stringify(v)); });
-  recomputeOtif(); recomputeInfull(); recomputeRatios();
+  recomputeOtif(); recomputeInfull(); recomputeFatliq(); recomputeRatios();
 }
 
 /* ---- eventos ---- */
