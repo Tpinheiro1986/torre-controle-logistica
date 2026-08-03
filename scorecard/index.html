@@ -273,6 +273,25 @@ function recomputeFatliq(){
   const ult=Object.keys(s).sort().pop();
   if(ult){ fl.last_month=ult; fl.last_val=s[ult]; }
 }
+/* Custo %TW Acumulado: para cada mês, Σcusto T&W ÷ Σfaturamento do ano até ali (YTD) */
+function recomputeCustoAcum(){
+  const ind=DATA.custo_op_ac, ctw=DATA.ctw_rs, fat=DATA.fat_rs;
+  if(!ind||!ctw||!fat) return;
+  const anos=new Set();
+  Object.keys(fat.series).forEach(k=>anos.add(k.slice(0,4)));
+  const s={};
+  anos.forEach(y=>{ let sn=0, sd=0;
+    for(let i=1;i<=12;i++){ const mm=String(i).padStart(2,'0'), k=`${y}-${mm}`;
+      const c=ctw.series[k], f=fat.series[k];
+      if(f==null) continue;                 // sem faturamento no mês, não acumula
+      sn+=(c||0); sd+=f;
+      if(sd) s[k]=+(sn/sd).toFixed(4);
+    }
+  });
+  ind.series=s; ind.calc='Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)';
+  const ult=Object.keys(s).sort().pop();
+  if(ult){ ind.last_month=ult; ind.last_val=s[ult]; }
+}
 function recomputeRatios(){
   Object.entries(RATIOS).forEach(([id,r])=>{
     const ind=DATA[id]; if(!ind||!DATA[r.num]||!DATA[r.den]) return;
@@ -978,7 +997,7 @@ function aplicarEditor(){
   });
   // recalcula OTIF se mexeu em ontime/infull
   if(id==='ontime'||id==='fillrate') recomputeOtif();
-  if(['ctw_rs','ctransp_rs','dev_rs','fat_rs'].includes(id)){ recomputeFatliq(); recomputeRatios(); }
+  if(['ctw_rs','ctransp_rs','dev_rs','fat_rs'].includes(id)){ recomputeFatliq(); recomputeRatios(); recomputeCustoAcum(); }
   if(['ped_tot','ped_frac'].includes(id)) recomputeInfull();
   return id;
 }
@@ -1102,7 +1121,7 @@ async function carregar(){
   }
   if(!DATA.inventario) DATA.inventario=JSON.parse(JSON.stringify(INV_EMBED.inventario));
   Object.entries(PED_EMBED).forEach(([k,v])=>{ if(!DATA[k]) DATA[k]=JSON.parse(JSON.stringify(v)); });
-  recomputeOtif(); recomputeInfull(); recomputeFatliq(); recomputeRatios();
+  recomputeOtif(); recomputeInfull(); recomputeFatliq(); recomputeRatios(); recomputeCustoAcum();
 }
 
 /* ---- eventos ---- */
