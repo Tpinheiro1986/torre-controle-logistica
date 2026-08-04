@@ -238,6 +238,7 @@ const MODOS=[["lines","Linhas"],["bars","Barras"],["area","Área"],["heat","Heat
    modo Acumulado = Σnum / Σden (não é média das porcentagens). */
 const RATIOS = {
   custo_op:    {num:'ctw_rs',      den:'fat_rs'},
+  custo_tr_ac: {num:'ctransp_rs',  den:'fat_rs'},
   devpct:      {num:'dev_rs',      den:'fat_rs'},
 };
 /* Ordem fixa dos painéis por dimensão (o que não estiver aqui entra depois) */
@@ -272,30 +273,24 @@ function recomputeFatliq(){
   const ult=Object.keys(s).sort().pop();
   if(ult){ fl.last_month=ult; fl.last_val=s[ult]; }
 }
-/* Custos acumulados: para cada mês, Σcusto ÷ Σfaturamento do ano até ali (YTD) */
+/* Custo %TW Acumulado: para cada mês, Σcusto T&W ÷ Σfaturamento do ano até ali (YTD) */
 function recomputeCustoAcum(){
-  const acums=[
-    {id:'custo_op_ac',  num:'ctw_rs',     calc:'Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)'},
-    {id:'custo_tr_ac',  num:'ctransp_rs', calc:'Σ Custo de Transporte ÷ Σ Faturamento (acumulado no ano)'},
-  ];
-  const fat=DATA.fat_rs; if(!fat) return;
-  acums.forEach(({id,num,calc})=>{
-    const ind=DATA[id], comp=DATA[num];
-    if(!ind||!comp) return;
-    const anos=new Set(); Object.keys(fat.series).forEach(k=>anos.add(k.slice(0,4)));
-    const s={};
-    anos.forEach(y=>{ let sn=0, sd=0;
-      for(let i=1;i<=12;i++){ const mm=String(i).padStart(2,'0'), k=`${y}-${mm}`;
-        const c=comp.series[k], f=fat.series[k];
-        if(f==null) continue;
-        sn+=(c||0); sd+=f;
-        if(sd) s[k]=+(sn/sd).toFixed(4);
-      }
-    });
-    ind.series=s; ind.calc=calc;
-    const ult=Object.keys(s).sort().pop();
-    if(ult){ ind.last_month=ult; ind.last_val=s[ult]; }
+  const ind=DATA.custo_op_ac, ctw=DATA.ctw_rs, fat=DATA.fat_rs;
+  if(!ind||!ctw||!fat) return;
+  const anos=new Set();
+  Object.keys(fat.series).forEach(k=>anos.add(k.slice(0,4)));
+  const s={};
+  anos.forEach(y=>{ let sn=0, sd=0;
+    for(let i=1;i<=12;i++){ const mm=String(i).padStart(2,'0'), k=`${y}-${mm}`;
+      const c=ctw.series[k], f=fat.series[k];
+      if(f==null) continue;                 // sem faturamento no mês, não acumula
+      sn+=(c||0); sd+=f;
+      if(sd) s[k]=+(sn/sd).toFixed(4);
+    }
   });
+  ind.series=s; ind.calc='Σ Custo T&W ÷ Σ Faturamento (acumulado no ano)';
+  const ult=Object.keys(s).sort().pop();
+  if(ult){ ind.last_month=ult; ind.last_val=s[ult]; }
 }
 function recomputeRatios(){
   Object.entries(RATIOS).forEach(([id,r])=>{
@@ -506,8 +501,7 @@ function renderKpis(){
         </div>`);
       return;
     }
-    const ACUMS=['custo_op_ac','custo_tr_ac'];
-    const ehUltimo = !!RATIOS[id] || ACUMS.includes(id);
+    const ehUltimo = !!RATIOS[id] || id==='custo_op_ac';
     let cur, prev, refTag=anoAtual, notaRef='', baseTxt='', parcialAviso='';
     const mesesCur = MMI.filter(mm=>ind.series[`${anoAtual}-${mm}`]!=null);
     if(ehUltimo){
@@ -515,7 +509,7 @@ function renderKpis(){
       const kAtual=ultimoMesAno(ind,anoAtual);
       cur = kAtual? ind.series[kAtual] : null;
       if(kAtual){ const kPrev=`${anoAnt}-${kAtual.slice(5)}`; prev = ind.series[kPrev]!=null?ind.series[kPrev]:null;
-        refTag = MESES[+kAtual.slice(5)-1]+'/'+anoAtual.slice(2); notaRef=(ACUMS.includes(id)?'acum':'mês'); baseTxt='mesmo mês de '+anoAnt; }
+        refTag = MESES[+kAtual.slice(5)-1]+'/'+anoAtual.slice(2); notaRef=(id==='custo_op_ac'?'acum':'mês'); baseTxt='mesmo mês de '+anoAnt; }
     } else {
       const agg=arr=>{const v=arr.filter(x=>x!=null); if(!v.length)return null;
         return ind.unit==='rs'? v.reduce((a,b)=>a+b,0) : v.reduce((a,b)=>a+b,0)/v.length;};
