@@ -184,10 +184,10 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
             style="float:right;font-size:11px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);min-width:230px;outline:none">
         </div>
           <div class="tw"><table class="dt"><thead><tr>
-            <th>#</th><th>Cliente / Matriz</th><th>Empresa</th><th>Região</th><th>UF</th>
+            <th>#</th><th>Cliente / Matriz</th><th>Região</th><th>UF</th><th>Cidade</th>
             <th class="r">CTes</th><th class="r" style="color:var(--red)">Frete</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
-            <th class="r" style="color:var(--amber)">%CTS</th><th style="min-width:70px">Nível</th>
+            <th class="r" style="color:var(--amber)">%CTS</th>
           </tr></thead><tbody id="tb-cli"></tbody></table></div></div>
       </div>
       <div class="sec" id="sec-remetente">
@@ -715,9 +715,8 @@ function fmtCnpj(c){c=(c||'').replace(/\D/g,'');return c.length===14?c.slice(0,2
 function cliSearch(v){_cliQ=(v||'').trim().toLowerCase();rCli();}
 function toggleFil(i){const rows=document.querySelectorAll('.filg-'+i);if(!rows.length)return;const show=rows[0].style.display==='none';rows.forEach(r=>r.style.display=show?'':'none');const car=document.getElementById('cliar-'+i);if(car)car.textContent=show?'\u25be':'\u25b8';}
 function rCli(){
-  let clis=getClis();const q=_cliQ;
-  const qd=q.replace(/\D/g,'');
-  const fmatch=f=>((f.nome||'').toLowerCase().includes(q)||(f.abrev||'').toLowerCase().includes(q)||(qd&&(f.cnpj||'').replace(/\D/g,'').includes(qd)));
+  let clis=getClis();const q=_cliQ;const qd=q.replace(/\D/g,'');
+  const fmatch=f=>((f.nome||'').toLowerCase().includes(q)||(f.abrev||'').toLowerCase().includes(q)||(f.cidade||'').toLowerCase().includes(q)||(qd&&(f.cnpj||'').replace(/\D/g,'').includes(qd)));
   if(q){clis=clis.filter(c=>(c.nome||'').toLowerCase().includes(q)||(c.matriz||'').toLowerCase().includes(q)||(c.filiais||[]).some(fmatch));}
   const maxF=clis[0]?.frete||1;let html='';
   clis.forEach((c,i)=>{
@@ -726,28 +725,28 @@ function rCli(){
     const caret=exp?'<span id="cliar-'+i+'" style="display:inline-block;width:12px;color:var(--text2)">'+(open?'\u25be':'\u25b8')+'</span>':'<span style="display:inline-block;width:12px"></span>';
     html+='<tr'+(exp?' style="cursor:pointer" onclick="toggleFil('+i+')"':'')+'>'
       +'<td style="color:var(--text2);font-size:10px">'+(i+1)+'</td>'
-      +'<td style="max-width:210px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+caret+c.nome+(exp?' <span style="color:var(--text2);font-weight:400;font-size:10px">('+nf+' filiais)</span>':'')+'</td>'
-      +'<td><span class="chip '+(c.empresa==='GENOMMA'?'chip-g':'chip-i')+'">'+c.empresa+'</span></td>'
-      +'<td style="font-size:10px;color:var(--text2)">'+(c.regiao||'\u2014')+'</td>'
-      +'<td style="font-size:10px;color:var(--text2)">'+(c.uf||'\u2014')+'</td>'
+      +'<td style="max-width:230px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+caret+c.nome+(exp?' <span style="color:var(--text2);font-weight:400;font-size:10px">('+nf+' filiais)</span>':'')+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+(exp?'<span style="color:var(--text3);font-style:italic">Matriz</span>':(c.regiao||'\u2014'))+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+(exp?'\u2014':(c.uf||'\u2014'))+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+(exp?'\u2014':((c.filiais&&c.filiais[0]&&c.filiais[0].cidade)||'\u2014'))+'</td>'
       +'<td class="r">'+c.ctes+'</td>'
       +'<td class="r" style="color:var(--red)">'+fK(c.frete)+'</td>'
       +'<td class="r" style="color:#185FA5">'+(c.v_merc>0?fK(c.v_merc):'\u2014')+'</td>'
-      +'<td class="r" style="color:'+cP(c.pct_cts)+';font-weight:600">'+pf(c.pct_cts)+'</td>'
-      +'<td><div style="height:4px;background:var(--bg2);border-radius:3px"><div style="height:100%;width:'+Math.round(c.frete/maxF*100)+'%;background:'+cP(c.pct_cts)+';border-radius:3px"></div></div></td></tr>';
+      +'<td class="r" style="color:'+cP(c.pct_cts)+';font-weight:600">'+pf(c.pct_cts)+'</td></tr>';
     if(exp){fils.forEach(f=>{
       html+='<tr class="filg-'+i+'" style="display:'+(open?'':'none')+';background:var(--bg2)">'
         +'<td></td>'
-        +'<td style="padding-left:26px;max-width:210px;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:var(--text2)">'+(f.abrev||f.nome||'')+' <span style="opacity:.55">'+fmtCnpj(f.cnpj)+'</span></td>'
-        +'<td></td><td></td>'
-        +'<td style="font-size:10px;color:var(--text2)">'+(f.uf||'')+'</td>'
+        +'<td style="padding-left:26px;max-width:230px;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:var(--text2)">'+(f.abrev||f.nome||'')+'</td>'
+        +'<td style="font-size:10px;color:var(--text2)">'+(f.regiao||'\u2014')+'</td>'
+        +'<td style="font-size:10px;color:var(--text2)">'+(f.uf||'\u2014')+'</td>'
+        +'<td style="font-size:10px;color:var(--text2)">'+(f.cidade||'\u2014')+'</td>'
         +'<td class="r" style="font-size:10px">'+f.ctes+'</td>'
         +'<td class="r" style="font-size:10px;color:var(--red)">'+fK(f.frete)+'</td>'
         +'<td class="r" style="font-size:10px;color:#185FA5">'+(f.v_merc>0?fK(f.v_merc):'\u2014')+'</td>'
-        +'<td></td><td></td></tr>';
+        +'<td class="r" style="font-size:10px;color:'+cP(f.pct_cts)+';font-weight:600">'+pf(f.pct_cts)+'</td></tr>';
     });}
   });
-  document.getElementById('tb-cli').innerHTML=html||'<tr><td colspan="10" style="text-align:center;color:var(--text2);padding:16px">Nenhum cliente encontrado</td></tr>';
+  document.getElementById('tb-cli').innerHTML=html||'<tr><td colspan="9" style="text-align:center;color:var(--text2);padding:16px">Nenhum cliente encontrado</td></tr>';
 }
 function rRem(){
   const rems=getRems();const maxF=rems[0]?.frete||1;
