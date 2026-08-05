@@ -1,0 +1,5427 @@
+{
+ "09080907000182": {
+  "nome": "Genomma Laboratories do Brasil LTDA",
+  "abrev": "GENOMMA",
+  "matriz": "GENOMMA"
+ },
+ "09080907000344": {
+  "nome": "GENOMMA LABORATORIES DO BRASIL LTDA-EPP",
+  "abrev": "GENOMMA SC",
+  "matriz": "GENOMMA SC"
+ },
+ "09080907000263": {
+  "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
+  "abrev": "GENOMMA FIL",
+  "matriz": "GENOMMA FIL"
+ },
+ "03551937000143": {
+  "nome": "AMERICAN FARMA DISTR FARMACEUTICA LTDA",
+  "abrev": "AMERICAN",
+  "matriz": "STA CRUZ PE"
+ },
+ "42225938000150": {
+  "nome": "CSB DROGARIAS SA",
+  "abrev": "CSB DROGARIA",
+  "matriz": "CSB DROGARIA"
+ },
+ "92665611010300": {
+  "nome": "DIMED S/A - DISTR DE MEDICAMENTOS",
+  "abrev": "DIMED RS",
+  "matriz": "DIMED RS"
+ },
+ "92665611014984": {
+  "nome": "DIMED S/A - DISTR DE MEDICAMENTOS",
+  "abrev": "DIMED SC",
+  "matriz": "DIMED RS"
+ },
+ "92665611012850": {
+  "nome": "DIMED S/A - DISTR DE MEDICAMENTOS",
+  "abrev": "DIMED RS 1",
+  "matriz": "DIMED RS"
+ },
+ "61940292005600": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ",
+  "abrev": "STA CRUZ PE",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292005520": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ BA",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292005368": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ ES",
+  "matriz": "STA CRUZ PE"
+ },
+ "10948085000198": {
+  "nome": "Genomma Lab Internacional SA de C.V.",
+  "abrev": "GENOMMA MEX",
+  "matriz": "GENOMMA MEX"
+ },
+ "00677858000195": {
+  "nome": "ARTE NATIVA PRODUTOS NATURAIS LTDA",
+  "abrev": "ARTE NATIVA",
+  "matriz": "ARTE NATIVA"
+ },
+ "04019475000504": {
+  "nome": "FARMA LOGISTICA E ARMAZENS GERAIS LTDA",
+  "abrev": "BOMI",
+  "matriz": "BOMI"
+ },
+ "61940292000137": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ SP",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292001290": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ MG",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292005287": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ GO",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820001179": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA PE",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000520": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA SP",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820001098": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANARELLO RS",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000440": {
+  "nome": "SC DISTRIBUICAO LTDA",
+  "abrev": "PANARELLO RJ",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000954": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA PR",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820001683": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA MT",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000105": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA GO",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820001500": {
+  "nome": "PANPHARMA DIST. DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA FL",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000792": {
+  "nome": "DISTR MEDICAMENTOS PANARELLO LTDA",
+  "abrev": "PANARELLO DF",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000369": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA MG",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820000873": {
+  "nome": "PANPHARMA DIST. DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA BA",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820001250": {
+  "nome": "PANPHARMA DIST. DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA AR",
+  "matriz": "STA CRUZ PE"
+ },
+ "08675130000136": {
+  "nome": "CONTCLASS SERV. DE PROC. DE DADOS LTDA",
+  "abrev": "CONTCLASS",
+  "matriz": "CONTCLASS"
+ },
+ "01227675000130": {
+  "nome": "ALLNET TELECOMUNICACOES E INFORMATICA LTDA",
+  "abrev": "ALLNET",
+  "matriz": "ALLNET"
+ },
+ "54651716001150": {
+  "nome": "SUPRICORP SUPRIMENTOS LTDA",
+  "abrev": "GIMBA",
+  "matriz": "GIMBA"
+ },
+ "04718143000194": {
+  "nome": "VR MEDICAL IMPORTADORA E DISTRIBUIDORA DE PRODUTOS MEDICOS LTDA",
+  "abrev": "VR MEDICAL",
+  "matriz": "VR MEDICAL"
+ },
+ "03688545000201": {
+  "nome": "DIGITAL WORK COMPUTER SERVICE COMERCIAL LTDA",
+  "abrev": "DIGITAL WORK",
+  "matriz": "DIGITAL WORK"
+ },
+ "61585865000151": {
+  "nome": "RAIA DROGASIL S.A.",
+  "abrev": "DROGASIL",
+  "matriz": "RAIA"
+ },
+ "61412110000236": {
+  "nome": "DROGARIA SAO PAULO",
+  "abrev": "DROGARIA SAO",
+  "matriz": "DROGARIA SAO"
+ },
+ "61412110007320": {
+  "nome": "DROGARIA SAO PAULO - DIADEMA",
+  "abrev": "DSPDIADEMA",
+  "matriz": "DROGARIA SAO"
+ },
+ "47410592000183": {
+  "nome": "ORGANIZACAO FARMACEUTICA DROGAO LTDA",
+  "abrev": "DROGAO",
+  "matriz": "DROGARIA SAO"
+ },
+ "44463156000699": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED GO",
+  "matriz": "SERVIMED SP"
+ },
+ "44463156000184": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED SP",
+  "matriz": "SERVIMED SP"
+ },
+ "03772503000173": {
+  "nome": "CEMED COM IMP EXP E DISTRIBUICAO LTDA",
+  "abrev": "CEMED",
+  "matriz": "CEMED"
+ },
+ "01206820001411": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA CE",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292004710": {
+  "nome": "DISTR MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ RS",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292001702": {
+  "nome": "DISTR MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ RJ",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292000218": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ PR",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292004639": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ ARA",
+  "matriz": "STA CRUZ PE"
+ },
+ "04688132000109": {
+  "nome": "SUDESTEFARMA S.A. PRODUTOS FARMACEUTICOS",
+  "abrev": "SUDESTEFARMA",
+  "matriz": "SUDESTEFARMA"
+ },
+ "72381189000625": {
+  "nome": "DELL COMPUTADORES DO BRASIL",
+  "abrev": "Dell Comput",
+  "matriz": "Dell Comput"
+ },
+ "43244631000169": {
+  "nome": "TRANSPORTADORA AMERICANA LTDA",
+  "abrev": "TRANSP AMER",
+  "matriz": "TRANSP AMER"
+ },
+ "01206820002060": {
+  "nome": "PANPHARMA DISTRIB. DE MEDICAMENTOS LTDA",
+  "abrev": "PANARELLO ES",
+  "matriz": "STA CRUZ PE"
+ },
+ "04019475000180": {
+  "nome": "FARMA LOGISTICA E ARMAZENS GERAIS LTDA",
+  "abrev": "FARMA LOG",
+  "matriz": "FARMA LOG"
+ },
+ "61940292005872": {
+  "nome": "DISTR MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ SC",
+  "matriz": "STA CRUZ PE"
+ },
+ "00478478000121": {
+  "nome": "ASSOCIACAO BRA. DA IND. DE HIGIENE PESSOAL PERF. E COSMESTICOS - ABIPHEC",
+  "abrev": "ABIHPEC",
+  "matriz": "ABIHPEC"
+ },
+ "60628369000175": {
+  "nome": "RADIO E TELEVISAO RECORD SA",
+  "abrev": "RECORD",
+  "matriz": "RECORD"
+ },
+ "61549259003368": {
+  "nome": "DROGARIA ONOFRE LTDA",
+  "abrev": "ONOFRE",
+  "matriz": "ONOFRE"
+ },
+ "44463156001741": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED ES",
+  "matriz": "SERVIMED SP"
+ },
+ "01206820001764": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANARELLO MS",
+  "matriz": "STA CRUZ PE"
+ },
+ "49732175002479": {
+  "nome": "ESTOK COMERCIO E REPRESENTACOES S.A.",
+  "abrev": "Tok & Stok",
+  "matriz": "Tok & Stok"
+ },
+ "03262073000140": {
+  "nome": "RCR REPRESENTAÇÕES E SERVIÇOS LTDA",
+  "abrev": "RCR",
+  "matriz": "RCR"
+ },
+ "61585865040960": {
+  "nome": "RAIA DROGASIL MG",
+  "abrev": "DROGASIL MG",
+  "matriz": "RAIA"
+ },
+ "33438250000167": {
+  "nome": "DROGARIAS PACHECO S/A",
+  "abrev": "PACHECO RJ",
+  "matriz": "DROGARIA SAO"
+ },
+ "45453214002529": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA BA",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214002014": {
+  "nome": "PROFARMA DISTR DE PR0D FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA MG",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214002286": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA PR",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214002600": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA RJ",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214001395": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA SP",
+  "matriz": "PROFARMA BA"
+ },
+ "33438250026204": {
+  "nome": "DROGARIAS PACHECO S/A",
+  "abrev": "PACHECO MG",
+  "matriz": "DROGARIA SAO"
+ },
+ "04570097000129": {
+  "nome": "ABANO RJ DISTRIBUIDORA LTDA",
+  "abrev": "ABANO",
+  "matriz": "ABANO"
+ },
+ "61412110030909": {
+  "nome": "DROGARIA SAO PAULO - SAO MATEUS",
+  "abrev": "DSP S MATEUS",
+  "matriz": "DROGARIA SAO"
+ },
+ "45453214002367": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA DF",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214001808": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA ES",
+  "matriz": "PROFARMA BA"
+ },
+ "54801535000433": {
+  "nome": "CENTRO METROPOLITANO DE COSMETICOS LTDA",
+  "abrev": "IKESAKI",
+  "matriz": "IKESAKI"
+ },
+ "33438250025666": {
+  "nome": "DROGARIAS PACHECO S/A",
+  "abrev": "PACHECO ES",
+  "matriz": "DROGARIA SAO"
+ },
+ "04287630000140": {
+  "nome": "MAIORI OPERADORA E LOGÍSTICA IMP E EXP",
+  "abrev": "MAIORI",
+  "matriz": "MAIORI"
+ },
+ "45453214002790": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA PE",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214002448": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA GO",
+  "matriz": "PROFARMA BA"
+ },
+ "06626253012400": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE MENOS",
+  "matriz": "PAGUE MENOS"
+ },
+ "44463156002128": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED MG",
+  "matriz": "SERVIMED SP"
+ },
+ "61585865046305": {
+  "nome": "RAIA DROGASIL GO",
+  "abrev": "DROGASIL GO",
+  "matriz": "RAIA"
+ },
+ "47960950044927": {
+  "nome": "MAGAZINE LUIZA S/A",
+  "abrev": "MAG. LUIZA",
+  "matriz": "MAGAZINE LU."
+ },
+ "11101147000194": {
+  "nome": "MULTILOG ARMAZENS GERAIS E LOGISTICA S/A",
+  "abrev": "MULTILOG",
+  "matriz": "MULTILOG"
+ },
+ "00063960017761": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WALMART PB",
+  "matriz": "WALMART MG"
+ },
+ "25773037000183": {
+  "nome": "PHARMASCIENCE INDUSTRIA FARMACEUTICA EIRELI",
+  "abrev": "PHARMASCIENC",
+  "matriz": "PHARMASCIENC"
+ },
+ "49732175000182": {
+  "nome": "ESTOK COMERCIO E REPRESENTACOES S.A.",
+  "abrev": "TOK",
+  "matriz": "Tok & Stok"
+ },
+ "07684771000275": {
+  "nome": "DTD Distribuiçao e Currier Ltda",
+  "abrev": "METRO",
+  "matriz": "METRO"
+ },
+ "04984598000151": {
+  "nome": "DISTRIBUIDORA TOTAL COM E REPRESENTACAO",
+  "abrev": "GALINDO",
+  "matriz": "GALINDO"
+ },
+ "45453214001042": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA SP1",
+  "matriz": "PROFARMA BA"
+ },
+ "11885540000116": {
+  "nome": "ROKA BRASIL SOLUCOES LOGISTICAS LTDA",
+  "abrev": "ROKA BRASIL",
+  "matriz": "ROKA BRASIL"
+ },
+ "06963801000139": {
+  "nome": "GA RJ BOTAFOGO LOCACAO DE ESPACO LTDA",
+  "abrev": "GUARDEAQUISP",
+  "matriz": "GUARDEAQUISP"
+ },
+ "11744058000166": {
+  "nome": "MIND ON COMUNICAÇÃO LTDA",
+  "abrev": "MIND ON",
+  "matriz": "MIND ON"
+ },
+ "00063960002730": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WALMART SP",
+  "matriz": "WALMART MG"
+ },
+ "00063960008266": {
+  "nome": "WMB SUPERMERCADOS DO BRASIL LTDA.",
+  "abrev": "WALMART MG",
+  "matriz": "WALMART MG"
+ },
+ "02057329000114": {
+  "nome": "DIVAMED IRMAOS VALOTTO DE MED. LTDA",
+  "abrev": "DIVAMED",
+  "matriz": "DIVAMED"
+ },
+ "47508411083264": {
+  "nome": "COMPANHIA BRASILEIRA DE DISTRIBUIÇÃO",
+  "abrev": "GPA SP",
+  "matriz": "GPA SP"
+ },
+ "06057223003510": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS RJ 5",
+  "matriz": "SENDAS SP"
+ },
+ "47508411136562": {
+  "nome": "COMPANHIA BRASILEIRA DE DISTRIBUICAO",
+  "abrev": "GPA PE",
+  "matriz": "GPA SP"
+ },
+ "45453214003096": {
+  "nome": "PROFARMA DISTR PROD FARMACEUTICOS S/A",
+  "abrev": "PROFARMA CE",
+  "matriz": "PROFARMA BA"
+ },
+ "45453214003177": {
+  "nome": "PROFARMA DISTR DE PROD FARMACEUTICOS S/A",
+  "abrev": "PROFARMA RS",
+  "matriz": "PROFARMA BA"
+ },
+ "05651966000102": {
+  "nome": "D CENTER DISTRIBUIDORA LTDA",
+  "abrev": "D CENTER",
+  "matriz": "D CENTER"
+ },
+ "60605664004365": {
+  "nome": "RAIA S/A",
+  "abrev": "RAIA SP",
+  "matriz": "RAIA"
+ },
+ "60605664040671": {
+  "nome": "RAIA S/A",
+  "abrev": "RAIA RJ",
+  "matriz": "RAIA"
+ },
+ "60605664036801": {
+  "nome": "RAIA S/A",
+  "abrev": "RAIA PR",
+  "matriz": "RAIA"
+ },
+ "13419716000170": {
+  "nome": "TRENDBOX SERVIÇOS DE MKT LTDA",
+  "abrev": "TRENDBOX",
+  "matriz": "TRENDBOX"
+ },
+ "09187372000143": {
+  "nome": "SUZANLOG LOGISTICA LTDA",
+  "abrev": "SUZANLOG",
+  "matriz": "SUZANLOG"
+ },
+ "48555775000150": {
+  "nome": "OBRA SOCIAL N S DA GLORIA FAZ ESPERANÇA",
+  "abrev": "OBRA SOCIAL",
+  "matriz": "OBRA SOCIAL"
+ },
+ "10605999000156": {
+  "nome": "O. BRITO DE OLIVEIRA",
+  "abrev": "DROG POPULAR",
+  "matriz": "DROG POPULAR"
+ },
+ "13463802000180": {
+  "nome": "WORLD IN MOTION TRANSPORTES LTDA",
+  "abrev": "WORLD IN",
+  "matriz": "WORLD IN"
+ },
+ "05997742000408": {
+  "nome": "UNIMARKA DISTRIBUIDORA S/A",
+  "abrev": "UNIMARKA",
+  "matriz": "UNIMARKA"
+ },
+ "13838076000132": {
+  "nome": "OTILIA B. DE OLIVEIRA",
+  "abrev": "DROG POP DIS",
+  "matriz": "DROG POPULAR"
+ },
+ "08195158000419": {
+  "nome": "GALINDO DISTRIBUIDORA E REPRESENTACAO LTDA",
+  "abrev": "GALINDO AL",
+  "matriz": "GALINDO"
+ },
+ "08195158000176": {
+  "nome": "GALINDO DISTRIBUIDORA E REPRESENTAÇÃO LTDA",
+  "abrev": "GALINDO PE",
+  "matriz": "GALINDO"
+ },
+ "05439479000180": {
+  "nome": "GALINDO & JD DISTRIBUIDORA LTDA ME",
+  "abrev": "GALINDO SE",
+  "matriz": "GALINDO"
+ },
+ "06152350000150": {
+  "nome": "IDEALFARMA COMERCIO E REPRESENTACOES DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "GALINDO RN",
+  "matriz": "GALINDO"
+ },
+ "00063960004350": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA1",
+  "matriz": "WALMART MG"
+ },
+ "00063960006484": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA2",
+  "matriz": "WALMART MG"
+ },
+ "00063960013260": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA3",
+  "matriz": "WALMART MG"
+ },
+ "00063960007103": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA4",
+  "matriz": "WALMART MG"
+ },
+ "00063960006808": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA5",
+  "matriz": "WALMART MG"
+ },
+ "00063960011216": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA6",
+  "matriz": "WALMART MG"
+ },
+ "00063960007618": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA7",
+  "matriz": "WALMART MG"
+ },
+ "00063960006646": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA8",
+  "matriz": "WALMART MG"
+ },
+ "00063960008002": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA9",
+  "matriz": "WALMART MG"
+ },
+ "00063960019624": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA10",
+  "matriz": "WALMART MG"
+ },
+ "00063960001687": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA11",
+  "matriz": "WALMART MG"
+ },
+ "00063960001091": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA12",
+  "matriz": "WALMART MG"
+ },
+ "00063960003620": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA13",
+  "matriz": "WALMART MG"
+ },
+ "93209765030962": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM LOJA14",
+  "matriz": "WALMART MG"
+ },
+ "00904606000151": {
+  "nome": "MOMENTO ENGENHARIA AMBIENTAL LTDA",
+  "abrev": "MOMENTO ENG",
+  "matriz": "MOMENTO ENG"
+ },
+ "07216054000219": {
+  "nome": "J SLEIMAN S.A. COM DE PROD DE HIGIENE E ALIMENTOS",
+  "abrev": "J SLEIMAN",
+  "matriz": "J SLEIMAN"
+ },
+ "14469133000116": {
+  "nome": "INDUSTRIA DE ARTEFATOS DE BORRACHAS INOVATEX LTDA",
+  "abrev": "INOVATEX",
+  "matriz": "INOVATEX"
+ },
+ "08966925000101": {
+  "nome": "FARMAUM DOS MEDICAMENTOS LTDA",
+  "abrev": "GALINDO PB",
+  "matriz": "GALINDO"
+ },
+ "08544703000192": {
+  "nome": "ROGE COMERCIO E DISTRIBUIDORA DE COSMETICOS LTDA",
+  "abrev": "ROGE",
+  "matriz": "ROGE"
+ },
+ "07399636000105": {
+  "nome": "DECMINAS DISTRIBUICAO E LOGISTICA S.A",
+  "abrev": "DEC MINAS",
+  "matriz": "DEC MINAS"
+ },
+ "84521053000148": {
+  "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "TAPAJOS",
+  "matriz": "TAPAJOS"
+ },
+ "00285753000190": {
+  "nome": "VENANCIO PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "VENANCIO",
+  "matriz": "VENANCIO"
+ },
+ "28763118000190": {
+  "nome": "A NOSSA DROGARIA DE CAXIAS LTDA",
+  "abrev": "NOSSA DROG",
+  "matriz": "NOSSA DROG"
+ },
+ "28763118001758": {
+  "nome": "A NOSSA DROGARIA DE CAXIAS LTDA",
+  "abrev": "NOSSA DROG F",
+  "matriz": "NOSSA DROG"
+ },
+ "79430682003067": {
+  "nome": "FARMACIA E DROGARIA NISSEI LTDA",
+  "abrev": "NISSEI",
+  "matriz": "NISSEI"
+ },
+ "04899316000118": {
+  "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E COSMETICOS SA",
+  "abrev": "IMIFARMA",
+  "matriz": "PAGUE MENOS"
+ },
+ "01342499000188": {
+  "nome": "BRASVENDING COMERCIAL S.A",
+  "abrev": "BRASVENDING",
+  "matriz": "BRASVENDING"
+ },
+ "04429478000192": {
+  "nome": "SB COMERCIO LTDA",
+  "abrev": "SB",
+  "matriz": "SB"
+ },
+ "07486620000121": {
+  "nome": "ATTACK DISTRIBUIDORA LTDA",
+  "abrev": "DEC AMAPA",
+  "matriz": "DEC AMAPA"
+ },
+ "61585865051309": {
+  "nome": "RAIA DROGASIL S.A.",
+  "abrev": "RAIA DROGASI",
+  "matriz": "RAIA"
+ },
+ "04949349000125": {
+  "nome": "LABORATORIO ANDROMACO LTDA",
+  "abrev": "ANDROMACO",
+  "matriz": "ANDROMACO"
+ },
+ "83754234000151": {
+  "nome": "DISTRIBUIDORA BIG BENN S.A",
+  "abrev": "BIG BENN",
+  "matriz": "BIG BENN"
+ },
+ "13179415000116": {
+  "nome": "GUARARAPES BRASIL ATACADO S/A",
+  "abrev": "GUARARAPES",
+  "matriz": "BIG BENN"
+ },
+ "14015102000195": {
+  "nome": "DALL SOLUCOES ANALITICAS E EMPRESARIAIS LTDA EPP",
+  "abrev": "DALL",
+  "matriz": "DALL"
+ },
+ "82873068000140": {
+  "nome": "GENESIO A MENDES & CIA LTDA",
+  "abrev": "DISTRIB GAM",
+  "matriz": "DISTRIB GAM"
+ },
+ "03785066000122": {
+  "nome": "REAL DISTRIBUIDORA E LOGISTICA LTDA",
+  "abrev": "REAL DEC",
+  "matriz": "REAL DEC"
+ },
+ "01520248000146": {
+  "nome": "MARQUES & MELO LTDA",
+  "abrev": "DISMELO",
+  "matriz": "DISMELO"
+ },
+ "06893666000100": {
+  "nome": "ACCO SCIENCE FARMACEUTICA",
+  "abrev": "ACCO",
+  "matriz": "ACCO"
+ },
+ "01233103000326": {
+  "nome": "MAPPEL INDUSTRIA DE EMBALAGENS S.A.",
+  "abrev": "ARCADE",
+  "matriz": "ARCADE"
+ },
+ "16010431000179": {
+  "nome": "SANTA MARTA DISTRIBUIDORA DE DROGAS LTDA",
+  "abrev": "SM DISTRIB",
+  "matriz": "SM DISTRIB"
+ },
+ "09156879000130": {
+  "nome": "CENTRO OESTE FARMA DISTR DE MEDIC LTDA",
+  "abrev": "CENTRO OESTE",
+  "matriz": "PROFARMA BA"
+ },
+ "09274480000153": {
+  "nome": "ROGE GÓIAS DISTRIBUIDORA LTDA",
+  "abrev": "ROGE GO",
+  "matriz": "ROGE"
+ },
+ "07641734000107": {
+  "nome": "DIST TOTAL PLUS COM E REPRES LTDA",
+  "abrev": "DISTR TOT",
+  "matriz": "GALINDO"
+ },
+ "15103047000158": {
+  "nome": "SANTANA SA DROGARIA FARMACIAS",
+  "abrev": "DROG SANTANA",
+  "matriz": "DROG SANTANA"
+ },
+ "04429478000273": {
+  "nome": "SB COMERCIO LTDA",
+  "abrev": "SB FILIAL",
+  "matriz": "SB"
+ },
+ "05556788000130": {
+  "nome": "FORTMED COM DE MEDICAMENTOS LTDA",
+  "abrev": "FORTMED",
+  "matriz": "FORTMED"
+ },
+ "04240370000157": {
+  "nome": "MERCANTIL NOVA ERA LTDA",
+  "abrev": "NOVA ERA",
+  "matriz": "NOVA ERA"
+ },
+ "04240370000319": {
+  "nome": "MERCANTIL NOVA ERA LTDA",
+  "abrev": "MERC NOVA ER",
+  "matriz": "NOVA ERA"
+ },
+ "15148319000136": {
+  "nome": "VIRTUAFARMA COM ON LINE S/A",
+  "abrev": "NET FARMA",
+  "matriz": "NET FARMA"
+ },
+ "15148319000217": {
+  "nome": "NETFARMA COMERCIO ON LINE S.A.",
+  "abrev": "VIRTUA FIL",
+  "matriz": "VIRTUA FIL"
+ },
+ "84521053000814": {
+  "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "TAPAJOS FL",
+  "matriz": "TAPAJOS"
+ },
+ "11976937000113": {
+  "nome": "MS VINHEDO DISTR DE MED LTDA",
+  "abrev": "MS VINHEDO",
+  "matriz": "MS VINHEDO"
+ },
+ "07516150000100": {
+  "nome": "E.L.C. COM DE MED FIT E HOM LTDA -EPP",
+  "abrev": "E.L.C.",
+  "matriz": "E.L.C."
+ },
+ "02307303000268": {
+  "nome": "DEC CONAR DISTRIBUIDORA LTDA",
+  "abrev": "CONAR",
+  "matriz": "CONAR"
+ },
+ "95410163000744": {
+  "nome": "PENNACHI &CIA LTDA",
+  "abrev": "PENNACCHI",
+  "matriz": "PENNACCHI"
+ },
+ "61585865073701": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA",
+  "matriz": "RAIA"
+ },
+ "61585865065954": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA R.J.",
+  "matriz": "RAIA"
+ },
+ "61585865065440": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA P.R.",
+  "matriz": "RAIA"
+ },
+ "06205895000187": {
+  "nome": "AFFITTO TECNOLOGIA LTDA",
+  "abrev": "ZONIS",
+  "matriz": "ZONIS"
+ },
+ "02033695000133": {
+  "nome": "VEDAPACK EMBALAGENS INDUSTRIAIS LTDA",
+  "abrev": "VEDAPACK EMB",
+  "matriz": "VEDAPACK EMB"
+ },
+ "06144877000132": {
+  "nome": "ALTO MIUDESAS COMERCIAL LTDA",
+  "abrev": "ALTO",
+  "matriz": "NAZARIA"
+ },
+ "08074024000105": {
+  "nome": "RD SOARES & CIA LTDA",
+  "abrev": "RD SOARES",
+  "matriz": "RD SOARES"
+ },
+ "39307517000163": {
+  "nome": "PRORIBEIRO ADM E ORGANIZ DE COMERCIO LTDA",
+  "abrev": "PRORIBEIRO",
+  "matriz": "PRORIBEIRO"
+ },
+ "07222185000209": {
+  "nome": "JORGE BATISTA E CIA LTDA",
+  "abrev": "GRUPO JORGE",
+  "matriz": "NAZARIA"
+ },
+ "07224991001026": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA",
+  "matriz": "NAZARIA"
+ },
+ "07224991000992": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PB",
+  "matriz": "NAZARIA"
+ },
+ "07224991000135": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA CE",
+  "matriz": "NAZARIA"
+ },
+ "07224991000640": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA MA",
+  "matriz": "NAZARIA"
+ },
+ "07224991000720": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PI",
+  "matriz": "NAZARIA"
+ },
+ "07224991000801": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA RN",
+  "matriz": "NAZARIA"
+ },
+ "07224991001298": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PE",
+  "matriz": "NAZARIA"
+ },
+ "03291717000128": {
+  "nome": "UNIFARMA REDE UNIFICADA DE FARM. LTDA",
+  "abrev": "UNIFARMA",
+  "matriz": "UNIFARMA"
+ },
+ "84521053000300": {
+  "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "TAPAJOS RO",
+  "matriz": "TAPAJOS"
+ },
+ "10194833000275": {
+  "nome": "GIGA BR DISTRIBUIDOR E ATACADISTA S/A",
+  "abrev": "GIGA",
+  "matriz": "GIGA"
+ },
+ "01559455000295": {
+  "nome": "UNIMED NORDESTE PAULISTA FEDERAÇÃO INTRAFEDERATIVA DAS COOPERATIVAS MEDICAS",
+  "abrev": "UNIMED",
+  "matriz": "UNIMED"
+ },
+ "04240370000661": {
+  "nome": "MERCANTIL NOVA ERA LTDA",
+  "abrev": "MERCANTIL",
+  "matriz": "MERCANTIL"
+ },
+ "03753945000172": {
+  "nome": "ANDRADE DISTRIBUIDOR LTDA",
+  "abrev": "ANDRADE",
+  "matriz": "ANDRADE"
+ },
+ "33014556018133": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AMERIC",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556019962": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AME SP",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556017919": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AME PE",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556000196": {
+  "nome": "LOJAS AMERICANAS S.A",
+  "abrev": "LOJAS AMER",
+  "matriz": "LOJAS AMERIC"
+ },
+ "60879848000164": {
+  "nome": "LABORATORIO TAYUYNA LTDA",
+  "abrev": "ADV-Tayuyna",
+  "matriz": "ADV-Tayuyna"
+ },
+ "06098636000366": {
+  "nome": "PEDRO DE OLIVEIRA",
+  "abrev": "PEDRO",
+  "matriz": "PEDRO"
+ },
+ "06098636000102": {
+  "nome": "JR COMERCIO ATACADISTA DE PRODUTOS DE HIGIENE LTDA",
+  "abrev": "JR ATAC MA",
+  "matriz": "JR ATACADIST"
+ },
+ "94296175000131": {
+  "nome": "DROGARIA MAIS ECONOMICA S.A",
+  "abrev": "MAIS ECON",
+  "matriz": "MAIS ECON"
+ },
+ "84521053000490": {
+  "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "TAPAJOS PA",
+  "matriz": "TAPAJOS"
+ },
+ "84521053001381": {
+  "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "TAPAJOS AP",
+  "matriz": "TAPAJOS"
+ },
+ "09002381000112": {
+  "nome": "INTERCONNECTED GRAFICA E EDITORA LTDA -ME",
+  "abrev": "M DESIGNER",
+  "matriz": "M DESIGNER"
+ },
+ "11322774000155": {
+  "nome": "NORTE SUL REAL DISTRIB E LOGIST LTDA",
+  "abrev": "NORTE SUL",
+  "matriz": "NORTE SUL"
+ },
+ "04257104000137": {
+  "nome": "VIRTUAL PRODUTOS PESSOAIS LTDA",
+  "abrev": "VIRTUAL PROD",
+  "matriz": "VIRTUA FIL"
+ },
+ "05103939000286": {
+  "nome": "ZAMBONI COMERCIAL LTDA",
+  "abrev": "ZAMBONI",
+  "matriz": "ZAMBONI"
+ },
+ "03688545000120": {
+  "nome": "DIGITAL WORK COMPUTER SERVICE COMERCIAL LTDA",
+  "abrev": "DIGITAL WOR",
+  "matriz": "DIGITAL WORK"
+ },
+ "19570720000706": {
+  "nome": "HIPOLABOR FARMACEUTICA LTDA",
+  "abrev": "HIPOLABOR",
+  "matriz": "HIPOLABOR"
+ },
+ "51602654000126": {
+  "nome": "ASSOCIACAO NACIONAL DE ATENCAO AO DIABETES",
+  "abrev": "ANAD",
+  "matriz": "ANAD"
+ },
+ "83754234013806": {
+  "nome": "DISTRIBUIDORA BIG BENN S.A",
+  "abrev": "BIG BENN PE",
+  "matriz": "BIG BENN"
+ },
+ "39022041000114": {
+  "nome": "CHEP DO BRASIL LTDA",
+  "abrev": "CHEP",
+  "matriz": "CHEP"
+ },
+ "06626253063315": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE M. PE",
+  "matriz": "PAGUE MENOS"
+ },
+ "02837536000191": {
+  "nome": "CLS TECNOLOGIA ANALITICA E SISTEMAS DE GESTAO LTDA",
+  "abrev": "CLS TECNOLOG",
+  "matriz": "CLS TECNOLOG"
+ },
+ "75217794000300": {
+  "nome": "JR TRANSPORTES LTDA",
+  "abrev": "JR",
+  "matriz": "JR"
+ },
+ "84487131000135": {
+  "nome": "MAPEMI BRASIL MATERIAIS MEDICOS E ODONTOLOGICOS LTDA",
+  "abrev": "MAPEMI",
+  "matriz": "MAPEMI"
+ },
+ "55643555000143": {
+  "nome": "RIOQUIMICA S.A.",
+  "abrev": "Rio Química",
+  "matriz": "Rio Química"
+ },
+ "04196584000173": {
+  "nome": "MASTER PUMPS EMBALAGENS COMERCIO IMPORTACAO E EXPORTACAO LTDA",
+  "abrev": "MASTER PUMPS",
+  "matriz": "MASTER PUMPS"
+ },
+ "92665611032290": {
+  "nome": "DIMED S/A - DISTRIBUIDORA DE MEDICAMENTOS",
+  "abrev": "DIMED ELD",
+  "matriz": "DIMED RS"
+ },
+ "92665611030750": {
+  "nome": "DIMED S/A - DISTR DE MEDICAMENTOS",
+  "abrev": "DIMED PR",
+  "matriz": "DIMED RS"
+ },
+ "60409075011863": {
+  "nome": "NESTLE BRASIL LTDA",
+  "abrev": "NESTLE",
+  "matriz": "NESTLE"
+ },
+ "06855263000169": {
+  "nome": "TRANSPORTADORA ROTAS PAULISTAS EXPRESS LTDA.ME",
+  "abrev": "TRANS. ROTAS",
+  "matriz": "TRANS. ROTAS"
+ },
+ "02344518000178": {
+  "nome": "REDE MULHER DE TELEVISAO LTDA",
+  "abrev": "REDE MULHER",
+  "matriz": "REDE MULHER"
+ },
+ "33438250044539": {
+  "nome": "DROGARIAS PACHECO S/A",
+  "abrev": "PACHECO",
+  "matriz": "DROGARIA SAO"
+ },
+ "11074573000186": {
+  "nome": "GAMA PACK COMERCIO E INJECAO DE PLASTICOS LTDA",
+  "abrev": "GAMA",
+  "matriz": "GAMA"
+ },
+ "06626253057935": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE M. GO",
+  "matriz": "PAGUE MENOS"
+ },
+ "01964690000161": {
+  "nome": "TRANSPOTECH PECAS E SERVICOS LTDA",
+  "abrev": "TRANSPOTECH",
+  "matriz": "TRANSPOTECH"
+ },
+ "00285753003459": {
+  "nome": "VENANCIO PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "VENANCIO P.",
+  "matriz": "VENANCIO"
+ },
+ "01858973000129": {
+  "nome": "AIRELA IND FARMACEUTICA LTDA",
+  "abrev": "AIRELA",
+  "matriz": "AIRELA"
+ },
+ "45237724000434": {
+  "nome": "J MOREIRA COMERCIAL DE ALIMENTOS LTDA",
+  "abrev": "J MOREIRA",
+  "matriz": "J MOREIRA"
+ },
+ "05424008000107": {
+  "nome": "UNILIDER DISTRIBUIDORA S/A",
+  "abrev": "UNILIDER",
+  "matriz": "UNILIDER"
+ },
+ "10583555000167": {
+  "nome": "TECNOFES COMERCIO E SERVICOS LTDA ME",
+  "abrev": "TECNOFES",
+  "matriz": "TECNOFES"
+ },
+ "17352172000127": {
+  "nome": "PLK LOG COMERCIAL E IMPORTADORA - EIRELI",
+  "abrev": "PLK",
+  "matriz": "PLK"
+ },
+ "11032063000146": {
+  "nome": "AERO COSMETIC IND E COM DE AEROSSOIS E COSMETICOS LTDA ME",
+  "abrev": "AEROCOSMETIC",
+  "matriz": "AEROCOSMETIC"
+ },
+ "60979457001606": {
+  "nome": "ASSOCIACAO DE ASSISTENCIA A CRIANCA DEFICIENTE",
+  "abrev": "AACD",
+  "matriz": "AACD"
+ },
+ "00482914000136": {
+  "nome": "NORTE SUL MEDICAMENTOS LTDA",
+  "abrev": "NORTESUL",
+  "matriz": "NORTE SUL"
+ },
+ "08473312000124": {
+  "nome": "CONEXAO MARITIMA SERVIÇOS LOGISTICOS S/A",
+  "abrev": "CONEXAO",
+  "matriz": "CONEXAO"
+ },
+ "00080249000154": {
+  "nome": "RESCAROLI COM DE GAS E AGUA LTDA",
+  "abrev": "RESCAROLI",
+  "matriz": "RESCAROLI"
+ },
+ "05285777000163": {
+  "nome": "AUTO MOEMA IMPORTS COMERCIO DE VEICULOS LTDA",
+  "abrev": "AUTO",
+  "matriz": "AUTO"
+ },
+ "05637940000100": {
+  "nome": "DALLA COMERCIO E AUTOMAÇÃO LTDA EPP",
+  "abrev": "DALLA",
+  "matriz": "DALLA"
+ },
+ "46179008000168": {
+  "nome": "BRASTERAPICA IND FARMACEUTICA LTDA",
+  "abrev": "BRASTERAPICA",
+  "matriz": "BRASTERAPICA"
+ },
+ "82873068000573": {
+  "nome": "GENESIO A MENDES & CIA LTDA",
+  "abrev": "GAM DIST.",
+  "matriz": "DISTRIB GAM"
+ },
+ "03551937000224": {
+  "nome": "AMERICAN FARMA DISTR FARMACEUTICA LTDA",
+  "abrev": "AMERICAN AL",
+  "matriz": "STA CRUZ PE"
+ },
+ "49698723000103": {
+  "nome": "MCASSAB COMERCIO E INDUSTRIA LTDA",
+  "abrev": "MCASSAB",
+  "matriz": "MCASSAB"
+ },
+ "04899316025293": {
+  "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E COSMETICOS SA",
+  "abrev": "IMIFARMA CE",
+  "matriz": "PAGUE MENOS"
+ },
+ "04656253000179": {
+  "nome": "UNITHER INDUSTRIA FARMACEUTICA LTDA",
+  "abrev": "MARIOL",
+  "matriz": "MARIOL"
+ },
+ "66715459000260": {
+  "nome": "ANIDRO DO BRASIL EXTRAÇÕES S.A. (GRUPO CENTROFLORA)",
+  "abrev": "CENTROFLORA",
+  "matriz": "CENTROFLORA"
+ },
+ "16991148000175": {
+  "nome": "FARMALOG LOGISTICA DE PRDOUTOS DE HIGIENE LIMPEZA E MEDICAMENTOS LTDA",
+  "abrev": "FARMALOG",
+  "matriz": "FARMA LOG"
+ },
+ "01129971000107": {
+  "nome": "SAFIRA COMÉRCIO E SERVIÇOS DE INFORMATICA LTDA",
+  "abrev": "SAFIRA",
+  "matriz": "SAFIRA"
+ },
+ "64154461000100": {
+  "nome": "NTA-NEW TECHNICAL ASSISTANCE SERVIÇO COMERCIO IMPORTACAO E EXPORTACAO LTDA.",
+  "abrev": "NEW TECHNIC",
+  "matriz": "NEW TECHNIC"
+ },
+ "09408965000192": {
+  "nome": "PRIMEINVEST EMPREENDIMENTOS IMOBILIARIOS S A",
+  "abrev": "MULTILOG.",
+  "matriz": "MULTILOG"
+ },
+ "00160488000203": {
+  "nome": "LATINTEL TELECOMUNICAÇÕES LTDA",
+  "abrev": "LATINTEL",
+  "matriz": "LATINTEL"
+ },
+ "46179008000320": {
+  "nome": "BRASTERAPICA IND FARMACEUTICA LTDA",
+  "abrev": "BRASTERAPIC",
+  "matriz": "BRASTERAPIC"
+ },
+ "11016450000350": {
+  "nome": "SRM INDUSTRIALIZAÇÃO LTDA - ME",
+  "abrev": "SRM",
+  "matriz": "SRM"
+ },
+ "15103047018529": {
+  "nome": "SANTANA SA DROGARIA FARMACIAS",
+  "abrev": "SANTANA",
+  "matriz": "BIG BENN"
+ },
+ "45569555000197": {
+  "nome": "CATALENT BRASIL LTDA",
+  "abrev": "CATALENT SOR",
+  "matriz": "CATALENT SOR"
+ },
+ "93209765023672": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM CDPINHAIS",
+  "matriz": "WALMART MG"
+ },
+ "93209765000621": {
+  "nome": "WALMART BRASIL LTDA",
+  "abrev": "WM CD P AL",
+  "matriz": "WALMART MG"
+ },
+ "45237724000191": {
+  "nome": "J MOREIRA COMERCIAL DE ALIMENTOS LTDA",
+  "abrev": "J MOREIRA2",
+  "matriz": "J MOREIRA"
+ },
+ "94296175023425": {
+  "nome": "DROGARIA MAIS ECONOMICA S.A",
+  "abrev": "MAIS ECON2",
+  "matriz": "MAIS ECON"
+ },
+ "25102146001493": {
+  "nome": "IRMAOS MATTAR & CIA LTDA",
+  "abrev": "IRMAOS MATTA",
+  "matriz": "IRMAOS MATTA"
+ },
+ "53502910000139": {
+  "nome": "DISTR DE PROD FARM GRAMENSE LTDA",
+  "abrev": "GRAMENSE",
+  "matriz": "GRAMENSE"
+ },
+ "82641606000170": {
+  "nome": "43 S.A GRÁFICA E EDITORA",
+  "abrev": "GRAFICA 43",
+  "matriz": "GRAFICA 43"
+ },
+ "61412110052384": {
+  "nome": "DROGARIA SAO PAULO S.A",
+  "abrev": "DSP S OSASCO",
+  "matriz": "DROGARIA SAO"
+ },
+ "00680933000339": {
+  "nome": "COOPERATIVA DOS TRANSPORTADORES DO VALE - COOTRAVALE",
+  "abrev": "COOTRAVAL SP",
+  "matriz": "COOTRAVAL SP"
+ },
+ "00680933000410": {
+  "nome": "COOPERATIVA DOS TRANSPORTADORES DO VALE - COOTRAVALE",
+  "abrev": "COOTRAVAL SC",
+  "matriz": "COOTRAVAL SC"
+ },
+ "39346861045343": {
+  "nome": "CENCOSUD BRASIL COMERCIAL LTDA",
+  "abrev": "CENCOSUD",
+  "matriz": "CENCOSUD"
+ },
+ "60664828004325": {
+  "nome": "EMPRESA DE TRANSPORTES ATLAS LTDA",
+  "abrev": "ATLAS SC",
+  "matriz": "ATLAS SC"
+ },
+ "45543915056489": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR PE",
+  "matriz": "CARREFOUR SP"
+ },
+ "45543915027977": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR DF",
+  "matriz": "CARREFOUR SP"
+ },
+ "45543915026733": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR RJ",
+  "matriz": "CARREFOUR SP"
+ },
+ "45543915013089": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR MG",
+  "matriz": "CARREFOUR SP"
+ },
+ "45543915005574": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR RS",
+  "matriz": "CARREFOUR SP"
+ },
+ "45543915022827": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR AM",
+  "matriz": "CARREFOUR SP"
+ },
+ "45543915007518": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR SP",
+  "matriz": "CARREFOUR SP"
+ },
+ "07639029000167": {
+  "nome": "TAC TRANSPORTES E ARMAZÉNS GERAIS LTDA",
+  "abrev": "TAC TRANSPOR",
+  "matriz": "TAC TRANSPOR"
+ },
+ "08299045000110": {
+  "nome": "AMR FOMENTO MERCANTIL LTDA",
+  "abrev": "AMR FOMENTO",
+  "matriz": "AMR FOMENTO"
+ },
+ "50935436002003": {
+  "nome": "EXPRESSO JUNDIAI LOGISTICA E TRANSPORTE LTDA",
+  "abrev": "JUNDIAI LOG",
+  "matriz": "JUNDIAI LOG"
+ },
+ "11676923000265": {
+  "nome": "FMAISPAR DIST E LOG DE PROD DE HIGIENE E LIMPEZA LTDA",
+  "abrev": "FMAISPAR",
+  "matriz": "FMAISPAR"
+ },
+ "45543915006384": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR OS",
+  "matriz": "CARREFOUR SP"
+ },
+ "11030240000155": {
+  "nome": "JKM TRANSPORTES LOGISTICA E ARMAZENAGEM LTDA",
+  "abrev": "JKM",
+  "matriz": "JKM"
+ },
+ "61549259005301": {
+  "nome": "DROGARIA ONOFRE LTDA",
+  "abrev": "ONOFRE BARUE",
+  "matriz": "ONOFRE"
+ },
+ "61381554000170": {
+  "nome": "RAZZO LTDA",
+  "abrev": "RAZZO",
+  "matriz": "RAZZO"
+ },
+ "22883829000112": {
+  "nome": "RC LOGISTICA E TRANSPORTES LTDA",
+  "abrev": "BRASIL PORTO",
+  "matriz": "BRASIL PORTO"
+ },
+ "01956134000143": {
+  "nome": "NILO TOZZO DISTRIBUIDORA LTDA",
+  "abrev": "NILO SC",
+  "matriz": "NILO SC"
+ },
+ "61074662000109": {
+  "nome": "HENRIFARMA PRODUTOS QUÍMICOS E FARMACÊUTICOS",
+  "abrev": "HENRIFARMA",
+  "matriz": "HENRIFARMA"
+ },
+ "78663788000960": {
+  "nome": "TRANSPORTE MANN LTDA",
+  "abrev": "MANN MATRIZ",
+  "matriz": "MANN MATRIZ"
+ },
+ "01956134000658": {
+  "nome": "NILO TOZZO & CIA LTDA",
+  "abrev": "NILO FILIAL",
+  "matriz": "NILO SC"
+ },
+ "39346861000161": {
+  "nome": "CENCOSUD BRASIL COMERCIAL LTDA",
+  "abrev": "CENCOSUD II",
+  "matriz": "CENCOSUD"
+ },
+ "58506155001741": {
+  "nome": "MIRA OTM TRANSPORTES LTDA",
+  "abrev": "MIRA",
+  "matriz": "MIRA"
+ },
+ "58506155000184": {
+  "nome": "MIRA OTM TRANSPORTES LTDA",
+  "abrev": "MIRA SP",
+  "matriz": "MIRA"
+ },
+ "10970887000102": {
+  "nome": "FEDEX BRASIL LOGISTICA E TRANSPORTE LTDA",
+  "abrev": "FEDEX PE",
+  "matriz": "FEDEX PE"
+ },
+ "60409075047035": {
+  "nome": "NESTLE BRASIL LTDA",
+  "abrev": "NESTLE 1",
+  "matriz": "NESTLE"
+ },
+ "05590025000106": {
+  "nome": "LEMA COMERCIO DE VEICULOS LTDA",
+  "abrev": "LEMA",
+  "matriz": "LEMA"
+ },
+ "14211104000150": {
+  "nome": "DROGARIA SERVIFARMA COM DE MEDICAMENTOS LTDA",
+  "abrev": "SERVFARMA",
+  "matriz": "SERVFARMA"
+ },
+ "39346861037910": {
+  "nome": "CENCOSUD BRASIL COMERCIAL LTDA",
+  "abrev": "CENCOSUD III",
+  "matriz": "CENCOSUD"
+ },
+ "61412110066768": {
+  "nome": "DROGARIA SAO PAULO S A",
+  "abrev": "DSPOSASCO II",
+  "matriz": "DROGARIA SAO"
+ },
+ "52134798001563": {
+  "nome": "INTEGRAÇÃO NACIONAL DE TRANSPORTES DE ENCOMENDAS E CARGAS LTDA",
+  "abrev": "INTEC SP",
+  "matriz": "INTEC SP"
+ },
+ "07224991001379": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PA",
+  "matriz": "NAZARIA"
+ },
+ "66471517000177": {
+  "nome": "DPC DISTRIBUIDOR ATACADISTA S/A",
+  "abrev": "DPC",
+  "matriz": "DPC"
+ },
+ "66471517001734": {
+  "nome": "DPC DISTRIBUIDOR ATACADISTA S/A",
+  "abrev": "DPC II",
+  "matriz": "DPC"
+ },
+ "66471517000924": {
+  "nome": "DPC DISTRIBUIDOR ATACADISTA S/A",
+  "abrev": "DPC III",
+  "matriz": "DPC"
+ },
+ "47079496000102": {
+  "nome": "MARALOG DISTRIBUIÇÃO S/A",
+  "abrev": "MARALOG",
+  "matriz": "MARALOG"
+ },
+ "47079496000790": {
+  "nome": "MARALOG DISTRIBUIÇÃO S/A",
+  "abrev": "MARALOG II",
+  "matriz": "MARALOG"
+ },
+ "79028502000180": {
+  "nome": "LECLAIR INDÚSTRIA E COMÉRCIO DE PERFUMES E COSMÉTICOS LTDA",
+  "abrev": "LECLAIR",
+  "matriz": "LECLAIR"
+ },
+ "61412110062002": {
+  "nome": "DROGARIA SAO PAULO S A",
+  "abrev": "DSP BA",
+  "matriz": "DROGARIA SAO"
+ },
+ "05756446000164": {
+  "nome": "LENÇOBRÁS INDUSTRIA E COMERCIO DE LENCOS UMEDECIDOS LTDA.",
+  "abrev": "LENÇOBRAS",
+  "matriz": "LENÇOBRAS"
+ },
+ "04340523000138": {
+  "nome": "SERVFARMA SERVICOS DE ATENDIMENTO LTDA",
+  "abrev": "SERVFARMASP",
+  "matriz": "SERVFARMASP"
+ },
+ "05958411000108": {
+  "nome": "OKAJIMA DISTRIBUIÇÃO E COMERCIO LTDA",
+  "abrev": "OKAJIMA",
+  "matriz": "OKAJIMA"
+ },
+ "61585865134000": {
+  "nome": "RAIA DROGASIL S.A",
+  "abrev": "DROGASIL PE",
+  "matriz": "RAIA"
+ },
+ "76343748000159": {
+  "nome": "AB PLAST MANUFATURADOS PLASTICOS",
+  "abrev": "AB PLAST",
+  "matriz": "AB PLAST"
+ },
+ "04660567000145": {
+  "nome": "TBC PERFUMES E COSMETICOS LTDA",
+  "abrev": "TBC",
+  "matriz": "TBC"
+ },
+ "45453214003681": {
+  "nome": "PROFARMA DISTR DE PR0D FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA PB",
+  "matriz": "PROFARMA BA"
+ },
+ "84521053006502": {
+  "nome": "TAPAJOS COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "TAPAJOS GUAJ",
+  "matriz": "TAPAJOS"
+ },
+ "06029901000192": {
+  "nome": "FAMA DISTRIBUIÇÃO E LOGISTICA LTDA",
+  "abrev": "FAMA",
+  "matriz": "FAMA"
+ },
+ "15391651000127": {
+  "nome": "DNC COMÉRCIO E DISTRIBUIÇÃO EIRELI",
+  "abrev": "DNC",
+  "matriz": "DNC"
+ },
+ "14273817000148": {
+  "nome": "CABRAL E SOUSA LTDA",
+  "abrev": "CABRAL",
+  "matriz": "CABRAL"
+ },
+ "04558754000112": {
+  "nome": "M BURTETT COM DE VEICULOS LTDA",
+  "abrev": "M BURTETT",
+  "matriz": "M BURTETT"
+ },
+ "83646984006906": {
+  "nome": "A.ANGELONI & CIA LTDA",
+  "abrev": "ANGELONI",
+  "matriz": "ANGELONI"
+ },
+ "04054534000151": {
+  "nome": "DILNOR - DISTRIBUICAO E LOGISTICA DO NORDESTE LTDA",
+  "abrev": "DILNOR",
+  "matriz": "DILNOR"
+ },
+ "03775813000141": {
+  "nome": "NORDIL NORDESTE DISTRIBUICAO E LOGISTICA LTDA",
+  "abrev": "NORDIL",
+  "matriz": "NORDIL"
+ },
+ "03775813000222": {
+  "nome": "NORDIL NORDESTE DISTRIBUICAO E LOGISTICA LTDA",
+  "abrev": "NORDIL II",
+  "matriz": "NORDIL"
+ },
+ "07987265000174": {
+  "nome": "RB DISTRIBUIDORA E COMERCIO DE CONSUMO MED E MERCA EM GERAL LTDA",
+  "abrev": "RB DISTRIB",
+  "matriz": "RB DISTRIB"
+ },
+ "07987265000255": {
+  "nome": "RB DISTRIBUIDORA E COMERCIO DE CONSUMO MED E MERCA EM GERAL LTDA",
+  "abrev": "RB DISTRIB I",
+  "matriz": "RB DISTRIB"
+ },
+ "18928881000251": {
+  "nome": "FARMASEMPRE LOGISTICA DE PROD DE HIGIENE LIMP E MEDIC LTDA",
+  "abrev": "FARMASEMPRE",
+  "matriz": "FARMASEMPRE"
+ },
+ "22417427000122": {
+  "nome": "J R ATACADISTA DE PRODUTOS DE HIGIENE LTDA",
+  "abrev": "JR ATACADIST",
+  "matriz": "JR ATACADIST"
+ },
+ "33304981000110": {
+  "nome": "SUPERMERCADOS MUNDIAL LTDA",
+  "abrev": "SUP MUNDIAL",
+  "matriz": "SUP MUNDIAL"
+ },
+ "17159943000164": {
+  "nome": "LQF LABORATORIO QUIMICO FARMACEUTICO RIO PRETO EIRELI - ME",
+  "abrev": "LQF",
+  "matriz": "LQF"
+ },
+ "79028502000342": {
+  "nome": "LECLAIR INDÚSTRIA E COMÉRCIO DE PERFUMES E COSMÉTICOS LTDA",
+  "abrev": "LECLAIR CD",
+  "matriz": "LECLAIR CD"
+ },
+ "04552888000126": {
+  "nome": "BIO SCIENTIFIC INDUSTRIA COSMETICOS LTDA",
+  "abrev": "BIO SCIENTIF",
+  "matriz": "BIO SCIENTIF"
+ },
+ "47508411254417": {
+  "nome": "COMPANHIA BRASILEIRA DE DISTRIBUIÇÃO",
+  "abrev": "GPA RJ II",
+  "matriz": "GPA SP"
+ },
+ "76089549000166": {
+  "nome": "COMERCIAL ESMERALDA LTDA",
+  "abrev": "COML ESMERAL",
+  "matriz": "COML ESMERAL"
+ },
+ "33130543002207": {
+  "nome": "CASAS GUANABARA COMESTIVEIS LTDA",
+  "abrev": "GUANABARA",
+  "matriz": "GUANABARA"
+ },
+ "10612134000117": {
+  "nome": "ACTION BR SOLUCOES EM PROMOCOES LTDA",
+  "abrev": "ACTION BR",
+  "matriz": "ACTION BR"
+ },
+ "03112879000666": {
+  "nome": "SASCAR TECNOLOGIA E SEGURANCA AUTOMOTIVA SA",
+  "abrev": "SASCAR II",
+  "matriz": "SASCAR II"
+ },
+ "16519945000154": {
+  "nome": "CONTLOG TRANSPORTES LTDA ME",
+  "abrev": "CONTLOG",
+  "matriz": "CONTLOG"
+ },
+ "27093558004293": {
+  "nome": "MILLS LOCACAO, SERVICOS E LOGISTICA S.A.",
+  "abrev": "MILLS",
+  "matriz": "MILLS"
+ },
+ "06626253087508": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE M. BA",
+  "matriz": "PAGUE MENOS"
+ },
+ "14685488000142": {
+  "nome": "A. T. L ARMAZENAGEM E MANUSEIO DIVERSOS EIRELI - ME",
+  "abrev": "ARTLOG",
+  "matriz": "ARTLOG"
+ },
+ "00850928000246": {
+  "nome": "TRANSCUNHA LTDA",
+  "abrev": "TRANSCUNHASP",
+  "matriz": "TRANSCUNHASP"
+ },
+ "43336056000124": {
+  "nome": "INDUSTRIA E COMERCIO GRAFICA CONSELHEIRO LTDA",
+  "abrev": "CONGRAF",
+  "matriz": "CONGRAF"
+ },
+ "04899316034284": {
+  "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E COSMETICOS SA",
+  "abrev": "IMIFARMA PA",
+  "matriz": "PAGUE MENOS"
+ },
+ "00285753002568": {
+  "nome": "VENANCIO PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "VENANCIO RJ",
+  "matriz": "VENANCIO"
+ },
+ "09944196000147": {
+  "nome": "ELEMENTUM LABORATORIO DE CONTROLE DE QUALIDADE LTDA - ME",
+  "abrev": "ELEMENTUM",
+  "matriz": "ELEMENTUM"
+ },
+ "12241369000256": {
+  "nome": "CENTRO LOGISTICO INTEGRADO FASTCARGO S.A",
+  "abrev": "CLIF",
+  "matriz": "CLIF"
+ },
+ "13475001000134": {
+  "nome": "B4A COMERCIO DE COSMETICOS E SERVIÇOS S A",
+  "abrev": "GLAMBOX",
+  "matriz": "GLAMBOX"
+ },
+ "10970887001095": {
+  "nome": "FEDEX BRASIL LOGISTICA E TRANSPORTE S/A",
+  "abrev": "FEDEX SE",
+  "matriz": "FEDEX SE"
+ },
+ "49975923000310": {
+  "nome": "LOJAS LIVIA COSMETICOS LTDA",
+  "abrev": "LOJAS LIVIA",
+  "matriz": "LOJAS LIVIA"
+ },
+ "54375647003738": {
+  "nome": "DROGAL FARMACEUTICA LTDA",
+  "abrev": "DROGAL",
+  "matriz": "DROGAL"
+ },
+ "74222563000160": {
+  "nome": "SINTER FUTURA LTDA.",
+  "abrev": "SINTER",
+  "matriz": "SINTER"
+ },
+ "88085485001500": {
+  "nome": "TRANSPORTADORA PLIMOR LTDA",
+  "abrev": "PLIMOR SC2",
+  "matriz": "PLIMOR SC2"
+ },
+ "88085485004959": {
+  "nome": "TRANSPORTADORA PLIMOR LTDA",
+  "abrev": "PLIMOR SP4",
+  "matriz": "PLIMOR SP4"
+ },
+ "05206070000114": {
+  "nome": "FABRICA DE IDEIAS INDUSTRIA E COMERCIO DE DISPLAYS LTDA",
+  "abrev": "FAB. DE IDEI",
+  "matriz": "FAB. DE IDEI"
+ },
+ "61585865163298": {
+  "nome": "RAIA DROGASIL S.A.",
+  "abrev": "RAIA BA",
+  "matriz": "RAIA"
+ },
+ "45884582000154": {
+  "nome": "ASSOCIAÇÃO BRASILEIRA DE COSMETOLOGIA",
+  "abrev": "ABC ASS.",
+  "matriz": "ABC ASS."
+ },
+ "01695000000540": {
+  "nome": "KGT TRANSPORTES LTDA - EPP",
+  "abrev": "KGT SC",
+  "matriz": "KGT SC"
+ },
+ "10555731000238": {
+  "nome": "DYSCAMP COMERCIO DE COSMETICOS EIRELI",
+  "abrev": "DYSCAMP GO",
+  "matriz": "DYSCAMP"
+ },
+ "10555731000157": {
+  "nome": "DYSCAMP COMERCIO DE COSMETICOS EIRELI",
+  "abrev": "DYSCAMP",
+  "matriz": "DYSCAMP"
+ },
+ "28045448000140": {
+  "nome": "ROGE BELEZA COMERCIO E DISTRIBUIDORA DE COSMETICOS LTDA",
+  "abrev": "ROGE PR",
+  "matriz": "ROGE"
+ },
+ "07259339000156": {
+  "nome": "LS LOG ARMAZENAGEM E LOGISTICA LTDA",
+  "abrev": "LS LOG",
+  "matriz": "LS LOG"
+ },
+ "54801535001081": {
+  "nome": "CENTRO METROPOLITANO DE COSMETICOS LTDA",
+  "abrev": "CENTRO METRO",
+  "matriz": "CENTRO METRO"
+ },
+ "47960950000121": {
+  "nome": "MAGAZINE LUIZA S/A",
+  "abrev": "MAGAZINE LU.",
+  "matriz": "MAGAZINE LU."
+ },
+ "61940292006410": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ PB",
+  "matriz": "STA CRUZ PE"
+ },
+ "05151226000107": {
+  "nome": "EXPRESSO MINAS FRIOS LTDA",
+  "abrev": "EXPRES MINAS",
+  "matriz": "EXPRES MINAS"
+ },
+ "00462691000145": {
+  "nome": "UPS SCS LOGISTICA BRASIL LTDA",
+  "abrev": "UPS II",
+  "matriz": "UPS II"
+ },
+ "60665981000703": {
+  "nome": "UNIAO QUIMICA FARMACEUTICA NACIONAL S A",
+  "abrev": "UNIAO QUIMIC",
+  "matriz": "UNIAO QUIMIC"
+ },
+ "11291682000155": {
+  "nome": "TRANSPORTES E LOGÍSTICA PARADA DOS AMIGOS",
+  "abrev": "PAR. DOS AMI",
+  "matriz": "PAR. DOS AMI"
+ },
+ "67171678000450": {
+  "nome": "TECMACH LOCACAO DE BENS MOVEIS, SERVICOS E COMERCIO LTDA",
+  "abrev": "TECMACH",
+  "matriz": "TECMACH"
+ },
+ "07936410000198": {
+  "nome": "ALINE MARQUES CONSULTORIA DE COMUNICAÇÃO LTDA",
+  "abrev": "ALINE MARQUE",
+  "matriz": "ALINE MARQUE"
+ },
+ "05141242000119": {
+  "nome": "AUTOHANDEL VEICULOS LTDA",
+  "abrev": "AUTOHANDEL",
+  "matriz": "AUTOHANDEL"
+ },
+ "60665981000975": {
+  "nome": "UNIAO QUIMICA FARMACEUTICA NACIONAL S A",
+  "abrev": "UNIAO QUIMI",
+  "matriz": "UNIAO QUIMI"
+ },
+ "04334187000110": {
+  "nome": "NANOVETORES TECNOLOGIA S/A",
+  "abrev": "NANOVETORES",
+  "matriz": "NANOVETORES"
+ },
+ "08915723000122": {
+  "nome": "PRESS KITS CRIATIVOS EIRELI ME",
+  "abrev": "PRESS KITS",
+  "matriz": "PRESS KITS"
+ },
+ "67171678000299": {
+  "nome": "TECMACH LOCACAO DE BENS MOVEIS, SERVICOS E COMERCIO LTDA",
+  "abrev": "TECMACH1",
+  "matriz": "TECMACH1"
+ },
+ "06099229000101": {
+  "nome": "ASSUPERO ENSINO SUPERIOR LTDA - UNIVERDADE PAULISTA - UNIP",
+  "abrev": "UNIP",
+  "matriz": "UNIP"
+ },
+ "33014556088425": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AME MG",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00634453001303": {
+  "nome": "TSV TRANSPORTES RAPIDOS LTDA",
+  "abrev": "TSV SC",
+  "matriz": "TSV SC"
+ },
+ "01149980000151": {
+  "nome": "SET NET ARMAZENAMENTO LOGISTICO LTDA",
+  "abrev": "SET NET",
+  "matriz": "SET NET"
+ },
+ "28189078000115": {
+  "nome": "DYSC BEAUTY COMÉRCIO E DISTRIBUIDORA DE COSMETICOS LTDA",
+  "abrev": "DYSCAMP SP",
+  "matriz": "DYSCAMP"
+ },
+ "88212113016014": {
+  "nome": "COMERCIO DE MEDICAMENTOS BRAIR LTDA",
+  "abrev": "SÃO JOÃO",
+  "matriz": "SÃO JOÃO"
+ },
+ "06626253119809": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE M. MG",
+  "matriz": "PAGUE MENOS"
+ },
+ "21372384000143": {
+  "nome": "LOGIC PHARMA LOGISTICA E ARMAZENS GERAIS LTDA",
+  "abrev": "LOGIC PHARMA",
+  "matriz": "LOGIC PHARMA"
+ },
+ "22359813000105": {
+  "nome": "DURACELL COMERCIAL E IMPORTADORA DO BRASIL LTDA",
+  "abrev": "DURACELL",
+  "matriz": "DURACELL"
+ },
+ "07224991001530": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PI 2",
+  "matriz": "NAZARIA"
+ },
+ "61412110095350": {
+  "nome": "DROGARIA SAO PAULO S A",
+  "abrev": "DSP GO",
+  "matriz": "DROGARIA SAO"
+ },
+ "04054511000147": {
+  "nome": "EMPITEC COMERCIAL LTDA",
+  "abrev": "EMPITEC",
+  "matriz": "EMPITEC"
+ },
+ "05651966001508": {
+  "nome": "D CENTER DISTRIBUIDORA LTDA",
+  "abrev": "D CENTER ES",
+  "matriz": "D CENTER"
+ },
+ "02558157079753": {
+  "nome": "TELEFONICA BRASIL S.A. EMBU",
+  "abrev": "TELEFONIC BR",
+  "matriz": "TELEFONICA"
+ },
+ "44363661000580": {
+  "nome": "GLENMARK FARMACEUTICA LTDA.",
+  "abrev": "GLENMARK 2",
+  "matriz": "GLENMARK 2"
+ },
+ "05958411000299": {
+  "nome": "OKAJIMA DISTRIBUIÇÃO E COMERCIO LTDA",
+  "abrev": "OKAJIMA II",
+  "matriz": "OKAJIMA"
+ },
+ "61549259006545": {
+  "nome": "DROGARIA ONOFRE LTDA",
+  "abrev": "ONOFRE RJ",
+  "matriz": "ONOFRE"
+ },
+ "61940292004981": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ OLI",
+  "matriz": "STA CRUZ PE"
+ },
+ "13472512000100": {
+  "nome": "MILANO SERVICOS LTDA",
+  "abrev": "MILANO IND",
+  "matriz": "MILANO IND"
+ },
+ "32934245000182": {
+  "nome": "PRESTIGE SERVIÇOS EMPRESARIAIS LTDA",
+  "abrev": "PRESTIGE LTD",
+  "matriz": "PRESTIGE LTD"
+ },
+ "97422620000150": {
+  "nome": "BOMPRECO BAHIA SUPERMERCADOS LTDA",
+  "abrev": "BOMPREÇO BA",
+  "matriz": "WALMART MG"
+ },
+ "13004510025840": {
+  "nome": "BOMPRECO SUPERMERCADOS DO NORDESTE LTDA",
+  "abrev": "BOMPREÇO PE",
+  "matriz": "WALMART MG"
+ },
+ "06057223036877": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS SP",
+  "matriz": "SENDAS SP"
+ },
+ "22557790000143": {
+  "nome": "MY BEAUTY LAB INDUSTRIA E COMERCIO DE COSMÉTICOS EIRELI EPP",
+  "abrev": "MY BEAUTY",
+  "matriz": "MY BEAUTY"
+ },
+ "11590488000332": {
+  "nome": "SK RENTAL LOCAÇÃO DE EQUIPAMENTOS LTDA",
+  "abrev": "SK RENTAL",
+  "matriz": "SK RENTAL"
+ },
+ "06281578000140": {
+  "nome": "EMPILHADEIRAS ITAJAÍ LTDA",
+  "abrev": "EMPI",
+  "matriz": "EMPI"
+ },
+ "11590488000251": {
+  "nome": "SK RENTAL LOCACAO DE EQUIPAMENTOS LTDA",
+  "abrev": "SK RENTAL PR",
+  "matriz": "SK RENTAL PR"
+ },
+ "18328050000168": {
+  "nome": "MAQBUSCA LOCAÇÃO DE MAQUINAS E EQUIPAMENTOS LTDA ME",
+  "abrev": "MAQBUSCA",
+  "matriz": "MAQBUSCA"
+ },
+ "00285753001324": {
+  "nome": "VENANCIO PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "VENANCIO ES",
+  "matriz": "VENANCIO"
+ },
+ "45453214002952": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA AL",
+  "matriz": "PROFARMA BA"
+ },
+ "06225952000190": {
+  "nome": "ICARO EXPRESS LOGISITICS LTDA",
+  "abrev": "ICARO EXPRES",
+  "matriz": "ICARO EXPRES"
+ },
+ "11193841000189": {
+  "nome": "HILLO COMERCIAL DO BRASIL LTDA",
+  "abrev": "HILLO MG",
+  "matriz": "HILLO MG"
+ },
+ "61585865212841": {
+  "nome": "RAIA DROGASIL S.A.",
+  "abrev": "RAIA CE",
+  "matriz": "RAIA"
+ },
+ "61585865184295": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA SP II",
+  "matriz": "RAIA"
+ },
+ "07471771000106": {
+  "nome": "POSTAL TRANSPORTES E ARMAZENAGEM",
+  "abrev": "POSTAL",
+  "matriz": "POSTAL"
+ },
+ "19426695000104": {
+  "nome": "ANOVIS INDUSTRIAL FARMACEUTICA LTDA.",
+  "abrev": "ANOVIS",
+  "matriz": "ANOVIS"
+ },
+ "05022999000193": {
+  "nome": "MNEMONIK COMUNICAÇÃO INTEGRADA LTDA",
+  "abrev": "MNEMONIK",
+  "matriz": "MNEMONIK"
+ },
+ "07667439000383": {
+  "nome": "COMERCIAL IBIAPINA LTDA",
+  "abrev": "IBIAPINA",
+  "matriz": "IBIAPINA"
+ },
+ "33381019000184": {
+  "nome": "PRESTIGERP EVENTOS",
+  "abrev": "PRESTIGERP",
+  "matriz": "PRESTIGERP"
+ },
+ "04899316053661": {
+  "nome": "IMIFARMA PRODUTOS FARM E COSM SA",
+  "abrev": "IMIFARMA SP",
+  "matriz": "PAGUE MENOS"
+ },
+ "34095293000150": {
+  "nome": "PRESTIGE RP EVENTOS 5 LTDA",
+  "abrev": "PRESTIGE RP",
+  "matriz": "PRESTIGE RP"
+ },
+ "07224991001700": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA MA 2",
+  "matriz": "NAZARIA"
+ },
+ "61585865223100": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA SP 2",
+  "matriz": "RAIA"
+ },
+ "82873068000735": {
+  "nome": "GENESIO A MENDES & CIA LTDA",
+  "abrev": "GAM PR",
+  "matriz": "DISTRIB GAM"
+ },
+ "22104606000100": {
+  "nome": "GRECO E GUERREIRO - SP ENVASE LTDA.",
+  "abrev": "CRA MAIS",
+  "matriz": "GRECO & GUER"
+ },
+ "13485130000294": {
+  "nome": "PHARMA LOG PRODUTOS FARMACEUTICOS EIRELI",
+  "abrev": "ANB",
+  "matriz": "ANB"
+ },
+ "84466424000136": {
+  "nome": "DUNORTE DIST DE PRODUTOS DE CONSUMO LTDA",
+  "abrev": "DUNORTE",
+  "matriz": "DUNORTE"
+ },
+ "34427999000171": {
+  "nome": "PWS DISTRIBUIDORA DE COSMÉTICOS LTDA",
+  "abrev": "DYSCAMP ES",
+  "matriz": "DYSCAMP"
+ },
+ "18496652000124": {
+  "nome": "ECOJOG AMBIENTAL LTDA",
+  "abrev": "ECOJOG",
+  "matriz": "ECOJOG"
+ },
+ "01287021000100": {
+  "nome": "ATHENAS INDÚSTRIA E TERCEIRIZAÇÃO DE COSMÉTICOS",
+  "abrev": "ATHENAS",
+  "matriz": "ATHENAS"
+ },
+ "02029746000234": {
+  "nome": "INDUSTRIAL E COMERCIAL BELLA PLUS LTDA",
+  "abrev": "BELLA PLUS",
+  "matriz": "BELLA PLUS"
+ },
+ "07224991001883": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PE 2",
+  "matriz": "NAZARIA"
+ },
+ "10696062000133": {
+  "nome": "LD COMERCIO DE MATERIAIS PARA DIAGNOSTICO",
+  "abrev": "LD COMERCIO",
+  "matriz": "LD COMERCIO"
+ },
+ "95591723012710": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT-PEJAB",
+  "matriz": "TNT-PEJAB"
+ },
+ "06057223036796": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223024780": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223034904": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223029900": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223027452": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223040041": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PI",
+  "matriz": "SENDAS SP"
+ },
+ "06057223039388": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AP",
+  "matriz": "SENDAS SP"
+ },
+ "04429478000435": {
+  "nome": "SB COMERCIO LTDA",
+  "abrev": "SB PA",
+  "matriz": "SB"
+ },
+ "06057223031808": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF",
+  "matriz": "SENDAS SP"
+ },
+ "06057223031999": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223032022": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223034157": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223037172": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG",
+  "matriz": "SENDAS SP"
+ },
+ "06057223039116": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PI 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223036443": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS SE",
+  "matriz": "SENDAS SP"
+ },
+ "06057223040475": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS SE1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223029072": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT",
+  "matriz": "SENDAS SP"
+ },
+ "06057223028262": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223039701": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PA",
+  "matriz": "SENDAS SP"
+ },
+ "06057223031050": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS RN",
+  "matriz": "SENDAS SP"
+ },
+ "06057223032103": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PA 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223039620": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PA 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223022655": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS CE",
+  "matriz": "SENDAS SP"
+ },
+ "06057223033347": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS RJ",
+  "matriz": "SENDAS SP"
+ },
+ "06057223028858": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PE",
+  "matriz": "SENDAS SP"
+ },
+ "06057223036010": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS BA",
+  "matriz": "SENDAS SP"
+ },
+ "06057223037687": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PA 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223035129": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PA 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030674": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AL",
+  "matriz": "SENDAS SP"
+ },
+ "06057223038497": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AL 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223034238": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PI 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223029153": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223035552": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030836": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PB 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223023031": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030089": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AM 1",
+  "matriz": "SENDAS SP"
+ },
+ "13485130000103": {
+  "nome": "PHARMA LOG PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "PHARMA LOG",
+  "matriz": "ANB"
+ },
+ "06057223038900": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AM 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223021926": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS CE 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223029668": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PB 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223034319": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223037253": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223032375": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223022906": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 6",
+  "matriz": "SENDAS SP"
+ },
+ "06057223036958": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 7",
+  "matriz": "SENDAS SP"
+ },
+ "06057223040203": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS RO 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223039469": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AL 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223039205": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 8",
+  "matriz": "SENDAS SP"
+ },
+ "06057223040394": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR",
+  "matriz": "SENDAS SP"
+ },
+ "06057223036362": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AM 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030240": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MS 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030321": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MS 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030917": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MS 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223034419": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 10",
+  "matriz": "SENDAS SP"
+ },
+ "44463156002551": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED MS",
+  "matriz": "SERVIMED SP"
+ },
+ "07575651000159": {
+  "nome": "GOL LINHAS AEREAS",
+  "abrev": "GOL",
+  "matriz": "GOL"
+ },
+ "28327684000150": {
+  "nome": "RRS SERVIÇOS AUXILIARES DE TRANSPORTES AÉREO",
+  "abrev": "AMAZON TRANS",
+  "matriz": "AMAZON TRANS"
+ },
+ "09549223000187": {
+  "nome": "ROBERTO CARLOS BELINA ME",
+  "abrev": "ROBERTO C",
+  "matriz": "ROBERTO C"
+ },
+ "01436319000208": {
+  "nome": "NOVA RIOTEL EMPREENDIMENTOS HOTELEIROS LTDA",
+  "abrev": "NOVA RIOTEL",
+  "matriz": "NOVA RIOTEL"
+ },
+ "01206820002655": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANARELLO PA",
+  "matriz": "STA CRUZ PE"
+ },
+ "06057223040122": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MA 1",
+  "matriz": "SENDAS SP"
+ },
+ "25102146006614": {
+  "nome": "IRMAOS MATTAR & CIA LTDA",
+  "abrev": "IRM MATTAR",
+  "matriz": "IRMAOS MATTA"
+ },
+ "06274825000180": {
+  "nome": "BR HUB TRADE",
+  "abrev": "BR HUB TRADE",
+  "matriz": "BR HUB TRADE"
+ },
+ "06057223041013": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MS 4",
+  "matriz": "SENDAS SP"
+ },
+ "33014556091990": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AM SP2",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556179145": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AM RS",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556082060": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AM RJ",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556178505": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AM MG",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556179498": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AM PA",
+  "matriz": "LOJAS AMERIC"
+ },
+ "11635171000456": {
+  "nome": "TAKEDA DISTRIBUIDORA LTDA",
+  "abrev": "TAKEDA",
+  "matriz": "TAKEDA"
+ },
+ "01239313000160": {
+  "nome": "CAMPOS FLORIDOS COMERCIO DE COSMETICOS LTDA",
+  "abrev": "EPOCA COSM",
+  "matriz": "EPOCA COSM"
+ },
+ "11724258000157": {
+  "nome": "BELEZA.COM COM DE PROD. DE BELEZA E SERV CABELEREIROS S/A",
+  "abrev": "BELEZA.COM",
+  "matriz": "BELEZA.COM"
+ },
+ "05054671002526": {
+  "nome": "LIDER COMERCIO E INDUSTRIA LTDA",
+  "abrev": "LIDER COMER",
+  "matriz": "LIDER COMER"
+ },
+ "57508426000844": {
+  "nome": "COOP - COOPERATIVA DE CONSUMO",
+  "abrev": "COOP",
+  "matriz": "COOP"
+ },
+ "10877246000108": {
+  "nome": "DISLAB COMERCIAL FARMACEUTICA LTDA",
+  "abrev": "DISLAB SP",
+  "matriz": "DISLAB SP"
+ },
+ "17715064000171": {
+  "nome": "DISLAB GO COMERCIAL FARMACEUTICA LTDA",
+  "abrev": "DISLAB GO",
+  "matriz": "DISLAB SP"
+ },
+ "31872495000172": {
+  "nome": "BANCO C6 S/A",
+  "abrev": "BANCO C6",
+  "matriz": "BANCO C6"
+ },
+ "64963044000108": {
+  "nome": "FARMACLUBE DROGARIAS LTDA",
+  "abrev": "FARMA DELIVE",
+  "matriz": "FARMA DELIVE"
+ },
+ "01239313000402": {
+  "nome": "CAMPOS FLORIDOS COMERCIO DE COSMETICOS LTDA",
+  "abrev": "EPOCA COSME",
+  "matriz": "EPOCA COSM"
+ },
+ "06052228000101": {
+  "nome": "CENTRAL ÚNICA DAS FAVELAS DO RIO DE JANEIRO",
+  "abrev": "CENTRAL ÚNIC",
+  "matriz": "CENTRAL ÚNIC"
+ },
+ "06057223040556": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS",
+  "matriz": "SENDAS SP"
+ },
+ "07399636002817": {
+  "nome": "DECMINAS DISTRIBUIÇÃO E LOGÍSTICA SA.",
+  "abrev": "CD DEC MINAS",
+  "matriz": "DEC MINAS"
+ },
+ "06057223041285": {
+  "nome": "SENDAS DISTRUIBUIDORA S/A",
+  "abrev": "SENDAS CE 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223041609": {
+  "nome": "SENDAS DISTRUIBUIDORA S/A",
+  "abrev": "SENDAS MA 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223041102": {
+  "nome": "SENDAS DISTRUIBUIDORA S/A",
+  "abrev": "SENDAS MA 3",
+  "matriz": "SENDAS SP"
+ },
+ "61940292006500": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ RN",
+  "matriz": "STA CRUZ PE"
+ },
+ "19351498000165": {
+  "nome": "CLUBE DA COMUNIDADE PARQUE SANTO ANTONIO (P.S.A.)",
+  "abrev": "CUFA SP",
+  "matriz": "CUFA SP"
+ },
+ "88085485000104": {
+  "nome": "TRANSPORTADORA PLIMOR LTDA",
+  "abrev": "PLIMOR RS4",
+  "matriz": "PLIMOR RS4"
+ },
+ "33014556150163": {
+  "nome": "LOJAS AMERICANAS S.A",
+  "abrev": "LOJAS AME RJ",
+  "matriz": "LOJAS AMERIC"
+ },
+ "33014556186273": {
+  "nome": "LOJAS AMERICANAS S.A",
+  "abrev": "LOJAS AME PR",
+  "matriz": "LOJAS AMERIC"
+ },
+ "06057223042095": {
+  "nome": "SENDAS DISTRIBUIDORA S.A",
+  "abrev": "SENDAS RJ 1",
+  "matriz": "SENDAS SP"
+ },
+ "01520248000227": {
+  "nome": "MARQUES & MELO LTDA",
+  "abrev": "DISMELO AM",
+  "matriz": "DISMELO"
+ },
+ "06057223034408": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 11",
+  "matriz": "SENDAS SP"
+ },
+ "07272350000156": {
+  "nome": "POP TRADE MARKETING E CONSULTORIA LTDA",
+  "abrev": "POP TRADE",
+  "matriz": "POP TRADE"
+ },
+ "47960950034450": {
+  "nome": "MAGAZINE LUIZA S A",
+  "abrev": "MAGALU MG",
+  "matriz": "MAGAZINE LU."
+ },
+ "47960950075725": {
+  "nome": "MAGAZINE LUIZA S A",
+  "abrev": "MAGALU PB",
+  "matriz": "MAGAZINE LU."
+ },
+ "47960950041901": {
+  "nome": "MAGAZINE LUIZA S A",
+  "abrev": "MAGALU RS",
+  "matriz": "MAGAZINE LU."
+ },
+ "47960950003902": {
+  "nome": "MAGAZINE LUIZA S A",
+  "abrev": "MAGALU SP",
+  "matriz": "MAGAZINE LU."
+ },
+ "47960950058804": {
+  "nome": "MAGAZINE LUIZA S A",
+  "abrev": "MAGALU SP 4",
+  "matriz": "MAGAZINE LU."
+ },
+ "21551379000793": {
+  "nome": "BECTON DICKINSON INDUSTRIAS CIRURGICAS LTDA",
+  "abrev": "BECTON",
+  "matriz": "BECTON"
+ },
+ "61585865242244": {
+  "nome": "RAIA DROGASIL S.A.",
+  "abrev": "RAIA RS",
+  "matriz": "RAIA"
+ },
+ "29011429000166": {
+  "nome": "MED MAIS SAUDE LTDA",
+  "abrev": "IBIAPINA CE",
+  "matriz": "IBIAPINA"
+ },
+ "10812314000142": {
+  "nome": "NUTRISENIOR INDUSTRIA, COMERCIO, IMPORTACAO E EXPORTACAO DE PRODUTOS",
+  "abrev": "NUTRISENIOR",
+  "matriz": "NUTRISENIOR"
+ },
+ "00501618000135": {
+  "nome": "SESTINI MERCANTIL LTDA",
+  "abrev": "SESTINI",
+  "matriz": "SESTINI"
+ },
+ "47508411251906": {
+  "nome": "COMPANHIA BRASILEIRA DE DISTRIBUIÇÃO",
+  "abrev": "GPA RJ III",
+  "matriz": "GPA SP"
+ },
+ "18233211002698": {
+  "nome": "FL BRASIL HOLDING, LOGISTICA E TRANSPORTE LTDA",
+  "abrev": "FLBR - SC",
+  "matriz": "FLBR - SC"
+ },
+ "04125363000104": {
+  "nome": "INSTITUTO CULTURAL BARONG",
+  "abrev": "BARONG",
+  "matriz": "BARONG"
+ },
+ "76360874000111": {
+  "nome": "INPLAVEL INDUSTRIA DE PLÁSTICOS LTDA",
+  "abrev": "INPLAVEL",
+  "matriz": "INPLAVEL"
+ },
+ "50662246000105": {
+  "nome": "FIABILA BRASIL LTDA IND. DE COMESTICOS LTDA",
+  "abrev": "FIABILA",
+  "matriz": "FIABILA"
+ },
+ "43214055000107": {
+  "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUICAO S A",
+  "abrev": "MARTINS",
+  "matriz": "MARTINS"
+ },
+ "43214055001774": {
+  "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUICAO S A",
+  "abrev": "MARTINS AM",
+  "matriz": "MARTINS"
+ },
+ "43214055001189": {
+  "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUICAO S A",
+  "abrev": "MARTINS BA",
+  "matriz": "MARTINS"
+ },
+ "43214055004013": {
+  "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUICAO S A",
+  "abrev": "MARTINS GO",
+  "matriz": "MARTINS"
+ },
+ "43214055002665": {
+  "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUICAO S A",
+  "abrev": "MARTINS MA",
+  "matriz": "MARTINS"
+ },
+ "57508426007695": {
+  "nome": "COOP COOPERATIVA DE CONSUMO",
+  "abrev": "COOP SP",
+  "matriz": "COOP"
+ },
+ "57508426007776": {
+  "nome": "COOP COOPERATIVA DE CONSUMO",
+  "abrev": "COOP SP 2",
+  "matriz": "COOP"
+ },
+ "60409075054082": {
+  "nome": "NESTLE BRASIL LTDA",
+  "abrev": "NESTLE NOVO",
+  "matriz": "NESTLE NOVO"
+ },
+ "04899316035175": {
+  "nome": "IMIFARMA PRODUTOS FARMACEUTICOS E COSMETICOS SA",
+  "abrev": "IMIFARMA MA",
+  "matriz": "PAGUE MENOS"
+ },
+ "08873972000100": {
+  "nome": "GIGANTO ON LINE IMP E COMERCIO LTDA",
+  "abrev": "GIGANTO",
+  "matriz": "GIGANTO"
+ },
+ "06057223041870": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT 3",
+  "matriz": "SENDAS SP"
+ },
+ "61940292006259": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ MT",
+  "matriz": "STA CRUZ PE"
+ },
+ "45453214003843": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA RN",
+  "matriz": "PROFARMA BA"
+ },
+ "33014556186192": {
+  "nome": "LOJAS AMERICANAS S/A",
+  "abrev": "LOJAS AME BA",
+  "matriz": "LOJAS AMERIC"
+ },
+ "34320383000105": {
+  "nome": "CRUZ & CRUZ IMPORTAÇÃO E EXPORTAÇÃO DE COSMETICOS LTDA",
+  "abrev": "CRUZ & CRUZ",
+  "matriz": "CRUZ & CRUZ"
+ },
+ "84305440000147": {
+  "nome": "INSTITUTO LAR E JUVENTUDE DE ASSISTENCIA E EDUCACAO",
+  "abrev": "LAR E JUVENT",
+  "matriz": "LAR E JUVENT"
+ },
+ "43575877000466": {
+  "nome": "DROGARIA NOVA ESPERANÇA EIRELI",
+  "abrev": "DROGARIA NOV",
+  "matriz": "DROGARIA NOV"
+ },
+ "07122223000170": {
+  "nome": "FARMIX DISTRIBUIDORA DE MEDICAMENTOS",
+  "abrev": "FARMIX",
+  "matriz": "FARMIX"
+ },
+ "07179544000101": {
+  "nome": "ABC EMPILHADEIRAS LTDA",
+  "abrev": "ABC",
+  "matriz": "ABC"
+ },
+ "07224991002006": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA MA 3",
+  "matriz": "NAZARIA"
+ },
+ "33041260159430": {
+  "nome": "VIA VAREJO S/A",
+  "abrev": "VIA VAREJO",
+  "matriz": "VIA VAREJO"
+ },
+ "33041260094711": {
+  "nome": "VIA VAREJO S/A",
+  "abrev": "VIA VAREJO 2",
+  "matriz": "VIA VAREJO"
+ },
+ "33041260048604": {
+  "nome": "GRUPO CASAS BAHIA S.A.",
+  "abrev": "VIA VAREJO 3",
+  "matriz": "VIA VAREJO"
+ },
+ "33041260146371": {
+  "nome": "VIA VAREJO S/A",
+  "abrev": "VIA VAREJO 4",
+  "matriz": "VIA VAREJO"
+ },
+ "33014556186435": {
+  "nome": "LOJAS AMERICANAS S/A-",
+  "abrev": "LOJAS AM CE",
+  "matriz": "LOJAS AMERIC"
+ },
+ "03007331000818": {
+  "nome": "EBAZAR.COM.BR.LTDA",
+  "abrev": "EBAZAR",
+  "matriz": "EBAZAR"
+ },
+ "35933374000144": {
+  "nome": "SHOPPER COMERCIO BEAUTY LTDA",
+  "abrev": "SHOPPER 2",
+  "matriz": "SHOPPER 2"
+ },
+ "37953357000102": {
+  "nome": "LA CASA CRIATIVA LTDA",
+  "abrev": "LA CASA",
+  "matriz": "LA CASA"
+ },
+ "92665611051162": {
+  "nome": "DIMED S/A - DISTRIBUIDORA DE MEDICAMENTOS",
+  "abrev": "DIMED PR 2",
+  "matriz": "DIMED RS"
+ },
+ "47960950166607": {
+  "nome": "MAGAZINE LUIZA S A",
+  "abrev": "MAGALU RJ",
+  "matriz": "MAGAZINE LU."
+ },
+ "09080907000506": {
+  "nome": "GENOMMA LABORATORIES DO BRASIL LTDA",
+  "abrev": "GENOMMA MG",
+  "matriz": "GENOMMA MG"
+ },
+ "89141329000186": {
+  "nome": "REQUIPEL COMERCIAL DE EQUIPAMENTOS LTDA",
+  "abrev": "REQUIPEL",
+  "matriz": "REQUIPEL"
+ },
+ "15436940000367": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON SP",
+  "matriz": "AMAZON SP"
+ },
+ "15436940000448": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON SP 2",
+  "matriz": "AMAZON SP"
+ },
+ "15436940000871": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON SP 3",
+  "matriz": "AMAZON SP"
+ },
+ "15436940001096": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON DF",
+  "matriz": "AMAZON SP"
+ },
+ "15436940000952": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON MG",
+  "matriz": "AMAZON SP"
+ },
+ "15436940000529": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON PE",
+  "matriz": "AMAZON SP"
+ },
+ "15436940001177": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON RS",
+  "matriz": "AMAZON SP"
+ },
+ "06057223042508": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT 4",
+  "matriz": "SENDAS SP"
+ },
+ "17438997000169": {
+  "nome": "K LOGISTICA LTDA",
+  "abrev": "PRATIKA",
+  "matriz": "PRATIKA"
+ },
+ "62327663000172": {
+  "nome": "FUNDAÇÃO ARNALDO VIEIRA DE CARVALHO",
+  "abrev": "FUND ARNALDO",
+  "matriz": "FUND ARNALDO"
+ },
+ "12787333000191": {
+  "nome": "B.DROPS S.A.",
+  "abrev": "B.DROPS S.A.",
+  "matriz": "B.DROPS S.A."
+ },
+ "14131317000171": {
+  "nome": "ALCANCE LOCAÇÃO E COMÉRCIO DE MÁQUINAS LTDA.",
+  "abrev": "ALCANCE",
+  "matriz": "ALCANCE"
+ },
+ "07586045000139": {
+  "nome": "RB CODE-COMERCIO E SERVICOS DE PRODUTOS E SOLUCOES EM TI LTDA",
+  "abrev": "YEP SOLUTION",
+  "matriz": "YEP SOLUTION"
+ },
+ "04429478017915": {
+  "nome": "SB COMERCIO LTDA",
+  "abrev": "SB BELEM",
+  "matriz": "SB"
+ },
+ "04921401000135": {
+  "nome": "INSTITUTO LAB SYSTEM DE PESQUISAS E ENSAIOS LTDA",
+  "abrev": "LAB SYSTEM",
+  "matriz": "LAB SYSTEM"
+ },
+ "06057223043148": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS AC",
+  "matriz": "SENDAS SP"
+ },
+ "11724258000580": {
+  "nome": "BELEZA.COM COM DE PROD. DE BELEZA E SERV CABELEREIROS S/A",
+  "abrev": "BELEZA PR",
+  "matriz": "BELEZA.COM"
+ },
+ "05999089000246": {
+  "nome": "DISLAB COMERCIAL FARMACEUTICA LTDA",
+  "abrev": "DISLAB ES",
+  "matriz": "DISLAB SP"
+ },
+ "06057223043571": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS AM 4",
+  "matriz": "SENDAS SP"
+ },
+ "01323588000187": {
+  "nome": "DPA LOGISTICA APLICADA E TRANSPORTES LTDA",
+  "abrev": "DPA LOGISTIC",
+  "matriz": "DPA LOGISTIC"
+ },
+ "04820606000124": {
+  "nome": "GIROTRADE S A",
+  "abrev": "GIROTRADE",
+  "matriz": "GIROTRADE"
+ },
+ "08241229000120": {
+  "nome": "MILFARMA COMERCIAL LTDA",
+  "abrev": "MILFARMA",
+  "matriz": "MILFARMA"
+ },
+ "28641104000102": {
+  "nome": "CIFORTE COMERCIO INTERNACIONAL E NACIONAL LTDA",
+  "abrev": "CIFORTE",
+  "matriz": "CIFORTE"
+ },
+ "29113570000170": {
+  "nome": "DMV LOCACOES LTDA",
+  "abrev": "FILL CONTENT",
+  "matriz": "FILL CONTENT"
+ },
+ "15769911000155": {
+  "nome": "MKT LOG LOGISTICA INTEGRADA LTDA",
+  "abrev": "MKT LOG",
+  "matriz": "MKT LOG"
+ },
+ "84487131000640": {
+  "nome": "MAPEMI BR MAT MEDICOS E ODONT LTDA",
+  "abrev": "MAPEMI RR",
+  "matriz": "MAPEMI"
+ },
+ "06057223044110": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 9",
+  "matriz": "SENDAS SP"
+ },
+ "61940292006682": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ AM",
+  "matriz": "STA CRUZ PE"
+ },
+ "00857492000217": {
+  "nome": "SOGAMAX DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "SOGAMAX",
+  "matriz": "SOGAMAX"
+ },
+ "66471517000843": {
+  "nome": "DPC DISTRIBUIDOR ATACADISTA S/A",
+  "abrev": "DPC ES",
+  "matriz": "DPC"
+ },
+ "23955016000153": {
+  "nome": "MV COMERCIAL FARMACEUTICA LTDA",
+  "abrev": "MV",
+  "matriz": "MV"
+ },
+ "07430231000184": {
+  "nome": "CMW SAÚDE & TECNOLOGIA IMPORTAÇÃO E EXPORTAÇÃO LTDA",
+  "abrev": "CMW",
+  "matriz": "CMW"
+ },
+ "07122223000251": {
+  "nome": "FARMIX DISTRIBUIDORA DE MEDICAMENTOS",
+  "abrev": "FARMIX BA",
+  "matriz": "FARMIX"
+ },
+ "20918597000165": {
+  "nome": "ATC  ATACADO E COSMETICO EIRELLI",
+  "abrev": "ATC",
+  "matriz": "ATC"
+ },
+ "07586045000210": {
+  "nome": "RB CODE-COMERCIO E SERVICOS DE PRODUTOS E SOLUCOES EM TI LTDA",
+  "abrev": "RB-CODE",
+  "matriz": "YEP SOLUTION"
+ },
+ "06057223046163": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PI 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223043733": {
+  "nome": "SENDAS DISTRUIBUIDORA S/A",
+  "abrev": "SENDAS CE 3",
+  "matriz": "SENDAS SP"
+ },
+ "82873068000654": {
+  "nome": "GENESIO A MENDES & CIA LTDA",
+  "abrev": "GAM DIST ES",
+  "matriz": "DISTRIB GAM"
+ },
+ "32873543000100": {
+  "nome": "DINAMICA GOIAS ATACADO DISTRIBUIDORA LTDA",
+  "abrev": "DINAMICA GO",
+  "matriz": "DINAMICA DF"
+ },
+ "11869763000190": {
+  "nome": "DINAMICA  ATACADO E DIST DE COSMETICOS E LOGISTICA LTDA",
+  "abrev": "DINAMICA DF",
+  "matriz": "DINAMICA DF"
+ },
+ "10829506000161": {
+  "nome": "ROGE INTERG COM E DIST DE ALIMENTOS LTDA",
+  "abrev": "ROGE SP",
+  "matriz": "ROGE"
+ },
+ "06057223045353": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS PR 6",
+  "matriz": "SENDAS SP"
+ },
+ "17256512002917": {
+  "nome": "DROGARIA ARAUJO S A",
+  "abrev": "ARAUJO",
+  "matriz": "ARAUJO"
+ },
+ "06057223044462": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT 5",
+  "matriz": "SENDAS SP"
+ },
+ "34479153000185": {
+  "nome": "JUSSARA SOUTO DE AZEVEDO",
+  "abrev": "JUSSARA",
+  "matriz": "JUSSARA"
+ },
+ "02110967000151": {
+  "nome": "DROGARIA E PERFUMARIA SADIVA LTDA",
+  "abrev": "DROGAMED",
+  "matriz": "DROGAMED"
+ },
+ "24583557000322": {
+  "nome": "SHOPPER COMERCIO ALIMENTICIO LTDA",
+  "abrev": "SHOPPER COME",
+  "matriz": "SHOPPER COME"
+ },
+ "03007331001032": {
+  "nome": "EBAZAR.COM.BR. LTDA",
+  "abrev": "EBAZAR MG",
+  "matriz": "EBAZAR"
+ },
+ "04737552004397": {
+  "nome": "MART MINAS DISTRIBUICAO LTDA",
+  "abrev": "MART MINAS",
+  "matriz": "MART MINAS"
+ },
+ "06057223047488": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS CURIT",
+  "matriz": "SENDAS SP"
+ },
+ "00776574172526": {
+  "nome": "AMERICANAS S.A",
+  "abrev": "LOJAS AME SJ",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574172283": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM CE1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574172607": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM RS1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574171554": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM RJ1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574083698": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM RJ2",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574172011": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AME ES",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574107031": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM PE1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574146010": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM SP1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574175703": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AME DF",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574081300": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM RJ3",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574172100": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM BA1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574152177": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM MG1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574171988": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM MG2",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574172364": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM PA1",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574172445": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM PA2",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574171805": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM SP3",
+  "matriz": "LOJAS AMERIC"
+ },
+ "00776574171716": {
+  "nome": "AMERICANAS S.A.",
+  "abrev": "LOJAS AM SP4",
+  "matriz": "LOJAS AMERIC"
+ },
+ "06057223047640": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 2",
+  "matriz": "SENDAS SP"
+ },
+ "40002510000112": {
+  "nome": "COMERCIAL FERNANDES VIEIRA LTDA",
+  "abrev": "RASGA PRECO",
+  "matriz": "RASGA PRECO"
+ },
+ "60665981000118": {
+  "nome": "União Quimica Farmaceutica Nacional SA",
+  "abrev": "União Qui SP",
+  "matriz": "União Qui SP"
+ },
+ "02543945001319": {
+  "nome": "ULTRAFARMA SAUDE LTDA",
+  "abrev": "ULTRAFARMA",
+  "matriz": "ULTRAFARMA"
+ },
+ "59610485000188": {
+  "nome": "BISPHARMA  EMBALAGENS  LTDA.",
+  "abrev": "BISPHARMA  E",
+  "matriz": "BISPHARMA  E"
+ },
+ "01375753000144": {
+  "nome": "RODOBORGES EXPRESS E LOGISTICA INTEGRADA LTDA",
+  "abrev": "RODOBORGE SP",
+  "matriz": "RODOBORGE SP"
+ },
+ "01125797002402": {
+  "nome": "ATIVA DISTRIBUICAO E LOGISTICA LTDA",
+  "abrev": "ATIVA -SP3",
+  "matriz": "ATIVA -SP3"
+ },
+ "01125797000701": {
+  "nome": "ATIVA DISTRIBUICAO E LOGISTICA LTDA",
+  "abrev": "ATIVA - SP2",
+  "matriz": "ATIVA - SP2"
+ },
+ "92665611026133": {
+  "nome": "DIMED S/A - DISTRIBUIDORA DE MEDICAMENTOS",
+  "abrev": "DIMED ES",
+  "matriz": "DIMED RS"
+ },
+ "02177560000141": {
+  "nome": "IBA - INSTITUTO BENEFICENTE ACONCHEGO",
+  "abrev": "IBA INSTITU",
+  "matriz": "IBA INSTITU"
+ },
+ "08698543000640": {
+  "nome": "NATUS FARMA COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "NATUS FARMA",
+  "matriz": "NATUS FARMA"
+ },
+ "07224991001964": {
+  "nome": "NAZARIA DISTR DE PRODS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA MA 4",
+  "matriz": "NAZARIA"
+ },
+ "06057223044705": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS RO 2",
+  "matriz": "SENDAS SP"
+ },
+ "01125797000116": {
+  "nome": "ATIVA DISTRIBUICAO E LOGISTICA LTDA",
+  "abrev": "ATIVA - SP1",
+  "matriz": "ATIVA - SP1"
+ },
+ "31590792000125": {
+  "nome": "EPNB EMPRESA DE PRODUTOS NUTRACEUTICOS DO BRASIL LTDA",
+  "abrev": "EPNB Empresa",
+  "matriz": "EPNB Empresa"
+ },
+ "06057223043903": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223045272": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS BA 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223046910": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS BA 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223045191": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS BA 3",
+  "matriz": "SENDAS SP"
+ },
+ "79430682025540": {
+  "nome": "FARMACIA E DROGRARIA NISSEI S.A - FL 973",
+  "abrev": "NISSEI PR 1",
+  "matriz": "NISSEI"
+ },
+ "16778270000168": {
+  "nome": "BALOODESIGN PUBLICIDADE, DESIGN E MARKETING LTDA",
+  "abrev": "BALOODESIGN",
+  "matriz": "BALOODESIGN"
+ },
+ "06057223047216": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 4",
+  "matriz": "SENDAS SP"
+ },
+ "17917577000165": {
+  "nome": "RECIFE FARMA LTDA",
+  "abrev": "RECIFE FARMA",
+  "matriz": "RECIFE FARMA"
+ },
+ "06057223052724": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS BA1",
+  "matriz": "SENDAS SP"
+ },
+ "07648380000114": {
+  "nome": "CENTRAL ÚNICA DAS FAVELAS DE MINAS GERAIS",
+  "abrev": "CUFA - MG",
+  "matriz": "CUFA - MG"
+ },
+ "40709383000196": {
+  "nome": "HELIÓPOLIS FORTE",
+  "abrev": "CUFA - SP",
+  "matriz": "CUFA - SP"
+ },
+ "01206820002493": {
+  "nome": "PANPHARMA DIST. DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA AL",
+  "matriz": "STA CRUZ PE"
+ },
+ "21659253000222": {
+  "nome": "QUALIDOC FARMACIA DIGITAL LTDA",
+  "abrev": "QUALIDOC",
+  "matriz": "QUALIDOC"
+ },
+ "07224991002189": {
+  "nome": "NAZARIA DIST DE PROD FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA PI 3",
+  "matriz": "NAZARIA"
+ },
+ "18233211003406": {
+  "nome": "FL BRASIL HOLDING, LOGISTICA E TRANSPORTE LTDA",
+  "abrev": "FLBR - GRU",
+  "matriz": "FLBR - GRU"
+ },
+ "07213420001096": {
+  "nome": "MANTIQUEIRA DISTRIBUIDORA DE PRODUTOS DE HIGIENE LTDA",
+  "abrev": "MANTIQUEIRA",
+  "matriz": "MANTIQUEIRA"
+ },
+ "05999089000165": {
+  "nome": "DISLAB COMERCIAL FARMACEUTICA LTDA",
+  "abrev": "DISLAB RJ",
+  "matriz": "DISLAB SP"
+ },
+ "33971496000108": {
+  "nome": "GOOXXY BRASIL S.A.",
+  "abrev": "MASTER VERDE",
+  "matriz": "MASTER VERDE"
+ },
+ "05607657000801": {
+  "nome": "SCANSOURCE BRASIL DISTRIBUIDORA DE TECNOLOGIAS LTDA.",
+  "abrev": "SCANSOURCESC",
+  "matriz": "CDC BRASIL"
+ },
+ "06057223046759": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS SP 2",
+  "matriz": "SENDAS SP"
+ },
+ "18233211007576": {
+  "nome": "FL BRASIL HOLDING, LOGISTICA E TRANSPORTE LTDA.",
+  "abrev": "FEMSA-EXP2",
+  "matriz": "FEMSA-EXP2"
+ },
+ "06057223053100": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS CE 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223053020": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS CE 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223052996": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS CE 6",
+  "matriz": "SENDAS SP"
+ },
+ "06057223053372": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223054344": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS GO 12",
+  "matriz": "SENDAS SP"
+ },
+ "45453214003924": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA SP2",
+  "matriz": "PROFARMA BA"
+ },
+ "44463156002802": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED PR",
+  "matriz": "SERVIMED SP"
+ },
+ "95591723012982": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT-RNNAT",
+  "matriz": "TNT-RNNAT"
+ },
+ "32279934000109": {
+  "nome": "ANDRADE FIGUEREDO MEDICAMENTOS LTDA",
+  "abrev": "ANDRADE FIG",
+  "matriz": "ANDRADE FIG"
+ },
+ "84583129001212": {
+  "nome": "REDE DE LOGISTICA FARMACEUTICA DINAMICA LTDA",
+  "abrev": "RD FARMA",
+  "matriz": "RD FARMA"
+ },
+ "20739844000166": {
+  "nome": "MODENA & SILVA LTDA",
+  "abrev": "MODENA",
+  "matriz": "MODENA"
+ },
+ "95591723018409": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "FEDEX- TNT",
+  "matriz": "FEDEX- TNT"
+ },
+ "95591723016201": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT - PAANA",
+  "matriz": "TNT - PAANA"
+ },
+ "95591723012478": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT-ALMCZ",
+  "matriz": "TNT-ALMCZ"
+ },
+ "95591723011900": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT-BASSA",
+  "matriz": "TNT-BASSA"
+ },
+ "95591723013288": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT-MASLZ",
+  "matriz": "TNT-MASLZ"
+ },
+ "95591723013369": {
+  "nome": "TNT MERCURIO CARGAS E ENCOMENDAS EXPRESSAS LTDA",
+  "abrev": "TNT-PITHE",
+  "matriz": "TNT-PITHE"
+ },
+ "06057223049006": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 5",
+  "matriz": "SENDAS SP"
+ },
+ "13311080000148": {
+  "nome": "DISTRIBUIDORA VALE DAS ACÁCIAS LTDA",
+  "abrev": "VALE DAS ACA",
+  "matriz": "VALE DAS ACA"
+ },
+ "79022877000133": {
+  "nome": "JOHNMAR COMERCIO E REPRESENTACOES LTDA",
+  "abrev": "JOHNMAR",
+  "matriz": "JOHNMAR"
+ },
+ "06057223054000": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223052643": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS DF 6",
+  "matriz": "SENDAS SP"
+ },
+ "06057223053968": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS TO",
+  "matriz": "SENDAS SP"
+ },
+ "66471517002382": {
+  "nome": "DPC DISTRIBUIDOR ATACADISTA S/A",
+  "abrev": "DPC SC",
+  "matriz": "DPC"
+ },
+ "01520248000499": {
+  "nome": "MARQUES & MELO LTDA",
+  "abrev": "DISMELO RR",
+  "matriz": "DISMELO"
+ },
+ "12471040000109": {
+  "nome": "CRISTIAN VIEIRA NUNES",
+  "abrev": "CRISTIAN VIE",
+  "matriz": "CRISTIAN VIE"
+ },
+ "02831172000132": {
+  "nome": "KOCH HIPERMERCADO S/A",
+  "abrev": "KOCH",
+  "matriz": "KOCH"
+ },
+ "06057223055588": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS RJ 2",
+  "matriz": "SENDAS SP"
+ },
+ "08030363000696": {
+  "nome": "SUPERMERCADO NORDESTAO LTDA",
+  "abrev": "NORDESTAO",
+  "matriz": "NORDESTAO"
+ },
+ "45623882000180": {
+  "nome": "LILA LEMOS REPRESENTACOES LTDA",
+  "abrev": "LILA LEMOS",
+  "matriz": "LILA LEMOS"
+ },
+ "18902047000106": {
+  "nome": "BELPORTO COSMETICOS LTDA",
+  "abrev": "COPEMI",
+  "matriz": "COPEMI"
+ },
+ "47183281000129": {
+  "nome": "MC REPRESENTACAO",
+  "abrev": "MC REPRESENT",
+  "matriz": "MC REPRESENT"
+ },
+ "23806587000126": {
+  "nome": "SHIMA REPRESENTACOES LTDA",
+  "abrev": "SHIMA REPRES",
+  "matriz": "SHIMA REPRES"
+ },
+ "45289573000115": {
+  "nome": "2ZN REPRESENTACOES DE PRODUTOS ALIMENTIC",
+  "abrev": "2ZN REPRESEN",
+  "matriz": "2ZN REPRESEN"
+ },
+ "19039861000101": {
+  "nome": "D MELO COMERCIO E REPRESENTACAO LTDA",
+  "abrev": "D MELO COMER",
+  "matriz": "D MELO COMER"
+ },
+ "32145879000156": {
+  "nome": "FT DISTRIBUIDORA E REPRESENTACAO LTDA",
+  "abrev": "FT CONSULTIN",
+  "matriz": "FT CONSULTIN"
+ },
+ "34480288000160": {
+  "nome": "QUBIT MARKETPLACE DISTRIB E COM LTDA",
+  "abrev": "V2FARMA",
+  "matriz": "V2FARMA"
+ },
+ "34480288000241": {
+  "nome": "QUBIT MARKETPLACE DISTRIB E COM LTDA",
+  "abrev": "V2FARMA MG",
+  "matriz": "V2FARMA"
+ },
+ "66438011000166": {
+  "nome": "DIST CENTRO OESTE DE MEDICAMENTOS LTDA",
+  "abrev": "DISTRIMED",
+  "matriz": "DISTRIMED"
+ },
+ "06057223051752": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 6",
+  "matriz": "SENDAS SP"
+ },
+ "06057223051329": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MG 7",
+  "matriz": "SENDAS SP"
+ },
+ "44463156002713": {
+  "nome": "SERVIMED COMERCIAL LTDA",
+  "abrev": "SERVIMED RJ",
+  "matriz": "SERVIMED SP"
+ },
+ "37752864000250": {
+  "nome": "V N FERNANDES SOLUÇÕES DE ECOMMERCE",
+  "abrev": "NOVUS",
+  "matriz": "NOVUS"
+ },
+ "43015537000219": {
+  "nome": "PROFARMA DISTR DE PROD HIGIE E BELEZA LTDA",
+  "abrev": "PROFARMA RJ2",
+  "matriz": "PROFARMA BA"
+ },
+ "49698723003110": {
+  "nome": "M.CASSAB COMERCIO E INDUSTRIA LTDA",
+  "abrev": "MCASSAB.COM",
+  "matriz": "MCASSAB.COM"
+ },
+ "06057223053615": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS RJ 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223051400": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS RJ 4",
+  "matriz": "SENDAS SP"
+ },
+ "21571888000192": {
+  "nome": "STAR BRASIL DISTRIBUIDORA DE PRODUTOS LTDA",
+  "abrev": "STAR BRASIL",
+  "matriz": "STAR BRASIL"
+ },
+ "61585865288660": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA MT",
+  "matriz": "RAIA"
+ },
+ "35298827000370": {
+  "nome": "RIOGRANDENSE DISTRIBUIDORA LTDA",
+  "abrev": "RIOGRANDENSE",
+  "matriz": "RIOGRANDENSE"
+ },
+ "62321138000220": {
+  "nome": "GRECO & GUERREIRO LTDA",
+  "abrev": "GRECO & GUER",
+  "matriz": "GRECO & GUER"
+ },
+ "45453214004068": {
+  "nome": "PROFARMA DISTR. DE PROD. FARMACEUTICOS SA",
+  "abrev": "PROFARMA PE2",
+  "matriz": "PROFARMA BA"
+ },
+ "66438011000328": {
+  "nome": "DIST CENTRO OESTE DE MEDICAMENTOS LTDA",
+  "abrev": "DISTRIMED 2",
+  "matriz": "DISTRIMED"
+ },
+ "70089974000179": {
+  "nome": "COMERCIAL VITA NORTE LTDA",
+  "abrev": "CADAN",
+  "matriz": "CADAN"
+ },
+ "70089974000330": {
+  "nome": "COMERCIAL VITA NORTE LTDA",
+  "abrev": "CADAN FILIAL",
+  "matriz": "CADAN"
+ },
+ "38221229000129": {
+  "nome": "VITALY DISTR. PROD. HOSP. ALIM. E COSMETICOS LTDA",
+  "abrev": "VITALY RJ",
+  "matriz": "VITALY RJ"
+ },
+ "37953982000146": {
+  "nome": "B2BX REPRESENTACAO LTDA",
+  "abrev": "B2BX",
+  "matriz": "B2BX"
+ },
+ "14197457000142": {
+  "nome": "ASSOCIACAO AUXILIO A RECICLAGEM DE ELETRONICOS E INCLUSAO DIGITAL - ECOBRAZ",
+  "abrev": "ECOBRAZ",
+  "matriz": "ECOBRAZ"
+ },
+ "02831172001104": {
+  "nome": "KOCH HIPERMERCADO S/A",
+  "abrev": "KOCH FILIAL",
+  "matriz": "KOCH"
+ },
+ "15072873000187": {
+  "nome": "M. R. CARDOSO OLIVEIRA E CIA LTDA",
+  "abrev": "M. R. CARDOS",
+  "matriz": "M. R. CARDOS"
+ },
+ "34580109000167": {
+  "nome": "CH&F MULTI REPRESENTACOES LTDA",
+  "abrev": "CH&F MULTI",
+  "matriz": "CH&F MULTI"
+ },
+ "30986545000180": {
+  "nome": "ARTHELO REPRESENTACOES LTDA",
+  "abrev": "ARTHELO REPR",
+  "matriz": "ARTHELO REPR"
+ },
+ "11914445000101": {
+  "nome": "DIO BERKANA MARKETING COMUNICACAO VIAGENS E CONGRESSOS LTDA",
+  "abrev": "DIO MARKETIN",
+  "matriz": "DIO MARKETIN"
+ },
+ "45143101000150": {
+  "nome": "ELDORADO DISTRIBUICAO DE BENS DE CONSUMO E DE HIGIENE PESSOAL LTDA.",
+  "abrev": "ELDORADO ES",
+  "matriz": "ELDORADO ES"
+ },
+ "35590976000146": {
+  "nome": "CAROLINA SAMPAIO GOES MANHAES DE ALMEIDA LTDA.",
+  "abrev": "CAROLINA SAM",
+  "matriz": "CAROLINA SAM"
+ },
+ "42235326000148": {
+  "nome": "AROLE COMERCIO E REPRESENTACOES LTDA",
+  "abrev": "AROLE COMERC",
+  "matriz": "AROLE COMERC"
+ },
+ "01206820003112": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA PI",
+  "matriz": "STA CRUZ PE"
+ },
+ "04240370001986": {
+  "nome": "MERCANTIL NOVA ERA LTDA",
+  "abrev": "NOVA ERA 2",
+  "matriz": "NOVA ERA"
+ },
+ "35298827000450": {
+  "nome": "RIOGRANDENSE DISTRIBUIDORA LTDA",
+  "abrev": "RIOGRAND PB",
+  "matriz": "RIOGRANDENSE"
+ },
+ "10970887015045": {
+  "nome": "FEDEX BRASIL LOGISTICA E TRANSPORTE LTDA",
+  "abrev": "FEDEX - CE",
+  "matriz": "FEDEX - CE"
+ },
+ "03753945000415": {
+  "nome": "ANDRADE DISTRIBUIDOR LTDA",
+  "abrev": "ANDRADE SE",
+  "matriz": "ANDRADE"
+ },
+ "01206820003031": {
+  "nome": "PANPHARMA DIST. DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA OD",
+  "matriz": "STA CRUZ PE"
+ },
+ "14741172000120": {
+  "nome": "MIX CERTO DISTRIBUIDORA DE COSMETICOS ALIMENTOS E LIMPEZA LTDA",
+  "abrev": "ZAMBONI RJ",
+  "matriz": "ZAMBONI"
+ },
+ "42023451000194": {
+  "nome": "LA PLAGE BEACH TENNIS & SPORTS LTDA",
+  "abrev": "LA PLAGE BEA",
+  "matriz": "LA PLAGE BEA"
+ },
+ "06698001000219": {
+  "nome": "MB5 - COMERCIO IMPORTACAO E EXPORTACAO LTDA",
+  "abrev": "MB 5 ES",
+  "matriz": "MB 5 ES"
+ },
+ "42996278000100": {
+  "nome": "SKALIL COMERCIO DE ROUPAS E ACESSORIOS ESPORTIVOS LTDA",
+  "abrev": "TRACK&FIELD",
+  "matriz": "TRACK&FIELD"
+ },
+ "06057223027703": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS SP 3",
+  "matriz": "SENDAS SP"
+ },
+ "38036306000170": {
+  "nome": "AR3 GESTAO E SERVICOS LTDA",
+  "abrev": "AR3 GESTAO",
+  "matriz": "AR3 GESTAO"
+ },
+ "03520924000107": {
+  "nome": "INVICTA PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "INVICTA MA",
+  "matriz": "INVICTA MA"
+ },
+ "07216054000642": {
+  "nome": "J SLEIMAN S.A. COMERCIO DE PRODUTOS DE HIGIENE E ALIMENTOS",
+  "abrev": "J SLEIMAN CE",
+  "matriz": "J SLEIMAN"
+ },
+ "34831119000128": {
+  "nome": "REIS REPRESENTACAO COMERCIAL LTDA",
+  "abrev": "REIS REPRESE",
+  "matriz": "REIS REPRESE"
+ },
+ "83483230000186": {
+  "nome": "SELBETTI TECNOLOGIA S.A",
+  "abrev": "SELBETTI TEC",
+  "matriz": "SELBETTI TEC"
+ },
+ "45027395000154": {
+  "nome": "DAKI CD BARUERI LTDA.",
+  "abrev": "DAKI SP",
+  "matriz": "DAKI MG"
+ },
+ "43977505000113": {
+  "nome": "DAKI BELO HORIZONTE LTDA",
+  "abrev": "DAKI MG",
+  "matriz": "DAKI MG"
+ },
+ "44072235000164": {
+  "nome": "DAKI CD VASCO DA GAMA LTDA",
+  "abrev": "DAKI RJ",
+  "matriz": "DAKI MG"
+ },
+ "09256138000120": {
+  "nome": "SOTON FARMA LTDA",
+  "abrev": "SOTON FARMA",
+  "matriz": "SOTON FARMA"
+ },
+ "06057223055154": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS MG 8",
+  "matriz": "SENDAS SP"
+ },
+ "06103531000196": {
+  "nome": "TATICA - MARKETING ESPORTIVO LTDA",
+  "abrev": "TATICA MKT",
+  "matriz": "TATICA MKT"
+ },
+ "46054219000840": {
+  "nome": "SOLFARMA COMERCIO DE PRODUTOS FARMACEUTICOS S.A.",
+  "abrev": "SOLFARMA",
+  "matriz": "SOLFARMA"
+ },
+ "11137051080783": {
+  "nome": "BOTICARIO PRODUTOS DE BELEZA LTDA",
+  "abrev": "BOTICARIO PR",
+  "matriz": "BELEZA.COM"
+ },
+ "17745613007163": {
+  "nome": "SUPERMERCADO BAHAMAS S/A",
+  "abrev": "BAHAMAS MG",
+  "matriz": "BAHAMAS MG"
+ },
+ "22959521000103": {
+  "nome": "CH REPRESENTACOES E ASSESSORIA LTDA",
+  "abrev": "CH REPRESENT",
+  "matriz": "CH REPRESENT"
+ },
+ "20139426000138": {
+  "nome": "OLIVEIRA & LEAO REPRESENTACOES COMERCIAIS LTDA",
+  "abrev": "OLIVEIRA LEA",
+  "matriz": "OLIVEIRA LEA"
+ },
+ "44768755000106": {
+  "nome": "OLIVEIRA E TRENTO ASSESSORIA E REPRESENTACAO LTDA",
+  "abrev": "OLIVEIRA TRE",
+  "matriz": "OLIVEIRA TRE"
+ },
+ "50533947000136": {
+  "nome": "E S MAIA SALVADOS",
+  "abrev": "IMPERIO SALV",
+  "matriz": "IMPERIO SALV"
+ },
+ "21448508000127": {
+  "nome": "TFSPORTS EVENTOS ESPORTIVOS LTDA.",
+  "abrev": "TFSPORTS",
+  "matriz": "TFSPORTS"
+ },
+ "34931544000199": {
+  "nome": "JM-CCM-RR COMERCIO E SERVICOS - LTDA",
+  "abrev": "TENNIS EXPER",
+  "matriz": "TENNIS EXPER"
+ },
+ "61585865288406": {
+  "nome": "RAIA S/A",
+  "abrev": "RAIA PA",
+  "matriz": "RAIA"
+ },
+ "23698102000128": {
+  "nome": "SL SERVICOS E ORGANIZACAO DE EVENTOS LTDA",
+  "abrev": "SL SERVICOS",
+  "matriz": "SL SERVICOS"
+ },
+ "01157555000104": {
+  "nome": "TENDA ATACADO SA",
+  "abrev": "TENDA SP",
+  "matriz": "TENDA SP"
+ },
+ "01157555001186": {
+  "nome": "TENDA ATACADO SA",
+  "abrev": "TENDA SP 2",
+  "matriz": "TENDA SP"
+ },
+ "61940292007069": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ RJ2",
+  "matriz": "STA CRUZ PE"
+ },
+ "23637077001063": {
+  "nome": "P. SEVERINI NETTO COMERCIAL LTDA",
+  "abrev": "V2FARMA GO",
+  "matriz": "V2FARMA"
+ },
+ "30843329000185": {
+  "nome": "IMPACTO EVENTOS E PROMOCOES LTDA",
+  "abrev": "IMPACTO",
+  "matriz": "IMPACTO"
+ },
+ "84487131000801": {
+  "nome": "MAPEMI - BRASIL MATERIAIS MEDICOS E ODONTOLOGICOS LTDA",
+  "abrev": "MAPEMI RO",
+  "matriz": "MAPEMI"
+ },
+ "00462691001974": {
+  "nome": "UPS DO BRASIL REMESSAS EXPRESSAS LTDA",
+  "abrev": "UPS III",
+  "matriz": "UPS III"
+ },
+ "08450457000100": {
+  "nome": "EPOCA COMERCIO E DISTRIBUICAO DE PRODUTOS ALIMENTICIOS E INDUSTRIALIZADOS LTDA",
+  "abrev": "EPOCA MG",
+  "matriz": "EPOCA MG"
+ },
+ "03007331002438": {
+  "nome": "EBAZAR.COM.BR. LTDA",
+  "abrev": "EBAZAR SP",
+  "matriz": "EBAZAR"
+ },
+ "34480288000403": {
+  "nome": "QUBIT MARKETPLACE DISTRIBUIDORA E COMERCIO LTDA",
+  "abrev": "V2FARMA SP",
+  "matriz": "V2FARMA"
+ },
+ "72381189001435": {
+  "nome": "DELL COMPUTADORES DO BRASIL LTDA",
+  "abrev": "DELL SP",
+  "matriz": "DELL SP"
+ },
+ "28525600000516": {
+  "nome": "DROGARIA MODENA LTDA",
+  "abrev": "MODENA PA",
+  "matriz": "MODENA"
+ },
+ "27311109000104": {
+  "nome": "SOORETAMA COMERCIO DE PRODUTOS ALIMENTICIOS LTDA",
+  "abrev": "SOORETAMA",
+  "matriz": "SOORETAMA"
+ },
+ "61940292007220": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ ES2",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820003465": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMAES2",
+  "matriz": "STA CRUZ PE"
+ },
+ "27875805000135": {
+  "nome": "YVA PACK INDUSTRIA E COMERCIO LTDA",
+  "abrev": "YVA PACK",
+  "matriz": "YVA PACK"
+ },
+ "84487131000720": {
+  "nome": "MAPEMI - BRASIL MATERIAIS MEDICOS E ODONTOLOGICOS LTDA",
+  "abrev": "MAPEMI RO 2",
+  "matriz": "MAPEMI"
+ },
+ "08623909000108": {
+  "nome": "TRADE WAY TRANSPORTES, SERVICOS, DISTRIBUICAO E COMERCIO LTDA",
+  "abrev": "TRADE LOG",
+  "matriz": "TRADE LOG"
+ },
+ "02029746000315": {
+  "nome": "INDUSTRIAL E COMERCIAL BELLA PLUS LTDA",
+  "abrev": "BELLA PLUS 2",
+  "matriz": "BELLA PLUS 2"
+ },
+ "01206820003201": {
+  "nome": "SC DISTRIBUICAO LTDA",
+  "abrev": "PANPHARMACE2",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820003546": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMAMG2",
+  "matriz": "STA CRUZ PE"
+ },
+ "61940292007301": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ MG2",
+  "matriz": "STA CRUZ PE"
+ },
+ "09384473000104": {
+  "nome": "DECONSULT MARKETING LTDA",
+  "abrev": "DECONSULT",
+  "matriz": "DECONSULT"
+ },
+ "42150391005059": {
+  "nome": "BRASKEM S.A",
+  "abrev": "BRASKEM",
+  "matriz": "BRASKEM"
+ },
+ "47234681000116": {
+  "nome": "ADT COMUNICACAO E MARKETING LTDA",
+  "abrev": "ADT MKT",
+  "matriz": "ADT MKT"
+ },
+ "15135338001019": {
+  "nome": "T. GLOBO IMPORTACAO E EXPORTACAO LTDA",
+  "abrev": "T.GLOBO IMP",
+  "matriz": "T.GLOBO IMP"
+ },
+ "82873068000816": {
+  "nome": "GENESIO A MENDES & CIA LTDA",
+  "abrev": "GAM DIST. DF",
+  "matriz": "DISTRIB GAM"
+ },
+ "61940292006925": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ ODE",
+  "matriz": "STA CRUZ PE"
+ },
+ "45453214004149": {
+  "nome": "PROFARMA DISTR DE PROD FARMACÊUTICOS S/A",
+  "abrev": "PROFARMA MT",
+  "matriz": "PROFARMA BA"
+ },
+ "11137051080945": {
+  "nome": "BOTICARIO PRODUTOS DE BELEZA LTDA",
+  "abrev": "BLZ WEB CAJA",
+  "matriz": "BELEZA.COM"
+ },
+ "06057223055740": {
+  "nome": "SENDAS DISTRIBUIDORA S A",
+  "abrev": "SENDAS MT 6",
+  "matriz": "SENDAS SP"
+ },
+ "33971496000280": {
+  "nome": "MASTER VERDE DISTRIB E COM DE PROD LTDA",
+  "abrev": "MVERDE DISTR",
+  "matriz": "MASTER VERDE"
+ },
+ "02543945001408": {
+  "nome": "ULTRAFARMA SAUDE LTDA",
+  "abrev": "ULTRAFARMA 2",
+  "matriz": "ULTRAFARMA"
+ },
+ "41196974000170": {
+  "nome": "CSA REPRESENTACOES LTDA",
+  "abrev": "CSA",
+  "matriz": "CSA"
+ },
+ "46054219000174": {
+  "nome": "SOLFARMA COMERCIO DE PRODUTOS FARMACEUTICOS S.A.",
+  "abrev": "SOLFARMA SP",
+  "matriz": "SOLFARMA"
+ },
+ "60628369000337": {
+  "nome": "RADIO E TELEVISAO RECORD S.A",
+  "abrev": "RECORD NEWS",
+  "matriz": "RECORD NEWS"
+ },
+ "43214055001693": {
+  "nome": "MARTINS COMERCIO E SERVICOS DE DISTRIBUICAO S/A",
+  "abrev": "MARTINS PB",
+  "matriz": "MARTINS"
+ },
+ "01206820003384": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMASP2",
+  "matriz": "STA CRUZ PE"
+ },
+ "33892715000155": {
+  "nome": "A2 INOVATION REPRESENTACAO COMERCIAL SERVICOS E EVENTOS LTDA",
+  "abrev": "A2 INOVATION",
+  "matriz": "A2 INOVATION"
+ },
+ "36321523000187": {
+  "nome": "LD Cargo Soluções Logísticas",
+  "abrev": "LD Cargo Sol",
+  "matriz": "LD Cargo Sol"
+ },
+ "30161098000120": {
+  "nome": "BARCELOS PUB LTDA",
+  "abrev": "BARCELOS",
+  "matriz": "BARCELOS"
+ },
+ "15436940001410": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON RJ",
+  "matriz": "AMAZON SP"
+ },
+ "15436940001509": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON PE 2",
+  "matriz": "AMAZON SP"
+ },
+ "54505052000300": {
+  "nome": "MINALBA ALIMENTOS E BEBIDAS LTDA",
+  "abrev": "MINALBA SP",
+  "matriz": "MINALBA SP"
+ },
+ "54505052000904": {
+  "nome": "MINALBA ALIMENTOS E BEBIDAS LTDA",
+  "abrev": "MINALBA SP 2",
+  "matriz": "MINALBA SP"
+ },
+ "06057223049189": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223043229": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PB 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223040980": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223048700": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PB 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223028181": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 4",
+  "matriz": "SENDAS SP"
+ },
+ "06057223028505": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223030160": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 6",
+  "matriz": "SENDAS SP"
+ },
+ "06057223042761": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 7",
+  "matriz": "SENDAS SP"
+ },
+ "06057223053453": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PB 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223051914": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS AL 3",
+  "matriz": "SENDAS SP"
+ },
+ "06057223052058": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS AL 5",
+  "matriz": "SENDAS SP"
+ },
+ "06057223049502": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS RN 1",
+  "matriz": "SENDAS SP"
+ },
+ "06057223037768": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 8",
+  "matriz": "SENDAS SP"
+ },
+ "06057223038810": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 9",
+  "matriz": "SENDAS SP"
+ },
+ "06057223028939": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 10",
+  "matriz": "SENDAS SP"
+ },
+ "11064350000138": {
+  "nome": "CEM COMERCIO E DISTRIBUICAO DE GENEROS ALIMENTICIOS LTDA",
+  "abrev": "C M DISTRIB",
+  "matriz": "EPOCA MG"
+ },
+ "06057223027967": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 11",
+  "matriz": "SENDAS SP"
+ },
+ "06057223028009": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 12",
+  "matriz": "SENDAS SP"
+ },
+ "06057223053291": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS RN 2",
+  "matriz": "SENDAS SP"
+ },
+ "06057223046597": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 13",
+  "matriz": "SENDAS SP"
+ },
+ "06057223051590": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS PE 14",
+  "matriz": "SENDAS SP"
+ },
+ "06057223033770": {
+  "nome": "SENDAS DISTRIBUIDORA S/A",
+  "abrev": "SENDAS RN 3",
+  "matriz": "SENDAS SP"
+ },
+ "01206820003708": {
+  "nome": "PANPHARMA DISTRIBUIDORA DE MEDICAMENTOS LTDA",
+  "abrev": "PANPHARMA RS",
+  "matriz": "STA CRUZ PE"
+ },
+ "34107370000144": {
+  "nome": "GIANINA SAO PAULO DISTRIBUIDORA LTDA",
+  "abrev": "GIANINA SP",
+  "matriz": "GIANINA SP"
+ },
+ "13262385000107": {
+  "nome": "GIANINA DRACENA DISTRIBUIDORA LTDA.",
+  "abrev": "GIANINA SP 2",
+  "matriz": "GIANINA SP"
+ },
+ "24715566000168": {
+  "nome": "GIANINA RIO CLARO DISTRIBUICAO HIGIENE E PERFUMARIA LTDA",
+  "abrev": "GIANINA SP 3",
+  "matriz": "GIANINA SP"
+ },
+ "37639126000110": {
+  "nome": "ARCOZ DISTRIBUIDORA LTDA",
+  "abrev": "ARCOZ SP",
+  "matriz": "ARCOZ SP"
+ },
+ "45453214004220": {
+  "nome": "PROFARMA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS S.A",
+  "abrev": "PROFARMA ES2",
+  "matriz": "PROFARMA BA"
+ },
+ "61940292007140": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "STA CRUZ SP2",
+  "matriz": "STA CRUZ PE"
+ },
+ "46054219001065": {
+  "nome": "SOLFARMA COMERCIO DE PRODUTOS FARMACEUTICOS S.A.",
+  "abrev": "SOLFARMA SP2",
+  "matriz": "SOLFARMA"
+ },
+ "15436940001681": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON CE",
+  "matriz": "AMAZON SP"
+ },
+ "47739682000112": {
+  "nome": "KDOIS LOCACAO E VENDA DE EQUIPAMENTOS LTDA",
+  "abrev": "KDOIS LOCACA",
+  "matriz": "KDOIS LOCACA"
+ },
+ "07016627000260": {
+  "nome": "MARQUES & SASSO LTDA - TRACK & FIELD",
+  "abrev": "MARQUES SASS",
+  "matriz": "MARQUES SASS"
+ },
+ "74522061000155": {
+  "nome": "LC DO BRASIL TRANSPORTES LTDA",
+  "abrev": "LC DO BRASIL",
+  "matriz": "LC DO BRASIL"
+ },
+ "15436940001762": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON PE 1",
+  "matriz": "AMAZON SP"
+ },
+ "50470604000170": {
+  "nome": "ACJ FRANQUIAS LTDA",
+  "abrev": "TRACK&FIELDI",
+  "matriz": "TRACK&FIELDI"
+ },
+ "50657322000186": {
+  "nome": "BRUCON ARARAQUARA COMERCIO DE ARTIGOS ESPORTIVOS LTDA",
+  "abrev": "BRUCON",
+  "matriz": "BRUCON"
+ },
+ "42362164000109": {
+  "nome": "JARDIM BELVEDERE COMERCIO VAREJISTA LTDA",
+  "abrev": "TRACKFIEL MG",
+  "matriz": "TRACKFIEL MG"
+ },
+ "30395737000200": {
+  "nome": "TTM COMERCIO DE ARTIGOS ESPORTIVOS LTDA",
+  "abrev": "TRACKFIEL PR",
+  "matriz": "TRACKFIEL PR"
+ },
+ "52367766000102": {
+  "nome": "R G COMERCIO E EMPREENDIMENTOS LTDA",
+  "abrev": "TRACKFIEL MA",
+  "matriz": "TRACKFIEL MA"
+ },
+ "33661590000152": {
+  "nome": "L.C COMERCIO DE VESTUARIOS LTDA",
+  "abrev": "TRACKFIEL SP",
+  "matriz": "TRACKFIEL SP"
+ },
+ "30518069000172": {
+  "nome": "TF SALVADOR COMERCIO DE ARTIGOS ESPORTIVOS LTDA",
+  "abrev": "TRACKFIEL BA",
+  "matriz": "TRACKFIEL BA"
+ },
+ "15293880000109": {
+  "nome": "HORIZONTE COMERCIO DE ARTIGOS ESPORTIVOS LTDA.",
+  "abrev": "TRACKFIEL GO",
+  "matriz": "TRACKFIEL GO"
+ },
+ "26437272000147": {
+  "nome": "LUZ COMERCIO DE ARTIGOS ESPORTIVOS LTDA",
+  "abrev": "TRACKFIELGO2",
+  "matriz": "TRACKFIELGO2"
+ },
+ "03262073000573": {
+  "nome": "RCR REPRESENTAÇÕES E SERVIÇOS LTDA 2",
+  "abrev": "RCR REPRESEN",
+  "matriz": "RCR"
+ },
+ "16577013000168": {
+  "nome": "GYM SUD PRODUTOS ESPORTIVOS E MODA PRAIA LTDA",
+  "abrev": "TRACKFIEL PE",
+  "matriz": "TRACKFIEL PE"
+ },
+ "27582670000110": {
+  "nome": "INTERTAQUARAL SPORTS ARTIGOS ESPORTIVOS LTDA",
+  "abrev": "TRACKFIELSP2",
+  "matriz": "TRACKFIELSP2"
+ },
+ "23713939000107": {
+  "nome": "CINTIA MARIA FAUSTINO FELIX 11412702771",
+  "abrev": "AZ MARIAS",
+  "matriz": "AZ MARIAS"
+ },
+ "46549783000168": {
+  "nome": "SELFIE SERVICE PRODUCOES LTDA",
+  "abrev": "SELFIE SERV",
+  "matriz": "SELFIE SERV"
+ },
+ "24445585000111": {
+  "nome": "BIABETICA SAUDE E COMUNICACAO LTDA",
+  "abrev": "BIABETICA",
+  "matriz": "BIABETICA"
+ },
+ "15727497000111": {
+  "nome": "BITE PRODUCOES ARTISTICAS LTDA",
+  "abrev": "BITE PRODUC",
+  "matriz": "BITE PRODUC"
+ },
+ "42544795000149": {
+  "nome": "FOSCACHES REPRESENTACAO COMERCIAL LTDA",
+  "abrev": "FOSCACHES",
+  "matriz": "FOSCACHES"
+ },
+ "23048790000261": {
+  "nome": "4 ELOS DISTRIBUIDORA LTDA",
+  "abrev": "4 ELOS ES",
+  "matriz": "4 ELOS ES"
+ },
+ "02251194000123": {
+  "nome": "AMA TRABALHO TEMPORARIO LTDA",
+  "abrev": "AMA TRABALHO",
+  "matriz": "AMA TRABALHO"
+ },
+ "61585865342460": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA GO",
+  "matriz": "RAIA"
+ },
+ "15436940001843": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON SP 4",
+  "matriz": "AMAZON SP"
+ },
+ "01206820003899": {
+  "nome": "SC DISTRIBUIÇÃO LTDA",
+  "abrev": "PANPHARMAMG3",
+  "matriz": "STA CRUZ PE"
+ },
+ "27280857000169": {
+  "nome": "FIRMO CAVALCANTI LTDA",
+  "abrev": "FIRMO CAVALC",
+  "matriz": "FIRMO CAVALC"
+ },
+ "23048790000180": {
+  "nome": "4 ELOS DISTRIBUIDORA LTDA",
+  "abrev": "4 ELOS RJ",
+  "matriz": "4 ELOS ES"
+ },
+ "83648477000105": {
+  "nome": "GIASSI & CIA LTDA",
+  "abrev": "GIASSI SC",
+  "matriz": "GIASSI SC"
+ },
+ "82956160000173": {
+  "nome": "MUNDIALMIX COMERCIO DE ALIMENTOS LTDA",
+  "abrev": "MUNDIALMIX",
+  "matriz": "MUNDIALMIX"
+ },
+ "82956160004322": {
+  "nome": "MUNDIALMIX COMERCIO DE ALIMENTOS LTDA",
+  "abrev": "MUNDIALMIX 2",
+  "matriz": "MUNDIALMIX"
+ },
+ "82956160005809": {
+  "nome": "MUNDIALMIX COMERCIO DE ALIMENTOS LTDA",
+  "abrev": "MUNDIALMIX 3",
+  "matriz": "MUNDIALMIX"
+ },
+ "00048785004674": {
+  "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+  "abrev": "INDAIA BA",
+  "matriz": "MINALBA SP"
+ },
+ "00048785003279": {
+  "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+  "abrev": "INDAIA PB",
+  "matriz": "MINALBA SP"
+ },
+ "00048785001810": {
+  "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+  "abrev": "INDAIA PE",
+  "matriz": "MINALBA SP"
+ },
+ "00048785002892": {
+  "nome": "INDAIA BRASIL AGUAS MINERAIS LTDA",
+  "abrev": "INDAIA CE",
+  "matriz": "MINALBA SP"
+ },
+ "60698771000126": {
+  "nome": "INOVALAB DO BRASIL LTDA",
+  "abrev": "INOVALAB MG",
+  "matriz": "INOVALAB MG"
+ },
+ "07224991002340": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA AL",
+  "matriz": "NAZARIA"
+ },
+ "54505052000220": {
+  "nome": "MINALBA ALIMENTOS E BEBIDAS LTDA",
+  "abrev": "MINALBA SP 3",
+  "matriz": "MINALBA SP"
+ },
+ "07224991001107": {
+  "nome": "NAZARIA DISTRIBUIDORA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "NAZARIA AL 2",
+  "matriz": "NAZARIA"
+ },
+ "65897910001306": {
+  "nome": "TAUSTE SUPERMERCADOS LTDA",
+  "abrev": "TAUSTE SP",
+  "matriz": "TAUSTE SP"
+ },
+ "01206820004518": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "SC DIST MT",
+  "matriz": "STA CRUZ PE"
+ },
+ "01206820004437": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "SC DIST MS",
+  "matriz": "STA CRUZ PE"
+ },
+ "61585865337202": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA ES",
+  "matriz": "RAIA"
+ },
+ "88212113111947": {
+  "nome": "COMERCIO DE MEDICAMENTOS BRAIR LTDA",
+  "abrev": "SÃO JOÃO FAR",
+  "matriz": "SÃO JOÃO"
+ },
+ "10344758000109": {
+  "nome": "ALEMOLDE INDUSTRIA E COMERCIO DE EMBALAGENS DE MATERIAL PLASTICO LTDA",
+  "abrev": "ALEMOLDE",
+  "matriz": "ALEMOLDE"
+ },
+ "41550495000100": {
+  "nome": "ST MARTECH TECNOLOGY LTDA.",
+  "abrev": "SIMPLES TRAD",
+  "matriz": "SIMPLES TRAD"
+ },
+ "06036468000112": {
+  "nome": "FOCO ASSESSORIA E CONSULTORIA LEGISLATIVA LTDA",
+  "abrev": "FOCO ASSESSO",
+  "matriz": "FOCO ASSESSO"
+ },
+ "56145589000170": {
+  "nome": "KFG PARTICIPACOES LTDA",
+  "abrev": "KFG",
+  "matriz": "KFG"
+ },
+ "15436940003706": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON MG 2",
+  "matriz": "AMAZON SP"
+ },
+ "15436940003544": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+  "abrev": "AMAZON RJ 2",
+  "matriz": "AMAZON SP"
+ },
+ "15436940003463": {
+  "nome": "AMAZON SERVICOS DE VAREJO DO BRASILLTDA.",
+  "abrev": "AMAZON DF 1",
+  "matriz": "AMAZON SP"
+ },
+ "57054794000193": {
+  "nome": "THEBELLA DISTRIBUIDORA E COMERCIO DE COSMETICOS LTDA",
+  "abrev": "THEBELLA",
+  "matriz": "DYSCAMP"
+ },
+ "12006584000191": {
+  "nome": "DROGARIA CIDADE PAISAGEM LTDA",
+  "abrev": "DROGARIA CID",
+  "matriz": "DROGARIA CID"
+ },
+ "55451074000136": {
+  "nome": "DROGARIA BOM PASTOR DE ITAPETININGA LTDA-EPP",
+  "abrev": "DROGARIA BOM",
+  "matriz": "DROGARIA BOM"
+ },
+ "71557680000197": {
+  "nome": "DROGARIA MIRIM SOROCABA LTDA-ME",
+  "abrev": "DROGARIA MIR",
+  "matriz": "DROGARIA MIR"
+ },
+ "74457243000190": {
+  "nome": "DROGARIA BRIGADEIRO TOBIAS LTDA-EPP",
+  "abrev": "DROGARIA BRI",
+  "matriz": "DROGARIA BRI"
+ },
+ "02607738000147": {
+  "nome": "DROGARIA NOVA SANTA FE LTDA - ME",
+  "abrev": "DROGARIA SAN",
+  "matriz": "DROGARIA SAN"
+ },
+ "15685374000327": {
+  "nome": "G. L. L. M. DE ARAUJO - DROGARIA - FILIAL 02",
+  "abrev": "M DE ARAUJO",
+  "matriz": "M DE ARAUJO"
+ },
+ "13140477000114": {
+  "nome": "DROGARIA VIVA FARMA MOGI MIRIM LTDA",
+  "abrev": "DROGARIA VIV",
+  "matriz": "DROGARIA VIV"
+ },
+ "15685374000408": {
+  "nome": "G.L.L.M DE ARAUJO DROGARIA LTDA",
+  "abrev": "ARAUJO DROG",
+  "matriz": "ARAUJO DROG"
+ },
+ "15685374000670": {
+  "nome": "G.L.L.M DE ARAUJO DROGARIA LTDA",
+  "abrev": "ARAUJO I",
+  "matriz": "ARAUJO I"
+ },
+ "30497822000190": {
+  "nome": "L. H. MANGUE DE ARAUJO E ARAUJO DROGARIA LTDA",
+  "abrev": "MANGUE ARAUJ",
+  "matriz": "MANGUE ARAUJ"
+ },
+ "20195724000145": {
+  "nome": "DROGARIA TEIXEIRA & ARAUJO M.GUACU LTDA-ME",
+  "abrev": "DROGARIA TEI",
+  "matriz": "DROGARIA TEI"
+ },
+ "54326301000139": {
+  "nome": "DROGARIA MIRANTE DO VALE LTDA ME",
+  "abrev": "DROGARIA VAL",
+  "matriz": "DROGARIA VAL"
+ },
+ "12855883000109": {
+  "nome": "DROGARIA ESSENCIA AREIAS LTDA - MATRIZ",
+  "abrev": "DROGARIA ESS",
+  "matriz": "DROGARIA ESS"
+ },
+ "47550314000121": {
+  "nome": "MOREIRA E OLIVEIRA MEDICAMENTOS LTDA",
+  "abrev": "MOREIRA E",
+  "matriz": "MOREIRA E"
+ },
+ "13737217000120": {
+  "nome": "CARDOSO & SODERO BITENCOURT LTDA ME",
+  "abrev": "CARDOSO & SO",
+  "matriz": "CARDOSO & SO"
+ },
+ "08044236000131": {
+  "nome": "DROGARIA LARGO DO PAISSANDU LTDA - ME",
+  "abrev": "DROGARIA LAR",
+  "matriz": "DROGARIA LAR"
+ },
+ "17280086000156": {
+  "nome": "DROGARIA MANGUE & ARAUJO LTDA",
+  "abrev": "DROGARIA MAN",
+  "matriz": "DROGARIA MAN"
+ },
+ "15329061000174": {
+  "nome": "DANIELA CRISTINA SOUZA SANTOS - ME",
+  "abrev": "DANIELA CRIS",
+  "matriz": "DANIELA CRIS"
+ },
+ "12312801000171": {
+  "nome": "DROGARIA DOMINGUES & SANT ANA LTDA",
+  "abrev": "DROGARIA DOM",
+  "matriz": "DROGARIA DOM"
+ },
+ "23056014000122": {
+  "nome": "SAUDEBIG COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "SAUDEBIG COM",
+  "matriz": "SAUDEBIG COM"
+ },
+ "34038090000202": {
+  "nome": "DROGARIA ULTRA POPULAR DE ARARAS LTDA - FILIAL 01",
+  "abrev": "DROGARIA ULT",
+  "matriz": "DROGARIA ULT"
+ },
+ "34038090000393": {
+  "nome": "DROGARIA ULTRA POPULAR DE ARARAS LTDA",
+  "abrev": "DROGARIA POP",
+  "matriz": "DROGARIA POP"
+ },
+ "14854313000111": {
+  "nome": "DROGARIA ULTRAPOPULAR LIMAO LTDA - EPP",
+  "abrev": "DROG ULT LIM",
+  "matriz": "DROG ULT LIM"
+ },
+ "35580435000137": {
+  "nome": "DROGARIA ULTRAPOPULAR SANTA CECILIA LTDA",
+  "abrev": "DROG ULT SC",
+  "matriz": "DROG ULT SC"
+ },
+ "43549179000143": {
+  "nome": "DROGALENE LTDA",
+  "abrev": "DROGALENE LT",
+  "matriz": "DROGALENE LT"
+ },
+ "51666022000126": {
+  "nome": "DROGALELLA LTDA - EPP",
+  "abrev": "DROGALELLA L",
+  "matriz": "DROGALELLA L"
+ },
+ "02607738000228": {
+  "nome": "DROGARIA NOVA SANTA FE LTDA - FILIAL 01",
+  "abrev": "DROG NOVA",
+  "matriz": "DROG NOVA"
+ },
+ "03485266000160": {
+  "nome": "DROGARIA MARIUSA LTDA - EPP - MATRIZ",
+  "abrev": "DROGARIA MAR",
+  "matriz": "DROGARIA MAR"
+ },
+ "09577887000150": {
+  "nome": "M. T. DE ARAUJO - DROGARIA",
+  "abrev": "M. T. DE ARA",
+  "matriz": "M. T. DE ARA"
+ },
+ "15685374000165": {
+  "nome": "G. L. L. M. DE ARAUJO - DROGARIA",
+  "abrev": "G. L. L. M.",
+  "matriz": "G. L. L. M."
+ },
+ "15685374000246": {
+  "nome": "G. L. L. M. DE ARAUJO - DROGARIA - 11",
+  "abrev": "G. L. L. M",
+  "matriz": "G. L. L. M"
+ },
+ "15685374000599": {
+  "nome": "G.L.L.M DE ARAUJO DROGARIA LTDA - (MAXI)",
+  "abrev": "G. L. L M.",
+  "matriz": "G. L. L M."
+ },
+ "29930498000173": {
+  "nome": "DROGARIA FABRIME LTDA",
+  "abrev": "DROGARIA FAB",
+  "matriz": "DROGARIA FAB"
+ },
+ "34038090000121": {
+  "nome": "DROGARIA ULTRA POPULAR DE ARARAS LTDA ME",
+  "abrev": "DROG ULT POP",
+  "matriz": "DROG ULT POP"
+ },
+ "02111827000106": {
+  "nome": "ROBSON GONÇALVES DA FONSECA TAUBATÉ ME",
+  "abrev": "ROBSON GONÇA",
+  "matriz": "ROBSON GONÇA"
+ },
+ "03803912000270": {
+  "nome": "DBB COMERCIO FARMACEUTICO LTDA - FILIAL 01",
+  "abrev": "DBB COMERCIO",
+  "matriz": "DBB COMERCIO"
+ },
+ "03803912000351": {
+  "nome": "DBB COMERCIO FARMACEUTICO LTDA - FILIAL 03",
+  "abrev": "DBB COMERCI",
+  "matriz": "DBB COMERCI"
+ },
+ "49536972000275": {
+  "nome": "ELIMAR DROGARIA LTDA - EPP - FILIAL 01",
+  "abrev": "ELIMAR DROGA",
+  "matriz": "ELIMAR DROGA"
+ },
+ "50358415000100": {
+  "nome": "DROGARIA SANTANA SOROCABA LTDA-ME",
+  "abrev": "DROG SANTAN",
+  "matriz": "DROG SANTAN"
+ },
+ "05234686000107": {
+  "nome": "DROGARIA DUTRA VARO LTDA - EPP",
+  "abrev": "DROGARIA DUT",
+  "matriz": "DROGARIA DUT"
+ },
+ "42940130000154": {
+  "nome": "DROGARIA DUTRA & SILVA LTDA",
+  "abrev": "DROG DUTRA",
+  "matriz": "DROG DUTRA"
+ },
+ "37639126000200": {
+  "nome": "ARCOZ DISTRIBUIDORA LTDA",
+  "abrev": "ARCOZ LAPA",
+  "matriz": "ARCOZ SP"
+ },
+ "06057223046830": {
+  "nome": "SENDAS DISTRIBUIDOR S/A",
+  "abrev": "SENDAS CE 7",
+  "matriz": "SENDAS SP"
+ },
+ "45503195000120": {
+  "nome": "CAPITAL DROGARIA E PERFUMARIA LTDA",
+  "abrev": "CAPITAL DROG",
+  "matriz": "CAPITAL DROG"
+ },
+ "18469209000164": {
+  "nome": "Drogaria Drogamaxi 30 Ltda",
+  "abrev": "Drogaria Dro",
+  "matriz": "Drogaria Dro"
+ },
+ "03208878000105": {
+  "nome": "Drogaria Drogamaxi 30 Ltda",
+  "abrev": "LUZA DROGARI",
+  "matriz": "LUZA DROGARI"
+ },
+ "24412378000160": {
+  "nome": "Vera Lucia de Almeida Lima",
+  "abrev": "Vera Lucia d",
+  "matriz": "Vera Lucia d"
+ },
+ "61412110137371": {
+  "nome": "DROGARIA SÃO PAULO - NOVA ODESSA",
+  "abrev": "DSPNOVAODESS",
+  "matriz": "DROGARIA SAO"
+ },
+ "58507232000110": {
+  "nome": "ALCANCE BR LTDA",
+  "abrev": "ALCANCE BR",
+  "matriz": "ALCANCE BR"
+ },
+ "61585865374159": {
+  "nome": "RAIA DROGASIL S/A",
+  "abrev": "RAIA ITUPEVA",
+  "matriz": "RAIA"
+ },
+ "01928075013501": {
+  "nome": "DMA DISTRIBUIDORA S/A",
+  "abrev": "DMA DISTRIBU",
+  "matriz": "DMA DISTRIBU"
+ },
+ "21378906001277": {
+  "nome": "PORTO SECO SUL DE MINAS LTDA",
+  "abrev": "PORTO SECO",
+  "matriz": "PORTO SECO"
+ },
+ "43770912000155": {
+  "nome": "Drogaria e Perfumaria Garça",
+  "abrev": "Drogaria Gar",
+  "matriz": "Drogaria Gar"
+ },
+ "11880769000168": {
+  "nome": "FARMACIA GRUPO DESCONTAO LTDA",
+  "abrev": "FARMACIA GRU",
+  "matriz": "FARMACIA GRU"
+ },
+ "11880769000591": {
+  "nome": "FARMACIA GRUPO DESCONTAO LTDA",
+  "abrev": "FARMACIA DES",
+  "matriz": "FARMACIA DES"
+ },
+ "11880769000320": {
+  "nome": "FARMACIA GRUPO DESCONTAO LTDA",
+  "abrev": "FARM DES",
+  "matriz": "FARM DES"
+ },
+ "67925081000101": {
+  "nome": "FARMACIA VIVER LTDA.",
+  "abrev": "FARMACIA VIV",
+  "matriz": "FARMACIA VIV"
+ },
+ "58698849000160": {
+  "nome": "Raízes Pharmacia Ltda",
+  "abrev": "RAIZES PHARM",
+  "matriz": "RAIZES PHARM"
+ },
+ "23241113000184": {
+  "nome": "TATIANE TEIXEIRA - DROGARIA",
+  "abrev": "TATIANE TEIX",
+  "matriz": "TATIANE TEIX"
+ },
+ "23241113000265": {
+  "nome": "TATIANE TEIXEIRA - DROGARIA",
+  "abrev": "TATIANE DROG",
+  "matriz": "TATIANE DROG"
+ },
+ "33786938000138": {
+  "nome": "Drogaria Italifarma Parque das americas Ltda",
+  "abrev": "Drogaria Ita",
+  "matriz": "Drogaria Ita"
+ },
+ "10907521000180": {
+  "nome": "DROGARIA RIOFARMA DE OSASCO LTDA",
+  "abrev": "DROGARIA RIO",
+  "matriz": "DROGARIA RIO"
+ },
+ "45566844000132": {
+  "nome": "DROGARIA TANJA FARMA LTDA",
+  "abrev": "DROGARIA TAN",
+  "matriz": "DROGARIA TAN"
+ },
+ "55930524000173": {
+  "nome": "Mota drogaria Ltda",
+  "abrev": "Mota drogari",
+  "matriz": "Mota drogari"
+ },
+ "10523519000108": {
+  "nome": "Drogaria Acpharma Ltda",
+  "abrev": "Drogaria Acp",
+  "matriz": "Drogaria Acp"
+ },
+ "47047893000194": {
+  "nome": "DROGARIA E PERFUMARIA SAOLI LTDA",
+  "abrev": "DROGARIA E P",
+  "matriz": "DROGARIA E P"
+ },
+ "27635459000118": {
+  "nome": "DROGARIA MEP DA PAVUNA LTDA",
+  "abrev": "DROGARIA MEP",
+  "matriz": "DROGARIA MEP"
+ },
+ "28327435000164": {
+  "nome": "FARMACIA DROGA POPULAR DO MALLET LTDA",
+  "abrev": "FARMACIA DRO",
+  "matriz": "FARMACIA DRO"
+ },
+ "47431041000104": {
+  "nome": "DROGARIA MEP DE SANTA CRUZ LTDA",
+  "abrev": "DROGARIA MPP",
+  "matriz": "DROGARIA MPP"
+ },
+ "55770270000173": {
+  "nome": "DROGARIA MEP DO RIO GRANDE LTDA",
+  "abrev": "DROGARIA RGR",
+  "matriz": "DROGARIA RGR"
+ },
+ "20983467000106": {
+  "nome": "DROGARIA MEIRELES & SBARDELINI LTDA",
+  "abrev": "DROGARIA MEI",
+  "matriz": "DROGARIA MEI"
+ },
+ "59351857000107": {
+  "nome": "DROGARIA CENTRAL DA MERITI LTDA",
+  "abrev": "DROGARIA CEN",
+  "matriz": "DROGARIA CEN"
+ },
+ "17588146000100": {
+  "nome": "DROGAMAXI DROGARIA LTDA",
+  "abrev": "DROGAMAXI DR",
+  "matriz": "DROGAMAXI DR"
+ },
+ "29459325000119": {
+  "nome": "ULTRACERES DROGARIA LTDA",
+  "abrev": "ULTRAPOPULAR",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "00484543000121": {
+  "nome": "DROGARIA PARANA LTDA",
+  "abrev": "DROG. PARANA",
+  "matriz": "DROG. PARANA"
+ },
+ "29459325000208": {
+  "nome": "ULTRACERES DROGARIA LTDA",
+  "abrev": "ULTRA POPULA",
+  "matriz": "ULTRA POPULA"
+ },
+ "20884408000261": {
+  "nome": "DROGARIAS ULTRA POPULAR NOVA ANDRADINA LTDA",
+  "abrev": "ULTRA NOVA",
+  "matriz": "ULTRA NOVA"
+ },
+ "20884408000180": {
+  "nome": "DROGARIAS ULTRA POPULAR NOVA ANDRADINA LTDA",
+  "abrev": "DROAGA ULTRA",
+  "matriz": "DROAGA ULTRA"
+ },
+ "22516839000110": {
+  "nome": "CML BRASIL COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "DR. ULTRA",
+  "matriz": "DR. ULTRA"
+ },
+ "34713312000164": {
+  "nome": "ULTRA JP COMERCIO DE MEDICAMENTOS LTDA",
+  "abrev": "ULTRA JP",
+  "matriz": "ULTRA JP"
+ },
+ "45676232000283": {
+  "nome": "FARMACIA ULTRA POPULAR DE GOIAS LTDA",
+  "abrev": "FARM. ULTRA",
+  "matriz": "FARM. ULTRA"
+ },
+ "45676232000364": {
+  "nome": "FARMACIA ULTRA POPULAR DE GOIAS LTDA",
+  "abrev": "F. ULTRA GO",
+  "matriz": "F. ULTRA GO"
+ },
+ "45676232000445": {
+  "nome": "FARMACIA ULTRA POPULAR DE GOIAS LTDA",
+  "abrev": "FARM. POPULA",
+  "matriz": "FARM. POPULA"
+ },
+ "26145315000110": {
+  "nome": "FARMACIA ULTRA POPULAR DE GOIAS LTDA",
+  "abrev": "ULTRA. POPUL",
+  "matriz": "ULTRA. POPUL"
+ },
+ "55360138000193": {
+  "nome": "AC FARMA DROGARIA LTDA.",
+  "abrev": "AC FARMA",
+  "matriz": "AC FARMA"
+ },
+ "04878620000189": {
+  "nome": "AC FARMA DROGARIA LTDA.",
+  "abrev": "AC. FARMA",
+  "matriz": "AC. FARMA"
+ },
+ "21909642000340": {
+  "nome": "FARMACIA MARTINS E ANDRADE LTDA",
+  "abrev": "FAR. MARTINS",
+  "matriz": "FAR. MARTINS"
+ },
+ "41281983000169": {
+  "nome": "DROGARIAS ULTRA POPULAR",
+  "abrev": "M&A DROGARIA",
+  "matriz": "M&A DROGARIA"
+ },
+ "21136551000157": {
+  "nome": "REALDROGAS LTDA",
+  "abrev": "REALDROGAS L",
+  "matriz": "REALDROGAS L"
+ },
+ "24690082000101": {
+  "nome": "DROGARIA MOREIRA E ORDONES LTDA",
+  "abrev": "DR. MOREIRA",
+  "matriz": "DR. MOREIRA"
+ },
+ "28325996000124": {
+  "nome": "DROGARIA ULTRA POPULAR JARDIM ATLANTICO",
+  "abrev": "ULTRA JARDIM",
+  "matriz": "ULTRA JARDIM"
+ },
+ "19713710000197": {
+  "nome": "DROGARIA ULTRA POPULAR",
+  "abrev": "SL DROGARIA",
+  "matriz": "SL DROGARIA"
+ },
+ "26169121000155": {
+  "nome": "MARTINS DE PAULA COMERCIO LTDA",
+  "abrev": "ULTRA P.",
+  "matriz": "ULTRA P."
+ },
+ "26169121000317": {
+  "nome": "MARTINS DE PAULA COMERCIO LTDA",
+  "abrev": "ULTRA POP.",
+  "matriz": "ULTRA POP."
+ },
+ "21909642000188": {
+  "nome": "FARMACIA MARTINS E ANDRADE LTDA",
+  "abrev": "AC FARMA M A",
+  "matriz": "AC FARMA M A"
+ },
+ "01206820004607": {
+  "nome": "DISTRIBUIDORA DE MEDICAMENTOS SANTA CRUZ LTDA",
+  "abrev": "SC DIST PR",
+  "matriz": "STA CRUZ PE"
+ },
+ "27201095000168": {
+  "nome": "A Q DA COSTA LTDA",
+  "abrev": "ULTRA SETOR",
+  "matriz": "ULTRA SETOR"
+ },
+ "27134933000390": {
+  "nome": "DROGARIA ULTRA OFERTA LTDA",
+  "abrev": "ULTRA OFERTA",
+  "matriz": "ULTRA OFERTA"
+ },
+ "34081317000111": {
+  "nome": "DROGARIAS ULTRA POPULAR",
+  "abrev": "SNA FARMACÊU",
+  "matriz": "SNA FARMACÊU"
+ },
+ "78533395000185": {
+  "nome": "DROGARIAS ULTRAPOPULAR",
+  "abrev": "FAR. LEANDRO",
+  "matriz": "FAR. LEANDRO"
+ },
+ "11207491000162": {
+  "nome": "DROGARIA VIDA BELLA LTDA",
+  "abrev": "DROG, VIDA",
+  "matriz": "DROG, VIDA"
+ },
+ "11207491000243": {
+  "nome": "DROGARIA VIDA BELLA LTDA",
+  "abrev": "DROG, VIDA B",
+  "matriz": "DROG, VIDA B"
+ },
+ "21559616000177": {
+  "nome": "L.L.A. DROGARIA LAMBERT E ALMEIDA LTDA",
+  "abrev": "LAMBERT E AM",
+  "matriz": "LAMBERT E AM"
+ },
+ "11421496000193": {
+  "nome": "ATTIVA PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "ATTIVA PROD.",
+  "matriz": "ATTIVA PROD."
+ },
+ "20868302000193": {
+  "nome": "ULTRA SAUDE FARMACEUTICA LTDA",
+  "abrev": "ULTRA SAUDE",
+  "matriz": "ULTRA SAUDE"
+ },
+ "02852571000180": {
+  "nome": "DROGARIA REAL FARMA DE OSASCO LTDA",
+  "abrev": "DROG. REAL",
+  "matriz": "DROG. REAL"
+ },
+ "14169897001168": {
+  "nome": "DROGARIA WANESSA LTDA",
+  "abrev": "DROGACLARA",
+  "matriz": "DROGACLARA"
+ },
+ "17409785000153": {
+  "nome": "DROGARIA R & N LTDA",
+  "abrev": "UNIAO PHARMA",
+  "matriz": "UNIAO PHARMA"
+ },
+ "05009812000111": {
+  "nome": "L A LABORATORIO FARMACEUTICO LTDA",
+  "abrev": "ULTRA S.J. B",
+  "matriz": "ULTRA S.J. B"
+ },
+ "33971496000795": {
+  "nome": "GOOXXY BRASIL S.A.",
+  "abrev": "GOOXXY MG",
+  "matriz": "MASTER VERDE"
+ },
+ "58649393000149": {
+  "nome": "DROGARIA SAO VICENTE RIACHO GRANDE LTDA",
+  "abrev": "S. VICENTE",
+  "matriz": "S. VICENTE"
+ },
+ "13852178000293": {
+  "nome": "JULIANA DE SOUZA PESSOA",
+  "abrev": "F. BIOFARMA",
+  "matriz": "F. BIOFARMA"
+ },
+ "13008466000185": {
+  "nome": "DROGARIA FORTALEZA LTDA",
+  "abrev": "DROG MESSIAS",
+  "matriz": "DROG MESSIAS"
+ },
+ "01222587000146": {
+  "nome": "DROGARIA VASCONCELOS LIMITADA",
+  "abrev": "DROG. MESSIA",
+  "matriz": "DROG. MESSIA"
+ },
+ "57590879000196": {
+  "nome": "DROGARIA ITOBI LTDA",
+  "abrev": "DROG. ITOBI",
+  "matriz": "DROG. ITOBI"
+ },
+ "49435087000119": {
+  "nome": "DROGARIA CENTRAL DE BANGU LTDA",
+  "abrev": "DONA FARMA",
+  "matriz": "DONA FARMA"
+ },
+ "10209334000123": {
+  "nome": "DROGARIA PEDRO E SOUSA LTDA",
+  "abrev": "D. SAO PEDRO",
+  "matriz": "D. SAO PEDRO"
+ },
+ "07757125000100": {
+  "nome": "DROGARIA ATRACAO DO MEIER LTDA",
+  "abrev": "D. ATRACAO",
+  "matriz": "D. ATRACAO"
+ },
+ "03774634000190": {
+  "nome": "C. F. BARROSO FRALDAS & MEDICAMENTOS",
+  "abrev": "DISK FRALDAS",
+  "matriz": "DISK FRALDAS"
+ },
+ "33995044000158": {
+  "nome": "DROGARIA JOVEM DA PIEDADE LTDA",
+  "abrev": "DROG. JOVEM",
+  "matriz": "DROG. JOVEM"
+ },
+ "06626253149031": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE M. PB",
+  "matriz": "PAGUE MENOS"
+ },
+ "06626253149384": {
+  "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
+  "abrev": "PAGUE M PB",
+  "matriz": "PAGUE MENOS"
+ },
+ "37351602000284": {
+  "nome": "BELA COM. IMP. E EXP., FAB. DE PRODUTOS E EQUIPAMENTOS LTDA",
+  "abrev": "BELA ES",
+  "matriz": "BELA ES"
+ },
+ "37351602000101": {
+  "nome": "BELA COMERCIO IMPORTACAO E EXPORTACAO, FABRICACAO DE PRODUTOS E",
+  "abrev": "BELA MG",
+  "matriz": "BELA MG"
+ },
+ "37351602000608": {
+  "nome": "BELA COMERCIO IMPORTACAO E EXPORTACAO, FABRICACAO DE PRODUTOS E",
+  "abrev": "BELA SC",
+  "matriz": "BELA MG"
+ },
+ "33438250076147": {
+  "nome": "DROGARIAS PACHECO S/A",
+  "abrev": "PACHECO CD V",
+  "matriz": "DROGARIA SAO"
+ },
+ "50780359000105": {
+  "nome": "DROGARIAS MAXI POPULAR",
+  "abrev": "DROGAMAXI MT",
+  "matriz": "DROGAMAXI MT"
+ },
+ "11969857000130": {
+  "nome": "BRATOL - COM. DE PROD. FARMACEUTICOS LTDA",
+  "abrev": "FARMA BRATOL",
+  "matriz": "FARMA BRATOL"
+ },
+ "13043546000171": {
+  "nome": "DROGARIAS ULTRA POPULAR",
+  "abrev": "DROGA ULTRA",
+  "matriz": "DROGA ULTRA"
+ },
+ "05009272000176": {
+  "nome": "FARMACEU DROGARIA LTDA",
+  "abrev": "FARMACEU",
+  "matriz": "FARMACEU"
+ },
+ "05009272000338": {
+  "nome": "FARMACEU DROGARIA LTDA",
+  "abrev": "FARMACEU DR",
+  "matriz": "FARMACEU DR"
+ },
+ "02997350000108": {
+  "nome": "DROGARIAS ULTRA POPULAR",
+  "abrev": "ULTRA POP",
+  "matriz": "ULTRA POP"
+ },
+ "22729846000108": {
+  "nome": "DROGARIA ULTRA POPULAR",
+  "abrev": "J & C ULTRA",
+  "matriz": "J & C ULTRA"
+ },
+ "43267239000135": {
+  "nome": "ANG DROGARIA LTDA",
+  "abrev": "ANG DROGARIA",
+  "matriz": "ANG DROGARIA"
+ },
+ "03712406000276": {
+  "nome": "DROGA CENTRO DE BOM REPOUSO LTDA",
+  "abrev": "BOM REPOUSO",
+  "matriz": "BOM REPOUSO"
+ },
+ "29285269000224": {
+  "nome": "DROGARIA CAMPOS ELISEOS LTDA - FILIAL 01",
+  "abrev": "DROG. CAMPOS",
+  "matriz": "ULTRA POPULA"
+ },
+ "04050862000180": {
+  "nome": "OLIVEIRA & IBANHEZ LTDA",
+  "abrev": "OLIVEIRA & I",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "04050862000260": {
+  "nome": "OLIVEIRA & IBANHEZ LTDA",
+  "abrev": "OLIVEIRA &",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "04050862000341": {
+  "nome": "OLIVEIRA & IBANHEZ LTDA",
+  "abrev": "FARMATOTAL",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "27545412000244": {
+  "nome": "C. J. DA SILVA & CIA LTDA",
+  "abrev": "ULTRA RIO C.",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "27545412000406": {
+  "nome": "C. J. DA SILVA & CIA LTDA",
+  "abrev": "DIAMANTINO",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "27545412000163": {
+  "nome": "C. J. DA SILVA & CIA LTDA",
+  "abrev": "BRASNORTE",
+  "matriz": "ULTRAPOPULAR"
+ },
+ "15436940001258": {
+  "nome": "AMAZON SERVICOS DE VAREJO BRASIL LTDA",
+  "abrev": "AMAZON GRU",
+  "matriz": "AMAZON SP"
+ },
+ "52969068000187": {
+  "nome": "DROGARIA RAPIDA TIRADENTES LTDA",
+  "abrev": "MAIS BARATO",
+  "matriz": "MAIS BARATO"
+ },
+ "28377943000157": {
+  "nome": "DROGA COSMO LTDA",
+  "abrev": "DROGA COSMO",
+  "matriz": "DROGA COSMO"
+ },
+ "48597785000158": {
+  "nome": "JORDAFARMA LTDA",
+  "abrev": "JORDAFARMA",
+  "matriz": "JORDAFARMA"
+ },
+ "53640064000113": {
+  "nome": "CMC FARMA LTDA",
+  "abrev": "CMC FARMA",
+  "matriz": "CMC FARMA"
+ },
+ "62172730000127": {
+  "nome": "DROGARIA PERFARMA LTDA",
+  "abrev": "PERFARMA",
+  "matriz": "PERFARMA"
+ },
+ "46618443000141": {
+  "nome": "DROGARIA SAO LOURENCO LTDA",
+  "abrev": "SAO LOURENCO",
+  "matriz": "SAO LOURENCO"
+ },
+ "55365750000159": {
+  "nome": "DROGA ISIS LTDA",
+  "abrev": "DF SAUDE",
+  "matriz": "DF SAUDE"
+ },
+ "26542337000114": {
+  "nome": "VIP EMPREENDIMENTOS FARMACEUTICOS LTDA",
+  "abrev": "ULTRA VIP",
+  "matriz": "ULTRA VIP"
+ },
+ "34430187000185": {
+  "nome": "DROGARIA LIDER",
+  "abrev": "DROG. LIDER",
+  "matriz": "DROG. LIDER"
+ },
+ "63373224000169": {
+  "nome": "DROGARIA RAINHA DA ABOLICAO LTDA",
+  "abrev": "DRG. MUNDIAL",
+  "matriz": "DRG. MUNDIAL"
+ },
+ "39319632000158": {
+  "nome": "DROGARIA ISAS LTDA",
+  "abrev": "DROG. ISAS",
+  "matriz": "DROG. ISAS"
+ },
+ "12163373000162": {
+  "nome": "JC SIQUEIRA DROGARIA LTDA",
+  "abrev": "CRISTINA FAR",
+  "matriz": "CRISTINA FAR"
+ },
+ "43625543000107": {
+  "nome": "CRISTINA FARMA DROGARIA LTDA.",
+  "abrev": "CRIS. FARMA",
+  "matriz": "CRIS. FARMA"
+ },
+ "09118677000101": {
+  "nome": "DROGARIA RAFAELA DE OSASCO LTDA",
+  "abrev": "DRG. RAFAELA",
+  "matriz": "DRG. RAFAELA"
+ },
+ "40734826000107": {
+  "nome": "KFARMA COMERCIO DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "KFARMA",
+  "matriz": "KFARMA"
+ },
+ "12225997000167": {
+  "nome": "DROGARIA RAFAELA LTDA",
+  "abrev": "DROG MUNDIAL",
+  "matriz": "DROG MUNDIAL"
+ },
+ "10915021000190": {
+  "nome": "TOP ALTO PARTICIPACOES E COMERCIO LTDA",
+  "abrev": "TOP ALTO",
+  "matriz": "TOP ALTO"
+ },
+ "24907925000189": {
+  "nome": "Drogaria pro vida LTDA",
+  "abrev": "Drog. PRO VD",
+  "matriz": "Drog. PRO VD"
+ },
+ "21471885000187": {
+  "nome": "ZMC DROGARIA COMERCIO VAREJISTA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "FARMACAMPOS",
+  "matriz": "FARMACAMPOS"
+ },
+ "23546448000100": {
+  "nome": "RIBEIRO & CIA LTDA",
+  "abrev": "DSG FARMA",
+  "matriz": "DSG FARMA"
+ },
+ "69294643000191": {
+  "nome": "DROGARIA MONTE KEMEL LIMITADA",
+  "abrev": "MONTE KEMEL",
+  "matriz": "MONTE KEMEL"
+ },
+ "36687681000155": {
+  "nome": "LCAMPOS COMERCIO VAREJISTA DE PRODUTOS FARMACEUTICOS LTDA",
+  "abrev": "LCAMPOS",
+  "matriz": "LCAMPOS"
+ },
+ "52201528000122": {
+  "nome": "FCAMPOS SUZANO DROGARIA LTDA",
+  "abrev": "FCAMPOS DROG",
+  "matriz": "FCAMPOS DROG"
+ },
+ "62547923000115": {
+  "nome": "FARMA CAMPOS TAUBATE LTDA",
+  "abrev": "FARMA CAMPOS",
+  "matriz": "FARMA CAMPOS"
+ },
+ "16753056000157": {
+  "nome": "DROGARIA LIDER DO LARANJAL LTDA",
+  "abrev": "DROG. BARATO",
+  "matriz": "DROG. BARATO"
+ },
+ "53573934000189": {
+  "nome": "DROGARIA LIDER DAS MISSOES LTDA",
+  "abrev": "D. M. BARATO",
+  "matriz": "D. M. BARATO"
+ },
+ "33045360000169": {
+  "nome": "FARMACIA VALPORTO LTDA",
+  "abrev": "DROG. MUNDIA",
+  "matriz": "DROG. MUNDIA"
+ },
+ "66306594000171": {
+  "nome": "DROGARIA ADRIELE APARECIDA LABIGALINI LTDA",
+  "abrev": "ADRIELE FARM",
+  "matriz": "ADRIELE FARM"
+ },
+ "14945429000166": {
+  "nome": "DROGARIA LIDER DE VALVERDE LTDA",
+  "abrev": "D. BARATO",
+  "matriz": "D. BARATO"
+ },
+ "08241229000553": {
+  "nome": "MILFARMA COMERCIAL LTDA",
+  "abrev": "MIL FARMA",
+  "matriz": "MILFARMA"
+ },
+ "10341045002550": {
+  "nome": "DROGARIA DMD LTDA",
+  "abrev": "DROGARIA DMD",
+  "matriz": "DROGARIA DMD"
+ },
+ "10341045002470": {
+  "nome": "DROGARIA DMD LTDA",
+  "abrev": "DROG. DMD",
+  "matriz": "DROG. DMD"
+ },
+ "57239065000101": {
+  "nome": "DROGARIA REI FARMA LTDA",
+  "abrev": "REI FARMA",
+  "matriz": "REI FARMA"
+ },
+ "72683287000102": {
+  "nome": "DROGARIA LUCAS LTDA",
+  "abrev": "DROG. LUCAS",
+  "matriz": "DROG. LUCAS"
+ },
+ "11399439000155": {
+  "nome": "DROGARIA MAXIMA DO CACHAMBI LTDA",
+  "abrev": "DR. CACHAMBI",
+  "matriz": "DR. CACHAMBI"
+ },
+ "60250082000154": {
+  "nome": "DROGARIA BETEL DA PALHADA LTDA",
+  "abrev": "S MUNDIAL",
+  "matriz": "S MUNDIAL"
+ },
+ "06246332000137": {
+  "nome": "DROGARIA LIDER DA ILHA LTDA",
+  "abrev": "BARATO MAIS",
+  "matriz": "BARATO MAIS"
+ },
+ "48548114000105": {
+  "nome": "DROGARIA PREDILETA DE AUSTIN LTDA",
+  "abrev": "D. BARATO MA",
+  "matriz": "D. BARATO MA"
+ },
+ "01970451000114": {
+  "nome": "DSG FARMA DE ALTEROSA LTDA",
+  "abrev": "DSGFARMA",
+  "matriz": "DSGFARMA"
+ },
+ "28189078000387": {
+  "nome": "DYSC BEAUTY COMÉRCIO E DISTRIBUIDORA DE COSMETICOS LTDA",
+  "abrev": "DYSCAMP BAUR",
+  "matriz": "DYSCAMP"
+ },
+ "45543915000181": {
+  "nome": "CARREFOUR COMERCIO E INDUSTRIA LTDA",
+  "abrev": "CARREFOUR M.",
+  "matriz": "CARREFOUR SP"
+ },
+ "00063960012298": {
+  "nome": "WMB SUPERMERCADOS DO BRASIL LTDA.",
+  "abrev": "WMB SUPERME",
+  "matriz": "CARREFOUR SP"
+ },
+ "00063960006999": {
+  "nome": "WMB SUPERMERCADOS DO BRASIL LTDA.",
+  "abrev": "WMB PE",
+  "matriz": "CARREFOUR SP"
+ },
+ "07339197000218": {
+  "nome": "DROGARIA POUP FARMA LTDA",
+  "abrev": "POUP FARM II",
+  "matriz": "POUP FARM II"
+ },
+ "49740150000120": {
+  "nome": "PRIME D.I.S.T COMERCIAL IMP EXP LTDA",
+  "abrev": "REDE PRIME",
+  "matriz": "REDE PRIME"
+ }
+}

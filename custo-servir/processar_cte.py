@@ -414,6 +414,35 @@ def parse_cancelamento(filepath: str):
 _r = lambda v: round(v, 2)
 _p = lambda f, m: round(f/m*100, 2) if m > 0 else None
 
+# ── DE-PARA CNPJ -> MATRIZ (agrupa clientes por matriz) ─────────────
+# Carrega cnpj_para_matriz.json (mesma pasta do script). Se faltar,
+# o agrupamento cai de volta para CNPJ (comportamento antigo).
+_MATRIZ_MAP = None
+def _digits(s):
+    return "".join(ch for ch in (s or "") if ch.isdigit())
+def _load_matriz_map():
+    from pathlib import Path
+    p = Path(__file__).parent / "cnpj_para_matriz.json"
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        m = {_digits(k): v for k, v in raw.items() if len(_digits(k)) == 14}
+        log.info(f"  de-para matriz: {len(m):,} CNPJs carregados")
+        return m
+    except Exception as ex:
+        log.warning(f"  de-para matriz NAO carregado ({ex}) - clientes por CNPJ")
+        return {}
+def _grupo_cliente(cli_cnpj, cli_nome):
+    """(chave_grupo, matriz, abrev, nome) para agrupar cliente por matriz."""
+    global _MATRIZ_MAP
+    if _MATRIZ_MAP is None:
+        _MATRIZ_MAP = _load_matriz_map()
+    info = _MATRIZ_MAP.get(_digits(cli_cnpj))
+    if info:
+        mz = (info.get("matriz") or info.get("nome") or cli_nome or "").strip()
+        return ("MZ:" + mz, mz, (info.get("abrev") or "").strip(),
+                (info.get("nome") or cli_nome or "").strip())
+    return (cli_cnpj or cli_nome or "?", "", "", cli_nome or "")
+
 def _agg_op(ctes):
     by_mes    = {}
     by_emp    = {e: {"f":0,"m":0,"n":0} for e in ("GENOMMA","INOVALAB","OUTROS")}
@@ -432,7 +461,8 @@ def _agg_op(ctes):
         uf = c["uf_dest"]
         rg = c["regiao"]
         tr = c.get("transp_nome") or "Sem nome"
-        cl = c.get("cli_cnpj")   or c.get("cliente") or "?"
+        _clgrp, _mz, _cabrev, _cnome = _grupo_cliente(c.get("cli_cnpj"), c.get("cliente"))
+        cl = _clgrp
         rk = c.get("rem_cnpj")   or c.get("rem_nome") or "?"
         mk = f"{c['ano']}-{c['mes']:02d}"
 
@@ -554,13 +584,24 @@ def _agg_op(ctes):
         rm_a=_get_or_create(by_rem[rk]["anos"],  ano_k, _SR); rm_a["f"]+=f; rm_a["m"]+=m; rm_a["n"]+=1
         rm_m=_get_or_create(by_rem[rk]["meses"], mes_k, _SR); rm_m["f"]+=f; rm_m["m"]+=m; rm_m["n"]+=1
 
-        # cliente
+        # cliente (agrupado por MATRIZ quando o CNPJ esta no de-para)
         if cl not in by_cli:
-            by_cli[cl] = {"nome":c.get("cliente",""),"cnpj":c.get("cli_cnpj",""),
-                          "empresa":e,"regiao":rg,"uf":uf,"f":0,"m":0,"n":0,"anos":{},"meses":{}}
+            by_cli[cl] = {"nome":(_mz or c.get("cliente","")),"cnpj":c.get("cli_cnpj",""),
+                          "matriz":_mz,"abrev":_cabrev,
+                          "empresa":e,"regiao":rg,"uf":uf,
+                          "f":0,"m":0,"n":0,"anos":{},"meses":{},"filiais":{}}
         by_cli[cl]["f"]+=f; by_cli[cl]["m"]+=m; by_cli[cl]["n"]+=1
         cl_a=_get_or_create(by_cli[cl]["anos"],  ano_k, _SR); cl_a["f"]+=f; cl_a["m"]+=m; cl_a["n"]+=1
         cl_m=_get_or_create(by_cli[cl]["meses"], mes_k, _SR); cl_m["f"]+=f; cl_m["m"]+=m; cl_m["n"]+=1
+        # filial (para drill-down matriz -> filial)
+        _fk = c.get("cli_cnpj") or c.get("cliente") or "?"
+        _fil = by_cli[cl]["filiais"].get(_fk)
+        if _fil is None:
+            _fil = {"cnpj":c.get("cli_cnpj",""),"nome":(_cnome or c.get("cliente","")),
+                    "abrev":_cabrev,"regiao":rg,"uf":uf,"cidade":c.get("mun_dest",""),
+                    "f":0,"m":0,"n":0}
+            by_cli[cl]["filiais"][_fk] = _fil
+        _fil["f"]+=f; _fil["m"]+=m; _fil["n"]+=1
 
     # meses
     meses_out = sorted([{
@@ -677,15 +718,27 @@ def _agg_op(ctes):
         "meses":{mes:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],"pct_cts":_p(d["f"],d["m"])} for mes,d in v.get("meses",{}).items()},
     } for v in by_rem.values()], key=lambda x:x["frete"], reverse=True)[:100]
 
-    # clientes top 200
-    clis_out = sorted([{
-        "nome":v["nome"],"cnpj":v["cnpj"],"empresa":v["empresa"],
-        "regiao":v["regiao"],"uf":v["uf"],
-        "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
-        "pct_cts":_p(v["f"],v["m"]),
-        "anos":{ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],"pct_cts":_p(d["f"],d["m"])} for ano,d in v.get("anos",{}).items()},
-        "meses":{mes:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],"pct_cts":_p(d["f"],d["m"])} for mes,d in v.get("meses",{}).items()},
-    } for v in by_cli.values()], key=lambda x:x["v_merc"], reverse=True)[:200]
+    # clientes agrupados por MATRIZ (top 200 por v_merc)
+    def _cli_row(v):
+        fil = sorted([{
+            "cnpj":ff["cnpj"],"nome":ff["nome"],"abrev":ff.get("abrev",""),
+            "regiao":ff.get("regiao",""),"uf":ff.get("uf",""),"cidade":ff.get("cidade",""),
+            "frete":_r(ff["f"]),"v_merc":_r(ff["m"]),"ctes":ff["n"],
+            "pct_cts":_p(ff["f"],ff["m"]),
+        } for ff in v.get("filiais",{}).values()], key=lambda x:x["v_merc"], reverse=True)
+        cnpj_disp = fil[0]["cnpj"] if len(fil)==1 else ""
+        return {
+            "nome":v["nome"],"matriz":v.get("matriz",""),"abrev":v.get("abrev",""),
+            "cnpj":cnpj_disp,"n_filiais":len(fil),"empresa":v["empresa"],
+            "regiao":v["regiao"],"uf":v["uf"],
+            "frete":_r(v["f"]),"v_merc":_r(v["m"]),"ctes":v["n"],
+            "pct_cts":_p(v["f"],v["m"]),
+            "anos":{ano:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],"pct_cts":_p(d["f"],d["m"])} for ano,d in v.get("anos",{}).items()},
+            "meses":{mes:{"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],"pct_cts":_p(d["f"],d["m"])} for mes,d in v.get("meses",{}).items()},
+            "filiais":fil,
+        }
+    clis_out = sorted([_cli_row(v) for v in by_cli.values()],
+                      key=lambda x:x["v_merc"], reverse=True)[:200]
 
     emps_out = {e: {"frete":_r(d["f"]),"v_merc":_r(d["m"]),"ctes":d["n"],
         "pct_cts":_p(d["f"],d["m"])} for e,d in by_emp.items()}
