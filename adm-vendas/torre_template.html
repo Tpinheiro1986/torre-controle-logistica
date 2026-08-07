@@ -122,14 +122,15 @@ footer{margin-top:24px;font-size:.78rem;color:var(--ink-soft)}
     <a href="../index.html" style="display:inline-block;margin-bottom:8px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--brand);font-size:12px;font-weight:700;background:#fff">← Menu inicial</a>
     <div class="eyebrow">Genomma · Torre de Controle · Pedidos</div>
     <h1>Painel de pedidos — ADM de Vendas × Operação</h1>
-    <p class="sub" id="subline">__SUBLINE__</p>
+    <p class="sub" id="subline">Carregando dados vivos do ERP…</p>
   </div>
-  <div>
-    <button id="updBtn" type="button">Atualizar com novo arquivo (.xls/.xlsx/.LST)</button>
+  <div style="text-align:right">
+    <button id="apiBtn" type="button" style="font-family:inherit;font-size:.82rem;font-weight:700;color:#fff;background:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:10px 16px;cursor:pointer;box-shadow:var(--shadow)">&#128260; Atualizar do ERP</button>
+    <button id="updBtn" type="button">Arquivo manual (.xls/.LST)</button>
     <input type="file" id="fileInput" accept=".xls,.xlsx,.xlsm,.lst,.LST,.txt">
+    <div id="apiStatus" style="font-size:.75rem;color:var(--ink-soft);margin-top:6px;min-height:1em"></div>
   </div>
 </header>
-__PENDBANNER__
 
 <nav class="tabs" id="tabs">
   <button data-t="qAdm" class="on"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>ADM de Vendas</button>
@@ -217,11 +218,11 @@ __PENDBANNER__
 <script>
 (function(){
 "use strict";
-var ITEMS=__ITEMS__;      /* cod -> [descricao, marca] */
+var ITEMS={};      /* cod -> [descricao, marca] */
 var PESOS={"4041121":1000,"5200200":494,"6003500":582,"6003400":582,"6003300":582,"5300400":16,"5300300":16,"5300200":16,"6003200":582,"4041120":1000,"4041119":1000,"4041118":1000,"4041117":238,"4041116":65,"4041115":302,"4041114":220,"1111700":110,"1009600":388,"1009500":384,"1009400":378,"1009300":100,"1009200":98,"1009100":100,"5300100":16,"6002800":582,"6002700":582,"6002600":582,"6002500":582,"6002400":582,"6002300":582,"6002200":582,"4041113":1000,"4041112":1000,"4041111":1000,"5200100":494,"4049000":900,"4048000":695,"4406300":25,"6002100":582,"6002000":582,"6001900":582,"6001800":582,"6001700":582,"6001600":582,"6001500":582,"1111500":125,"1111400":48,"1111300":468,"1111200":244,"3906700":128,"3906600":128,"3906500":128,"2100200":458,"2100100":458,"4406200":25,"4406100":25,"1009000":256,"1008900":265,"1008800":265,"2310900":57,"6001200":582,"6001100":582,"4046000":900,"4045000":900,"1111100":430,"6001000":582,"6000900":582,"5100200":155.1,"5100100":155.1,"1111000":60,"6000800":582,"4044400":435,"4044300":435,"4044200":465,"4044100":435,"2310800":31,"4044000":435,"4043900":435,"4043800":1000,"4043700":1000,"4043600":1000,"6000700":582,"1110900":125,"1110800":65,"1110700":172,"3300200":53,"6000600":582,"6000500":582,"6000400":582,"3300100":52,"1110600":170,"4043500":465,"6000300":585,"6000200":585,"4043400":223,"6000100":585,"4043300":695,"4043200":695,"4043100":695,"2310700":114,"2310600":74,"4041061":465,"4041060":465,"1110500":86,"1110400":46,"1110300":96,"2931100":196,"5010200":54,"1110200":54,"1110100":60,"1110000":60,"1109900":549.58,"2310500":218,"5010100":28,"2310400":54,"2310300":54,"4043040":126,"4043000":152,"4042011":244,"4042010":248,"4042001":244,"4042000":254,"4041050":465,"4041041":468,"4041040":465,"4041031":466,"4041030":465,"4041021":465,"4041020":465,"4041011":465,"4041010":465,"4041001":465,"4041000":485,"3031037":58,"4010400":688,"4010300":223,"2310200":54,"2310100":55,"3009900":18,"5010000":31,"1109800":410,"1109700":234,"4406000":25,"1109600":292,"1109500":86,"1109400":54,"1109300":292,"1109200":78,"1109100":78,"1109000":48,"1108900":30,"1108800":110,"3906400":140,"600270":146,"1031087":90,"1031086":90,"1031085":90,"1031084":90,"1031083":90,"1031082":90,"2331081":31,"1131080":116,"1031079":56,"1031078":60,"1031077":178,"1031069":346,"1031076":186,"1031075":186,"4031074":930,"4031073":987,"1131072":58,"2931071":186,"1031070":174,"1031068":176,"4031067":163,"1131066":43,"3931065":126,"3931064":140,"3931063":136,"3931062":139,"4431060":26,"4031055":135,"2331059":54,"2331058":54,"2331057":54,"2331056":54,"2331054":68,"600261":496,"1141050":120,"1131049":244,"3031048":979.2,"3932047":294,"1031046":42,"1031045":136,"3031028":251,"3931044":280,"3431043":408,"3431042":825,"3431041":107,"3431040":829,"3431039":596,"3031038":67,"3031036":57,"1031035":140,"1031034":140,"1031033":140,"1131032":512,"4031031":280,"4031030":473,"4031029":476,"3031027":215,"3031012":211,"1131025":287.15,"1131024":267,"1131023":57,"1131022":76.5,"1131021":136.3,"1131020":28.28,"1131019":83,"1131018":85.71,"1131017":46.73,"1131016":86.15,"1131015":47.2,"1131014":416,"1131013":230,"1132011":45,"600245":152,"600276":186,"600275":186,"600274":198,"1031002":177,"1031001":177,"1131009":218,"1131008":219,"1141005":117,"1132007":235,"1132006":240,"1531004":584,"1531003":584,"600269":733,"600280":170,"600279":584,"600278":584,"600277":584,"600228":66,"600273":622,"600272":622,"600271":237,"600227":126,"600268":735,"600267":246,"600266":254,"600265":445,"600264":156,"600263":402,"600262":401,"600260":200,"600259":177,"600258":40,"600257":230,"600256":230,"600255":230,"600254":45,"600253":145,"600252":181,"600251":1084,"600250":1084,"600249":1084,"600248":1084,"600247":1084,"600246":1084,"600244":141,"600243":460,"600242":460,"600241":230,"600240":245,"600239":257,"600238":456,"600237":490,"600236":739,"600234":367,"600233":97,"600232":583,"600231":242,"600230":303,"600229":246,"600189":126,"600226":101,"600225":172.3,"600224":172.3,"600223":192,"600222":440,"600221":440,"600220":252,"600219":261,"600218":220,"600217":257,"600216":220,"600215":220,"600214":146,"600213":146,"600212":146,"600210":45,"600209":52,"600208":203,"600207":203,"600206":402,"600205":402,"600204":203,"600203":203,"600202":402,"600201":400,"600200":52,"600199":218,"600198":203,"600197":203,"600170":296,"600211":10,"600184":80,"600196":374,"600195":402,"600193":140,"600192":140,"600191":140,"600194":180,"600181":50,"600182":310,"600190":103,"600179":172.3,"600178":488.5,"600177":489,"600176":489,"600175":489,"600174":489,"600173":489,"600172":489,"600169":488.5,"600168":488.5,"600167":488.5,"600166":488.5,"600165":488.5,"600164":488.5,"600163":500,"600162":129,"600161":129,"600160":112,"600159":96,"600158":48,"600157":304,"600156":246,"600155":190,"600154":10,"600153":88,"600152":254,"600151":44,"600150":84,"600149":86.15,"600148":83.9,"600147":484,"600146":40,"600143":379,"600142":29,"600141":85,"600140":90,"600139":92,"600138":92,"600137":92,"600136":92,"600135":92,"600134":69,"600131":15,"600130":32,"600127":147,"600125":68,"600126":33,"600123":118,"600122":141,"600121":146,"600120":46,"600119":24,"600118":60,"600117":60,"600116":60,"600115":60,"600114":60,"600113":60,"600112":60,"600111":60,"600110":60,"600109":52,"600108":52,"600107":83,"600106":153,"600105":118,"600104":190,"600103":488.5,"600102":151.5,"600101":488.5,"600100":488.5,"600099":488.5,"600098":488.5,"600097":488.5,"600096":488.5,"600095":488.5,"600094":488.5,"600093":245,"600092":488.5,"600091":488.5,"600090":396,"600089":396,"600088":488.5,"600087":488.5,"600086":488.5,"600085":488.5,"600084":400,"600083":400,"600082":489,"600081":458,"600080":488.5,"600079":488.5,"600078":488.5,"600077":488.5,"600076":488.5,"600075":488.5,"600074":488.5,"600073":488.5,"600072":1061,"600071":1248,"600070":488.5,"600069":900,"600068":900,"600067":900,"600066":900,"600065":590.8,"600064":900,"600063":900,"600057":488.5,"600056":486,"600055":488.5,"600054":488.5,"600053":488.5,"600052":488.5,"600051":488.5,"600050":488.5,"600049":250,"600048":488.5,"600047":488.5,"600046":114,"600045":573,"600044":46,"6000043":239,"600042":20,"600041":488.5,"600040":450,"600039":450,"600038":114,"600037":216,"600036":98.8,"600035":458,"600034":466,"600033":170,"600032":465,"102218":118,"102217":118,"600028":488.5,"600027":488.5,"600026":488.5,"600025":499.6,"600024":86,"600023":132.6,"600022":198,"600021":491,"600020":497,"600019":463,"600018":83.9,"600015":127.2,"92005":53,"92004":86.15,"91017":140,"91016":60,"9050":500,"102216":90,"102215":90,"102214":90,"102213":90,"105153":466,"6000013":465,"6000012":465,"6000011":465,"600010":84,"600009":294.2,"600008":92.3,"600007":129,"91167":87.7,"91156":573,"9042":42,"600004":48,"600003":46,"600002":94,"600001":46,"900273":463.2,"900272":463.2,"900271":463.2,"91114":58,"105152":450.9,"9039":186,"9038":488.5,"9037":488.5,"9036":488.5,"9035":488.5,"9034":488.5,"9033":488.5,"9032":488.5,"9031":488.5,"104234":557.3,"9027":438,"9025":488.5,"9024":482,"9023":478,"9022":38,"900259":54,"900252":270,"900251":170,"900250":170,"9020":90,"9019":70,"9018":220,"9017":170,"9016":270,"9015":270,"9014":270,"9013":270,"900248":310,"900247":290,"102252":90,"102242":118,"102212":112,"9012":70,"9011":300,"9010":250,"9009":220,"9008":90,"9007":170,"9006":170,"9005":170,"9004":270,"9003":270,"9002":270,"9001":260,"108141":780,"108131":15.83,"108121":780,"108111":166.67,"102371":307.9,"102361":307.9,"102351":307.9,"102341":280,"102271":118,"102261":118,"102741":60,"106111":199,"104233":97.3,"104212":256.2,"104112":96,"102911":175,"102811":222.5,"102731":60,"102721":60,"102711":60,"102641":62,"102631":62,"102621":62,"102611":62,"102541":56,"102531":56,"102521":56,"102511":56,"105151":466,"105141":466,"105131":466,"105121":466,"105111":466,"104111":50,"103231":212,"103131":198,"103121":172,"103111":200,"102421":46,"102411":32.9,"102331":272,"102321":274,"102311":284,"102251":113.5,"102241":118,"102232":116,"102222":114,"102211":118,"102112":176,"102111":66,"101111":114}; /* cod -> peso bruto unitario (g) - fonte: Itens_Cadastro 04/08/2026 */
-var CLIUF=__CLIUF__;      /* cliente -> UF (do Excel enriquecido) */
-var CLIMAT=__CLIMAT__;    /* cliente -> matriz (do Excel enriquecido) */
-var EMBEDDED=__DATA__;    /* linhas compactas */
+var CLIUF={};      /* cliente -> UF (do Excel enriquecido) */
+var CLIMAT={};    /* cliente -> matriz (do Excel enriquecido) */
+var EMBEDDED=[];    /* linhas compactas */
 var RAW=[],TAB="qAdm",LAST=null;
 
 var css=getComputedStyle(document.documentElement);
@@ -238,7 +239,7 @@ function pct(v){return (100*v).toLocaleString("pt-BR",{maximumFractionDigits:1})
 function pct0(v){return Math.round(100*v)+"%";}
 function ymLabel(k){var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];var p=k.split("-");return m[+p[1]-1]+"/"+p[0].slice(2);}
 
-var SITN=["Aberto","Atendido Parcial","Atendido Total","Cancelado","Suspenso"];
+var SITN=["Aberto","Atendido Parcial","Atendido Total","Cancelado","Suspenso","Pendente","Fatur Balcão","Faturado Parcial"];
 var ALOCN=["Nao Aloc","Aloc Parc","Aloc Total"];
 
 function hydrate(arr){
@@ -637,7 +638,7 @@ function parseLSTText(text){
   });
   return out;
 }
-var SIT_IDX={"Aberto":0,"Atendido Parcial":1,"Atendido Total":2,"Cancelado":3,"Suspenso":4};
+var SIT_IDX={"Aberto":0,"Atendido Parcial":1,"Atendido Total":2,"Cancelado":3,"Suspenso":4,"Pendente":5,"Fatur Balcão":6,"Faturado Parcial":7};
 var ALOC_IDX={"Nao Aloc":0,"Aloc Parc":1,"Aloc Total":2};
 document.getElementById("updBtn").addEventListener("click",function(){document.getElementById("fileInput").click();});
 document.getElementById("fileInput").addEventListener("change",function(){
@@ -691,11 +692,89 @@ document.getElementById("fileInput").addEventListener("change",function(){
   reader.readAsArrayBuffer(f);
 });
 
+/* ---------- dados vivos: Supabase (fato_pedido_api + dim_item) ---------- */
+var SB_URL="https://ennsbpibfnuwlvtodukg.supabase.co/rest/v1";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODQ4MzcsImV4cCI6MjA4OTk2MDgzN30.PlAs8d56rHTLxrCLzePHMTeL1fZGGrP-d5xetwpOD50"; /* chave anon (publica, somente leitura + insert na fila) */
+var SB_HDR={"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Accept-Profile":"adm_vendas","Content-Profile":"adm_vendas","Content-Type":"application/json"};
+function sbGet(path){return fetch(SB_URL+"/"+path,{headers:SB_HDR}).then(function(r){if(!r.ok)throw new Error("Supabase HTTP "+r.status);return r.json();});}
+function sbGetAll(base){var PAGE=1000;
+  function next(off,acc){return sbGet(base+"&limit="+PAGE+"&offset="+off).then(function(rows){
+    acc=acc.concat(rows);return rows.length===PAGE?next(off+PAGE,acc):acc;});}
+  return next(0,[]);}
+var FATO_COLS="matriz,cliente,ped_cli,cod_item,produtos,desc_marca,situacao,sit_alocacao,nr_embarque,descricao_motivo,bonificado,qtd_pedida,qtd_atende,qt_saldo,vl_tot_item,vl_aberto_merc,dt_implantacao,nfe,uf_cliente,qt_aloca,ultima_atualizacao";
+function apiParaCompacta(r){
+  var sit=String(r.situacao||"").trim();if(!(sit in SIT_IDX))return null;
+  var aloc=String(r.sit_alocacao||"").trim();
+  var motivo=String(r.descricao_motivo||"").trim();
+  if(motivo.indexOf("bloquear temporariamente")>=0)motivo="Bloqueio tempor\u00e1rio";
+  var di=r.dt_implantacao||null;
+  return [String(r.matriz||"").trim(),String(r.cliente||"").trim(),String(r.ped_cli||"").trim(),String(r.cod_item||"").trim(),
+    SIT_IDX[sit],(aloc in ALOC_IDX)?ALOC_IDX[aloc]:2,(Number(r.nr_embarque)||0)>0?1:0,
+    motivo?1:0,motivo,r.bonificado?1:0,
+    Number(r.qtd_pedida)||0,Number(r.qtd_atende)||0,Number(r.qt_saldo)||0,
+    Math.round((Number(r.vl_tot_item)||0)*100)/100,Math.round((Number(r.vl_aberto_merc)||0)*100)/100,
+    di?di.slice(0,7):null,(r.nfe&&String(r.nfe).trim()!=="")?1:0,String(r.uf_cliente||"").trim(),di,Number(r.qt_aloca)||0];
+}
+function carregarDadosVivos(){
+  var sl=document.getElementById("subline");
+  sl.textContent="Carregando dados vivos do ERP (Supabase)\u2026";
+  return Promise.all([
+    sbGetAll("fato_pedido_api?ativo=is.true&select="+FATO_COLS+"&order=id"),
+    sbGetAll("dim_item?select=cod_item,descricao,marca,peso_bruto_g&order=cod_item").catch(function(){return[];})
+  ]).then(function(res){
+    var fato=res[0],cad=res[1];
+    cad.forEach(function(it){
+      if(it.descricao)ITEMS[it.cod_item]=[it.descricao,it.marca||""];
+      var p=Number(it.peso_bruto_g);if(isFinite(p)&&p>0)PESOS[it.cod_item]=p;
+    });
+    var arr=[],ult=null;
+    fato.forEach(function(r){
+      if(!ITEMS[r.cod_item]&&(r.produtos||r.desc_marca))ITEMS[r.cod_item]=[String(r.produtos||r.cod_item).trim(),String(r.desc_marca||"").trim()];
+      var c=apiParaCompacta(r);if(c)arr.push(c);
+      if(r.ultima_atualizacao&&(!ult||r.ultima_atualizacao>ult))ult=r.ultima_atualizacao;
+    });
+    hydrate(arr);
+    var quando=ult?new Date(ult).toLocaleString("pt-BR"):"\u2014";
+    sl.innerHTML="Dados vivos da API LOG023 (Datasul) \u00b7 "+fmtInt(RAW.length)+" itens de pedido \u00b7 \u00faltima carga: <b>"+esc(quando)+"</b>";
+    buildFilters();render();syncTabFilters();
+  }).catch(function(err){
+    sl.innerHTML="\u26a0\ufe0f Falha ao carregar dados vivos ("+esc(err.message)+"). Use o bot\u00e3o de arquivo manual como alternativa.";
+  });
+}
+
+/* ---------- botao Atualizar do ERP (fila + robo interno) ---------- */
+var API_BUSY=false;
+function statusAtu(msg){document.getElementById("apiStatus").textContent=msg||"";}
+function liberarAtu(){API_BUSY=false;document.getElementById("apiBtn").disabled=false;}
+function acompanhar(id,ini){
+  if(Date.now()-ini>15*60000){statusAtu("\u23f1 Demorou demais \u2014 verifique se o worker interno est\u00e1 rodando.");return liberarAtu();}
+  sbGet("solicitacao_atualizacao?id=eq."+id+"&select=status,detalhe").then(function(rows){
+    var st=(rows[0]||{});
+    if(st.status==="concluida"){statusAtu("\u2705 Atualizado! Recarregando dados\u2026");liberarAtu();
+      return carregarDadosVivos().then(function(){statusAtu("");});}
+    if(st.status==="erro"){statusAtu("\u274c "+(st.detalhe||"erro na atualiza\u00e7\u00e3o"));return liberarAtu();}
+    statusAtu(st.status==="executando"?"\u2699\ufe0f Buscando dados no ERP\u2026":"Na fila\u2026 aguardando o rob\u00f4 interno.");
+    setTimeout(function(){acompanhar(id,ini);},3000);
+  }).catch(function(){setTimeout(function(){acompanhar(id,ini);},5000);});
+}
+document.getElementById("apiBtn").addEventListener("click",function(){
+  if(API_BUSY)return;API_BUSY=true;
+  document.getElementById("apiBtn").disabled=true;
+  statusAtu("Enviando solicita\u00e7\u00e3o\u2026");
+  fetch(SB_URL+"/solicitacao_atualizacao",{method:"POST",
+    headers:Object.assign({},SB_HDR,{"Prefer":"return=representation"}),
+    body:JSON.stringify([{origem:"dashboard-adm"}])})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+  .then(function(rows){acompanhar(rows[0].id,Date.now());})
+  .catch(function(e){statusAtu("Falha ao solicitar: "+e.message);liberarAtu();});
+});
+
 /* ---------- init ---------- */
 hydrate(EMBEDDED);
 buildFilters();
 render();
 syncTabFilters();
+carregarDadosVivos();
 })();
 </script>
 </body>
