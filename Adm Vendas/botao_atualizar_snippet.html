@@ -1,0 +1,96 @@
+<!-- ============================================================
+  BOTÃO "ATUALIZAR DADOS" — Torre de Controle ADM de Vendas
+  Cole este bloco no torre_template.html (painel ADM apenas!).
+
+  Fluxo: botão -> insere pedido na fila (Supabase) -> worker interno
+  roda a API LOG023 -> botão acompanha o status -> ao concluir,
+  recarrega os dados na tela.
+
+  IMPORTANTE: use a chave ANON (pública, só leitura + insert na fila).
+  NUNCA coloque a service_role key aqui — este HTML é público!
+============================================================= -->
+
+<button id="btn-atualizar-api" onclick="TorreAtualizar.solicitar()"
+        style="padding:8px 16px;border-radius:8px;border:none;cursor:pointer;
+               background:#2563eb;color:#fff;font-weight:600;">
+  🔄 Atualizar dados
+</button>
+<span id="btn-atualizar-status" style="margin-left:10px;font-size:13px;color:#555;"></span>
+
+<script>
+const TorreAtualizar = (() => {
+  const SB_URL  = "https://ennsbpibfnuwlvtodukg.supabase.co/rest/v1";
+  const SB_ANON = "COLE_AQUI_A_ANON_KEY"; // chave anon (pública) do projeto
+  const HDR = {
+    "apikey": SB_ANON,
+    "Authorization": "Bearer " + SB_ANON,
+    "Accept-Profile": "adm_vendas",
+    "Content-Profile": "adm_vendas",
+    "Content-Type": "application/json",
+  };
+  const TIMEOUT_MIN = 15;           // desiste de acompanhar após 15 min
+  let acompanhando = false;
+
+  const st = (msg) => document.getElementById("btn-atualizar-status").textContent = msg;
+  const btn = () => document.getElementById("btn-atualizar-api");
+
+  async function solicitar() {
+    if (acompanhando) return;
+    acompanhando = true;
+    btn().disabled = true;
+    st("Enviando solicitação…");
+    try {
+      const r = await fetch(SB_URL + "/solicitacao_atualizacao", {
+        method: "POST",
+        headers: { ...HDR, "Prefer": "return=representation" },
+        body: JSON.stringify([{ origem: "dashboard-adm" }]),
+      });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const [{ id }] = await r.json();
+      st("Na fila… o robô interno vai buscar os dados no ERP.");
+      acompanhar(id, Date.now());
+    } catch (e) {
+      st("Falha ao solicitar: " + e.message);
+      liberar();
+    }
+  }
+
+  async function acompanhar(id, inicio) {
+    if (Date.now() - inicio > TIMEOUT_MIN * 60000) {
+      st("⏱ Demorou mais que o esperado. Verifique se o worker interno está rodando.");
+      return liberar();
+    }
+    try {
+      const r = await fetch(SB_URL + "/solicitacao_atualizacao?id=eq." + id +
+                            "&select=status,detalhe", { headers: HDR });
+      const [linha] = await r.json();
+      if (linha.status === "concluida") {
+        st("✅ Dados atualizados! Recarregando…");
+        liberar();
+        // Se o dashboard lê do Supabase: chame aqui a função que refaz as
+        // consultas e re-renderiza. Enquanto os dados forem embutidos no HTML,
+        // um reload garante pegar a última publicação:
+        setTimeout(() => location.reload(), 1200);
+        return;
+      }
+      if (linha.status === "erro") {
+        st("❌ Erro na atualização: " + (linha.detalhe || "ver log do worker"));
+        return liberar();
+      }
+      st(linha.status === "executando"
+         ? "⚙️ Buscando dados no ERP…"
+         : "Na fila… aguardando o robô interno.");
+      setTimeout(() => acompanhar(id, inicio), 3000);
+    } catch (e) {
+      setTimeout(() => acompanhar(id, inicio), 5000); // instabilidade: tenta de novo
+    }
+  }
+
+  function liberar() {
+    acompanhando = false;
+    btn().disabled = false;
+  }
+
+  return { solicitar };
+})();
+</script>
