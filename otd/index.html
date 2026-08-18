@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v9.21-tema-genomma', date: '22/07/2026' };
+window.__BUILD__ = { version: 'v10.0-regras-status', date: '18/08/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -3169,6 +3169,302 @@ function atrasosToggleNF(rid, rowEl){
 // Usado pelo Excel "Exportar Todas as Notas" para incluir a coluna
 // "Status Painel" derivada das regras de negócio (v9.6+).
 // ============================================================
+// ============================================================
+// MOTOR DE REGRAS v10.0 - aprovado pela operacao em 17/08/2026
+// Espelho exato de regras_status_otd.py. Se mudar um, mude o outro.
+// Substitui a classificarStatusPainel() abaixo, que fica so como
+// referencia historica (nao e mais chamada por ninguem).
+// ============================================================
+/* ============================================================================
+ * Motor de classificacao de status do painel OTD - Torre de Controle Logistica
+ * Versao: v10.0 - regras aprovadas pela operacao em 17/08/2026
+ *
+ * Espelho exato de regras_status_otd.py. Se mudar um, mude o outro.
+ *
+ * COMO USAR NO otd/index.html
+ * ---------------------------
+ * Substitui a antiga classificarStatusPainel(). Chame com a linha inteira:
+ *
+ *     const r = OTDRegras.classificar(linha);
+ *     r.status_painel   // 'On Time', 'Tratativa Fiscal', 'CD', ...
+ *     r.macro           // 'Entregue', 'Transito', 'CD', 'Devolvida', ...
+ *     r.prazo           // 'No Prazo' | 'Em Atraso' | 'Sem Prazo' | '' (entregues)
+ *     r.entra_otd       // true somente para On Time / Off Time
+ *     r.regra           // id da regra que decidiu - guarde para auditoria
+ * ==========================================================================*/
+
+var OTDRegras = (function () {
+  'use strict';
+
+  var VERSAO_REGRAS = 'v10.0-2026-08-17';
+
+  // -- 1. Macros do painel ---------------------------------------------------
+  var MACRO = {
+    'On Time': 'Entregue',
+    'Off Time': 'Entregue',
+    'Em Transito': 'Transito',
+    'Aguardando Agendamento': 'Transito',
+    'Agendamento Solicitado': 'Transito',
+    'Agendamento Confirmado': 'Transito',
+    'Em Rota de Entrega': 'Transito',
+    'Tratativa Embarcador': 'Transito',
+    'Tratativa Transportadora': 'Transito',
+    'Tratativa Fiscal': 'Transito',
+    'CD': 'CD',
+    'Devolvida': 'Devolvida',
+    'Desconsiderada': 'Desconsiderada',
+    'Sem Regra': 'Sem Regra'
+  };
+
+  var EM_TRATATIVA = ['Tratativa Embarcador', 'Tratativa Transportadora', 'Tratativa Fiscal'];
+  var ENTRA_OTD = ['On Time', 'Off Time'];
+
+  function macroDe(s) { return MACRO[s] || 'Sem Regra'; }
+  function emTratativa(s) { return EM_TRATATIVA.indexOf(s) >= 0; }
+
+  // -- 2. De-para de ocorrencias - aprovado pela operacao --------------------
+  // Encerram o ciclo e tem precedencia sobre o Status da Entrega do ERP,
+  // porque o catalogo TMS marca 25/998/999 como "Entregue Destino = Sim" e o
+  // ERP devolve esses casos como "Entregue no Prazo" - o que inflava o OTD.
+  var OCOR_ENTREGUE = [1];
+  var OCOR_OFF_TIME = [2];
+  var OCOR_DEVOLVIDA = [25, 999];
+  var OCOR_DESCONSIDERADA = [998];
+
+  // Como decidir On Time x Off Time numa NF entregue.
+  //   true  -> Off Time se as datas mostram atraso OU se o ERP ja diz "em atraso".
+  //            Mantem a regra atual do painel e soma o cheque de datas por cima.
+  //            E o comportamento aprovado em 17/08/2026.
+  //   false -> Off Time somente quando Data Entrega > Data Max Entrega.
+  // Na base de 17/08/2026 a diferenca e de 4 NFs (OTD 99,74% x 99,79%).
+  var OFF_TIME_SE_ERP_DIZ_ATRASO = true;
+
+  var OCOR_TRANSITO = {
+    0: 'Em Transito',
+    98: 'Em Transito',
+    600: 'Aguardando Agendamento',
+    601: 'Agendamento Solicitado',
+    602: 'Agendamento Confirmado',
+    28: 'Em Rota de Entrega',
+    84: 'Em Rota de Entrega',
+    91: 'Em Rota de Entrega',
+    807: 'Em Rota de Entrega',
+    26: 'Tratativa Fiscal',
+    3: 'Tratativa Embarcador',
+    5: 'Tratativa Embarcador',
+    8: 'Tratativa Embarcador',
+    9: 'Tratativa Embarcador',
+    23: 'Tratativa Embarcador',
+    80: 'Tratativa Embarcador',
+    92: 'Tratativa Embarcador',
+    420: 'Tratativa Embarcador',
+    19: 'Tratativa Transportadora',
+    20: 'Tratativa Transportadora',
+    21: 'Tratativa Transportadora',
+    29: 'Tratativa Transportadora',
+    31: 'Tratativa Transportadora',
+    33: 'Tratativa Transportadora',
+    35: 'Tratativa Transportadora',
+    44: 'Tratativa Transportadora',
+    50: 'Tratativa Transportadora',
+    99: 'Tratativa Transportadora'
+  };
+
+  // -- 3. Normalizacao -------------------------------------------------------
+  // O ERP entrega HTML dentro do valor do campo. Ja foi observado o status
+  // "<i>Status em Atualizacao - Aguarde o Processamento</i>" com as tags <i>
+  // no conteudo. Sem limpar, qualquer comparacao por igualdade quebra.
+  var NULOS = ['', 'nan', 'none', 'null', '-', 'nat', 'n/a'];
+
+  function texto(v) {
+    if (v === null || v === undefined) return '';
+    var s = String(v).replace(/<[^>]*>/g, ' ').replace(/\u00a0/g, ' ');
+    s = s.replace(/\s+/g, ' ').trim();
+    return NULOS.indexOf(s.toLowerCase()) >= 0 ? '' : s;
+  }
+
+  function semAcento(s) {
+    return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  function inteiro(v) {
+    var s = texto(v);
+    if (!s) return null;
+    var n = parseFloat(s.replace(',', '.'));
+    return isNaN(n) ? null : Math.trunc(n);
+  }
+
+  function preenchido(v) {
+    var s = texto(v);
+    if (!s) return false;
+    return ['0', '0.0', '00'].indexOf(s) < 0;
+  }
+
+  function data(v) {
+    if (v instanceof Date) return isNaN(v.getTime()) ? null : new Date(v.getFullYear(), v.getMonth(), v.getDate());
+    var s = texto(v);
+    if (!s) return null;
+    s = s.split(' ')[0].split('T')[0];
+    var m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+    m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+    m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/);
+    if (m) return new Date(2000 + +m[3], +m[2] - 1, +m[1]);
+    return null;
+  }
+
+  function chaveNorm(k) {
+    return semAcento(k).replace(/[ .]/g, '');
+  }
+
+  function campo(linha) {
+    var nomes = Array.prototype.slice.call(arguments, 1);
+    for (var i = 0; i < nomes.length; i++) {
+      if (linha[nomes[i]] !== undefined) return linha[nomes[i]];
+    }
+    var alvo = nomes.map(chaveNorm);
+    for (var k in linha) {
+      if (Object.prototype.hasOwnProperty.call(linha, k) && alvo.indexOf(chaveNorm(k)) >= 0) return linha[k];
+    }
+    return null;
+  }
+
+  // -- 4. Motor --------------------------------------------------------------
+  // Precedencia (a primeira que casa decide):
+  //   R1 Desconsiderada - sufixo '- Desconsiderada' no status ou ocorrencia 998
+  //   R2 Devolvida      - ocorrencia 25 ou 999
+  //   R3 Entregue       - ocorrencia 1 (avalia prazo) ou 2 (sempre Off Time)
+  //   R4 Entregue (ERP) - sem ocorrencia finalizadora, status do ERP diz entregue
+  //   R5 CD             - sem CTE, sem romaneio e sem data de inicio de transporte
+  //   R6 Transito       - tem CTE ou romaneio; sub-status pela ocorrencia
+  //   R7 Sem Regra      - ocorrencia fora do de-para aprovado
+  function classificar(linha, hoje) {
+    if (!hoje) { hoje = new Date(); }
+    hoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+    var statusErp = texto(campo(linha, 'Status da Entrega', 'Status_da_Entrega'));
+    var ocor = inteiro(campo(linha, 'Ocorrencia', 'Ocorrência'));
+    var romaneio = campo(linha, 'Romaneio', 'Romaneio NF');
+    var cte = campo(linha, 'Conhecimento', 'Nro Conhecimento', 'CTE');
+    var iniTransp = campo(linha, 'Data Ini. Transp.', 'Data Ini Transp', 'Data Inicio Transporte');
+    var dtPrevisao = data(campo(linha, 'Data Max Entrega', 'Previsão de Entrega', 'Previsao de Entrega'));
+    var dtEntrega = data(campo(linha, 'Data Entrega Operacao', 'Data Entrega', 'Data Entregue'));
+
+    function resultado(status, regra, prazo) {
+      return {
+        status_painel: status,
+        macro: macroDe(status),
+        em_tratativa: emTratativa(status),
+        prazo: prazo || '',
+        entra_otd: ENTRA_OTD.indexOf(status) >= 0,
+        regra: regra,
+        ocorrencia: ocor,
+        versao_regras: VERSAO_REGRAS
+      };
+    }
+
+    var erp = semAcento(statusErp);
+
+    // R1 - unico caso em que o status do ERP vence a ocorrencia
+    if (erp.indexOf('desconsiderada') >= 0) return resultado('Desconsiderada', 'R1-status');
+    if (OCOR_DESCONSIDERADA.indexOf(ocor) >= 0) return resultado('Desconsiderada', 'R1-ocor998');
+
+    // R2
+    if (OCOR_DEVOLVIDA.indexOf(ocor) >= 0) return resultado('Devolvida', 'R2-ocor' + ocor);
+
+    // R3
+    if (OCOR_OFF_TIME.indexOf(ocor) >= 0) return resultado('Off Time', 'R3-ocor2');
+
+    // Decide se uma NF entregue e Off Time. Ver OFF_TIME_SE_ERP_DIZ_ATRASO.
+    function entregueAtrasou() {
+      var porData = !!(dtEntrega && dtPrevisao && dtEntrega.getTime() > dtPrevisao.getTime());
+      var porErp = erp.indexOf('atraso') >= 0;
+      if (OFF_TIME_SE_ERP_DIZ_ATRASO) return porData || porErp;
+      if (dtEntrega && dtPrevisao) return porData;
+      return porErp;
+    }
+
+    if (OCOR_ENTREGUE.indexOf(ocor) >= 0) {
+      var atrasou1 = entregueAtrasou();
+      return resultado(atrasou1 ? 'Off Time' : 'On Time',
+                       atrasou1 ? 'R3-ocor1-atraso' : 'R3-ocor1');
+    }
+
+    // R4 - vale so quando nao ha ocorrencia finalizadora contradizendo
+    if (erp.indexOf('entregue') === 0) {
+      var atrasou2 = entregueAtrasou();
+      return resultado(atrasou2 ? 'Off Time' : 'On Time',
+                       atrasou2 ? 'R4-erp-atraso' : 'R4-erp');
+    }
+
+    // Daqui para baixo a NF nao foi entregue: calcula o corte de prazo
+    var prazo;
+    if (!dtPrevisao) prazo = 'Sem Prazo';
+    else if (dtPrevisao.getTime() < hoje.getTime()) prazo = 'Em Atraso';
+    else prazo = 'No Prazo';
+
+    // R5 - ainda no centro de distribuicao: nada indica que a carga saiu
+    var temCte = preenchido(cte);
+    var temRomaneio = preenchido(romaneio);
+    var temInicio = data(iniTransp) !== null;
+    if (!temCte && !temRomaneio && !temInicio) return resultado('CD', 'R5-cd', prazo);
+
+    // R6 - tem CTE ou romaneio: saiu do CD. A ocorrencia define o sub-status
+    if (ocor === null) return resultado('Em Transito', 'R6-transito-sem-ocor', prazo);
+    if (Object.prototype.hasOwnProperty.call(OCOR_TRANSITO, ocor)) {
+      return resultado(OCOR_TRANSITO[ocor], 'R6-ocor' + ocor, prazo);
+    }
+
+    // R7 - ocorrencia nunca aprovada. Fica visivel e fora do OTD, para aparecer
+    // no dia seguinte em vez de sumir dentro de um default.
+    return resultado('Sem Regra', 'R7-ocor' + ocor, prazo);
+  }
+
+  // -- 5. Apoio --------------------------------------------------------------
+  function classificarBase(linhas, hoje) {
+    var saida = [], porStatus = {}, porMacro = {}, porPrazo = {}, semRegra = {};
+    for (var i = 0; i < linhas.length; i++) {
+      var r = classificar(linhas[i], hoje);
+      saida.push(r);
+      porStatus[r.status_painel] = (porStatus[r.status_painel] || 0) + 1;
+      porMacro[r.macro] = (porMacro[r.macro] || 0) + 1;
+      if (r.prazo) porPrazo[r.prazo] = (porPrazo[r.prazo] || 0) + 1;
+      if (r.status_painel === 'Sem Regra') semRegra[r.ocorrencia] = (semRegra[r.ocorrencia] || 0) + 1;
+    }
+    var on = porStatus['On Time'] || 0, off = porStatus['Off Time'] || 0;
+    return {
+      linhas: saida,
+      diagnostico: {
+        versao_regras: VERSAO_REGRAS,
+        total: linhas.length,
+        por_status: porStatus,
+        por_macro: porMacro,
+        por_prazo: porPrazo,
+        otd_pct: (on + off) ? Math.round(on / (on + off) * 10000) / 100 : null,
+        base_otd: on + off,
+        ocorrencias_sem_regra: semRegra,
+        alerta_sem_regra: Object.keys(semRegra).length > 0
+      }
+    };
+  }
+
+  return {
+    VERSAO_REGRAS: VERSAO_REGRAS,
+    MACRO: MACRO,
+    OCOR_TRANSITO: OCOR_TRANSITO,
+    classificar: classificar,
+    classificarBase: classificarBase,
+    macroDe: macroDe,
+    emTratativa: emTratativa,
+    _norm: { texto: texto, inteiro: inteiro, data: data, preenchido: preenchido, campo: campo }
+  };
+})();
+
+// ============================================================
+// [LEGADO v9.6] classificarStatusPainel - nao e mais chamada.
+// Mantida apenas para consulta. Pode ser removida no futuro.
+// ============================================================
 function classificarStatusPainel(status, romaneio, ocorrencia, dataMaxEntrega){
   const s = String(status||'').trim();
   const tem_rom = romaneio != null && String(romaneio).trim() !== '' && String(romaneio).trim() !== '0';
@@ -3278,12 +3574,12 @@ async function exportarTodasNotasExcel(ev){
       const obj = {};
       headers.forEach((h,i) => { obj[h] = r[i] || ''; });
       // v9.8: adicionar coluna "Status Painel" derivada das regras de negócio
-      obj['Status Painel'] = classificarStatusPainel(
-        obj['Status da Entrega'],
-        obj['Romaneio'],
-        obj['Ocorrencia'] || obj['Ocorrência'],
-        obj['Data Max Entrega']
-      );
+      // v10.0: motor novo - recebe a linha inteira e acha as colunas sozinho
+      const _r = OTDRegras.classificar(obj);
+      obj['Status Painel'] = _r.status_painel;
+      obj['Macro'] = _r.macro;
+      obj['Prazo'] = _r.prazo;
+      obj['Regra'] = _r.regra;
       return obj;
     });
 
@@ -3294,6 +3590,9 @@ async function exportarTodasNotasExcel(ev){
       headersFinal.push(h);
       if(h === 'Status da Entrega' && !inseriu){
         headersFinal.push('Status Painel');
+        headersFinal.push('Macro');
+        headersFinal.push('Prazo');
+        headersFinal.push('Regra');
         inseriu = true;
       }
     }
