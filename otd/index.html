@@ -460,8 +460,9 @@ table.dt th{color:#33536F}
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#0072BC; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Trânsito</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Atraso</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#7A4FBF; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Tratativa</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#3787C7; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Ag. CTE</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#C76137; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Tr. Agenda</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#3787C7; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Ag. Agendamento</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#C76137; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Agend. Confirmado</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#8A5A00; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Devolvida</th>
               </tr>
             </thead>
             <tbody>
@@ -474,6 +475,7 @@ table.dt th{color:#33536F}
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#7A4FBF" id="o-trat">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3787C7" id="o-agcte">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#C76137" id="o-tag">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#8A5A00" id="o-dev">—</span></td>
               </tr>
               <tr>
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-on-s">—</td>
@@ -484,6 +486,7 @@ table.dt th{color:#33536F}
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trat-s">—</td>
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-agcte-s">—</td>
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-tag-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-dev-s">—</td>
               </tr>
             </tbody>
           </table>
@@ -522,14 +525,15 @@ table.dt th{color:#33536F}
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Trânsito em Atraso, Tratativa, Ag. CTE, Trânsito Agenda e Previsão por Quarter</div>
+          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Atraso, Tratativa, Ag. Agendamento, Agend. Confirmado, Devolvida e Previsão por Quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
             <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
             <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#0072BC;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#0072BC" id="o3-trs">—</div><div style="font-size:11px;color:#0072BC;margin-top:2px" id="o3-trs-val">—</div></div>
             <div class="status-hl" style="background:#FCEBEB"><div style="font-size:9px;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito em Atraso</div><div style="font-size:24px;font-weight:700;color:#A32D2D" id="o3-trs-atr">—</div><div style="font-size:11px;color:#A32D2D;margin-top:2px" id="o3-trs-atr-val">—</div></div>
             <div class="status-hl" style="background:#EFE6FB"><div style="font-size:9px;color:#7A4FBF;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Tratativa</div><div style="font-size:24px;font-weight:700;color:#7A4FBF" id="o3-trat">—</div><div style="font-size:11px;color:#7A4FBF;margin-top:2px" id="o3-trat-val">—</div></div>
-            <div class="status-hl" style="background:#E6F0FB"><div style="font-size:9px;color:#3787C7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Ag. CTE</div><div style="font-size:24px;font-weight:700;color:#3787C7" id="o3-agcte">—</div><div style="font-size:11px;color:#3787C7;margin-top:2px" id="o3-agcte-val">—</div></div>
-            <div class="status-hl" style="background:#FBEEE3"><div style="font-size:9px;color:#C76137;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Trânsito Agenda</div><div style="font-size:24px;font-weight:700;color:#C76137" id="o3-tag">—</div><div style="font-size:11px;color:#C76137;margin-top:2px" id="o3-tag-val">—</div></div>
+            <div class="status-hl" style="background:#E6F0FB"><div style="font-size:9px;color:#3787C7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Ag. Agendamento</div><div style="font-size:24px;font-weight:700;color:#3787C7" id="o3-agcte">—</div><div style="font-size:11px;color:#3787C7;margin-top:2px" id="o3-agcte-val">—</div></div>
+            <div class="status-hl" style="background:#FBEEE3"><div style="font-size:9px;color:#C76137;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Agend. Confirmado</div><div style="font-size:24px;font-weight:700;color:#C76137" id="o3-tag">—</div><div style="font-size:11px;color:#C76137;margin-top:2px" id="o3-tag-val">—</div></div>
+            <div class="status-hl" style="background:#F5EDDF"><div style="font-size:9px;color:#8A5A00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Devolvida</div><div style="font-size:24px;font-weight:700;color:#8A5A00" id="o3-dev">—</div><div style="font-size:11px;color:#8A5A00;margin-top:2px" id="o3-dev-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
@@ -4280,8 +4284,8 @@ function renderOTDChart(d){
   const MC=d._MC||{};
   let fat=0,qtd=0,on=0,off=0,hub=0,trs=0,trs_atr=0;
   let on_val=0,off_val=0,hub_val=0,trs_val=0,trs_atr_val=0;
-  let trat=0,agcte=0,tag=0;
-  let trat_val=0,agcte_val=0,tag_val=0;
+  let trat=0,agcte=0,tag=0,dev=0;
+  let trat_val=0,agcte_val=0,tag_val=0,dev_val=0;
   let fatBonif=0,qtdBonif=0; // bonificações por mês filtrado
   ms.forEach(m=>{
     // tentar chave numérica e string
@@ -4289,8 +4293,8 @@ function renderOTDChart(d){
     if(!md)return;
     fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;trs_atr+=(md.trs_atr||0);
     on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;trs_atr_val+=(md.trs_atr_val||0);
-    trat+=(md.tratativa||0); agcte+=(md.ag_cte||0); tag+=(md.transito_agenda||0);
-    trat_val+=(md.tratativa_val||0); agcte_val+=(md.ag_cte_val||0); tag_val+=(md.transito_agenda_val||0);
+    trat+=(md.tratativa||0); agcte+=(md.ag_cte||0); tag+=(md.transito_agenda||0); dev+=(md.devolvida||0);
+    trat_val+=(md.tratativa_val||0); agcte_val+=(md.ag_cte_val||0); tag_val+=(md.transito_agenda_val||0); dev_val+=(md.devolvida_val||0);
     const bmm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)];
     if(bmm){fatBonif+=(bmm.fat||0);qtdBonif+=(bmm.qtd||0);}
   });
@@ -4331,9 +4335,12 @@ function renderOTDChart(d){
   const tratValAll   = filtroAtivo ? trat_val                : (d.totalTratativaValAll!=null      ? d.totalTratativaValAll      : trat_val);
   const agcteValAll  = filtroAtivo ? agcte_val               : (d.totalAgCteValAll!=null          ? d.totalAgCteValAll          : agcte_val);
   const tagValAll    = filtroAtivo ? tag_val                 : (d.totalTransitoAgendaValAll!=null ? d.totalTransitoAgendaValAll : tag_val);
+  // v10.0: Devolvida (ocorrencias 25 e 999) - fora do OTD, card proprio
+  const devAll       = filtroAtivo ? dev                     : (d.totalDevolvidaAll!=null    ? d.totalDevolvidaAll    : dev);
+  const devValAll    = filtroAtivo ? dev_val                 : (d.totalDevolvidaValAll!=null ? d.totalDevolvidaValAll : dev_val);
   // v9.7: Total não finalizado = TUDO que não entregou
-  const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll;
-  const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll;
+  const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll + devAll;
+  const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll + devValAll;
 
   document.getElementById('o-fat').textContent=fmtM(fatTotal);
   document.getElementById('o-fat-s').textContent=qtdTotal.toLocaleString('pt-BR')+' NFs (vendas + bonif)';
@@ -4357,6 +4364,7 @@ function renderOTDChart(d){
   document.getElementById('o-trat').textContent=tratAll;document.getElementById('o-trat-s').textContent=fmtM(tratValAll);
   document.getElementById('o-agcte').textContent=agcteAll;document.getElementById('o-agcte-s').textContent=fmtM(agcteValAll);
   document.getElementById('o-tag').textContent=tagAll;document.getElementById('o-tag-s').textContent=fmtM(tagValAll);
+  document.getElementById('o-dev').textContent=devAll;document.getElementById('o-dev-s').textContent=fmtM(devValAll);
   document.getElementById('o-otd').textContent=otdAll+'%';
   // Subtexto do OTD: mostra o filtro ativo claramente
   let otdLabel = onAll.toLocaleString('pt-BR')+' On Time de '+finAll.toLocaleString('pt-BR')+' finalizadas';
@@ -4408,6 +4416,7 @@ function renderOTDChart(d){
   document.getElementById('o3-trat').textContent=tratAll;document.getElementById('o3-trat-val').textContent=fmtM(tratValAll);
   document.getElementById('o3-agcte').textContent=agcteAll;document.getElementById('o3-agcte-val').textContent=fmtM(agcteValAll);
   document.getElementById('o3-tag').textContent=tagAll;document.getElementById('o3-tag-val').textContent=fmtM(tagValAll);
+  document.getElementById('o3-dev').textContent=devAll;document.getElementById('o3-dev-val').textContent=fmtM(devValAll);
   document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
   // ---- BLOCO 1: Genomma vs Inovalab — calculado dos meses filtrados ----
