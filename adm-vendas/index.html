@@ -122,13 +122,22 @@ footer{margin-top:24px;font-size:.78rem;color:var(--ink-soft)}
     <a href="../index.html" style="display:inline-block;margin-bottom:8px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;color:var(--brand);font-size:12px;font-weight:700;background:#fff">← Menu inicial</a>
     <div class="eyebrow">Genomma · Torre de Controle · Pedidos</div>
     <h1>Painel de pedidos — ADM de Vendas × Operação</h1>
-    <p class="sub" id="subline">Carregando dados vivos do ERP…</p>
+    <p class="sub" style="margin-top:6px"><span id="idadeDado"></span></p>
+    <p class="sub" id="subline">Pedidos de 06/01/2026 a 20/08/2026 · 54.826 linhas · fonte: API pedidos-venda (producao) via gateway · 8 de 8 meses revarridos nesta rodada; guardados só os pedidos completos com alocação total (49.031 linhas) · atualizado em 20/08/2026 às 14:55</p>
   </div>
   <div style="text-align:right">
     <button id="apiBtn" type="button" style="font-family:inherit;font-size:.82rem;font-weight:700;color:#fff;background:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:10px 16px;cursor:pointer;box-shadow:var(--shadow)">&#128260; Atualizar do ERP</button>
     <button id="updBtn" type="button">Arquivo manual (.xls/.LST)</button>
     <input type="file" id="fileInput" accept=".xls,.xlsx,.xlsm,.lst,.LST,.txt">
     <div id="apiStatus" style="font-size:.75rem;color:var(--ink-soft);margin-top:6px;min-height:1em"></div>
+    <div id="erpBox" hidden style="margin-top:10px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);max-width:360px;text-align:left">
+      <div style="display:flex;gap:10px;margin-bottom:10px">
+        <div style="flex:1"><label for="erpIni" style="display:block;font-size:.7rem;font-weight:700;color:var(--ink-soft);margin-bottom:3px">Implantação de</label><input type="date" id="erpIni" style="font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:9px;padding:7px 9px;width:100%"></div>
+        <div style="flex:1"><label for="erpFim" style="display:block;font-size:.7rem;font-weight:700;color:var(--ink-soft);margin-bottom:3px">até</label><input type="date" id="erpFim" style="font-family:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:9px;padding:7px 9px;width:100%"></div>
+      </div>
+      <button id="erpGo" type="button" style="font-family:inherit;font-size:.78rem;font-weight:700;border-radius:9px;padding:8px 14px;cursor:pointer;border:1px solid var(--brand);background:var(--brand);color:#fff">Buscar no ERP</button>
+      <button id="erpCancel" type="button" style="font-family:inherit;font-size:.78rem;font-weight:700;border-radius:9px;padding:8px 14px;cursor:pointer;margin-left:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink-soft)">Fechar</button>
+    </div>
   </div>
 </header>
 
@@ -146,6 +155,9 @@ footer{margin-top:24px;font-size:.78rem;color:var(--ink-soft)}
   <div class="ms" id="msProduto"><label>Produto</label></div>
   <div class="ms" id="msSit"><label>Situação</label></div>
   <div class="ms" id="msBonif"><label>Bonificado</label></div>
+  <div class="ms" id="msUf"><label>UF</label></div>
+  <div class="ms" id="msEstab"><label>Estabelecimento</label></div>
+  <div class="ms" id="msAloc"><label>Sit. Alocação</label></div>
   <div class="ms"><label>Pedido</label><input id="fPedido" class="txt" type="text" placeholder="Digite o pedido"></div>
   <button id="resetBtn" type="button">Limpar filtros</button>
 </div>
@@ -219,7 +231,7 @@ footer{margin-top:24px;font-size:.78rem;color:var(--ink-soft)}
 (function(){
 "use strict";
 var ITEMS={};      /* cod -> [descricao, marca] */
-var PESOS={"4041121":1000,"5200200":494,"6003500":582,"6003400":582,"6003300":582,"5300400":16,"5300300":16,"5300200":16,"6003200":582,"4041120":1000,"4041119":1000,"4041118":1000,"4041117":238,"4041116":65,"4041115":302,"4041114":220,"1111700":110,"1009600":388,"1009500":384,"1009400":378,"1009300":100,"1009200":98,"1009100":100,"5300100":16,"6002800":582,"6002700":582,"6002600":582,"6002500":582,"6002400":582,"6002300":582,"6002200":582,"4041113":1000,"4041112":1000,"4041111":1000,"5200100":494,"4049000":900,"4048000":695,"4406300":25,"6002100":582,"6002000":582,"6001900":582,"6001800":582,"6001700":582,"6001600":582,"6001500":582,"1111500":125,"1111400":48,"1111300":468,"1111200":244,"3906700":128,"3906600":128,"3906500":128,"2100200":458,"2100100":458,"4406200":25,"4406100":25,"1009000":256,"1008900":265,"1008800":265,"2310900":57,"6001200":582,"6001100":582,"4046000":900,"4045000":900,"1111100":430,"6001000":582,"6000900":582,"5100200":155.1,"5100100":155.1,"1111000":60,"6000800":582,"4044400":435,"4044300":435,"4044200":465,"4044100":435,"2310800":31,"4044000":435,"4043900":435,"4043800":1000,"4043700":1000,"4043600":1000,"6000700":582,"1110900":125,"1110800":65,"1110700":172,"3300200":53,"6000600":582,"6000500":582,"6000400":582,"3300100":52,"1110600":170,"4043500":465,"6000300":585,"6000200":585,"4043400":223,"6000100":585,"4043300":695,"4043200":695,"4043100":695,"2310700":114,"2310600":74,"4041061":465,"4041060":465,"1110500":86,"1110400":46,"1110300":96,"2931100":196,"5010200":54,"1110200":54,"1110100":60,"1110000":60,"1109900":549.58,"2310500":218,"5010100":28,"2310400":54,"2310300":54,"4043040":126,"4043000":152,"4042011":244,"4042010":248,"4042001":244,"4042000":254,"4041050":465,"4041041":468,"4041040":465,"4041031":466,"4041030":465,"4041021":465,"4041020":465,"4041011":465,"4041010":465,"4041001":465,"4041000":485,"3031037":58,"4010400":688,"4010300":223,"2310200":54,"2310100":55,"3009900":18,"5010000":31,"1109800":410,"1109700":234,"4406000":25,"1109600":292,"1109500":86,"1109400":54,"1109300":292,"1109200":78,"1109100":78,"1109000":48,"1108900":30,"1108800":110,"3906400":140,"600270":146,"1031087":90,"1031086":90,"1031085":90,"1031084":90,"1031083":90,"1031082":90,"2331081":31,"1131080":116,"1031079":56,"1031078":60,"1031077":178,"1031069":346,"1031076":186,"1031075":186,"4031074":930,"4031073":987,"1131072":58,"2931071":186,"1031070":174,"1031068":176,"4031067":163,"1131066":43,"3931065":126,"3931064":140,"3931063":136,"3931062":139,"4431060":26,"4031055":135,"2331059":54,"2331058":54,"2331057":54,"2331056":54,"2331054":68,"600261":496,"1141050":120,"1131049":244,"3031048":979.2,"3932047":294,"1031046":42,"1031045":136,"3031028":251,"3931044":280,"3431043":408,"3431042":825,"3431041":107,"3431040":829,"3431039":596,"3031038":67,"3031036":57,"1031035":140,"1031034":140,"1031033":140,"1131032":512,"4031031":280,"4031030":473,"4031029":476,"3031027":215,"3031012":211,"1131025":287.15,"1131024":267,"1131023":57,"1131022":76.5,"1131021":136.3,"1131020":28.28,"1131019":83,"1131018":85.71,"1131017":46.73,"1131016":86.15,"1131015":47.2,"1131014":416,"1131013":230,"1132011":45,"600245":152,"600276":186,"600275":186,"600274":198,"1031002":177,"1031001":177,"1131009":218,"1131008":219,"1141005":117,"1132007":235,"1132006":240,"1531004":584,"1531003":584,"600269":733,"600280":170,"600279":584,"600278":584,"600277":584,"600228":66,"600273":622,"600272":622,"600271":237,"600227":126,"600268":735,"600267":246,"600266":254,"600265":445,"600264":156,"600263":402,"600262":401,"600260":200,"600259":177,"600258":40,"600257":230,"600256":230,"600255":230,"600254":45,"600253":145,"600252":181,"600251":1084,"600250":1084,"600249":1084,"600248":1084,"600247":1084,"600246":1084,"600244":141,"600243":460,"600242":460,"600241":230,"600240":245,"600239":257,"600238":456,"600237":490,"600236":739,"600234":367,"600233":97,"600232":583,"600231":242,"600230":303,"600229":246,"600189":126,"600226":101,"600225":172.3,"600224":172.3,"600223":192,"600222":440,"600221":440,"600220":252,"600219":261,"600218":220,"600217":257,"600216":220,"600215":220,"600214":146,"600213":146,"600212":146,"600210":45,"600209":52,"600208":203,"600207":203,"600206":402,"600205":402,"600204":203,"600203":203,"600202":402,"600201":400,"600200":52,"600199":218,"600198":203,"600197":203,"600170":296,"600211":10,"600184":80,"600196":374,"600195":402,"600193":140,"600192":140,"600191":140,"600194":180,"600181":50,"600182":310,"600190":103,"600179":172.3,"600178":488.5,"600177":489,"600176":489,"600175":489,"600174":489,"600173":489,"600172":489,"600169":488.5,"600168":488.5,"600167":488.5,"600166":488.5,"600165":488.5,"600164":488.5,"600163":500,"600162":129,"600161":129,"600160":112,"600159":96,"600158":48,"600157":304,"600156":246,"600155":190,"600154":10,"600153":88,"600152":254,"600151":44,"600150":84,"600149":86.15,"600148":83.9,"600147":484,"600146":40,"600143":379,"600142":29,"600141":85,"600140":90,"600139":92,"600138":92,"600137":92,"600136":92,"600135":92,"600134":69,"600131":15,"600130":32,"600127":147,"600125":68,"600126":33,"600123":118,"600122":141,"600121":146,"600120":46,"600119":24,"600118":60,"600117":60,"600116":60,"600115":60,"600114":60,"600113":60,"600112":60,"600111":60,"600110":60,"600109":52,"600108":52,"600107":83,"600106":153,"600105":118,"600104":190,"600103":488.5,"600102":151.5,"600101":488.5,"600100":488.5,"600099":488.5,"600098":488.5,"600097":488.5,"600096":488.5,"600095":488.5,"600094":488.5,"600093":245,"600092":488.5,"600091":488.5,"600090":396,"600089":396,"600088":488.5,"600087":488.5,"600086":488.5,"600085":488.5,"600084":400,"600083":400,"600082":489,"600081":458,"600080":488.5,"600079":488.5,"600078":488.5,"600077":488.5,"600076":488.5,"600075":488.5,"600074":488.5,"600073":488.5,"600072":1061,"600071":1248,"600070":488.5,"600069":900,"600068":900,"600067":900,"600066":900,"600065":590.8,"600064":900,"600063":900,"600057":488.5,"600056":486,"600055":488.5,"600054":488.5,"600053":488.5,"600052":488.5,"600051":488.5,"600050":488.5,"600049":250,"600048":488.5,"600047":488.5,"600046":114,"600045":573,"600044":46,"6000043":239,"600042":20,"600041":488.5,"600040":450,"600039":450,"600038":114,"600037":216,"600036":98.8,"600035":458,"600034":466,"600033":170,"600032":465,"102218":118,"102217":118,"600028":488.5,"600027":488.5,"600026":488.5,"600025":499.6,"600024":86,"600023":132.6,"600022":198,"600021":491,"600020":497,"600019":463,"600018":83.9,"600015":127.2,"92005":53,"92004":86.15,"91017":140,"91016":60,"9050":500,"102216":90,"102215":90,"102214":90,"102213":90,"105153":466,"6000013":465,"6000012":465,"6000011":465,"600010":84,"600009":294.2,"600008":92.3,"600007":129,"91167":87.7,"91156":573,"9042":42,"600004":48,"600003":46,"600002":94,"600001":46,"900273":463.2,"900272":463.2,"900271":463.2,"91114":58,"105152":450.9,"9039":186,"9038":488.5,"9037":488.5,"9036":488.5,"9035":488.5,"9034":488.5,"9033":488.5,"9032":488.5,"9031":488.5,"104234":557.3,"9027":438,"9025":488.5,"9024":482,"9023":478,"9022":38,"900259":54,"900252":270,"900251":170,"900250":170,"9020":90,"9019":70,"9018":220,"9017":170,"9016":270,"9015":270,"9014":270,"9013":270,"900248":310,"900247":290,"102252":90,"102242":118,"102212":112,"9012":70,"9011":300,"9010":250,"9009":220,"9008":90,"9007":170,"9006":170,"9005":170,"9004":270,"9003":270,"9002":270,"9001":260,"108141":780,"108131":15.83,"108121":780,"108111":166.67,"102371":307.9,"102361":307.9,"102351":307.9,"102341":280,"102271":118,"102261":118,"102741":60,"106111":199,"104233":97.3,"104212":256.2,"104112":96,"102911":175,"102811":222.5,"102731":60,"102721":60,"102711":60,"102641":62,"102631":62,"102621":62,"102611":62,"102541":56,"102531":56,"102521":56,"102511":56,"105151":466,"105141":466,"105131":466,"105121":466,"105111":466,"104111":50,"103231":212,"103131":198,"103121":172,"103111":200,"102421":46,"102411":32.9,"102331":272,"102321":274,"102311":284,"102251":113.5,"102241":118,"102232":116,"102222":114,"102211":118,"102112":176,"102111":66,"101111":114}; /* cod -> peso bruto unitario (g) - fonte: Itens_Cadastro 04/08/2026 */
+var PESOS={}; /* cod -> peso bruto unitario (g) - fonte: Itens_Cadastro 04/08/2026 */
 var CLIUF={};      /* cliente -> UF (do Excel enriquecido) */
 var CLIMAT={};    /* cliente -> matriz (do Excel enriquecido) */
 var EMBEDDED=[];    /* linhas compactas */
@@ -248,7 +260,11 @@ function hydrate(arr){
     return {matriz:a[0]||CLIMAT[a[1]]||a[1]||"(sem matriz)",cliente:a[1],pedido:a[2],codItem:a[3],
       produto:it[0]||a[3],marca:it[1]||"(sem marca)",
       sit:SITN[a[4]],aloc:ALOCN[a[5]],temEmb:!!a[6],motivoCod:a[7],motivo:a[8],
-      bonif:a[9]?"Sim":"Não",peso:PESOS[a[3]]||0,qp:a[10],qa:a[11],saldo:a[12],vl:a[13],vlAbe:a[14],mes:a[15],nf:!!a[16],uf:a[17]||CLIUF[a[1]]||"",dia:a[18]||null,qAloc:a[19]||0};
+      bonif:a[9]?"Sim":"Não",peso:PESOS[a[3]]||0,qp:a[10],qa:a[11],saldo:a[12],vl:a[13],vlAbe:a[14],mes:a[15],nf:!!a[16],uf:a[17]||CLIUF[a[1]]||"",dia:a[18]||null,qAloc:a[19]||0,
+      /* posições 20-26: campos que o .LST não tinha. Base antiga (20
+         colunas) continua carregando — aqui tudo cai no valor padrão. */
+      cidade:a[20]||"",dtNfe:a[21]||null,dtEmb:a[22]||null,
+      estabel:a[23]||"",volEmb:a[24]||0,nrEmb:a[25]||0,nfeNum:a[26]||""};
   });
 }
 
@@ -322,6 +338,16 @@ function buildFilters(){
   makeMS("msProduto",prodKeys,function(c){return c+" — "+(prods[c]||"");});
   makeMS("msSit",["Aberto","Atendido Parcial","Atendido Total","Cancelado","Suspenso"]);
   makeMS("msBonif",["Sim","Não"]);
+  /* Vêm do ERP: o arquivo .LST não trazia estabelecimento nem alocação. */
+  var ufs={},estabs={};
+  RAW.forEach(function(r){if(r.uf)ufs[r.uf]=1;if(r.estabel)estabs[r.estabel]=1;});
+  makeMS("msUf",Object.keys(ufs).sort());
+  makeMS("msAloc",["Nao Aloc","Aloc Parc","Aloc Total"]);
+  /* Estabelecimento só existe em base vinda do ERP. Com base antiga o filtro
+     ficaria vazio e pareceria quebrado — então some em vez de enganar. */
+  var chavesEst=Object.keys(estabs).sort();
+  document.getElementById("msEstab").style.display=chavesEst.length?"":"none";
+  if(chavesEst.length)makeMS("msEstab",chavesEst);
 }
 document.getElementById("fPedido").addEventListener("input",render);
 document.getElementById("resetBtn").addEventListener("click",function(){
@@ -335,7 +361,8 @@ document.getElementById("resetBtn").addEventListener("click",function(){
 });
 function filtered(){
   var fMes=msActive("msMes"),fMat=msActive("msMatriz"),fCli=msActive("msCliente"),
-      fMar=msActive("msMarca"),fPro=msActive("msProduto"),fSit=msActive("msSit"),fBon=msActive("msBonif");
+      fMar=msActive("msMarca"),fPro=msActive("msProduto"),fSit=msActive("msSit"),fBon=msActive("msBonif"),
+      fUf=msActive("msUf"),fEst=msActive("msEstab"),fAlo=msActive("msAloc");
   var fPed=document.getElementById("fPedido").value.trim().toUpperCase();
   return RAW.filter(function(r){
     if(fMes&&fMes.indexOf(r.mes)<0)return false;
@@ -345,6 +372,9 @@ function filtered(){
     if(fPro&&fPro.indexOf(r.codItem)<0)return false;
     if(fSit&&fSit.indexOf(r.sit)<0)return false;
     if(fBon&&fBon.indexOf(r.bonif)<0)return false;
+    if(fUf&&fUf.indexOf(r.uf)<0)return false;
+    if(fEst&&fEst.indexOf(r.estabel)<0)return false;
+    if(fAlo&&fAlo.indexOf(r.aloc)<0)return false;
     if(fPed&&r.pedido.toUpperCase().indexOf(fPed)<0)return false;
     return true;
   });
@@ -536,10 +566,13 @@ function render(){
     stat("Qt pedida",fmtInt(aO.qp))+stat("Qt atendida",fmtInt(aO.qa))+
     stat("Qt saldo",fmtInt(Math.max(0,aO.qp-aO.qa-aO.qEmb)))+stat("Qt embarcada",fmtInt(aO.qEmb))+stat("Peso embarcado",fmtKg(aO.pEmb))+stat("Vl aberto",fmtBRLfull(aO.vlAbe))+stat("Embarcado s/ NF",fmtBRLfull(aO.emb));
   renderDrill("tOper",oper,
-    [{h:"Matriz",key:function(r){return r.matriz;}},
+    [{h:"Estabel",key:function(r){return r.estabel||"—";}},
+     {h:"Matriz",key:function(r){return r.matriz;}},
      {h:"Cliente",key:function(r){return r.cliente;}},
      {h:"UF",key:function(r){return r.uf||"—";}},
-     {h:"Pedido",key:function(r){return r.pedido;}}],
+     {h:"Pedido",key:function(r){return r.pedido;}},
+     /* Nível do embarque: é por ele que a operação procura o pedido. */
+     {h:"Nº embarque",key:function(r){return r.nrEmb?String(r.nrEmb):"—";}}],
     [{h:"Vl total item",fmt:function(a){return fmtBRLfull(a.vl);}},
      {h:"Qt pedida",fmt:function(a){return fmtInt(a.qp);}},
      {h:"Qt embarcada",fmt:function(a){return '<span style="color:var(--ok);font-weight:600">'+fmtInt(a.qEmb)+'</span>';}},
@@ -701,7 +734,7 @@ function sbGetAll(base){var PAGE=1000;
   function next(off,acc){return sbGet(base+"&limit="+PAGE+"&offset="+off).then(function(rows){
     acc=acc.concat(rows);return rows.length===PAGE?next(off+PAGE,acc):acc;});}
   return next(0,[]);}
-var FATO_COLS="matriz,cliente,ped_cli,cod_item,produtos,desc_marca,situacao,sit_alocacao,nr_embarque,descricao_motivo,bonificado,qtd_pedida,qtd_atende,qt_saldo,vl_tot_item,vl_aberto_merc,dt_implantacao,nfe,uf_cliente,qt_aloca,ultima_atualizacao";
+var FATO_COLS="matriz,cliente,ped_cli,cod_item,produtos,desc_marca,situacao,sit_alocacao,nr_embarque,descricao_motivo,bonificado,qtd_pedida,qtd_atende,qt_saldo,vl_tot_item,vl_aberto_merc,dt_implantacao,nfe,uf_cliente,qt_aloca,ultima_atualizacao,cidade_cliente,dt_emissao_nfe,dt_embarque,estabel,qtd_vol_embarque";
 function apiParaCompacta(r){
   var sit=String(r.situacao||"").trim();if(!(sit in SIT_IDX))return null;
   var aloc=String(r.sit_alocacao||"").trim();
@@ -713,7 +746,13 @@ function apiParaCompacta(r){
     motivo?1:0,motivo,r.bonificado?1:0,
     Number(r.qtd_pedida)||0,Number(r.qtd_atende)||0,Number(r.qt_saldo)||0,
     Math.round((Number(r.vl_tot_item)||0)*100)/100,Math.round((Number(r.vl_aberto_merc)||0)*100)/100,
-    di?di.slice(0,7):null,(r.nfe&&String(r.nfe).trim()!=="")?1:0,String(r.uf_cliente||"").trim(),di,Number(r.qt_aloca)||0];
+    di?di.slice(0,7):null,(r.nfe&&String(r.nfe).trim()!=="")?1:0,String(r.uf_cliente||"").trim(),di,Number(r.qt_aloca)||0,
+    /* 20-26: campos que só a API LOG023 traz */
+    String(r.cidade_cliente||"").trim(),
+    /* sem NF o ERP devolve a data da consulta; vira pico falso no dia da coleta */
+    (r.nfe&&String(r.nfe).trim()!=="")?(r.dt_emissao_nfe||null):null,
+    r.dt_embarque||null,String(r.estabel||"").trim(),
+    Number(r.qtd_vol_embarque)||0,Number(r.nr_embarque)||0,String(r.nfe||"").trim()];
 }
 function carregarDadosVivos(){
   var sl=document.getElementById("subline");
@@ -758,7 +797,13 @@ function acompanhar(id,ini){
   }).catch(function(){setTimeout(function(){acompanhar(id,ini);},5000);});
 }
 document.getElementById("apiBtn").addEventListener("click",function(){
-  if(API_BUSY)return;API_BUSY=true;
+  if(API_BUSY)return;
+  /* Um clique, sem etapa intermediária. Com serviço alcançável — mesma origem ou
+     pelo endereço absoluto — coleta direto pelo gateway. Sem serviço, só o
+     GitHub tem para onde ir (fila do Supabase). */
+  if(LOCAL.ok){abrirSeletor();return;}
+  if(!ehGitHub()){semColeta();return;}
+  API_BUSY=true;
   document.getElementById("apiBtn").disabled=true;
   statusAtu("Enviando solicita\u00e7\u00e3o\u2026");
   fetch(SB_URL+"/solicitacao_atualizacao",{method:"POST",
@@ -769,12 +814,247 @@ document.getElementById("apiBtn").addEventListener("click",function(){
   .catch(function(e){statusAtu("Falha ao solicitar: "+e.message);liberarAtu();});
 });
 
+/* ---------- fonte de dados por ambiente ---------- */
+/* O mesmo arquivo roda no GitHub e no Helix. Quem decide é o ambiente, em tempo
+   de carga — nunca um "build" diferente para cada lado:
+
+     1) EMBEDDED preenchido  -> painel publicado do Helix, arquivo autossuficiente
+     2) serviço local no ar  -> Helix em desenvolvimento, dados por ./api
+     3) nenhum dos dois      -> GitHub Pages, dados pelo Supabase
+
+   Nos casos 1 e 2 o Supabase não é consultado: o Helix não depende dele. */
+/* Endereço absoluto do serviço de coleta. O painel publicado é servido pelo
+   Helix (origem própria) e o serviço roda em /proxy/8770/ — origens diferentes.
+   Tentando as duas, o botão funciona nos dois endereços e ninguém precisa
+   trocar de link. Se o nome do espaço mudar, é esta linha que muda. */
+var SERVICO_URL="https://connectflow.helix.genomma/proxy/8770";
+
+var LOCAL={ok:false,base:null,ambiente:null,job:null,timer:null};
+
+/* Preenchido pelo processo que escreve o painel. Serve para a página dizer a
+   própria idade: painel velho passou a ser visível, em vez de mostrar número
+   parado sem avisar — foi assim que uma base de 3 dias passou por atual. */
+var ATUALIZADO_EM="2026-08-20T14:55:42-03:00";
+
+function mostrarIdade(){
+  if(!ATUALIZADO_EM)return;
+  var t=Date.parse(ATUALIZADO_EM);
+  if(isNaN(t))return;
+  var horas=(Date.now()-t)/3600000;
+  var texto,cor;
+  if(horas<1.5){texto="atualizado agora";cor="var(--ok)";}
+  else if(horas<24){texto="atualizado há "+Math.round(horas)+"h";cor="var(--ink-soft)";}
+  else {texto="\u26a0 dado de "+Math.floor(horas/24)+" dia(s) atrás — a sincronização pode estar parada";
+        cor="var(--ruptura)";}
+  var el=document.getElementById("idadeDado");
+  if(el){el.textContent=texto;el.style.color=cor;el.style.fontWeight="700";}
+}
+
+/* O Supabase só pode ser usado no GitHub Pages. No Helix o painel não fala com
+   ele — nem para ler, nem para enfileirar. Sem esta checagem, o painel publicado
+   do Helix (que é estático, então não tem ./api) caía no caminho do Supabase:
+   a caixa de data não abria e o botão ficava girando à espera de um worker que
+   não existe. Foi o que aconteceu em 13/08. */
+function ehGitHub(){
+  var h=String((window.location&&window.location.hostname)||"").toLowerCase();
+  return h.indexOf("github.io")>=0||h.indexOf("githubusercontent")>=0;
+}
+
+function statusAtuHTML(html){document.getElementById("apiStatus").innerHTML=html||"";}
+
+/* O endereço do espaço Helix não é descobrível de dentro do painel publicado, e
+   chutar o nome só gera erro silencioso. Então: guarda o que funcionou, e quando
+   nada funciona pergunta uma vez e lembra. */
+function servicoSalvo(){
+  try{return (window.localStorage&&localStorage.getItem("helixServicoUrl"))||"";}
+  catch(e){return "";}
+}
+function salvarServico(u){
+  try{localStorage.setItem("helixServicoUrl",u);}catch(e){}
+}
+
+/* Sem redirecionar: o botão funciona aqui mesmo. O que pode faltar é o serviço
+   estar no ar, ou o painel não saber o endereço dele. */
+function semColeta(){
+  var atual=servicoSalvo()||SERVICO_URL;
+  statusAtuHTML(
+    "<b>O serviço de coleta não respondeu.</b><br>"+
+    "1) No espaço Helix, rode <code>python3 ~/projeto/adm-vendas-sync/servico.py</code>.<br>"+
+    "2) Confira o endereço do serviço — é a URL do seu espaço com <code>/proxy/8770</code>:<br>"+
+    "<input id=\"svcUrl\" type=\"text\" value=\""+atual+"\" spellcheck=\"false\" "+
+    "style=\"font-family:inherit;font-size:.75rem;width:340px;max-width:100%;padding:5px 8px;"+
+    "border:1px solid var(--line);border-radius:7px;margin:5px 6px 0 0\">"+
+    "<button id=\"svcSalvar\" type=\"button\" style=\"font-family:inherit;font-size:.72rem;"+
+    "font-weight:700;padding:6px 11px;border-radius:7px;cursor:pointer;border:1px solid var(--brand);"+
+    "background:var(--brand);color:#fff\">Salvar e tentar</button><br>"+
+    "<span style=\"font-size:.72rem\">Enquanto isso, <b>Arquivo manual</b> continua funcionando "+
+    "e os dados já carregados nesta tela seguem válidos.</span>");
+  var b=document.getElementById("svcSalvar");
+  if(b)b.addEventListener("click",function(){
+    var u=(document.getElementById("svcUrl").value||"").trim().replace(/\/+$/,"");
+    if(!u){statusAtu("Informe o endereço do serviço.");return;}
+    salvarServico(u);
+    statusAtu("Procurando o serviço em "+u+"…");
+    localProbe().then(function(){
+      if(LOCAL.ok)statusAtu("✅ Serviço encontrado (ambiente "+LOCAL.ambiente+"). Clique em Atualizar do ERP.");
+      else semColeta();
+    });
+  });
+}
+
+/* O período da coleta vem do filtro "Mês de implantação" do próprio painel:
+   filtrou os meses, o botão busca exatamente esses meses. Sem filtro, o ano
+   corrente. Meses não contíguos viram o intervalo do menor ao maior — a API só
+   aceita uma janela contínua de datas. */
+function periodoDoFiltro(){
+  var hoje=new Date();
+  var iso=function(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+
+                              "-"+String(d.getDate()).padStart(2,"0");};
+  var m=msActive("msMes");
+  if(!m||!m.length)
+    return {ini:hoje.getFullYear()+"-01-01",fim:iso(hoje),
+            rotulo:"ano corrente (nenhum mês filtrado)"};
+  var ord=m.slice().sort();
+  var pri=ord[0],ult=ord[ord.length-1];
+  var u=ult.split("-");
+  var ultimoDia=new Date(+u[0],+u[1],0).getDate(); /* dia 0 do mês seguinte = último deste */
+  var rotulo=(pri===ult)?ymLabel(pri):ymLabel(pri)+" a "+ymLabel(ult);
+  /* Buraco no meio da seleção: o intervalo vai trazer os meses do meio também. */
+  var esperado=(+ult.split("-")[0]-+pri.split("-")[0])*12+(+u[1]-+pri.split("-")[1])+1;
+  if(ord.length<esperado)rotulo+=" ("+ord.length+" meses marcados, intervalo cobre "+esperado+")";
+  return {ini:pri+"-01",fim:ult+"-"+String(ultimoDia).padStart(2,"0"),rotulo:rotulo};
+}
+
+function tentarBase(base){
+  var ctl=("AbortController" in window)?new AbortController():null;
+  if(ctl)setTimeout(function(){ctl.abort();},5000);
+  return fetch(base+"/status",{headers:{Accept:"application/json"},
+                               credentials:"include",
+                               signal:ctl?ctl.signal:undefined})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){
+      if(!j||!j.ok)throw 0;
+      LOCAL.ok=true;LOCAL.base=base;LOCAL.ambiente=j.ambiente||"?";
+    });
+}
+
+/* Tentativas, em ordem: mesma origem (painel aberto pelo próprio serviço), o
+   endereço que já funcionou antes, e por fim o padrão. No GitHub, nenhuma. */
+function localProbe(){
+  if(ehGitHub())return Promise.resolve();
+  LOCAL.ok=false;LOCAL.base=null;
+  var salvo=servicoSalvo();
+  var p=tentarBase("./api");
+  if(salvo)p=p.catch(function(){return tentarBase(salvo.replace(/\/+$/,"")+"/api");});
+  return p.catch(function(){return tentarBase(SERVICO_URL+"/api");})
+          .catch(function(){LOCAL.ok=false;LOCAL.base=null;});
+}
+
+function aplicarCatalogos(res){
+  Object.keys(res.itens||{}).forEach(function(k){ITEMS[k]=res.itens[k];});
+  Object.keys(res.cliUf||{}).forEach(function(k){CLIUF[k]=res.cliUf[k];});
+  Object.keys(res.cliMatriz||{}).forEach(function(k){CLIMAT[k]=res.cliMatriz[k];});
+  Object.keys(res.pesos||{}).forEach(function(k){PESOS[k]=res.pesos[k];});
+}
+
+function carregarDoServico(){
+  statusAtu("Carregando do serviço local…");
+  return fetch(LOCAL.base+"/dados",{headers:{Accept:"application/json"},credentials:"include"})
+    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+    .then(function(res){
+      aplicarCatalogos(res);
+      hydrate(res.linhas||[]);
+      buildFilters();render();syncTabFilters();
+      if(res.subline)document.getElementById("subline").textContent=res.subline;
+      statusAtu("");
+    })
+    .catch(function(e){statusAtu("Falha ao ler o serviço local: "+e.message);});
+}
+
+function iniciarFonte(){
+  return localProbe().then(function(){
+    var btn=document.getElementById("apiBtn");
+    if(LOCAL.ok)btn.title="Coleta direta pelo gateway (ambiente "+LOCAL.ambiente+")";
+    else btn.title="Enfileira a atualização para o worker interno";
+    if(EMBEDDED.length)return;             /* 1) base embutida: nada a buscar */
+    if(LOCAL.ok)return carregarDoServico(); /* 2) Helix com serviço */
+    if(ehGitHub())return carregarDadosVivos();/* 3) GitHub -> Supabase */
+    /* 4) Helix publicado e sem base: não há de onde ler, e o Supabase está fora
+          de questão aqui. Diz o que fazer em vez de ficar carregando à toa. */
+    document.getElementById("subline").textContent=
+      "Sem base carregada — use “Arquivo manual” para subir o ESPD022.";
+    semColeta();
+  });
+}
+
+/* ---------- coleta direta, quando há serviço local ---------- */
+function localPolling(){
+  fetch(LOCAL.base+"/progresso?id="+encodeURIComponent(LOCAL.job),{headers:{Accept:"application/json"},credentials:"include"})
+    .then(function(r){return r.json();})
+    .then(function(j){
+      if(j.estado==="rodando"){
+        var pc=j.total?Math.round(100*j.feitas/j.total):0;
+        statusAtu("⚙️ Buscando no ERP… "+pc+"% ("+j.feitas+"/"+j.total+" janelas · "+fmtInt(j.linhas||0)+" linhas)");
+        return;
+      }
+      clearInterval(LOCAL.timer);LOCAL.timer=null;liberarAtu();
+      if(j.estado==="erro"){statusAtu("❌ "+(j.mensagem||"erro na coleta"));return;}
+      aplicarCatalogos(j.resultado);
+      hydrate(j.resultado.linhas);
+      buildFilters();render();syncTabFilters();
+      if(j.resultado.subline)document.getElementById("subline").textContent=j.resultado.subline;
+      statusAtu("✅ "+fmtInt(j.resultado.linhas.length)+" itens de pedido carregados.");
+    })
+    .catch(function(){
+      clearInterval(LOCAL.timer);LOCAL.timer=null;liberarAtu();
+      statusAtu("❌ Perdi contato com o serviço local — confira o terminal do servico.py.");
+    });
+}
+
+/* Abre o seletor com o período já preenchido a partir do filtro de mês. Fica
+   editável: o filtro é o palpite, a escolha final é sua. */
+function abrirSeletor(){
+  var box=document.getElementById("erpBox");
+  box.hidden=!box.hidden;
+  if(box.hidden){statusAtu("");return;}
+  var per=periodoDoFiltro();
+  document.getElementById("erpIni").value=per.ini;
+  document.getElementById("erpFim").value=per.fim;
+  statusAtu("Ambiente "+LOCAL.ambiente+" · período pelo filtro: "+per.rotulo);
+}
+
+function coletarAgora(){
+  var ini=document.getElementById("erpIni").value,
+      fim=document.getElementById("erpFim").value;
+  if(!ini||!fim){statusAtu("Preencha as duas datas.");return;}
+  if(ini>fim){statusAtu("A data inicial é posterior à final.");return;}
+  document.getElementById("erpBox").hidden=true;
+  API_BUSY=true;document.getElementById("apiBtn").disabled=true;
+  statusAtu("⚙️ Buscando no ERP · "+ini+" a "+fim+"…");
+  /* text/plain é Content-Type da lista segura do CORS: evita o preflight OPTIONS,
+     que o proxy do Helix não repassa (o serviço lê o corpo como JSON de todo jeito). */
+  fetch(LOCAL.base+"/atualizar",{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},
+        credentials:"include",body:JSON.stringify({ini:ini,fim:fim})})
+    .then(function(r){return r.json();})
+    .then(function(j){
+      if(!j.ok)throw new Error(j.mensagem||"o serviço recusou o pedido");
+      LOCAL.job=j.id;LOCAL.timer=setInterval(localPolling,1500);
+    })
+    .catch(function(e){liberarAtu();statusAtu("❌ Não consegui iniciar: "+e.message);});
+}
+
+document.getElementById("erpGo").addEventListener("click",coletarAgora);
+document.getElementById("erpCancel").addEventListener("click",function(){
+  document.getElementById("erpBox").hidden=true;statusAtu("");
+});
+
 /* ---------- init ---------- */
 hydrate(EMBEDDED);
 buildFilters();
 render();
 syncTabFilters();
-carregarDadosVivos();
+mostrarIdade();
+iniciarFonte();
 })();
 </script>
 </body>
