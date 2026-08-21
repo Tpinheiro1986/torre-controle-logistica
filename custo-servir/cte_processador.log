@@ -1763,3 +1763,25 @@
 2026-08-17 09:28:14,990 [INFO]   OK cte_dados.json salvo
 2026-08-17 09:28:22,133 [INFO]   OK Publicado no Supabase
 2026-08-17 09:28:28,280 [INFO]   OK ctes_raw.json (5013KB)
+2026-08-18 13:34:32,923 [INFO] Historico: 8,505 CTes | ultima exec: 2026-08-17T09:27:16.922858
+2026-08-18 13:34:32,924 [INFO] Buscando XMLs...
+2026-08-18 13:34:57,253 [INFO]   59,905 CTe | 823 Canc. em 24s
+2026-08-18 13:34:57,255 [INFO]   Novos: 21 CTe | 0 Cancelamento
+2026-08-18 13:34:57,256 [INFO]   Processando com 7 workers...
+2026-08-18 13:34:57,958 [INFO]   21 CTes novos em 0s
+2026-08-18 13:34:58,005 [INFO] Agregando 8,526 CTes...
+2026-08-18 13:34:58,017 [INFO]   de-para matriz: 1,085 CNPJs carregados
+2026-08-18 13:34:58,339 [INFO]   OK cte_dados.json salvo
+2026-08-18 13:35:00,711 [INFO]   OK Publicado no Supabase
+2026-08-18 13:35:06,106 [INFO]   OK ctes_raw.json (5025KB)
+2026-08-19 10:26:29,311 [INFO] Historico: 8,526 CTes | ultima exec: 2026-08-18T13:34:32.830650
+2026-08-19 10:26:29,312 [INFO] Buscando XMLs...
+2026-08-19 10:28:11,449 [INFO]   59,911 CTe | 823 Canc. em 102s
+2026-08-19 10:28:11,450 [INFO]   Novos: 6 CTe | 0 Cancelamento
+2026-08-19 10:28:11,451 [INFO]   Processando com 7 workers...
+2026-08-19 10:28:12,314 [INFO]   1 CTes novos em 0s
+2026-08-19 10:28:12,354 [INFO] Agregando 8,527 CTes...
+2026-08-19 10:28:12,369 [INFO]   de-para matriz: 1,085 CNPJs carregados
+2026-08-19 10:28:12,829 [INFO]   OK cte_dados.json salvo
+2026-08-19 10:28:15,230 [INFO]   OK Publicado no Supabase
+2026-08-19 10:28:18,358 [INFO]   OK ctes_raw.json (5026KB)

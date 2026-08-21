@@ -1,0 +1,28 @@
+ARQUIVO PARA COMMITAR NO GITHUB
+================================
+
+O QUE É
+  index.html  →  painel Adm. Vendas, versão do Helix de 20/08/2026 15:11
+  61.899 bytes · sha256 começa com 28f06f36a52d7ef5
+
+ONDE VAI NO REPOSITÓRIO
+  torre-controle-logistica/adm-vendas/index.html
+  (substitui o arquivo que já existe ali)
+
+O QUE ESTE ARQUIVO TEM
+  O código do painel, igual ao do Helix.
+
+O QUE ELE NÃO TEM
+  Os 54.826 pedidos. Os blocos de dados vão vazios (var EMBEDDED=[]),
+  porque o repositório é público e a carteira do ERP não pode ir para a
+  internet aberta sem combinar com o responsável.
+
+  Consequência: aberto no GitHub Pages, o painel busca no Supabase
+  (tabela adm_vendas.fato_pedido_api). Como essa tabela está com 0 linhas,
+  a tela vai abrir vazia até alguém alimentá-la.
+
+CONFERÊNCIA JÁ FEITA AQUI
+  - nenhuma ocorrência de nome de cliente (DIMED, RAIA, PAGUE, CICATRICURE…)
+  - blocos de dados vazios
+  - sintaxe do JavaScript válida
+  - a chave do gateway (HELIX_APIKEY) não aparece no arquivo
