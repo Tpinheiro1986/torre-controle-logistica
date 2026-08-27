@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.0-regras-status', date: '18/08/2026' };
+window.__BUILD__ = { version: 'v10.1-notas-abertas', date: '27/08/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -405,6 +405,7 @@ table.dt th{color:#33536F}
     <div class="tab" onclick="switchTab('offtime',this)">Off Time Clientes</div>
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
     <div class="tab" onclick="switchTab('leadtime',this)">Lead Time</div>
+    <div class="tab" onclick="switchTab('abertas',this)">Notas em Aberto</div>
     <div class="tab" onclick="switchTab('tv',this)" style="background:linear-gradient(90deg,#004A87,#00A7E7);color:#fff">📡 TV</div>
   </div>
 
@@ -1116,6 +1117,78 @@ table.dt th{color:#33536F}
       </div>
     </div>
 
+    <!-- ============ NOTAS EM ABERTO (v9.23) ============ -->
+    <div class="dash-section" id="sec-abertas" style="display:none">
+      <div id="abertas-empty" class="empty-state" style="display:none">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p>Nenhuma base carregada ainda.</p>
+        <p id="abertas-empty-hint" style="font-size:11px;display:none">O dados.json atual não tem o extrato de Notas em Aberto — reprocesse a base (atualizar.bat) com o pipeline v9.23+.</p>
+      </div>
+      <div id="abertas-content" style="display:none">
+        <div class="update-bar"><span class="update-dot" style="background:#0072BC"></span><span id="abertas-update-text">Extrato da carteira pendente — todas as NFs ainda não entregues, da emissão mais antiga para a mais nova</span></div>
+
+        <!-- KPIs (somatória — acompanham os filtros) -->
+        <div class="krow" id="abertas-kpis" style="margin-bottom:12px"></div>
+
+        <!-- Filtros -->
+        <div class="fbar" id="abertas-fbar">
+          <span class="fl">Situação</span>
+          <button class="fbtn on" onclick="abertasFilter('sit','todas',this)">Todas</button>
+          <span id="abertas-sit-btns"></span>
+          <div class="fdiv"></div>
+          <span class="fl">Região</span>
+          <button class="fbtn on" onclick="abertasFilter('reg','todas',this)">Todas</button>
+          <span id="abertas-reg-btns"></span>
+          <div class="fdiv"></div>
+          <span class="fl">Transportadora</span>
+          <select id="abertas-transp-sel" onchange="abertasFilter('transp',this.value,null)"
+            style="padding:5px 10px;font-size:11px;border:0.5px solid var(--border2);border-radius:14px;background:var(--bg);color:var(--text);max-width:220px">
+            <option value="todas">Todas</option>
+          </select>
+        </div>
+
+        <!-- Extrato -->
+        <div class="card">
+          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">1</span>Extrato de Notas em Aberto
+            <button onclick="exportarAbertasExcel(event)" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar para Excel
+            </button>
+          </div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Ordenado por data de faturamento (mais antiga primeiro). NFs entregues, devolvidas e desconsideradas não aparecem aqui.
+            <span id="abertas-count" style="font-weight:600;color:#0072BC;margin-left:6px"></span>
+          </p>
+          <div style="margin-bottom:10px">
+            <input id="abertas-search" type="text" placeholder="Buscar NF, pedido, cliente, cidade, UF ou transportadora..."
+              class="form-input" style="max-width:340px;padding:6px 12px;font-size:12px"
+              oninput="abertasSearch()">
+          </div>
+          <div class="tw"><table class="dt" id="abertas-table">
+            <thead><tr>
+              <th>#</th>
+              <th>Nº NF</th>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Cidade</th>
+              <th>UF</th>
+              <th>Região</th>
+              <th>Transportadora</th>
+              <th>Situação</th>
+              <th>Data Faturamento</th>
+              <th>Prev. Entrega</th>
+              <th class="r">Dias em Aberto</th>
+              <th class="r" style="color:#A32D2D">Dias Atraso</th>
+              <th class="r">Valor NF</th>
+              <th class="r">Peso</th>
+            </tr></thead>
+            <tbody id="abertas-tbody"></tbody>
+          </table></div>
+          <div id="abertas-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2)"></div>
+        </div>
+      </div>
+    </div>
+
 
 
   </div>
@@ -1213,7 +1286,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', clientes:'sec-clientes', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', tv:'tv-mode'
+  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', clientes:'sec-clientes', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', abertas:'sec-abertas', tv:'tv-mode'
 };
 
 function switchTab(id, btn){
@@ -1242,6 +1315,7 @@ function switchTab(id, btn){
   if(id==='atrasos'){ renderAtrasos(); }
   if(id==='infull'){ renderInFull(); }
   if(id==='leadtime'){ renderLeadTimes(); }
+  if(id==='abertas'){ renderAbertas(); }
 }
 
 // init visibility
@@ -1283,7 +1357,8 @@ function filtrosSalvar(){
       atrasos:  atrasosFilter_state,
       offtime:  offTimeFilter_state,
       leadtime: leadTime_state,
-      infull:   inFullFilter_state
+      infull:   inFullFilter_state,
+      abertas:  abertasFilter_state
     }));
   }catch(e){ /* storage indisponível — segue sem persistir */ }
 }
@@ -2291,9 +2366,11 @@ function transpToggleNF(ti, rowEl, nome){
   }
   // Linha de resumo: total + contagem por situação (mesma sequência do quadro)
   const totalVal = nfs.reduce((a,n)=>a+(n.valor||0),0);
+  const totalPeso = nfs.reduce((a,n)=>a+(n.peso||0),0);
   let resumo = '<span style="font-weight:600;color:#A32D2D">'+nfs.length+' NF(s) pendente(s)</span>'
              + '<span style="margin:0 8px;color:var(--border2)">|</span>'
-             + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>';
+             + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>'
+             + (totalPeso>0?'<span style="margin:0 8px;color:var(--border2)">|</span><span style="font-weight:600;color:var(--text2)">'+fmtKgTotal(totalPeso)+'</span>':'');
   TRANSP_STATUS.forEach(s => {
     const q = nfs.filter(n => n.tipo === s.k).length;
     if(!q) return;
@@ -2302,7 +2379,7 @@ function transpToggleNF(ti, rowEl, nome){
   html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
   html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
     + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Cliente</th><th>Região</th><th>UF</th>'
-    + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th class="r">Valor NF</th></tr></thead><tbody>'
+    + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th class="r">Valor NF</th><th class="r">Peso</th></tr></thead><tbody>'
     + nfs.map((n,i)=>{
         const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888', bg:'var(--bg2)'};
         const corReg = REG_CORES[n.regiao] || '#888';
@@ -2317,6 +2394,7 @@ function transpToggleNF(ti, rowEl, nome){
           + '<td style="color:var(--text2)">'+(n.dt_fat||'—')+'</td>'
           + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
           + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
+          + '<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
           + '</tr>';
       }).join('')
     + '</tbody></table></div>';
@@ -2538,9 +2616,11 @@ function clientesToggleNF(ci, rowEl){
     cell.innerHTML = html; cell.dataset.done = '1'; return;
   }
   const totalVal = nfs.reduce((a,n)=>a+(n.valor||0),0);
+  const totalPesoCli = nfs.reduce((a,n)=>a+(n.peso||0),0);
   let resumo = '<span style="font-weight:600">'+nfs.length+' NF(s)</span>'
              + '<span style="margin:0 8px;color:var(--border2)">|</span>'
-             + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>';
+             + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>'
+             + (totalPesoCli>0?'<span style="margin:0 8px;color:var(--border2)">|</span><span style="font-weight:600;color:var(--text2)">'+fmtKgTotal(totalPesoCli)+'</span>':'');
   CLI_STATUS.forEach(s=>{
     const q = nfs.filter(n=>n.tipo===s.k).length;
     if(!q) return;
@@ -2549,7 +2629,7 @@ function clientesToggleNF(ci, rowEl){
   html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
   html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
     + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Transportadora</th><th>Região</th><th>UF</th><th>Cidade</th>'
-    + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th>Data Entrega</th><th class="r">Valor NF</th></tr></thead><tbody>'
+    + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th>Data Entrega</th><th class="r">Valor NF</th><th class="r">Peso</th></tr></thead><tbody>'
     + nfs.map((n,i)=>{
         const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888'};
         const corReg = REG_CORES[n.regiao] || '#888';
@@ -2566,6 +2646,7 @@ function clientesToggleNF(ci, rowEl){
           + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
           + '<td style="color:'+(n.dt_ent?'var(--text)':'var(--text3)')+';font-weight:'+(n.dt_ent?'500':'400')+'">'+(n.dt_ent||'—')+'</td>'
           + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
+          + '<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
           + '</tr>';
       }).join('')
     + '</tbody></table></div>';
@@ -2597,12 +2678,13 @@ function exportarClientesExcel(ev){
         'Data Faturamento': n.dt_fat||'',
         'Prev. Entrega': n.dt_prev||'',
         'Data Entrega': n.dt_ent||'',
-        'Valor (R$)': n.valor||0
+        'Valor (R$)': n.valor||0,
+        'Peso (kg)': n.peso||0
       });
     }));
     if(!rows.length){ alert('Nenhuma NF para exportar nos filtros atuais.'); return; }
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{wch:5},{wch:38},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:20},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14}];
+    ws['!cols'] = [{wch:5},{wch:38},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:20},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14},{wch:12}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'NFs por Cliente');
     let nome = 'clientes_nfs';
@@ -3113,7 +3195,7 @@ function renderAtrasosTabelas(){
           +'<div style="padding:8px 14px 12px 28px">'
           +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:6px">Notas fiscais deste cliente ('+c.nfs.length+')</div>'
           +'<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
-          +'<thead><tr><th>Nota</th><th>Pedido</th><th>Transportadora</th><th>Mês</th><th class="r">Dias Atraso</th><th class="r">Valor</th></tr></thead><tbody>'
+          +'<thead><tr><th>Nota</th><th>Pedido</th><th>Transportadora</th><th>Mês</th><th class="r">Dias Atraso</th><th class="r">Valor</th><th class="r">Peso</th></tr></thead><tbody>'
           +c.nfs.map(n=>'<tr>'
             +'<td style="font-family:monospace;font-weight:600">'+(n.nf||'—')+'</td>'
             +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
@@ -3121,6 +3203,7 @@ function renderAtrasosTabelas(){
             +'<td style="color:var(--text2)">'+(n.mes_nome||'—')+'</td>'
             +'<td class="r" style="color:'+((n.dias||0)>3?'#A32D2D':'#854F0B')+';font-weight:600">'+(n.dias!=null?n.dias+'d':'—')+'</td>'
             +'<td class="r" style="color:#A32D2D">'+fmtM(n.valor)+'</td>'
+            +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
             +'</tr>').join('')
           +'</tbody></table></div></td></tr>';
       }
@@ -3163,6 +3246,256 @@ function atrasosToggleNF(rid, rowEl){
   d.style.display=abrir?'table-row':'none';
   const ch=rowEl&&rowEl.querySelector?rowEl.querySelector('.atr-chev'):null;
   if(ch) ch.style.transform=abrir?'rotate(90deg)':'rotate(0deg)';
+}
+
+// ============================================================
+// NOTAS EM ABERTO (v9.23)
+// Extrato da carteira pendente Brasil — todas as NFs não entregues,
+// da emissão mais antiga para a mais nova (payload.notasAbertas,
+// gerado pelo processar_otd.py v9.23+). Somatórias no cabeçalho
+// acompanham os filtros ativos.
+// ============================================================
+let abertasFilter_state = {sit:'todas', reg:'todas', transp:'todas'};
+let abertasPage = 1;
+const ABERTAS_PER_PAGE = 50;
+
+// Peso em kg. Nas células mostra kg; a somatória do KPI vira tonelada
+// quando passa de 1.000 kg para não virar um número ilegível.
+function fmtKg(v){
+  if(v == null || isNaN(v)) return '—';
+  v = Number(v);
+  if(v === 0) return '—';
+  return v.toLocaleString('pt-BR', {maximumFractionDigits:1}) + ' kg';
+}
+function fmtKgTotal(v){
+  if(v == null || isNaN(v) || v === 0) return '—';
+  v = Number(v);
+  if(v >= 1000) return (v/1000).toLocaleString('pt-BR', {maximumFractionDigits:1}) + ' t';
+  return v.toLocaleString('pt-BR', {maximumFractionDigits:1}) + ' kg';
+}
+
+function renderAbertas(){
+  const empty = document.getElementById('abertas-empty');
+  const hint  = document.getElementById('abertas-empty-hint');
+  const content = document.getElementById('abertas-content');
+  if(!otdData){
+    empty.style.display='block'; hint.style.display='none'; content.style.display='none';
+    return;
+  }
+  const lista = otdData.notasAbertas;
+  if(!Array.isArray(lista) || !lista.length){
+    empty.style.display='block'; content.style.display='none';
+    if(!Array.isArray(lista)){
+      hint.style.display='block';
+      console.warn('[Notas em Aberto] dados.json sem o campo notasAbertas — reprocesse a base (atualizar.bat) com o pipeline v9.23+.');
+    } else {
+      hint.style.display='none';
+    }
+    return;
+  }
+  empty.style.display='none'; content.style.display='block';
+
+  // Pills de Situação — só as que existem na base, na ordem do quadro
+  const sitBtns = document.getElementById('abertas-sit-btns'); sitBtns.innerHTML='';
+  const sitsPresentes = TRANSP_STATUS.filter(s => lista.some(n => n.tipo === s.k));
+  sitsPresentes.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='fbtn'; b.textContent=s.lbl; b.dataset.k=s.k;
+    b.onclick=function(){abertasFilter('sit',s.k,this);};
+    sitBtns.appendChild(b);
+  });
+
+  // Pills de Região
+  const regs=[...new Set(lista.map(n=>n.regiao).filter(Boolean))].sort();
+  const regBtns=document.getElementById('abertas-reg-btns'); regBtns.innerHTML='';
+  regs.forEach(r=>{
+    const b=document.createElement('button');b.className='fbtn';b.textContent=r;
+    b.onclick=function(){abertasFilter('reg',r,this);};regBtns.appendChild(b);
+  });
+
+  // Select de Transportadora
+  const transps=[...new Set(lista.map(n=>n.transp).filter(Boolean))].sort();
+  const sel=document.getElementById('abertas-transp-sel');
+  sel.innerHTML='<option value="todas">Todas</option>'+transps.map(t=>'<option value="'+t.replace(/"/g,'&quot;')+'">'+t+'</option>').join('');
+
+  // Restaura o último filtro usado, validando contra os dados atuais
+  const sAb = filtrosLer().abertas;
+  if(sAb){
+    abertasFilter_state.sit    = sitsPresentes.some(s=>s.k===sAb.sit) ? sAb.sit : 'todas';
+    abertasFilter_state.reg    = regs.includes(sAb.reg) ? sAb.reg : 'todas';
+    abertasFilter_state.transp = transps.includes(sAb.transp) ? sAb.transp : 'todas';
+  }
+  sel.value = abertasFilter_state.transp;
+  abertasSyncBotoes();
+
+  abertasPage=1;
+  renderAbertasTabela();
+}
+
+function abertasSyncBotoes(){
+  // Botões "Todas": únicos filhos diretos do fbar (0 = situação, 1 = região)
+  const dir = document.querySelectorAll('#abertas-fbar > .fbtn');
+  dir.forEach(b=>b.classList.remove('on'));
+  const sitBs = document.querySelectorAll('#abertas-sit-btns .fbtn');
+  sitBs.forEach(b=>b.classList.remove('on'));
+  if(abertasFilter_state.sit==='todas'){ if(dir[0]) dir[0].classList.add('on'); }
+  else sitBs.forEach(b=>{ if(b.dataset.k===abertasFilter_state.sit) b.classList.add('on'); });
+
+  const regBs = document.querySelectorAll('#abertas-reg-btns .fbtn');
+  regBs.forEach(b=>b.classList.remove('on'));
+  if(abertasFilter_state.reg==='todas'){ if(dir[1]) dir[1].classList.add('on'); }
+  else regBs.forEach(b=>{ if(b.textContent===abertasFilter_state.reg) b.classList.add('on'); });
+}
+
+function abertasFilter(tipo,val,btn){
+  if(tipo==='sit')         abertasFilter_state.sit = val;
+  else if(tipo==='reg')    abertasFilter_state.reg = val;
+  else if(tipo==='transp') abertasFilter_state.transp = val;
+  abertasSyncBotoes();
+  filtrosSalvar();
+  abertasPage=1;
+  renderAbertasTabela();
+}
+
+function abertasSearch(){
+  abertasPage=1;
+  renderAbertasTabela();
+}
+
+function getAbertasFiltrado(){
+  const search=(document.getElementById('abertas-search')?.value||'').toLowerCase();
+  return (otdData?.notasAbertas||[]).filter(n=>{
+    if(abertasFilter_state.sit!=='todas' && n.tipo!==abertasFilter_state.sit) return false;
+    if(abertasFilter_state.reg!=='todas' && n.regiao!==abertasFilter_state.reg) return false;
+    if(abertasFilter_state.transp!=='todas' && n.transp!==abertasFilter_state.transp) return false;
+    if(search && !(
+      String(n.nf||'').toLowerCase().includes(search) ||
+      String(n.pedido||'').toLowerCase().includes(search) ||
+      (n.cliente||'').toLowerCase().includes(search) ||
+      (n.cidade||'').toLowerCase().includes(search) ||
+      (n.uf||'').toLowerCase().includes(search) ||
+      (n.transp||'').toLowerCase().includes(search)
+    )) return false;
+    return true;
+  });
+}
+
+function renderAbertasTabela(){
+  const filt = getAbertasFiltrado();
+
+  // ---- KPIs: somatória do que está filtrado ----
+  const totalVal  = filt.reduce((a,n)=>a+(n.valor||0),0);
+  const totalPeso = filt.reduce((a,n)=>a+(n.peso||0),0);
+  const emAtraso  = filt.filter(n=>n.dias_atraso!=null && n.dias_atraso>0);
+  const valAtraso = emAtraso.reduce((a,n)=>a+(n.valor||0),0);
+  const maisAntiga = filt.reduce((mx,n)=>Math.max(mx, n.dias_aberto||0), 0);
+  const nfAntiga   = filt.find(n=>(n.dias_aberto||0)===maisAntiga);
+  const pctAtraso  = filt.length ? Math.round(emAtraso.length/filt.length*100) : 0;
+
+  document.getElementById('abertas-kpis').innerHTML=
+    '<div class="kpi kpi-blu"><div class="kpi-lbl">NFs em Aberto</div><div class="kpi-val">'+filt.length.toLocaleString('pt-BR')+'</div><div class="kpi-sub">nos filtros atuais</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Valor Total</div><div class="kpi-val" style="color:#0072BC">'+fmtM(totalVal)+'</div><div class="kpi-sub">carteira pendente</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Peso Total</div><div class="kpi-val" style="color:#004A87">'+fmtKgTotal(totalPeso)+'</div><div class="kpi-sub">soma das NFs</div></div>'
+   +'<div class="kpi kpi-red"><div class="kpi-lbl">Em Atraso</div><div class="kpi-val">'+emAtraso.length.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+pctAtraso+'% da carteira · '+fmtM(valAtraso)+'</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">NF mais antiga</div><div class="kpi-val">'+(maisAntiga>0?maisAntiga+'d':'—')+'</div><div class="kpi-sub">'+(nfAntiga?('NF '+(nfAntiga.nf||'—')+' · '+(nfAntiga.dt_fat||'—')):'em aberto')+'</div></div>';
+
+  // ---- Tabela (já vem ordenada do pipeline; reforça a ordem aqui) ----
+  const ordenado=[...filt].sort((a,b)=>String(a.dt_fat_iso||'9999-12-31').localeCompare(String(b.dt_fat_iso||'9999-12-31')));
+  const total=ordenado.length;
+  const pages=Math.ceil(total/ABERTAS_PER_PAGE)||1;
+  if(abertasPage>pages) abertasPage=pages;
+  const start=(abertasPage-1)*ABERTAS_PER_PAGE;
+  const slice=ordenado.slice(start, start+ABERTAS_PER_PAGE);
+  document.getElementById('abertas-count').textContent=total.toLocaleString('pt-BR')+' NF(s) em aberto';
+
+  const mapS={}; TRANSP_STATUS.forEach(s=>mapS[s.k]=s);
+  let rows='';
+  if(!slice.length){
+    rows='<tr><td colspan="15" style="color:var(--text3);text-align:center;padding:20px">Nenhuma NF encontrada para os filtros atuais</td></tr>';
+  } else {
+    slice.forEach((n,i)=>{
+      const s=mapS[n.tipo]||{lbl:n.tipo||'—',cor:'#888'};
+      const corReg=REG_CORES[n.regiao]||'#888';
+      const abertoC=(n.dias_aberto||0)>30?'#A32D2D':(n.dias_aberto||0)>15?'#854F0B':'var(--text2)';
+      rows+='<tr>'
+        +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
+        +'<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
+        +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
+        +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
+        +'<td style="color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cidade||'')+'">'+(n.cidade||'—')+'</td>'
+        +'<td style="font-weight:600">'+(n.uf||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
+        +'<td style="color:var(--text2);white-space:nowrap">'+(n.dt_fat||'—')+'</td>'
+        +'<td style="color:'+(n.dias_atraso!=null?'#A32D2D':'var(--text2)')+';white-space:nowrap">'+(n.dt_prev||'—')+'</td>'
+        +'<td class="r" style="color:'+abertoC+';font-weight:600">'+(n.dias_aberto!=null?n.dias_aberto+'d':'—')+'</td>'
+        +'<td class="r" style="color:#A32D2D;font-weight:'+(n.dias_atraso!=null?'700':'400')+'">'+(n.dias_atraso!=null?n.dias_atraso+'d':'—')+'</td>'
+        +'<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
+        +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
+        +'</tr>';
+    });
+  }
+  document.getElementById('abertas-tbody').innerHTML=rows;
+
+  // Paginação
+  let pag='<span>'+total.toLocaleString('pt-BR')+' registros</span><span style="margin:0 8px">|</span>';
+  if(pages>1){
+    pag+='<button class="btn-sm" onclick="abertasPaginar(-1)" '+(abertasPage<=1?'disabled':'')+'>← Ant</button>';
+    pag+='<span style="margin:0 6px">Pág '+abertasPage+' de '+pages+'</span>';
+    pag+='<button class="btn-sm" onclick="abertasPaginar(1)" '+(abertasPage>=pages?'disabled':'')+'>Próx →</button>';
+  }
+  document.getElementById('abertas-paginacao').innerHTML=pag;
+}
+
+function abertasPaginar(dir){
+  abertasPage+=dir;
+  renderAbertasTabela();
+  document.getElementById('abertas-table')?.scrollIntoView({behavior:'smooth'});
+}
+
+// Excel: 1 linha por NF, respeitando os filtros e a ordenação da tela
+function exportarAbertasExcel(ev){
+  const btn = ev && ev.target ? ev.target.closest('button') : null;
+  const txt = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = 'Gerando...'; }
+  try{
+    const filt=[...getAbertasFiltrado()].sort((a,b)=>String(a.dt_fat_iso||'9999-12-31').localeCompare(String(b.dt_fat_iso||'9999-12-31')));
+    if(!filt.length){ alert('Nenhuma NF em aberto para exportar nos filtros atuais.'); return; }
+    const mapS={}; TRANSP_STATUS.forEach(s=>mapS[s.k]=s);
+    const rows=filt.map((n,i)=>({
+      '#': i+1,
+      'Numero NF': n.nf||'',
+      'Pedido': n.pedido||'',
+      'Cliente': n.cliente||'',
+      'Cidade': n.cidade||'',
+      'UF': n.uf||'',
+      'Regiao': n.regiao||'',
+      'Transportadora': n.transp||'',
+      'Situacao': (mapS[n.tipo]||{}).lbl || n.tipo || '',
+      'Data Faturamento': n.dt_fat||'',
+      'Prev. Entrega': n.dt_prev||'',
+      'Dias em Aberto': n.dias_aberto!=null?n.dias_aberto:'',
+      'Dias Atraso': n.dias_atraso!=null?n.dias_atraso:'',
+      'Valor (R$)': n.valor||0,
+      'Peso (kg)': n.peso||0
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{wch:5},{wch:12},{wch:14},{wch:38},{wch:20},{wch:5},{wch:14},{wch:30},{wch:22},{wch:16},{wch:14},{wch:13},{wch:11},{wch:14},{wch:12}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Notas em Aberto');
+    let nome = 'notas_em_aberto';
+    if(abertasFilter_state.sit!=='todas')    nome += '_' + abertasFilter_state.sit;
+    if(abertasFilter_state.reg!=='todas')    nome += '_' + abertasFilter_state.reg;
+    if(abertasFilter_state.transp!=='todas') nome += '_' + abertasFilter_state.transp.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
+    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    XLSX.writeFile(wb, nome + '_' + stamp + '.xlsx');
+  } catch(e){
+    alert('Erro ao exportar: ' + e.message);
+    console.error(e);
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = txt; }
+  }
 }
 
 // ============================================================
@@ -3648,7 +3981,8 @@ function exportarAtrasosExcel(){
           'Transportadora': n.transp||c.transp||'',
           'Mes Embarque': n.mes_nome||c.mes_nome||'',
           'Dias Atraso': n.dias!=null?n.dias:'',
-          'Valor (R$)': n.valor||0
+          'Valor (R$)': n.valor||0,
+          'Peso (kg)': n.peso||0
         });
       });
     } else {
@@ -3665,12 +3999,13 @@ function exportarAtrasosExcel(){
         'Transportadora': c.transp||'',
         'Mes Embarque': c.mes_nome||'',
         'Dias Atraso': c.dias_medio!=null?c.dias_medio:'',
-        'Valor (R$)': c.valor||0
+        'Valor (R$)': c.valor||0,
+        'Peso (kg)': ''
       });
     }
   });
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:5},{wch:35},{wch:18},{wch:5},{wch:14},{wch:22},{wch:14},{wch:14},{wch:30},{wch:12},{wch:11},{wch:16}];
+  ws['!cols'] = [{wch:5},{wch:35},{wch:18},{wch:5},{wch:14},{wch:22},{wch:14},{wch:14},{wch:30},{wch:12},{wch:11},{wch:16},{wch:12}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'NFs em Atraso');
   let nome = 'atrasos_nf';
@@ -4112,6 +4447,10 @@ function detectarBaseDesatualizada(payload){
   // Verifica: payload tem Lead Times?
   if(payload.lead_time_brasil === undefined){
     motivos.push('Lead Times e Impacto Agenda ausentes (reprocesse a base)');
+  }
+  // Verifica: payload tem o extrato de Notas em Aberto (v9.23)?
+  if(payload.notasAbertas === undefined){
+    motivos.push('extrato de Notas em Aberto ausente (reprocesse a base)');
   }
   return motivos.length ? motivos : null;
 }
