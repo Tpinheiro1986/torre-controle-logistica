@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.1-notas-abertas', date: '27/08/2026' };
+window.__BUILD__ = { version: 'v10.2-notas-abertas-layout', date: '27/08/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -76,6 +76,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg3);color:var(--
 
 /* CONTAINER */
 .container{max-width:1400px;margin:0 auto;padding:28px 32px}
+/* v10.2: aba Notas em Aberto usa tela mais larga (padrão do modo TV) para a
+   tabela de 15 colunas respirar; as demais abas continuam em 1400px. */
+body.abertas-on .container{max-width:1860px}
+#abertas-table th{white-space:nowrap}
+#abertas-table{table-layout:auto}
+@media(max-width:1919px){ body.abertas-on .container{max-width:96vw} }
 
 /* UPLOAD SECTION */
 .upload-section{display:none}
@@ -1175,10 +1181,10 @@ table.dt th{color:#33536F}
               <th>Região</th>
               <th>Transportadora</th>
               <th>Situação</th>
-              <th>Data Faturamento</th>
+              <th>Faturamento</th>
               <th>Prev. Entrega</th>
-              <th class="r">Dias em Aberto</th>
-              <th class="r" style="color:#A32D2D">Dias Atraso</th>
+              <th class="r">Dias Aberto</th>
+              <th class="r" style="color:#A32D2D">Atraso</th>
               <th class="r">Valor NF</th>
               <th class="r">Peso</th>
             </tr></thead>
@@ -1315,6 +1321,8 @@ function switchTab(id, btn){
   if(id==='atrasos'){ renderAtrasos(); }
   if(id==='infull'){ renderInFull(); }
   if(id==='leadtime'){ renderLeadTimes(); }
+  // v10.2: tela larga só enquanto a aba Notas em Aberto está ativa
+  document.body.classList.toggle('abertas-on', id==='abertas');
   if(id==='abertas'){ renderAbertas(); }
 }
 
@@ -3421,11 +3429,11 @@ function renderAbertasTabela(){
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
         +'<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
         +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
-        +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
-        +'<td style="color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cidade||'')+'">'+(n.cidade||'—')+'</td>'
+        +'<td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
+        +'<td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cidade||'')+'">'+(n.cidade||'—')+'</td>'
         +'<td style="font-weight:600">'+(n.uf||'—')+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
-        +'<td style="font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
         +'<td style="color:var(--text2);white-space:nowrap">'+(n.dt_fat||'—')+'</td>'
         +'<td style="color:'+(n.dias_atraso!=null?'#A32D2D':'var(--text2)')+';white-space:nowrap">'+(n.dt_prev||'—')+'</td>'
