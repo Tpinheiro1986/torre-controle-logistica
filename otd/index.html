@@ -1216,6 +1216,7 @@ table.dt th{color:#33536F}
         <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
           Todas as notas da base, sem filtro. Busque por número da NF, pedido, cliente, romaneio, conhecimento, cidade, UF ou transportadora.
           <strong>Para consultar várias NFs de uma vez</strong>, cole a lista separada por ponto e vírgula ou vírgula (ex.: <code>1634; 1635; 1636</code>), ou digite uma por uma e tecle Enter.
+          Uma linha por NF, da emissão mais recente para a mais antiga. Quando a nota tem mais de uma ocorrência, vale a última — o histórico completo fica na ficha.
           Clique em qualquer linha para abrir a ficha completa da nota, com todos os campos do arquivo mestre.
         </p>
 
@@ -1242,24 +1243,21 @@ table.dt th{color:#33536F}
             <th>UF</th>
             <th>Pedido</th>
             <th>Romaneio</th>
-            <th>CT-e</th>
             <th>Emissão</th>
-            <th>Embarque</th>
             <th>Ini. Transp.</th>
             <th>Max Entrega</th>
-            <th>Agendamento</th>
             <th>Entrega</th>
             <th class="r">Dias Dec.</th>
             <th class="r">Dias Atraso</th>
             <th>Tipo Ent.</th>
-            <th>Ocor.</th>
-            <th>Descrição da ocorrência</th>
-            <th>Status no TMS</th>
-            <th>Situação no painel</th>
-            <th>Aparece?</th>
             <th class="r">Volumes</th>
             <th class="r">Peso</th>
             <th class="r">Valor NF</th>
+            <th>Status no TMS</th>
+            <th>Ocor.</th>
+            <th>Descrição da ocorrência</th>
+            <th>Situação no painel</th>
+            <th>Aparece?</th>
           </tr></thead>
           <tbody id="consulta-tbody"></tbody>
         </table></div>
@@ -5814,11 +5812,15 @@ const MAP_LABELS={
 </script>
 <script>
 /* ============================================================
-   CONSULTAR NF — v10.3
+   CONSULTAR NF — v10.4
    Busca direta no arquivo mestre (dashboards/otd/historico_mestre.csv),
    a base completa, ANTES dos filtros de ingestão. É a única tela do painel
    que enxerga todas as NFs — inclusive as descartadas — e diz, para cada
    uma, qual regra decidiu a situação dela.
+
+   v10.4: uma linha por NF. Quando a mesma nota tem mais de uma ocorrência
+   no arquivo, vale a ÚLTIMA (por Data Ocorrencia); o histórico completo
+   fica na ficha. Ordenação padrão: emissão da mais nova para a mais antiga.
    ============================================================ */
 (function(){
 
@@ -5826,8 +5828,8 @@ const CSV_URL = (typeof SUPABASE_URL!=='undefined' ? SUPABASE_URL : 'https://enn
   + '/storage/v1/object/public/dashboards/otd/historico_mestre.csv';
 
 const CONSULTA_PER_PAGE = 100;
-const st = { carregado:false, carregando:false, erro:null, head:[], idx:{}, linhas:[],
-             resultado:[], page:1, termo:'', termos:[], naoEncontrados:[] };
+const st = { carregado:false, carregando:false, erro:null, head:[], idx:{}, linhas:[], notas:[],
+             resultado:[], page:1, termo:'', termos:[], naoEncontrados:[], soFora:false, ignoradas:0 };
 
 /* Separadores aceitos na busca múltipla: ; , quebra de linha e tab.
    Espaço NÃO separa — nome de cliente tem espaço. */
@@ -5851,13 +5853,15 @@ function parseCSV(txt){
   };
   const head = split(linhas[0]).map(h=>h.replace(/<[^>]*>/g,'').trim());
   const idx={}; head.forEach((h,i)=>{ if(idx[h]===undefined) idx[h]=i; });
-  const rows=[];
+  const iNF = idx['Nro NF'];
+  const rows=[]; let ignoradas=0;
   for(let i=1;i<linhas.length;i++){
     const c=split(linhas[i]);
-    if(c.every(v=>!String(v).trim())) continue;   // linha em branco do CSV
+    if(c.every(v=>!String(v).trim())){ ignoradas++; continue; }          // linha em branco
+    if(iNF!==undefined && !String(c[iNF]??'').trim()){ ignoradas++; continue; } // linha sem número de NF
     rows.push(c);
   }
-  return {head, idx, rows};
+  return {head, idx, rows, ignoradas};
 }
 
 const g = (r,nome) => String(r[st.idx[nome]] ?? '').trim();
@@ -5869,6 +5873,11 @@ function dBR(s){
   if(!m) return null;
   return new Date(+m[3], +m[2]-1, +m[1]);
 }
+function tsBR(s){                       // com hora, para ordenar ocorrências
+  const m=String(s||'').trim().match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+  if(!m) return -Infinity;
+  return new Date(+m[3], +m[2]-1, +m[1], +(m[4]||0), +(m[5]||0)).getTime();
+}
 function vNum(s){
   s=String(s||'').replace(/[^\d,.-]/g,'');
   if(!s) return 0;
@@ -5877,6 +5886,32 @@ function vNum(s){
 }
 const brl = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const dash = v => (v===''||v==null) ? '—' : v;
+
+/* ---------- consolidação: 1 linha por NF, valendo a última ocorrência ---------- */
+function agrupar(rows){
+  const map=new Map();
+  rows.forEach((r,i)=>{
+    const k = g(r,'Nro NF')+'|'+g(r,'Serie NF')+'|'+g(r,'Embarcador');
+    if(!map.has(k)) map.set(k,[]);
+    map.get(k).push({r,i});
+  });
+  const notas=[];
+  map.forEach(itens=>{
+    // da ocorrência mais antiga para a mais recente
+    const ord = itens.slice().sort((a,b)=>{
+      const ta=tsBR(g(a.r,'Data Ocorrencia')), tb=tsBR(g(b.r,'Data Ocorrencia'));
+      if(ta!==tb) return ta-tb;
+      const ia=parseFloat(g(a.r,'id_ocorrencia'))||0, ib=parseFloat(g(b.r,'id_ocorrencia'))||0;
+      if(ia!==ib) return ia-ib;
+      return a.i-b.i;                       // empate: ordem do arquivo
+    }).map(x=>x.r);
+    const atual = ord[ord.length-1];        // a ÚLTIMA ocorrência é a que vale
+    const de = dBR(g(atual,'Data Emissao'));
+    notas.push({ rows:ord, atual, emi: de ? de.getTime() : -Infinity });
+  });
+  notas.sort((a,b)=> b.emi - a.emi);        // emissão: mais nova primeiro
+  return notas;
+}
 
 /* ---------- de-para de ocorrências (motor v10.0) ---------- */
 const OCOR_TRANSITO = {
@@ -5923,7 +5958,6 @@ function diagnosticar(r){
     return dMax >= hoje ? 'No Prazo' : 'Em Atraso';
   };
 
-  // filtro de ingestão — roda antes de qualquer regra de status
   if(pedidoInvalido(pedido)){
     return { entra:false, sit:'Descartada na ingestão', tom:'err', regra:'INGEST · pedido',
       onde:'Nenhum painel',
@@ -5931,7 +5965,6 @@ function diagnosticar(r){
              + (temEnt ? ' A nota já tem entrega registrada — é OTD que não está sendo contado.' : '') };
   }
 
-  // R1 — desconsiderada
   if(/desconsiderada/i.test(status) || ocor==='998'){
     let motivo;
     if(/HOMOLOGACAO/i.test(cliente))
@@ -5944,34 +5977,29 @@ function diagnosticar(r){
     return { entra:false, sit:'Desconsiderada', tom:'err', regra:'R1', onde:'Nenhum painel', motivo };
   }
 
-  // R2 — devolução
   if(ocor==='25' || ocor==='999'){
     return { entra:true, sit:'Devolvida', tom:'amb', regra:'R2', onde:'Painel (macro Devolvida) · fora do cálculo de OTD',
       motivo:'Ocorrência '+ocor+' — devolução. Conta como Devolvida e sai do cálculo de OTD por regra, mas continua visível no painel.' };
   }
 
-  // R3 — ocorrência finalizadora
   if(ocor==='1' || ocor==='2'){
     const p = ocor==='2' ? 'Off Time' : prazoEntregue();
     return { entra:true, sit:'Entregue · '+p, tom:(p==='On Time'?'ok':'amb'), regra:'R3 · ocor '+ocor,
       onde:'OTD', motivo:'Ocorrência '+ocor+(ocor==='2'?' — sempre Off Time.':' — entrega realizada, prazo avaliado pelas datas.') };
   }
 
-  // R4 — status de entrega
   if(/^entregue/i.test(status)){
     const p = prazoEntregue();
     return { entra:true, sit:'Entregue · '+p, tom:(p==='On Time'?'ok':'amb'), regra:'R4',
       onde:'OTD', motivo:'Sem ocorrência finalizadora, mas o status do ERP diz Entregue.' };
   }
 
-  // R5 — ainda no CD
   if(!cte && !rom && !iniTr){
     const c=cortePrazo();
     return { entra:true, sit:'CD · '+c, tom:(c==='Em Atraso'?'err':'blu'), regra:'R5',
       onde:'OTD + Notas em Aberto', motivo:'Sem CT-e, sem romaneio e sem início de transporte — ainda não saiu do CD.' };
   }
 
-  // R6 — trânsito
   const sub = OCOR_TRANSITO[ocor];
   if(sub !== undefined){
     const c=cortePrazo();
@@ -5979,7 +6007,6 @@ function diagnosticar(r){
       onde:'OTD + Notas em Aberto', motivo:'Tem CT-e ou romaneio; a ocorrência '+(ocor||'(vazia)')+' define o sub-status de trânsito.' };
   }
 
-  // R7 — fora do de-para
   return { entra:false, sit:'Sem Regra', tom:'err', regra:'R7', onde:'Nenhum painel',
     motivo:'Ocorrência '+ocor+' não está no de-para aprovado. A nota cai em alarme e fica fora do OTD.' };
 }
@@ -5995,7 +6022,8 @@ async function carregar(){
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const txt = await resp.text();
     const p = parseCSV(txt);
-    st.head=p.head; st.idx=p.idx; st.linhas=p.rows;
+    st.head=p.head; st.idx=p.idx; st.linhas=p.rows; st.ignoradas=p.ignoradas;
+    st.notas=agrupar(p.rows);
     st.carregado=true;
     pintarStatus('');
     buscar();
@@ -6017,15 +6045,15 @@ function pintarStatus(t){
 const CAMPOS_BUSCA = ['Nro NF','Pedido','Cliente','CNPJ Cliente','Romaneio','Conhecimento',
                       'Transportador','Cidade Destino','UF Destino','Embarcador','Status da Entrega','Descricao'];
 
-// Casa um termo isolado: NF exata tem prioridade; senão, busca parcial nos campos.
+// Casa um termo isolado: NF exata tem prioridade; senão, busca parcial em
+// QUALQUER ocorrência da nota.
 function casar(termo){
   const t=termo.toLowerCase();
-  const exato = st.linhas.filter(r => g(r,'Nro NF').toLowerCase() === t);
+  const exato = st.notas.filter(n => g(n.atual,'Nro NF').toLowerCase() === t);
   if(exato.length) return exato;
-  return st.linhas.filter(r => CAMPOS_BUSCA.some(c => String(g(r,c)).toLowerCase().includes(t)));
+  return st.notas.filter(n => n.rows.some(r => CAMPOS_BUSCA.some(c => String(g(r,c)).toLowerCase().includes(t))));
 }
 
-// Termos ativos = os já fixados como chips + o que estiver digitado agora.
 function termosAtivos(){
   return st.termos.concat(fatiarTermos(st.termo));
 }
@@ -6033,19 +6061,23 @@ function termosAtivos(){
 function buscar(){
   const termos = termosAtivos();
   st.naoEncontrados = [];
-  if(!termos.length){ st.resultado = st.linhas; return; }   // sem busca = base inteira
+  if(!termos.length){ st.resultado = st.notas; aplicarRecorte(); return; }
 
-  // um passe por termo: guarda os que não acharam nada e une o resto,
-  // preservando a ordem da base e sem repetir linha
   const achadas = new Set();
   termos.forEach(t => {
     const hits = casar(t);
     if(!hits.length) st.naoEncontrados.push(t);
-    else hits.forEach(r => achadas.add(r));
+    else hits.forEach(n => achadas.add(n));
   });
-  st.resultado = achadas.size ? st.linhas.filter(r => achadas.has(r)) : [];
+  st.resultado = achadas.size ? st.notas.filter(n => achadas.has(n)) : [];
+  aplicarRecorte();
 }
 
+function aplicarRecorte(){
+  if(st.soFora) st.resultado = st.resultado.filter(n => !diagnosticar(n.atual).entra);
+}
+
+/* ---------- ações ---------- */
 window.consultaBuscar = function(){
   st.termo = document.getElementById('consulta-input').value || '';
   st.page = 1;
@@ -6053,8 +6085,6 @@ window.consultaBuscar = function(){
   buscar(); renderChips(); renderKpis(); renderTabela();
 };
 
-// Enter fixa o que está digitado como chip(s) e limpa o campo,
-// para ir empilhando NFs uma a uma.
 window.consultaKey = function(ev){
   if(ev.key === 'Enter'){ ev.preventDefault(); consultaAplicar(); return; }
   if(ev.key === 'Backspace' && !ev.target.value && st.termos.length){
@@ -6072,6 +6102,11 @@ window.consultaAplicar = function(){
   buscar(); renderChips(); renderKpis(); renderTabela();
 };
 
+window.consultaSoFora = function(){
+  st.soFora = !st.soFora; st.page=1;
+  buscar(); renderChips(); renderKpis(); renderTabela();
+};
+
 window.consultaRemoverTermo = function(i){
   st.termos.splice(i,1); st.page=1;
   buscar(); renderChips(); renderKpis(); renderTabela();
@@ -6080,42 +6115,30 @@ window.consultaRemoverTermo = function(i){
 window.consultaLimpar = function(){
   const inp=document.getElementById('consulta-input');
   if(inp) inp.value='';
-  st.termo=''; st.termos=[]; st.naoEncontrados=[]; st.page=1;
+  st.termo=''; st.termos=[]; st.naoEncontrados=[]; st.soFora=false; st.page=1;
   buscar(); renderChips(); renderKpis(); renderTabela();
   if(inp) inp.focus();
 };
 
 /* ---------- render ---------- */
-function renderKpis(){
-  const el=document.getElementById('consulta-kpis'); if(!el) return;
-  if(!st.carregado){
-    el.innerHTML='<div class="kpi"><div class="kpi-lbl">Arquivo mestre</div><div class="kpi-val">—</div><div class="kpi-sub">'+(st.erro?'falha na leitura':'carregando...')+'</div></div>';
-    return;
-  }
-  let fora=0, valorFora=0;
-  st.linhas.forEach(r=>{ if(!diagnosticar(r).entra){ fora++; valorFora+=vNum(g(r,'Valor Total')); } });
-  const dentro = st.linhas.length - fora;
-  const achou = st.resultado.length;
-  const achouFora = st.resultado.filter(r=>!diagnosticar(r).entra).length;
-  const valorRes = st.resultado.reduce((a,r)=>a+vNum(g(r,'Valor Total')),0);
-  el.innerHTML =
-     '<div class="kpi"><div class="kpi-lbl">NFs no arquivo mestre</div><div class="kpi-val">'+st.linhas.length.toLocaleString('pt-BR')+'</div><div class="kpi-sub">base completa, sem filtro</div></div>'
-    +'<div class="kpi kpi-grn"><div class="kpi-lbl">Chegam ao painel</div><div class="kpi-val">'+dentro.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entram em OTD, CD, trânsito ou devolução</div></div>'
-    +'<div class="kpi kpi-red"><div class="kpi-lbl">Não chegam ao painel</div><div class="kpi-val">'+fora.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+(st.linhas.length?((fora/st.linhas.length)*100).toFixed(1):'0')+'% da base · '+brl(valorFora)+'</div></div>'
-    +'<div class="kpi kpi-blu"><div class="kpi-lbl">Na tela</div><div class="kpi-val">'+achou.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+achouFora.toLocaleString('pt-BR')+' fora do painel · '+brl(valorRes)
-      +((st.naoEncontrados&&st.naoEncontrados.length&&termosAtivos().length>1)?'<br><span style="color:#A32D2D">'+st.naoEncontrados.length+' termo(s) sem resultado</span>':'')+'</div></div>'
-    +'<div class="kpi kpi-amb"><div class="kpi-lbl">Origem</div><div class="kpi-val" style="font-size:15px">historico_mestre</div><div class="kpi-sub">'+st.head.length+' campos por NF</div></div>';
-}
-
 const TOM={ok:'#3B6D11',amb:'#854F0B',err:'#A32D2D',blu:'#0072BC'};
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COLSPAN = 25;
 
-/* Chips dos termos fixados (as NFs empilhadas com Enter ou coladas em lote) */
 function renderChips(){
   const box=document.getElementById('consulta-chips'); if(!box) return;
-  if(!st.termos.length){ box.style.display='none'; box.innerHTML=''; return; }
+  if(!st.termos.length && !st.soFora){ box.style.display='none'; box.innerHTML=''; return; }
   box.style.display='flex';
   const semResultado = new Set((st.naoEncontrados||[]).map(t=>t.toLowerCase()));
-  let html='<span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Consultando '+st.termos.length+'</span>';
+  let html='';
+  if(st.soFora){
+    html += '<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 10px;border-radius:14px;'
+      +'font-size:11px;font-weight:600;background:#A32D2D14;color:#A32D2D;border:0.5px solid #A32D2D40">'
+      +'Só as que não chegam ao painel'
+      +'<button onclick="consultaSoFora()" title="Voltar para todas" style="border:0;background:transparent;color:inherit;cursor:pointer;font-size:14px;line-height:1;padding:0 2px">&times;</button></span>';
+  }
+  if(st.termos.length)
+    html+='<span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Consultando '+st.termos.length+'</span>';
   html += st.termos.map((t,i)=>{
     const vazio = semResultado.has(t.toLowerCase());
     const cor = vazio ? '#A32D2D' : '#0072BC';
@@ -6130,9 +6153,33 @@ function renderChips(){
   html += '<button class="fbtn" onclick="consultaLimpar()" style="margin-left:4px">Limpar todos</button>';
   box.innerHTML=html;
 }
-const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-const COLSPAN = 28;
+function renderKpis(){
+  const el=document.getElementById('consulta-kpis'); if(!el) return;
+  if(!st.carregado){
+    el.innerHTML='<div class="kpi"><div class="kpi-lbl">Arquivo mestre</div><div class="kpi-val">—</div><div class="kpi-sub">'+(st.erro?'falha na leitura':'carregando...')+'</div></div>';
+    return;
+  }
+  let fora=0, valorFora=0, comHistorico=0;
+  st.notas.forEach(n=>{
+    if(n.rows.length>1) comHistorico++;
+    if(!diagnosticar(n.atual).entra){ fora++; valorFora+=vNum(g(n.atual,'Valor Total')); }
+  });
+  const dentro = st.notas.length - fora;
+  const achou = st.resultado.length;
+  const achouFora = st.resultado.filter(n=>!diagnosticar(n.atual).entra).length;
+  const valorRes = st.resultado.reduce((a,n)=>a+vNum(g(n.atual,'Valor Total')),0);
+  el.innerHTML =
+     '<div class="kpi"><div class="kpi-lbl">NFs no arquivo mestre</div><div class="kpi-val">'+st.notas.length.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+st.linhas.length.toLocaleString('pt-BR')+' linhas · '+comHistorico+' NFs com mais de uma ocorrência</div></div>'
+    +'<div class="kpi kpi-grn"><div class="kpi-lbl">Chegam ao painel</div><div class="kpi-val">'+dentro.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entram em OTD, CD, trânsito ou devolução</div></div>'
+    +'<div class="kpi kpi-red" onclick="consultaSoFora()" style="cursor:pointer" title="Clique para listar só estas NFs">'
+      +'<div class="kpi-lbl">Não chegam ao painel</div><div class="kpi-val">'+fora.toLocaleString('pt-BR')+'</div>'
+      +'<div class="kpi-sub">'+(st.notas.length?((fora/st.notas.length)*100).toFixed(1):'0')+'% da base · '+brl(valorFora)
+      +'<br><span style="color:#A32D2D;font-weight:600">'+(st.soFora?'✓ listando só estas — clique para voltar':'clique para ver quais são')+'</span></div></div>'
+    +'<div class="kpi kpi-blu"><div class="kpi-lbl">Na tela</div><div class="kpi-val">'+achou.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+achouFora.toLocaleString('pt-BR')+' fora do painel · '+brl(valorRes)
+      +((st.naoEncontrados&&st.naoEncontrados.length&&termosAtivos().length>1)?'<br><span style="color:#A32D2D">'+st.naoEncontrados.length+' termo(s) sem resultado</span>':'')+'</div></div>'
+    +'<div class="kpi kpi-amb"><div class="kpi-lbl">Ordenação</div><div class="kpi-val" style="font-size:15px">Emissão ↓</div><div class="kpi-sub">mais recente primeiro · '+st.head.length+' campos por NF</div></div>';
+}
 
 function renderTabela(){
   const tb=document.getElementById('consulta-tbody'); if(!tb) return;
@@ -6145,7 +6192,7 @@ function renderTabela(){
 
   const lista=st.resultado;
   if(!lista.length)
-    return vazio('Nenhuma NF encontrada para '+esc(termosAtivos().join(', '))+'. Esta busca varre as '+st.linhas.length.toLocaleString('pt-BR')+' linhas do arquivo mestre — se não achou aqui, a nota não está na base enviada pela transportadora.');
+    return vazio('Nenhuma NF encontrada para '+esc(termosAtivos().join(', '))+'. Esta busca varre as '+st.notas.length.toLocaleString('pt-BR')+' NFs do arquivo mestre — se não achou aqui, a nota não está na base enviada pela transportadora.');
 
   const pages=Math.ceil(lista.length/CONSULTA_PER_PAGE)||1;
   if(st.page>pages) st.page=pages;
@@ -6154,9 +6201,14 @@ function renderTabela(){
   const slice=lista.slice(start, start+CONSULTA_PER_PAGE);
 
   let html='';
-  slice.forEach((r,i)=>{
+  slice.forEach((n,i)=>{
+    const r=n.atual;
     const d=diagnosticar(r);
     const key=start+i;
+    const nOcor=n.rows.length;
+    const selo = nOcor>1
+      ? ' <span style="font-size:9px;font-weight:600;padding:1px 5px;border-radius:8px;background:var(--bg3);color:var(--text2)" title="'+nOcor+' ocorrências nesta NF — vale a última, de '+esc(g(r,'Data Ocorrencia')||'data não informada')+'">'+nOcor+'ª de '+nOcor+'</span>'
+      : '';
     html+='<tr style="cursor:pointer" onclick="consultaDetalhe('+key+')" title="Clique para ver a ficha completa">'
       +'<td style="font-weight:600">'+esc(g(r,'Nro NF'))+'</td>'
       +'<td>'+esc(dash(g(r,'Serie NF')))+'</td>'
@@ -6168,27 +6220,25 @@ function renderTabela(){
       +'<td>'+esc(dash(g(r,'UF Destino')))+'</td>'
       +'<td>'+esc(dash(g(r,'Pedido')))+'</td>'
       +'<td>'+esc(dash(g(r,'Romaneio')))+'</td>'
-      +'<td>'+esc(dash(g(r,'Conhecimento')))+'</td>'
       +'<td>'+esc(dash(g(r,'Data Emissao')))+'</td>'
-      +'<td>'+esc(dash(g(r,'Data Embarque')))+'</td>'
       +'<td>'+esc(dash(g(r,'Data Ini. Transp.')))+'</td>'
       +'<td>'+esc(dash(g(r,'Data Max Entrega')))+'</td>'
-      +'<td>'+esc(dash(g(r,'Data Agendamento')))+'</td>'
       +'<td>'+esc(dash(g(r,'Data Entrega Operacao')))+'</td>'
       +'<td class="r">'+esc(dash(g(r,'Dias Decorridos')))+'</td>'
       +'<td class="r" style="color:#A32D2D">'+esc(dash(g(r,'Dias Atraso')))+'</td>'
       +'<td>'+esc(dash(g(r,'Tipo Ent.')))+'</td>'
-      +'<td>'+esc(dash(g(r,'Ocorrencia')))+'</td>'
-      +'<td style="font-size:10px;color:var(--text2)">'+esc(dash(g(r,'Descricao')))+'</td>'
-      +'<td style="font-size:10px;color:var(--text2)">'+esc(dash(g(r,'Status da Entrega')))+'</td>'
-      +'<td><span class="badge" style="background:'+TOM[d.tom]+'1F;color:'+TOM[d.tom]+'">'+esc(d.sit)+'</span></td>'
-      +'<td>'+(d.entra?'<span class="badge badge-ok">Sim</span>':'<span class="badge badge-err">Não</span>')+'</td>'
       +'<td class="r">'+esc(dash(g(r,'Qtde Volumes')))+'</td>'
       +'<td class="r">'+esc(dash(g(r,'Peso')))+'</td>'
       +'<td class="r">'+brl(vNum(g(r,'Valor Total')))+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+esc(dash(g(r,'Status da Entrega')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Ocorrencia')))+selo+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+esc(dash(g(r,'Descricao')))+'</td>'
+      +'<td><span class="badge" style="background:'+TOM[d.tom]+'1F;color:'+TOM[d.tom]+'">'+esc(d.sit)+'</span></td>'
+      +'<td>'+(d.entra?'<span class="badge badge-ok">Sim</span>':'<span class="badge badge-err">Não</span>')+'</td>'
       +'</tr>'
       +'<tr id="consulta-det-'+key+'" style="display:none"><td colspan="'+COLSPAN+'" style="background:var(--bg2);padding:16px">'
-        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Ficha completa · NF '+esc(g(r,'Nro NF'))+' · todos os '+st.head.length+' campos do arquivo mestre</div>'
+        + (nOcor>1 ? historicoHTML(n) : '')
+        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Ficha completa · NF '+esc(g(r,'Nro NF'))+' · '+(nOcor>1?'última ocorrência · ':'')+'todos os '+st.head.length+' campos do arquivo mestre</div>'
         +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 22px;font-size:11.5px">'
           + st.head.map((h,ci)=>
               '<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">'+esc(h)+'</div>'
@@ -6207,14 +6257,35 @@ function renderTabela(){
   pag.innerHTML = '<span>'+lista.length.toLocaleString('pt-BR')+' NF(s)'
       + (tAtivos.length
           ? (tAtivos.length>1 ? ' para '+tAtivos.length+' termos' : ' para "'+esc(tAtivos[0])+'"')
-          : ' — base completa')
+          : (st.soFora ? ' que não chegam ao painel' : ' — base completa'))
       + ' · linhas '+(start+1).toLocaleString('pt-BR')+'–'+Math.min(start+CONSULTA_PER_PAGE, lista.length).toLocaleString('pt-BR')
       + ' · página '+st.page+' de '+pages+'</span>'
     + (pages>1
       ? '<button class="fbtn" onclick="consultaPage(-1)" '+(st.page<=1?'disabled':'')+'>Anterior</button>'
         +'<button class="fbtn" onclick="consultaPage(1)" '+(st.page>=pages?'disabled':'')+'>Próxima</button>'
       : '')
-    + '<span style="margin-left:auto;color:var(--text3)">Clique na linha para abrir a ficha completa</span>';
+    + '<span style="margin-left:auto;color:var(--text3)">Emissão da mais nova para a mais antiga · clique na linha para abrir a ficha</span>';
+}
+
+// Histórico de ocorrências da NF, da mais antiga para a mais recente
+function historicoHTML(n){
+  let h='<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">'
+    +'Histórico de ocorrências ('+n.rows.length+') — a última é a que vale</div>'
+    +'<div class="tw" style="margin-bottom:16px"><table class="dt" style="font-size:11px">'
+    +'<thead><tr><th>#</th><th>Data da ocorrência</th><th>Ocor.</th><th>Descrição</th><th>Status da Entrega</th><th>Data Entrega</th><th>id_ocorrencia</th></tr></thead><tbody>';
+  n.rows.forEach((r,i)=>{
+    const ultima = i===n.rows.length-1;
+    h+='<tr'+(ultima?' style="background:#0072BC12;font-weight:600"':' style="opacity:.7"')+'>'
+      +'<td>'+(i+1)+(ultima?' <span class="badge badge-proc">vale esta</span>':'')+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Ocorrencia')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Ocorrencia')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Descricao')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Status da Entrega')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Entrega Operacao')))+'</td>'
+      +'<td>'+esc(dash(g(r,'id_ocorrencia')))+'</td>'
+      +'</tr>';
+  });
+  return h+'</tbody></table></div>';
 }
 
 window.consultaPage = function(d){ st.page+=d; renderTabela(); window.scrollTo({top:0,behavior:'smooth'}); };
@@ -6229,10 +6300,11 @@ window.exportarConsultaExcel = function(ev){
   if(ev) ev.stopPropagation();
   const lista=st.resultado;
   if(!lista.length) return;
-  const dados=lista.map(r=>{
-    const o={};
+  const dados=lista.map(n=>{
+    const r=n.atual, o={};
     st.head.forEach((h,ci)=>{ o[h]=String(r[ci]??'').trim(); });
     const d=diagnosticar(r);
+    o['[Ocorrências na NF]']=n.rows.length;
     o['[Situação no painel]']=d.sit;
     o['[Aparece no painel]']=d.entra?'Sim':'Não';
     o['[Onde aparece]']=d.onde;
