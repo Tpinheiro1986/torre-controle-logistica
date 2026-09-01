@@ -412,6 +412,7 @@ table.dt th{color:#33536F}
     <div class="tab" onclick="switchTab('infull',this)">In Full</div>
     <div class="tab" onclick="switchTab('leadtime',this)">Lead Time</div>
     <div class="tab" onclick="switchTab('abertas',this)">Notas em Aberto</div>
+    <div class="tab" onclick="switchTab('consulta',this)">Consultar NF</div>
     <div class="tab" onclick="switchTab('tv',this)" style="background:linear-gradient(90deg,#004A87,#00A7E7);color:#fff">📡 TV</div>
   </div>
 
@@ -1195,6 +1196,77 @@ table.dt th{color:#33536F}
       </div>
     </div>
 
+    <!-- ============ CONSULTAR NF (v10.3) ============ -->
+    <div class="dash-section" id="sec-consulta" style="display:none">
+      <div class="update-bar">
+        <span class="update-dot" style="background:#854F0B"></span>
+        <span id="consulta-update-text">Base completa do arquivo mestre — todas as NFs, inclusive as que os filtros de ingestão descartam e que por isso não aparecem em nenhum outro painel</span>
+      </div>
+
+      <div class="krow" id="consulta-kpis" style="margin-bottom:12px"></div>
+
+      <div class="card">
+        <div class="slabel" style="flex-wrap:wrap">
+          <span class="slabel-num">1</span>Consultar NF
+          <button id="consulta-export" onclick="exportarConsultaExcel(event)" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:none;align-items:center;gap:6px">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar resultado
+          </button>
+        </div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+          Todas as notas da base, sem filtro. Busque por número da NF, pedido, cliente, romaneio, conhecimento, cidade, UF ou transportadora.
+          <strong>Para consultar várias NFs de uma vez</strong>, cole a lista separada por ponto e vírgula ou vírgula (ex.: <code>1634; 1635; 1636</code>), ou digite uma por uma e tecle Enter.
+          Clique em qualquer linha para abrir a ficha completa da nota, com todos os campos do arquivo mestre.
+        </p>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+          <input id="consulta-input" type="text" placeholder="1634; 1635; 1636  ·  ou uma NF + Enter  ·  ou cliente, pedido, romaneio..."
+            class="form-input" style="min-width:340px;flex:1;max-width:520px;padding:8px 12px;font-size:13px"
+            oninput="consultaBuscar()" onkeydown="consultaKey(event)" autocomplete="off">
+          <button class="fbtn" onclick="consultaAplicar()">Adicionar à lista</button>
+          <button class="fbtn" onclick="consultaLimpar()">Limpar busca</button>
+          <span id="consulta-status" style="font-size:11px;color:var(--text2)"></span>
+        </div>
+
+        <div id="consulta-chips" style="display:none;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px"></div>
+
+        <div class="tw"><table class="dt" id="consulta-table">
+          <thead><tr>
+            <th>Nº NF</th>
+            <th>Sér.</th>
+            <th>Embarcador</th>
+            <th>Transportadora</th>
+            <th>Cliente</th>
+            <th>CNPJ Cliente</th>
+            <th>Cidade</th>
+            <th>UF</th>
+            <th>Pedido</th>
+            <th>Romaneio</th>
+            <th>CT-e</th>
+            <th>Emissão</th>
+            <th>Embarque</th>
+            <th>Ini. Transp.</th>
+            <th>Max Entrega</th>
+            <th>Agendamento</th>
+            <th>Entrega</th>
+            <th class="r">Dias Dec.</th>
+            <th class="r">Dias Atraso</th>
+            <th>Tipo Ent.</th>
+            <th>Ocor.</th>
+            <th>Descrição da ocorrência</th>
+            <th>Status no TMS</th>
+            <th>Situação no painel</th>
+            <th>Aparece?</th>
+            <th class="r">Volumes</th>
+            <th class="r">Peso</th>
+            <th class="r">Valor NF</th>
+          </tr></thead>
+          <tbody id="consulta-tbody"></tbody>
+        </table></div>
+        <div id="consulta-paginacao" style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px;color:var(--text2);flex-wrap:wrap"></div>
+      </div>
+    </div>
+
 
 
   </div>
@@ -1292,7 +1364,7 @@ checkSession();
 // TABS
 // ============================================================
 const TABS = {
-  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', clientes:'sec-clientes', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', abertas:'sec-abertas', tv:'tv-mode'
+  otd:'sec-otd', atrasos:'sec-atrasos', transp:'sec-transp', clientes:'sec-clientes', offtime:'sec-offtime', infull:'sec-infull', leadtime:'sec-leadtime', abertas:'sec-abertas', consulta:'sec-consulta', tv:'tv-mode'
 };
 
 function switchTab(id, btn){
@@ -1322,8 +1394,9 @@ function switchTab(id, btn){
   if(id==='infull'){ renderInFull(); }
   if(id==='leadtime'){ renderLeadTimes(); }
   // v10.2: tela larga só enquanto a aba Notas em Aberto está ativa
-  document.body.classList.toggle('abertas-on', id==='abertas');
+  document.body.classList.toggle('abertas-on', id==='abertas' || id==='consulta');
   if(id==='abertas'){ renderAbertas(); }
+  if(id==='consulta' && typeof initConsulta==='function'){ initConsulta(); }
 }
 
 // init visibility
@@ -5737,6 +5810,450 @@ const MAP_LABELS={
   setTimeout(renderTV, 100);
   setTimeout(renderTV, 1500);
   setTimeout(renderTV, 4000);
+})();
+</script>
+<script>
+/* ============================================================
+   CONSULTAR NF — v10.3
+   Busca direta no arquivo mestre (dashboards/otd/historico_mestre.csv),
+   a base completa, ANTES dos filtros de ingestão. É a única tela do painel
+   que enxerga todas as NFs — inclusive as descartadas — e diz, para cada
+   uma, qual regra decidiu a situação dela.
+   ============================================================ */
+(function(){
+
+const CSV_URL = (typeof SUPABASE_URL!=='undefined' ? SUPABASE_URL : 'https://ennsbpibfnuwlvtodukg.supabase.co')
+  + '/storage/v1/object/public/dashboards/otd/historico_mestre.csv';
+
+const CONSULTA_PER_PAGE = 100;
+const st = { carregado:false, carregando:false, erro:null, head:[], idx:{}, linhas:[],
+             resultado:[], page:1, termo:'', termos:[], naoEncontrados:[] };
+
+/* Separadores aceitos na busca múltipla: ; , quebra de linha e tab.
+   Espaço NÃO separa — nome de cliente tem espaço. */
+const SEPARADORES = /[;,\n\r\t]+/;
+function fatiarTermos(txt){
+  return String(txt||'').split(SEPARADORES).map(t=>t.trim()).filter(Boolean);
+}
+
+/* ---------- CSV ---------- */
+function parseCSV(txt){
+  const linhas = txt.split(/\r?\n/).filter(l=>l.length);
+  const split = l => {
+    const out=[]; let cur='', q=false;
+    for(let i=0;i<l.length;i++){
+      const c=l[i];
+      if(c==='"'){ if(q && l[i+1]==='"'){cur+='"';i++;} else q=!q; }
+      else if(c===';' && !q){ out.push(cur); cur=''; }
+      else cur+=c;
+    }
+    out.push(cur); return out;
+  };
+  const head = split(linhas[0]).map(h=>h.replace(/<[^>]*>/g,'').trim());
+  const idx={}; head.forEach((h,i)=>{ if(idx[h]===undefined) idx[h]=i; });
+  const rows=[];
+  for(let i=1;i<linhas.length;i++){
+    const c=split(linhas[i]);
+    if(c.every(v=>!String(v).trim())) continue;   // linha em branco do CSV
+    rows.push(c);
+  }
+  return {head, idx, rows};
+}
+
+const g = (r,nome) => String(r[st.idx[nome]] ?? '').trim();
+
+/* ---------- datas / números ---------- */
+function dBR(s){
+  s=String(s||'').trim(); if(!s) return null;
+  const m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if(!m) return null;
+  return new Date(+m[3], +m[2]-1, +m[1]);
+}
+function vNum(s){
+  s=String(s||'').replace(/[^\d,.-]/g,'');
+  if(!s) return 0;
+  s=s.replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.');
+  return parseFloat(s)||0;
+}
+const brl = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const dash = v => (v===''||v==null) ? '—' : v;
+
+/* ---------- de-para de ocorrências (motor v10.0) ---------- */
+const OCOR_TRANSITO = {
+  '0':'Em Trânsito','98':'Em Trânsito','':'Em Trânsito',
+  '600':'Aguardando Agendamento','601':'Agendamento Solicitado','602':'Agendamento Confirmado',
+  '28':'Em Rota de Entrega','84':'Em Rota de Entrega','91':'Em Rota de Entrega','807':'Em Rota de Entrega',
+  '26':'Tratativa Fiscal',
+  '3':'Tratativa Embarcador','5':'Tratativa Embarcador','8':'Tratativa Embarcador','9':'Tratativa Embarcador',
+  '23':'Tratativa Embarcador','80':'Tratativa Embarcador','92':'Tratativa Embarcador','420':'Tratativa Embarcador',
+  '19':'Tratativa Transportadora','20':'Tratativa Transportadora','21':'Tratativa Transportadora',
+  '29':'Tratativa Transportadora','31':'Tratativa Transportadora','33':'Tratativa Transportadora',
+  '35':'Tratativa Transportadora','44':'Tratativa Transportadora','50':'Tratativa Transportadora',
+  '99':'Tratativa Transportadora'
+};
+
+function pedidoInvalido(p){
+  const s=String(p||'').trim().toLowerCase();
+  if(s===''||s==='0'||s==='null'||s==='nan') return true;
+  const n=parseFloat(s);
+  return (!isNaN(n) && n===0);
+}
+
+/* ---------- diagnóstico: por que a nota aparece (ou não) ---------- */
+function diagnosticar(r){
+  const status  = g(r,'Status da Entrega');
+  const ocor    = String(g(r,'Ocorrencia')).replace(/\.0$/,'');
+  const cliente = g(r,'Cliente');
+  const pedido  = g(r,'Pedido');
+  const rom     = g(r,'Romaneio').replace(/^0+$/,'');
+  const cte     = g(r,'Conhecimento');
+  const iniTr   = g(r,'Data Ini. Transp.');
+  const dEnt    = dBR(g(r,'Data Entrega Operacao'));
+  const dMax    = dBR(g(r,'Data Max Entrega'));
+  const temEnt  = !!g(r,'Data Entrega Operacao');
+
+  const prazoEntregue = () => {
+    const erpAtraso = /atraso/i.test(status);
+    const foraPrazo = (dEnt && dMax && dEnt > dMax);
+    return (foraPrazo || erpAtraso) ? 'Off Time' : 'On Time';
+  };
+  const cortePrazo = () => {
+    if(!dMax) return 'Sem Prazo';
+    const hoje=new Date(); hoje.setHours(0,0,0,0);
+    return dMax >= hoje ? 'No Prazo' : 'Em Atraso';
+  };
+
+  // filtro de ingestão — roda antes de qualquer regra de status
+  if(pedidoInvalido(pedido)){
+    return { entra:false, sit:'Descartada na ingestão', tom:'err', regra:'INGEST · pedido',
+      onde:'Nenhum painel',
+      motivo:'Campo Pedido vazio ou zero. O filtro v8.2 remove a linha antes de qualquer classificação.'
+             + (temEnt ? ' A nota já tem entrega registrada — é OTD que não está sendo contado.' : '') };
+  }
+
+  // R1 — desconsiderada
+  if(/desconsiderada/i.test(status) || ocor==='998'){
+    let motivo;
+    if(/HOMOLOGACAO/i.test(cliente))
+      motivo='NF-e emitida em ambiente de homologação, sem valor fiscal. Descarte correto.';
+    else if(ocor==='998')
+      motivo='Ocorrência 998 — descarte solicitado pela operação.';
+    else
+      motivo='O TMS mandou o status com o sufixo "Desconsiderada". A regra R1 é a primeira avaliada e tira a nota de todas as análises.'
+             + (temEnt ? ' Atenção: esta nota TEM data de entrega registrada — provável erro de cadastro no TMS.' : '');
+    return { entra:false, sit:'Desconsiderada', tom:'err', regra:'R1', onde:'Nenhum painel', motivo };
+  }
+
+  // R2 — devolução
+  if(ocor==='25' || ocor==='999'){
+    return { entra:true, sit:'Devolvida', tom:'amb', regra:'R2', onde:'Painel (macro Devolvida) · fora do cálculo de OTD',
+      motivo:'Ocorrência '+ocor+' — devolução. Conta como Devolvida e sai do cálculo de OTD por regra, mas continua visível no painel.' };
+  }
+
+  // R3 — ocorrência finalizadora
+  if(ocor==='1' || ocor==='2'){
+    const p = ocor==='2' ? 'Off Time' : prazoEntregue();
+    return { entra:true, sit:'Entregue · '+p, tom:(p==='On Time'?'ok':'amb'), regra:'R3 · ocor '+ocor,
+      onde:'OTD', motivo:'Ocorrência '+ocor+(ocor==='2'?' — sempre Off Time.':' — entrega realizada, prazo avaliado pelas datas.') };
+  }
+
+  // R4 — status de entrega
+  if(/^entregue/i.test(status)){
+    const p = prazoEntregue();
+    return { entra:true, sit:'Entregue · '+p, tom:(p==='On Time'?'ok':'amb'), regra:'R4',
+      onde:'OTD', motivo:'Sem ocorrência finalizadora, mas o status do ERP diz Entregue.' };
+  }
+
+  // R5 — ainda no CD
+  if(!cte && !rom && !iniTr){
+    const c=cortePrazo();
+    return { entra:true, sit:'CD · '+c, tom:(c==='Em Atraso'?'err':'blu'), regra:'R5',
+      onde:'OTD + Notas em Aberto', motivo:'Sem CT-e, sem romaneio e sem início de transporte — ainda não saiu do CD.' };
+  }
+
+  // R6 — trânsito
+  const sub = OCOR_TRANSITO[ocor];
+  if(sub !== undefined){
+    const c=cortePrazo();
+    return { entra:true, sit:sub+' · '+c, tom:(c==='Em Atraso'?'err':'blu'), regra:'R6 · ocor '+(ocor||'vazia'),
+      onde:'OTD + Notas em Aberto', motivo:'Tem CT-e ou romaneio; a ocorrência '+(ocor||'(vazia)')+' define o sub-status de trânsito.' };
+  }
+
+  // R7 — fora do de-para
+  return { entra:false, sit:'Sem Regra', tom:'err', regra:'R7', onde:'Nenhum painel',
+    motivo:'Ocorrência '+ocor+' não está no de-para aprovado. A nota cai em alarme e fica fora do OTD.' };
+}
+
+/* ---------- carga ---------- */
+async function carregar(){
+  if(st.carregado || st.carregando) return;
+  st.carregando=true; st.erro=null;
+  pintarStatus('Carregando arquivo mestre...');
+  renderTabela();
+  try{
+    const resp = await fetch(CSV_URL+'?_='+Date.now(), {cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const txt = await resp.text();
+    const p = parseCSV(txt);
+    st.head=p.head; st.idx=p.idx; st.linhas=p.rows;
+    st.carregado=true;
+    pintarStatus('');
+    buscar();
+  }catch(e){
+    st.erro = e.message;
+    pintarStatus('Não foi possível ler o arquivo mestre ('+e.message+'). Tente recarregar a página.');
+  }finally{
+    st.carregando=false;
+    renderChips(); renderKpis(); renderTabela();
+  }
+}
+
+function pintarStatus(t){
+  const el=document.getElementById('consulta-status');
+  if(el) el.textContent=t||'';
+}
+
+/* ---------- busca ---------- */
+const CAMPOS_BUSCA = ['Nro NF','Pedido','Cliente','CNPJ Cliente','Romaneio','Conhecimento',
+                      'Transportador','Cidade Destino','UF Destino','Embarcador','Status da Entrega','Descricao'];
+
+// Casa um termo isolado: NF exata tem prioridade; senão, busca parcial nos campos.
+function casar(termo){
+  const t=termo.toLowerCase();
+  const exato = st.linhas.filter(r => g(r,'Nro NF').toLowerCase() === t);
+  if(exato.length) return exato;
+  return st.linhas.filter(r => CAMPOS_BUSCA.some(c => String(g(r,c)).toLowerCase().includes(t)));
+}
+
+// Termos ativos = os já fixados como chips + o que estiver digitado agora.
+function termosAtivos(){
+  return st.termos.concat(fatiarTermos(st.termo));
+}
+
+function buscar(){
+  const termos = termosAtivos();
+  st.naoEncontrados = [];
+  if(!termos.length){ st.resultado = st.linhas; return; }   // sem busca = base inteira
+
+  // um passe por termo: guarda os que não acharam nada e une o resto,
+  // preservando a ordem da base e sem repetir linha
+  const achadas = new Set();
+  termos.forEach(t => {
+    const hits = casar(t);
+    if(!hits.length) st.naoEncontrados.push(t);
+    else hits.forEach(r => achadas.add(r));
+  });
+  st.resultado = achadas.size ? st.linhas.filter(r => achadas.has(r)) : [];
+}
+
+window.consultaBuscar = function(){
+  st.termo = document.getElementById('consulta-input').value || '';
+  st.page = 1;
+  if(!st.carregado){ carregar(); return; }
+  buscar(); renderChips(); renderKpis(); renderTabela();
+};
+
+// Enter fixa o que está digitado como chip(s) e limpa o campo,
+// para ir empilhando NFs uma a uma.
+window.consultaKey = function(ev){
+  if(ev.key === 'Enter'){ ev.preventDefault(); consultaAplicar(); return; }
+  if(ev.key === 'Backspace' && !ev.target.value && st.termos.length){
+    st.termos.pop(); st.page=1; buscar(); renderChips(); renderKpis(); renderTabela();
+  }
+};
+
+window.consultaAplicar = function(){
+  const inp=document.getElementById('consulta-input');
+  const novos=fatiarTermos(inp ? inp.value : '');
+  if(!novos.length) return;
+  novos.forEach(t=>{ if(!st.termos.some(x=>x.toLowerCase()===t.toLowerCase())) st.termos.push(t); });
+  if(inp){ inp.value=''; inp.focus(); }
+  st.termo=''; st.page=1;
+  buscar(); renderChips(); renderKpis(); renderTabela();
+};
+
+window.consultaRemoverTermo = function(i){
+  st.termos.splice(i,1); st.page=1;
+  buscar(); renderChips(); renderKpis(); renderTabela();
+};
+
+window.consultaLimpar = function(){
+  const inp=document.getElementById('consulta-input');
+  if(inp) inp.value='';
+  st.termo=''; st.termos=[]; st.naoEncontrados=[]; st.page=1;
+  buscar(); renderChips(); renderKpis(); renderTabela();
+  if(inp) inp.focus();
+};
+
+/* ---------- render ---------- */
+function renderKpis(){
+  const el=document.getElementById('consulta-kpis'); if(!el) return;
+  if(!st.carregado){
+    el.innerHTML='<div class="kpi"><div class="kpi-lbl">Arquivo mestre</div><div class="kpi-val">—</div><div class="kpi-sub">'+(st.erro?'falha na leitura':'carregando...')+'</div></div>';
+    return;
+  }
+  let fora=0, valorFora=0;
+  st.linhas.forEach(r=>{ if(!diagnosticar(r).entra){ fora++; valorFora+=vNum(g(r,'Valor Total')); } });
+  const dentro = st.linhas.length - fora;
+  const achou = st.resultado.length;
+  const achouFora = st.resultado.filter(r=>!diagnosticar(r).entra).length;
+  const valorRes = st.resultado.reduce((a,r)=>a+vNum(g(r,'Valor Total')),0);
+  el.innerHTML =
+     '<div class="kpi"><div class="kpi-lbl">NFs no arquivo mestre</div><div class="kpi-val">'+st.linhas.length.toLocaleString('pt-BR')+'</div><div class="kpi-sub">base completa, sem filtro</div></div>'
+    +'<div class="kpi kpi-grn"><div class="kpi-lbl">Chegam ao painel</div><div class="kpi-val">'+dentro.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entram em OTD, CD, trânsito ou devolução</div></div>'
+    +'<div class="kpi kpi-red"><div class="kpi-lbl">Não chegam ao painel</div><div class="kpi-val">'+fora.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+(st.linhas.length?((fora/st.linhas.length)*100).toFixed(1):'0')+'% da base · '+brl(valorFora)+'</div></div>'
+    +'<div class="kpi kpi-blu"><div class="kpi-lbl">Na tela</div><div class="kpi-val">'+achou.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+achouFora.toLocaleString('pt-BR')+' fora do painel · '+brl(valorRes)
+      +((st.naoEncontrados&&st.naoEncontrados.length&&termosAtivos().length>1)?'<br><span style="color:#A32D2D">'+st.naoEncontrados.length+' termo(s) sem resultado</span>':'')+'</div></div>'
+    +'<div class="kpi kpi-amb"><div class="kpi-lbl">Origem</div><div class="kpi-val" style="font-size:15px">historico_mestre</div><div class="kpi-sub">'+st.head.length+' campos por NF</div></div>';
+}
+
+const TOM={ok:'#3B6D11',amb:'#854F0B',err:'#A32D2D',blu:'#0072BC'};
+
+/* Chips dos termos fixados (as NFs empilhadas com Enter ou coladas em lote) */
+function renderChips(){
+  const box=document.getElementById('consulta-chips'); if(!box) return;
+  if(!st.termos.length){ box.style.display='none'; box.innerHTML=''; return; }
+  box.style.display='flex';
+  const semResultado = new Set((st.naoEncontrados||[]).map(t=>t.toLowerCase()));
+  let html='<span style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Consultando '+st.termos.length+'</span>';
+  html += st.termos.map((t,i)=>{
+    const vazio = semResultado.has(t.toLowerCase());
+    const cor = vazio ? '#A32D2D' : '#0072BC';
+    return '<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 6px 3px 10px;border-radius:14px;'
+      +'font-size:11px;font-weight:600;background:'+cor+'14;color:'+cor+';border:0.5px solid '+cor+'40"'
+      +(vazio?' title="Nenhuma NF encontrada para este termo"':'')+'>'
+      + esc(t) + (vazio ? ' <span style="font-weight:400;opacity:.8">sem resultado</span>' : '')
+      + '<button onclick="consultaRemoverTermo('+i+')" title="Remover"'
+      + ' style="border:0;background:transparent;color:inherit;cursor:pointer;font-size:14px;line-height:1;padding:0 2px">&times;</button>'
+      + '</span>';
+  }).join('');
+  html += '<button class="fbtn" onclick="consultaLimpar()" style="margin-left:4px">Limpar todos</button>';
+  box.innerHTML=html;
+}
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const COLSPAN = 28;
+
+function renderTabela(){
+  const tb=document.getElementById('consulta-tbody'); if(!tb) return;
+  const pag=document.getElementById('consulta-paginacao');
+  const btnExp=document.getElementById('consulta-export');
+  const vazio = m => { tb.innerHTML='<tr><td colspan="'+COLSPAN+'" style="color:var(--text3);text-align:center;padding:22px">'+m+'</td></tr>'; pag.innerHTML=''; if(btnExp) btnExp.style.display='none'; };
+
+  if(st.erro) return vazio('<span style="color:#A32D2D">'+esc(st.erro)+'</span>');
+  if(!st.carregado) return vazio('Carregando o arquivo mestre...');
+
+  const lista=st.resultado;
+  if(!lista.length)
+    return vazio('Nenhuma NF encontrada para '+esc(termosAtivos().join(', '))+'. Esta busca varre as '+st.linhas.length.toLocaleString('pt-BR')+' linhas do arquivo mestre — se não achou aqui, a nota não está na base enviada pela transportadora.');
+
+  const pages=Math.ceil(lista.length/CONSULTA_PER_PAGE)||1;
+  if(st.page>pages) st.page=pages;
+  if(st.page<1) st.page=1;
+  const start=(st.page-1)*CONSULTA_PER_PAGE;
+  const slice=lista.slice(start, start+CONSULTA_PER_PAGE);
+
+  let html='';
+  slice.forEach((r,i)=>{
+    const d=diagnosticar(r);
+    const key=start+i;
+    html+='<tr style="cursor:pointer" onclick="consultaDetalhe('+key+')" title="Clique para ver a ficha completa">'
+      +'<td style="font-weight:600">'+esc(g(r,'Nro NF'))+'</td>'
+      +'<td>'+esc(dash(g(r,'Serie NF')))+'</td>'
+      +'<td>'+esc(g(r,'Embarcador').replace(/ (DO BRASIL )?LTDA\.?$/i,''))+'</td>'
+      +'<td>'+esc(g(r,'Transportador'))+'</td>'
+      +'<td>'+esc(g(r,'Cliente'))+'</td>'
+      +'<td>'+esc(dash(g(r,'CNPJ Cliente')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Cidade Destino')))+'</td>'
+      +'<td>'+esc(dash(g(r,'UF Destino')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Pedido')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Romaneio')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Conhecimento')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Emissao')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Embarque')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Ini. Transp.')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Max Entrega')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Agendamento')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Data Entrega Operacao')))+'</td>'
+      +'<td class="r">'+esc(dash(g(r,'Dias Decorridos')))+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+esc(dash(g(r,'Dias Atraso')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Tipo Ent.')))+'</td>'
+      +'<td>'+esc(dash(g(r,'Ocorrencia')))+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+esc(dash(g(r,'Descricao')))+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+esc(dash(g(r,'Status da Entrega')))+'</td>'
+      +'<td><span class="badge" style="background:'+TOM[d.tom]+'1F;color:'+TOM[d.tom]+'">'+esc(d.sit)+'</span></td>'
+      +'<td>'+(d.entra?'<span class="badge badge-ok">Sim</span>':'<span class="badge badge-err">Não</span>')+'</td>'
+      +'<td class="r">'+esc(dash(g(r,'Qtde Volumes')))+'</td>'
+      +'<td class="r">'+esc(dash(g(r,'Peso')))+'</td>'
+      +'<td class="r">'+brl(vNum(g(r,'Valor Total')))+'</td>'
+      +'</tr>'
+      +'<tr id="consulta-det-'+key+'" style="display:none"><td colspan="'+COLSPAN+'" style="background:var(--bg2);padding:16px">'
+        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Ficha completa · NF '+esc(g(r,'Nro NF'))+' · todos os '+st.head.length+' campos do arquivo mestre</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 22px;font-size:11.5px">'
+          + st.head.map((h,ci)=>
+              '<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">'+esc(h)+'</div>'
+              +'<div style="word-break:break-word">'+esc(dash(String(r[ci]??'').trim()))+'</div></div>').join('')
+        +'</div>'
+        +'<div style="margin-top:12px;padding:10px 12px;border-left:3px solid '+TOM[d.tom]+';background:var(--bg);font-size:12px;line-height:1.55">'
+          +'<strong>Situação no painel:</strong> '+esc(d.sit)+' &nbsp;·&nbsp; <strong>Regra:</strong> '+esc(d.regra)+' &nbsp;·&nbsp; <strong>Onde aparece:</strong> '+esc(d.onde)+'<br>'
+          +esc(d.motivo)
+        +'</div>'
+      +'</td></tr>';
+  });
+  tb.innerHTML=html;
+  if(btnExp) btnExp.style.display='inline-flex';
+
+  const tAtivos = termosAtivos();
+  pag.innerHTML = '<span>'+lista.length.toLocaleString('pt-BR')+' NF(s)'
+      + (tAtivos.length
+          ? (tAtivos.length>1 ? ' para '+tAtivos.length+' termos' : ' para "'+esc(tAtivos[0])+'"')
+          : ' — base completa')
+      + ' · linhas '+(start+1).toLocaleString('pt-BR')+'–'+Math.min(start+CONSULTA_PER_PAGE, lista.length).toLocaleString('pt-BR')
+      + ' · página '+st.page+' de '+pages+'</span>'
+    + (pages>1
+      ? '<button class="fbtn" onclick="consultaPage(-1)" '+(st.page<=1?'disabled':'')+'>Anterior</button>'
+        +'<button class="fbtn" onclick="consultaPage(1)" '+(st.page>=pages?'disabled':'')+'>Próxima</button>'
+      : '')
+    + '<span style="margin-left:auto;color:var(--text3)">Clique na linha para abrir a ficha completa</span>';
+}
+
+window.consultaPage = function(d){ st.page+=d; renderTabela(); window.scrollTo({top:0,behavior:'smooth'}); };
+
+window.consultaDetalhe = function(key){
+  const el=document.getElementById('consulta-det-'+key);
+  if(el) el.style.display = (el.style.display==='none' ? 'table-row' : 'none');
+};
+
+/* ---------- export: todos os campos do mestre + diagnóstico ---------- */
+window.exportarConsultaExcel = function(ev){
+  if(ev) ev.stopPropagation();
+  const lista=st.resultado;
+  if(!lista.length) return;
+  const dados=lista.map(r=>{
+    const o={};
+    st.head.forEach((h,ci)=>{ o[h]=String(r[ci]??'').trim(); });
+    const d=diagnosticar(r);
+    o['[Situação no painel]']=d.sit;
+    o['[Aparece no painel]']=d.entra?'Sim':'Não';
+    o['[Onde aparece]']=d.onde;
+    o['[Regra]']=d.regra;
+    o['[Motivo]']=d.motivo;
+    return o;
+  });
+  const ws=XLSX.utils.json_to_sheet(dados);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Consulta NF');
+  XLSX.writeFile(wb, 'consulta-nf-'+new Date().toISOString().slice(0,10)+'.xlsx');
+};
+
+/* ---------- init ---------- */
+window.initConsulta = function(){
+  renderChips(); renderKpis(); renderTabela();
+  if(!st.carregado) carregar();
+  const inp=document.getElementById('consulta-input');
+  if(inp) setTimeout(()=>inp.focus(), 80);
+};
+
 })();
 </script>
 </body>
