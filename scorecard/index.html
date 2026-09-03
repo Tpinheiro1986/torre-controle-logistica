@@ -247,9 +247,26 @@ const ORDEM = {
   'Prazos & Lead Time':['lead_ped','lead_nf','lead_tr','lead_exp','liberacao'],
 };
 /* Não exibir como painel (dado permanece no dados.json) */
-const OCULTOS = ['devolucao','ped_tot','ped_frac'];
+const OCULTOS = ['devolucao','ped_tot','ped_frac','ira_cont','ira_div','ila_cont','ila_div'];
 /* Não listar no editor */
-const SEM_EDICAO = ['devolucao'];
+const SEM_EDICAO = ['devolucao','ira_cont','ira_div','ila_cont','ila_div'];
+/* Campos de acuracidade (lançamento manual) que alimentam IRA e ILA.
+   IRA = (Qtde total contada − Qtde com divergências) ÷ Qtde total contada × 100
+   ILA = Posições sem divergências ÷ Posições contadas × 100 (sem div. = contadas − divergências)
+   Os lançamentos ficam também na tabela public.acuracidade_lancamentos do Supabase. */
+const TAB_ACU = 'acuracidade_lancamentos';
+const ACU_EMBED = {
+  ira_cont:{label:'IRA — Quantidade Total Contada',group:'Estoque & Acuracidade',dir:'up',unit:'num',target:null,series:{}},
+  ira_div:{label:'IRA — Quantidade com Divergências',group:'Estoque & Acuracidade',dir:'down',unit:'num',target:null,series:{}},
+  ila_cont:{label:'ILA — Posições Contadas',group:'Estoque & Acuracidade',dir:'up',unit:'num',target:null,series:{}},
+  ila_div:{label:'ILA — Posições com Divergências',group:'Estoque & Acuracidade',dir:'down',unit:'num',target:null,series:{}},
+};
+const ACU_CFG = {
+  ira:{cont:'ira_cont',div:'ira_div',rot:['Qtde total contada','Qtde com divergências'],semdiv:false,
+       calc:'(Qtde total contada − Qtde com divergências) ÷ Qtde total contada × 100'},
+  ila:{cont:'ila_cont',div:'ila_div',rot:['Posições contadas','Posições com divergências'],semdiv:true,
+       calc:'Posições sem divergências ÷ Posições contadas × 100 · sem divergências = contadas − divergências'},
+};
 /* Campos de quantidade de pedidos (lançamento manual) que alimentam o % In-Full */
 const PED_EMBED = {
   ped_tot:{label:'Pedidos — Quantidade Total',group:'Entregas & Atendimento',dir:'up',unit:'num',target:null,series:{}},
@@ -349,6 +366,24 @@ function recomputeInfull(){
   const s=DATA.infull.series, yy={};
   Object.keys(s).forEach(k=>{const y=k.slice(0,4);(yy[y]=yy[y]||[]).push(s[k]);});
   DATA.infull.yearly={}; Object.keys(yy).forEach(y=>DATA.infull.yearly[y]=+(yy[y].reduce((a,b)=>a+b,0)/yy[y].length).toFixed(4));
+}
+
+/* IRA/ILA calculados a partir dos lançamentos, com 2 casas no percentual.
+   Onde ainda não houver quantidades lançadas, o histórico já registrado permanece. */
+function recomputeAcuracidade(){
+  Object.entries(ACU_CFG).forEach(([id,cfg])=>{
+    const ind=DATA[id], C=DATA[cfg.cont], D=DATA[cfg.div];
+    if(!ind||!C||!D) return;
+    Object.keys(C.series).forEach(k=>{
+      const c=C.series[k], d=D.series[k];
+      if(c!=null && c>0) ind.series[k]=+(((c-(d||0))/c).toFixed(4)); // 4 casas na fração = 2 casas no %
+    });
+    ind.calc=cfg.calc;
+    const s=ind.series, yy={};
+    Object.keys(s).forEach(k=>{const y=k.slice(0,4);(yy[y]=yy[y]||[]).push(s[k]);});
+    ind.yearly={}; Object.keys(yy).forEach(y=>ind.yearly[y]=+(yy[y].reduce((a,b)=>a+b,0)/yy[y].length).toFixed(4));
+    const last=Object.keys(s).sort().pop(); if(last){ind.last_month=last;ind.last_val=s[last];}
+  });
 }
 
 /* ---- OTIF corrigido: On Time × In-Full ---- */
@@ -612,8 +647,8 @@ const SOBRE = {
   devpct:'Percentual de devolução sobre o faturamento. Indicador de qualidade comercial e logística.',
   qualidade:'Registros de incidências de qualidade identificadas na operação. Sinaliza falhas de processo, avaria ou conformidade.',
   ocup:'Ocupação das posições do CD. Trabalha como limite de capacidade: ultrapassar o teto compromete a operação e a produtividade.',
-  ira:'Acuracidade de inventário em quantidade: aderência entre estoque físico e sistêmico. Base da confiabilidade do estoque.',
-  ila:'Acuracidade de endereçamento: se o item está no local que o sistema indica. Impacta diretamente a produtividade da separação.',
+  ira:'Acuracidade de inventário em quantidade: (Qtde total contada − Qtde com divergências) ÷ Qtde total contada × 100, calculado automaticamente dos lançamentos. Base da confiabilidade do estoque.',
+  ila:'Acuracidade de endereçamento: Posições sem divergências ÷ Posições contadas × 100 (sem divergências = contadas − divergências), calculado automaticamente dos lançamentos. Impacta a produtividade da separação.',
   inventario:'Ajustes financeiros apurados nos inventários, por semestre. Valores positivos indicam sobra e negativos, falta.',
   liberacao:'Tempo entre o recebimento do pedido e sua liberação para separação. Gargalo típico de crédito e cadastro.',
   lead_ped:'Tempo total do ciclo do pedido, do recebimento até a entrega. Consolida todas as etapas seguintes.',
@@ -930,7 +965,7 @@ function toDisp(ind,v){ if(v==null||v==='')return ''; return ind.unit==='%'? +(v
 function fromDisp(ind,s){ if(s===''||s==null)return null; const n=+s; if(isNaN(n))return null; return ind.unit==='%'? +(n/100).toFixed(4) : n; }
 
 function ehFormula(id){ const i=DATA[id]; return !!RATIOS[id] || id==='otif' || id==='infull' || !!(i&&i.calc) || !!(i&&i.half); }
-function indsEdit(g){ return Object.keys(DATA).filter(k=>DATA[k].group===g && !ehFormula(k) && !SEM_EDICAO.includes(k)); }
+function indsEdit(g){ return Object.keys(DATA).filter(k=>DATA[k].group===g && (!ehFormula(k)||ACU_CFG[k]) && !SEM_EDICAO.includes(k)); }
 async function abrirModal(prefId){
   if(!podeEditar()){ const ok=await autenticar(); if(!ok) return; }
   const sInd=document.getElementById("edInd"),sAno=document.getElementById("edAno"),sFrom=document.getElementById("edProjFrom");
@@ -956,6 +991,35 @@ function montarTabela(){
       SEMANAS.map(w=>{const v=ind.series[`${ano}-${WK(w)}`];
         return `<td><input data-w="${w}" type="number" step="any" value="${v==null?'':v}"></td>`;}).join("")+"</tr>";
     document.getElementById("edTable").innerHTML=head+row;
+    return;
+  }
+  // grade composta de acuracidade (IRA/ILA): quantidades lançadas + cálculo automático
+  if(ACU_CFG[id]){
+    const cfg=ACU_CFG[id], C=DATA[cfg.cont].series, D=DATA[cfg.div].series;
+    let h="<tr><th>Campo</th>"+MESES.map(m=>`<th>${m}</th>`).join("")+"</tr>";
+    h+=`<tr><th style="text-align:left">${cfg.rot[0]}</th>`+
+      MMI.map((mm,i)=>`<td><input data-acu="cont" data-m="${i}" type="number" step="any" min="0" value="${C[`${ano}-${mm}`]??''}"></td>`).join("")+"</tr>";
+    h+=`<tr><th style="text-align:left">${cfg.rot[1]}</th>`+
+      MMI.map((mm,i)=>`<td><input data-acu="div" data-m="${i}" type="number" step="any" min="0" value="${D[`${ano}-${mm}`]??''}"></td>`).join("")+"</tr>";
+    if(cfg.semdiv) h+=`<tr><th style="text-align:left">Posições sem divergências <span class="hint">(automático)</span></th>`+
+      MMI.map((mm,i)=>`<td class="acu-ro" data-ro="semdiv" data-m="${i}" style="text-align:center;color:var(--ink-soft);font-weight:600">—</td>`).join("")+"</tr>";
+    h+=`<tr><th style="text-align:left">Target % <span class="hint">(automático, 2 casas)</span></th>`+
+      MMI.map((mm,i)=>`<td class="acu-ro" data-ro="target" data-m="${i}" style="text-align:center;color:var(--genomma);font-weight:700">—</td>`).join("")+"</tr>";
+    const tb=document.getElementById("edTable"); tb.innerHTML=h;
+    const recalcACU=()=>{
+      for(let m=0;m<12;m++){
+        const ci=tb.querySelector(`input[data-acu="cont"][data-m="${m}"]`), di=tb.querySelector(`input[data-acu="div"][data-m="${m}"]`);
+        const c=ci.value===''?null:+ci.value, d=di.value===''?0:+di.value;
+        const sd=tb.querySelector(`td[data-ro="semdiv"][data-m="${m}"]`), tg=tb.querySelector(`td[data-ro="target"][data-m="${m}"]`);
+        if(c==null||isNaN(c)||c<=0){ if(sd)sd.textContent='—'; tg.textContent = DATA[id].series[`${ano}-${MMI[m]}`]!=null? (DATA[id].series[`${ano}-${MMI[m]}`]*100).toFixed(2).replace('.',',')+'*' : '—'; continue; }
+        if(sd) sd.textContent=(c-d).toLocaleString('pt-BR');
+        tg.textContent=(((c-d)/c)*100).toFixed(2).replace('.',',');
+      }
+    };
+    tb.querySelectorAll('input[data-acu]').forEach(inp=>inp.addEventListener('input',recalcACU));
+    recalcACU();
+    const st=document.getElementById("edStatus");
+    if(st) st.textContent='Lance as quantidades: o Target % é calculado sozinho ((contadas − divergências) ÷ contadas × 100, 2 casas). Valores com * vêm do histórico em %, de meses sem quantidades lançadas.';
     return;
   }
   // grid
@@ -985,6 +1049,17 @@ function aplicarEditor(){
     });
     return id;
   }
+  // grade composta de acuracidade
+  if(ACU_CFG[id]){
+    const cfg=ACU_CFG[id], C=DATA[cfg.cont], D=DATA[cfg.div];
+    document.querySelectorAll('#edTable input[data-acu]').forEach(inp=>{
+      const key=`${ano}-${MMI[+inp.dataset.m]}`, tgt=inp.dataset.acu==='cont'?C:D;
+      const v=inp.value===''?null:+inp.value;
+      if(v==null||isNaN(v)) delete tgt.series[key]; else tgt.series[key]=v;
+    });
+    recomputeAcuracidade();
+    return id;
+  }
   // série do ano
   document.querySelectorAll("#edTable input[data-m]").forEach(inp=>{
     const mm=MMI[+inp.dataset.m], key=`${ano}-${mm}`, v=fromDisp(ind,inp.value);
@@ -998,6 +1073,7 @@ function aplicarEditor(){
 }
 function preencherProjecao(){
   const idw=document.getElementById("edInd").value;
+  if(ACU_CFG[idw]){ toast('Para IRA/ILA lance as quantidades — o percentual é automático.'); return; }
   if(DATA[idw]&&DATA[idw].weekly){          // projeção semanal: média das últimas 4 semanas preenchidas
     const ins=[...document.querySelectorAll("#edTable input[data-w]")];
     const vals=[]; let projetadas=0;
@@ -1049,6 +1125,19 @@ function explicaErro(e){
   if(/401|403|unauthorized|forbidden/i.test(m+code)) return 'Não autorizado — é preciso estar logado como '+ADMIN_EMAIL+'.';
   return m+(code?' (código '+code+')':'');
 }
+/* Upsert dos lançamentos de acuracidade na tabela public.acuracidade_lancamentos.
+   O banco calcula sozinho sem_divergencias e target (2 casas). */
+async function gravarAcuracidade(){
+  if(!sb) return {ok:true,n:0};
+  const rows=[];
+  [['IRA',ACU_CFG.ira],['ILA',ACU_CFG.ila]].forEach(([tipo,cfg])=>{
+    const C=DATA[cfg.cont].series, D=DATA[cfg.div].series;
+    Object.keys(C).forEach(mes=>{ if(C[mes]!=null) rows.push({mes,tipo,contadas:C[mes],divergencias:D[mes]||0}); });
+  });
+  if(!rows.length) return {ok:true,n:0};
+  const {error}=await sb.from(TAB_ACU).upsert(rows,{onConflict:'mes,tipo'});
+  return error? {ok:false,error} : {ok:true,n:rows.length};
+}
 async function salvarServidor(){
   if(!podeEditar()){ toast('Somente '+ADMIN_EMAIL+' pode salvar dados.'); return; }
   aplicarEditor(); render();
@@ -1058,7 +1147,9 @@ async function salvarServidor(){
   try{
     const r=await gravarStorage();
     if(!r.ok) throw r.error;
-    st.textContent="✓ Salvo no servidor ("+r.via+") às "+new Date().toLocaleTimeString('pt-BR');
+    const ra=await gravarAcuracidade();
+    if(!ra.ok) throw ra.error;
+    st.textContent="✓ Salvo no servidor ("+r.via+(ra.n?"; acuracidade: "+ra.n+" lançamentos na tabela":"")+") às "+new Date().toLocaleTimeString('pt-BR');
     toast("Salvo no Supabase ✓"); fecharModal();
   }catch(e){
     st.textContent="Não salvou: "+explicaErro(e);
@@ -1116,7 +1207,20 @@ async function carregar(){
   }
   if(!DATA.inventario) DATA.inventario=JSON.parse(JSON.stringify(INV_EMBED.inventario));
   Object.entries(PED_EMBED).forEach(([k,v])=>{ if(!DATA[k]) DATA[k]=JSON.parse(JSON.stringify(v)); });
-  recomputeOtif(); recomputeInfull(); recomputeFatliq(); recomputeRatios(); recomputeCustoAcum();
+  Object.entries(ACU_EMBED).forEach(([k,v])=>{ if(!DATA[k]) DATA[k]=JSON.parse(JSON.stringify(v)); });
+  /* lançamentos de IRA/ILA na tabela do Supabase prevalecem sobre o dados.json */
+  if(sb){
+    try{
+      const {data,error}=await sb.from(TAB_ACU).select('mes,tipo,contadas,divergencias');
+      if(!error && Array.isArray(data)) data.forEach(r=>{
+        const cfg = r.tipo==='IRA'? ACU_CFG.ira : r.tipo==='ILA'? ACU_CFG.ila : null;
+        if(!cfg || !/^20\d\d-\d\d$/.test(r.mes||'')) return;
+        if(r.contadas!=null) DATA[cfg.cont].series[r.mes]=+r.contadas;
+        DATA[cfg.div].series[r.mes]=+(r.divergencias||0);
+      });
+    }catch(e){}
+  }
+  recomputeOtif(); recomputeInfull(); recomputeAcuracidade(); recomputeFatliq(); recomputeRatios(); recomputeCustoAcum();
 }
 
 /* ---- eventos ---- */
