@@ -183,7 +183,7 @@ body.tv-on > *:not(#tv-mode):not(#tv-back-btn):not(script){display:none !importa
 body.tv-on{background:#DFEBF6 !important;margin:0;padding:0;overflow:hidden;height:100vh}
 #tv-mode{display:none;position:fixed;inset:0;overflow:hidden;color:#0B2740;
   font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:radial-gradient(1200px 700px at 78% -8%, rgba(0,167,231,.10), transparent 60%),radial-gradient(1000px 800px at -6% 110%, rgba(0,114,188,.10), transparent 55%),linear-gradient(160deg,#EEF5FB,#DFEBF6)}
+  background:radial-gradient(1250px 720px at 92% -12%, rgba(0,167,231,.28), transparent 62%),radial-gradient(1100px 820px at -8% 112%, rgba(0,74,135,.15), transparent 64%),linear-gradient(143deg,#F7FBFE 0%,#E2EFF8 100%)}
 body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 #tv-mode *{box-sizing:border-box;margin:0;padding:0}
 #gtv-stage{width:1920px;height:1080px;flex:none;position:absolute;top:50%;left:50%;transform-origin:center center;transform:translate(-50%,-50%);padding:30px 40px 26px;display:flex;flex-direction:column;gap:20px;font-size:16px}
@@ -191,25 +191,25 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 @keyframes gtv-pulse{0%{box-shadow:0 0 0 0 rgba(242,166,12,.5)}70%{box-shadow:0 0 0 9px rgba(242,166,12,0)}100%{box-shadow:0 0 0 0 rgba(242,166,12,0)}}
 .gtv-loading{display:flex;align-items:center;justify-content:center;height:100vh;color:#0072BC;font-size:24px;letter-spacing:4px;font-family:'Montserrat',sans-serif}
 #tv-mode .gtv-tnum{font-variant-numeric:tabular-nums}
-#tv-mode .gtv-eyebrow{font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#0072BC;font-size:13px}
+#tv-mode .gtv-eyebrow{font-family:'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#0072BC;font-size:17px}
 #tv-mode .gtv-muted{color:#7C95AC}
 /* header */
 #tv-mode .gtv-top{display:flex;align-items:center;justify-content:space-between;flex:none}
 #tv-mode .gtv-brand{display:flex;align-items:center;gap:18px}
-#tv-mode .gtv-logo{height:56px;width:auto;display:block}
+#tv-mode .gtv-logo{height:68px;width:auto;display:block}
 #tv-mode .gtv-bar{width:5px;height:52px;border-radius:4px;flex:none;background:linear-gradient(180deg,#00A7E7,#004A87)}
-#tv-mode .gtv-brand h1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:30px;letter-spacing:.04em;color:#0B2740;line-height:1}
-#tv-mode .gtv-brand .gtv-sub{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.22em;color:#7C95AC;text-transform:uppercase;margin-top:7px}
+#tv-mode .gtv-brand h1{font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:38px;letter-spacing:.04em;color:#0B2740;line-height:1}
+#tv-mode .gtv-brand .gtv-sub{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:15px;letter-spacing:.22em;color:#7C95AC;text-transform:uppercase;margin-top:7px}
 #tv-mode .gtv-period{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #DDE9F2;border-radius:999px;padding:11px 26px;box-shadow:0 10px 26px -14px rgba(0,74,135,.22)}
 #tv-mode .gtv-period .gtv-dot{width:11px;height:11px;border-radius:50%;background:#00A7E7;box-shadow:0 0 0 5px rgba(0,167,231,.18)}
-#tv-mode .gtv-period .gtv-pl{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.2em;color:#7C95AC;text-transform:uppercase}
-#tv-mode .gtv-period .gtv-pv{font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;letter-spacing:.08em;color:#0072BC}
+#tv-mode .gtv-period .gtv-pl{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.2em;color:#7C95AC;text-transform:uppercase}
+#tv-mode .gtv-period .gtv-pv{font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:24px;letter-spacing:.08em;color:#0072BC}
 #tv-mode .gtv-clockwrap{text-align:right}
-#tv-mode .gtv-clockwrap .gtv-cl{font-family:'Montserrat',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.2em;color:#7C95AC;text-transform:uppercase}
-#tv-mode .gtv-clock{font-weight:800;font-size:34px;color:#0B2740;line-height:1.05}
-#tv-mode .gtv-clockwrap .gtv-date{font-weight:600;font-size:13px;color:#0072BC}
+#tv-mode .gtv-clockwrap .gtv-cl{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.2em;color:#7C95AC;text-transform:uppercase}
+#tv-mode .gtv-clock{font-weight:800;font-size:44px;color:#0B2740;line-height:1.05}
+#tv-mode .gtv-clockwrap .gtv-date{font-weight:600;font-size:17px;color:#0072BC}
 #tv-mode .gtv-topright{display:flex;align-items:center;gap:26px}
-#tv-mode .gtv-backpill{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #DDE9F2;border-radius:999px;padding:12px 20px;font-weight:600;font-size:14px;color:#33536F;box-shadow:0 10px 26px -14px rgba(0,74,135,.22);cursor:pointer;font-family:'Inter',system-ui,sans-serif}
+#tv-mode .gtv-backpill{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #DDE9F2;border-radius:999px;padding:13px 24px;font-weight:600;font-size:17px;color:#33536F;box-shadow:0 10px 26px -14px rgba(0,74,135,.22);cursor:pointer;font-family:'Inter',system-ui,sans-serif}
 #tv-mode .gtv-backpill:hover{border-color:#0072BC;color:#0072BC}
 /* grid */
 #tv-mode .gtv-grid{flex:1;display:grid;grid-template-columns:1.04fr 1.28fr;grid-template-rows:1fr 1fr;gap:20px;min-height:0}
@@ -218,78 +218,87 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 #tv-mode .gtv-card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex:none}
 /* OTD */
 #tv-mode .gtv-otd-body{display:flex;gap:22px;flex:1;min-height:0;align-items:center}
-#tv-mode .gtv-gauge{position:relative;width:300px;height:300px;flex:none}
+#tv-mode .gtv-gauge{position:relative;width:286px;height:286px;flex:none}
 #tv-mode .gtv-gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
 #tv-mode .gtv-sweep{position:absolute;inset:14px;border-radius:50%;overflow:hidden;-webkit-mask:radial-gradient(circle, transparent 56%, #000 57%);mask:radial-gradient(circle, transparent 56%, #000 57%);pointer-events:none}
 #tv-mode .gtv-sweep::after{content:"";position:absolute;inset:-25%;background:conic-gradient(from 0deg, rgba(0,167,231,.32), rgba(0,167,231,0) 28%);animation:gtv-spin 4s linear infinite}
-#tv-mode .gtv-gc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#tv-mode .gtv-gc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 46px}
 #tv-mode .gtv-gc .gtv-pct{font-weight:900;font-size:70px;letter-spacing:-.03em;color:#0B2740;line-height:.9}
-#tv-mode .gtv-gc .gtv-plb{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.2em;color:#0072BC;text-transform:uppercase;margin-top:8px}
-#tv-mode .gtv-gc .gtv-mo{font-weight:600;font-size:13px;color:#7C95AC;margin-top:3px}
+#tv-mode .gtv-gc .gtv-plb{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.2em;color:#0072BC;text-transform:uppercase;margin-top:8px}
+#tv-mode .gtv-gc .gtv-mo{font-weight:600;font-size:15px;color:#7C95AC;margin-top:3px;white-space:nowrap}
 #tv-mode .gtv-otd-side{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
 #tv-mode .gtv-metaline{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-#tv-mode .gtv-metaline .gtv-big{font-weight:800;font-size:15px;color:#0B2740}
+#tv-mode .gtv-metaline .gtv-big{font-weight:800;font-size:19px;color:#0B2740}
 #tv-mode .gtv-metabar{height:10px;border-radius:6px;background:#EAF1F8;overflow:hidden;position:relative}
 #tv-mode .gtv-metabar > i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#00A7E7,#0072BC)}
 #tv-mode .gtv-metabar .gtv-target{position:absolute;top:-4px;bottom:-4px;width:3px;background:#F2A60C;border-radius:2px}
 #tv-mode .gtv-summary{display:flex;gap:8px}
-#tv-mode .gtv-chip{flex:1;background:#EEF5FB;border:1px solid #EAF1F8;border-radius:12px;padding:9px 12px}
-#tv-mode .gtv-chip .gtv-n{font-weight:800;font-size:20px;color:#0B2740}
-#tv-mode .gtv-chip .gtv-t{font-size:11px;color:#7C95AC;font-weight:600}
-#tv-mode .gtv-hist{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;margin-top:auto}
-#tv-mode .gtv-hcard{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:13px;padding:10px 11px;text-align:left}
-#tv-mode .gtv-hcard .gtv-m{font-family:'Montserrat',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.14em;color:#7C95AC;text-transform:uppercase}
-#tv-mode .gtv-hcard .gtv-p{font-weight:800;font-size:23px;color:#0072BC;line-height:1.1;margin-top:3px}
-#tv-mode .gtv-hcard .gtv-nf{font-size:10.5px;color:#7C95AC;font-weight:600}
+#tv-mode .gtv-chip{flex:1;min-width:0;background:#EEF5FB;border:1px solid #EAF1F8;border-radius:12px;padding:10px 12px}
+#tv-mode .gtv-chip .gtv-n{font-weight:800;font-size:28px;color:#0B2740}
+#tv-mode .gtv-chip .gtv-t{font-size:14px;color:#7C95AC;font-weight:600}
+#tv-mode .gtv-hist{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:auto}
+#tv-mode .gtv-hcard{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:13px;padding:10px 8px;text-align:left;min-width:0;overflow:hidden}
+#tv-mode .gtv-hcard .gtv-m{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;color:#7C95AC;text-transform:uppercase}
+#tv-mode .gtv-hcard .gtv-p{font-weight:800;font-size:24px;color:#0072BC;line-height:1.1;margin-top:3px;white-space:nowrap}
+#tv-mode .gtv-hcard .gtv-nf{font-size:13px;color:#7C95AC;font-weight:600}
 /* tiles */
-#tv-mode .gtv-tiles{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;flex:1;min-height:0}
-#tv-mode .gtv-tile{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+#tv-mode .gtv-tiles{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:14px;flex:1;min-height:0}
+#tv-mode .gtv-tile{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
 #tv-mode .gtv-tile .gtv-accent{position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:4px;background:#0072BC}
 #tv-mode .gtv-tile.gtv-alt .gtv-accent{background:#00A7E7}
 #tv-mode .gtv-tile.gtv-warn{background:#FEF4DE;border-color:#F6E2B3}
 #tv-mode .gtv-tile.gtv-warn .gtv-accent{background:#F2A60C}
-#tv-mode .gtv-tile .gtv-lbl{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.12em;color:#33536F;text-transform:uppercase;padding-left:10px;display:flex;align-items:center;gap:8px}
+#tv-mode .gtv-tile .gtv-lbl{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.09em;color:#33536F;text-transform:uppercase;padding-left:10px;display:flex;align-items:center;gap:8px;line-height:1.25}
+#tv-mode .gtv-tile.gtv-dev{background:#FBEFEF;border-color:#F2D6D5}
+#tv-mode .gtv-tile.gtv-dev .gtv-accent{background:#C1504D}
+#tv-mode .gtv-tile.gtv-dev .gtv-num,#tv-mode .gtv-tile.gtv-dev .gtv-tval{color:#A83E3B}
+#tv-mode .gtv-tile.gtv-tot{background:linear-gradient(135deg,#0072BC,#004A87);border-color:#004A87}
+#tv-mode .gtv-tile.gtv-tot .gtv-accent{background:#00A7E7}
+#tv-mode .gtv-tile.gtv-tot .gtv-lbl{color:#BFE4F7}
+#tv-mode .gtv-tile.gtv-tot .gtv-num{color:#fff}
+#tv-mode .gtv-tile.gtv-tot .gtv-unit{color:#9FD4EF}
+#tv-mode .gtv-tile.gtv-tot .gtv-tval{color:#BFE4F7}
 #tv-mode .gtv-tile .gtv-pulse{width:9px;height:9px;border-radius:50%;background:#F2A60C;animation:gtv-pulse 1.8s infinite}
 #tv-mode .gtv-tile .gtv-row{display:flex;align-items:flex-end;justify-content:space-between;padding-left:10px}
-#tv-mode .gtv-tile .gtv-num{font-weight:900;font-size:46px;color:#0B2740;line-height:.95;letter-spacing:-.02em}
+#tv-mode .gtv-tile .gtv-num{font-weight:900;font-size:50px;color:#0B2740;line-height:.95;letter-spacing:-.02em}
 #tv-mode .gtv-tile.gtv-warn .gtv-num{color:#B9810A}
-#tv-mode .gtv-tile .gtv-unit{font-weight:700;font-size:12px;color:#7C95AC;margin-bottom:8px;letter-spacing:.08em}
-#tv-mode .gtv-tile .gtv-tval{font-weight:600;font-size:13px;color:#0072BC;padding-left:10px;margin-top:6px}
+#tv-mode .gtv-tile .gtv-unit{font-weight:700;font-size:14px;color:#7C95AC;margin-bottom:8px;letter-spacing:.08em}
+#tv-mode .gtv-tile .gtv-tval{font-weight:600;font-size:16px;color:#0072BC;padding-left:10px;margin-top:6px}
 #tv-mode .gtv-tile.gtv-warn .gtv-tval{color:#B9810A}
 /* map */
-#tv-mode .gtv-lead{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
-#tv-mode .gtv-leadbox{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:13px;padding:10px 14px}
-#tv-mode .gtv-leadbox .gtv-t{font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.16em;color:#7C95AC;text-transform:uppercase}
-#tv-mode .gtv-leadbox .gtv-v{font-weight:800;font-size:26px;color:#0B2740}
-#tv-mode .gtv-leadbox .gtv-v small{font-size:14px;color:#0072BC;font-weight:700}
-#tv-mode .gtv-mapbody{display:flex;gap:18px;flex:1;min-height:0}
-#tv-mode .gtv-mapwrap{flex:none;width:300px;display:flex;align-items:center;justify-content:center}
-#tv-mode .gtv-mapwrap svg{width:100%;height:100%;max-height:300px}
-#tv-mode .gtv-rtable{flex:1;display:flex;flex-direction:column;justify-content:center}
-#tv-mode .gtv-rtable .gtv-hd{display:grid;grid-template-columns:1.3fr .8fr .8fr;font-family:'Montserrat',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.12em;color:#7C95AC;text-transform:uppercase;padding:0 6px 8px;border-bottom:1px solid #DDE9F2}
-#tv-mode .gtv-rrow{display:grid;grid-template-columns:1.3fr .8fr .8fr;align-items:center;padding:11px 6px;border-bottom:1px solid #EAF1F8}
+#tv-mode .gtv-lead{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;flex:none}
+#tv-mode .gtv-leadbox{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:13px;padding:10px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#tv-mode .gtv-leadbox .gtv-t{font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.16em;color:#7C95AC;text-transform:uppercase}
+#tv-mode .gtv-leadbox .gtv-v{font-weight:800;font-size:30px;color:#0B2740}
+#tv-mode .gtv-leadbox .gtv-v small{font-size:17px;color:#0072BC;font-weight:700}
+#tv-mode .gtv-mapbody{display:flex;gap:18px;flex:1;min-height:0;overflow:hidden}
+#tv-mode .gtv-mapwrap{flex:none;width:290px;display:flex;align-items:center;justify-content:center;min-height:0}
+#tv-mode .gtv-mapwrap svg{width:100%;height:100%;max-height:288px}
+#tv-mode .gtv-rtable{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+#tv-mode .gtv-rtable .gtv-hd{display:grid;grid-template-columns:1.3fr .8fr .8fr;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#7C95AC;text-transform:uppercase;padding:0 6px 6px;border-bottom:1px solid #DDE9F2;flex:none}
+#tv-mode .gtv-rrow{display:grid;grid-template-columns:1.3fr .8fr .8fr;align-items:center;padding:9px 6px;border-bottom:1px solid #EAF1F8;flex:none}
 #tv-mode .gtv-rrow:last-child{border-bottom:none}
-#tv-mode .gtv-rrow .gtv-rn{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;color:#0B2740}
+#tv-mode .gtv-rrow .gtv-rn{display:flex;align-items:center;gap:9px;font-weight:700;font-size:19px;color:#0B2740}
 #tv-mode .gtv-rdot{width:11px;height:11px;border-radius:3px;flex:none}
-#tv-mode .gtv-rrow .gtv-ro{font-weight:800;font-size:15px;color:#0072BC;text-align:right}
-#tv-mode .gtv-rrow .gtv-rl{font-weight:600;font-size:14px;color:#33536F;text-align:right}
+#tv-mode .gtv-rrow .gtv-ro{font-weight:800;font-size:19px;color:#0072BC;text-align:right}
+#tv-mode .gtv-rrow .gtv-rl{font-weight:600;font-size:18px;color:#33536F;text-align:right}
 /* ranking */
-#tv-mode .gtv-rank-hd{display:grid;grid-template-columns:34px 1fr 92px 1fr;gap:14px;align-items:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.12em;color:#7C95AC;text-transform:uppercase;padding:0 4px 10px;border-bottom:1px solid #DDE9F2}
-#tv-mode .gtv-rank{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding-top:4px}
-#tv-mode .gtv-rkrow{display:grid;grid-template-columns:34px 1fr 92px 1fr;gap:14px;align-items:center;padding:8px 4px;border-bottom:1px solid #EAF1F8}
+#tv-mode .gtv-rank-hd{display:grid;grid-template-columns:38px 1fr 104px 1fr;gap:14px;align-items:center;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;color:#7C95AC;text-transform:uppercase;padding:0 4px 10px;border-bottom:1px solid #DDE9F2}
+#tv-mode .gtv-rank{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-between;padding-top:2px;overflow:hidden}
+#tv-mode .gtv-rkrow{display:grid;grid-template-columns:38px 1fr 104px 1fr;gap:14px;align-items:center;padding:9px 4px;border-bottom:1px solid #EAF1F8}
 #tv-mode .gtv-rkrow:last-child{border-bottom:none}
-#tv-mode .gtv-rkpos{font-weight:800;font-size:15px;color:#0072BC;font-variant-numeric:tabular-nums}
-#tv-mode .gtv-rkname{font-weight:700;font-size:16px;color:#0B2740;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#tv-mode .gtv-rkotd{font-weight:800;font-size:17px;color:#0B2740;text-align:right;font-variant-numeric:tabular-nums}
+#tv-mode .gtv-rkpos{font-weight:800;font-size:19px;color:#0072BC;font-variant-numeric:tabular-nums}
+#tv-mode .gtv-rkname{font-weight:700;font-size:21px;color:#0B2740;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tv-mode .gtv-rkotd{font-weight:800;font-size:22px;color:#0B2740;text-align:right;font-variant-numeric:tabular-nums}
 #tv-mode .gtv-rkbarwrap{display:flex;align-items:center;gap:11px}
-#tv-mode .gtv-rkbar{flex:1;height:11px;border-radius:6px;background:#EAF1F8;overflow:hidden}
+#tv-mode .gtv-rkbar{flex:1;height:14px;border-radius:6px;background:#EAF1F8;overflow:hidden}
 #tv-mode .gtv-rkbar > i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#00A7E7,#0072BC)}
-#tv-mode .gtv-rkfin{font-weight:700;font-size:13px;color:#7C95AC;width:46px;text-align:right;font-variant-numeric:tabular-nums}
+#tv-mode .gtv-rkfin{font-weight:700;font-size:17px;color:#7C95AC;width:58px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
 /* footer */
-#tv-mode .gtv-foot{flex:none;display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:#7C95AC;font-weight:600;padding:0 6px}
+#tv-mode .gtv-foot{flex:none;display:flex;align-items:center;justify-content:space-between;font-size:16px;color:#7C95AC;font-weight:600;padding:0 6px}
 #tv-mode .gtv-foot .gtv-l{display:flex;align-items:center;gap:10px}
 #tv-mode .gtv-foot .gtv-live{width:9px;height:9px;border-radius:50%;background:#10A36B;box-shadow:0 0 0 4px rgba(16,163,107,.16)}
-#tv-mode .gtv-foot .gtv-ver{font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:.14em;color:#0072BC}
+#tv-mode .gtv-foot .gtv-ver{font-family:'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.14em;color:#0072BC}
 /* back button (Genomma) */
 #tv-back-btn{display:none;position:fixed;top:24px;right:34px;z-index:9999;background:rgba(255,255,255,.92);color:#0072BC;border:1px solid #BCDCEE;border-radius:24px;padding:9px 20px;font-size:13px;font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing:.04em;cursor:pointer;backdrop-filter:blur(4px);transition:all .2s;box-shadow:0 8px 22px -12px rgba(0,74,135,.5)}
 #tv-back-btn:hover{background:#fff;border-color:#0072BC;transform:translateY(-1px)}
@@ -5452,8 +5461,15 @@ function renderLeadTimes_quadros_2_3(){
       trs_atr_val:         d.totalTrsAtrValAll          || 0,
       tratativa_val:       d.totalTratativaValAll       || 0,
       ag_cte_val:          d.totalAgCteValAll           || 0,
-      transito_agenda_val: d.totalTransitoAgendaValAll  || 0
+      transito_agenda_val: d.totalTransitoAgendaValAll  || 0,
+      devolvida:           d.totalDevolvidaAll           || 0,
+      devolvida_val:       d.totalDevolvidaValAll        || 0
     };
+    // total da carteira ainda aberta = tudo que não foi finalizado nem devolvido
+    status.aberto = status.hub + status.trs + status.trs_atr + status.tratativa
+                  + status.ag_cte + status.transito_agenda;
+    status.aberto_val = status.hub_val + status.trs_val + status.trs_atr_val
+                  + status.tratativa_val + status.ag_cte_val + status.transito_agenda_val;
 
     const finalizadas = status.on + status.off;
     const otdPct = finalizadas > 0 ? (status.on / finalizadas * 100) : null;
@@ -5475,12 +5491,21 @@ function renderLeadTimes_quadros_2_3(){
         otd: finM > 0 ? (onM/finM*100) : null
       };
     }
-    // Mês corrente
-    const otdMesCorrente = otdDoMes(mesHoje);
-    // 4 meses anteriores (mais antigo → mais recente)
+    // Mês de referência do hero: o corrente, ou — quando a base ainda não tem
+    // nenhuma NF finalizada nele (virada de mês, carga atrasada) — o último mês
+    // com dado. Sem isso a rosca fica em "—" todo início de mês.
+    let mesRef = mesHoje;
+    if(otdDoMes(mesRef).fin === 0){
+      for(let m = mesHoje - 1; m >= 1; m--){
+        if(otdDoMes(m).fin > 0){ mesRef = m; break; }
+      }
+    }
+    const otdMesCorrente = otdDoMes(mesRef);
+    otdMesCorrente.defasado = (mesRef !== mesHoje);
+    // 4 meses anteriores ao de referência (mais antigo → mais recente)
     const otdMesesAnteriores = [];
     for(let i = 4; i >= 1; i--){
-      const m = mesHoje - i;
+      const m = mesRef - i;
       if(m >= 1) otdMesesAnteriores.push(otdDoMes(m));
     }
 
@@ -5605,7 +5630,6 @@ const MAP_LABELS={
 };
 
   function gtvFmtPct(v){ return (v!=null && !isNaN(v)) ? Number(v).toFixed(1).replace('.',',')+'%' : '—'; }
-  function gtvFmtRS(v){ if(!v) return ''; v=Number(v); if(v>=1e6) return 'R$ '+(v/1e6).toFixed(1).replace('.',',')+' mi'; if(v>=1e4) return 'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil'; if(v>=1e3) return 'R$ '+(v/1e3).toFixed(1).replace('.',',')+' mil'; return 'R$ '+Math.round(v).toLocaleString('pt-BR'); }
   function gtvLerp(a,b,t){return a+(b-a)*t;}
   function gtvHex(c){return '#'+c.map(function(v){return Math.round(v).toString(16).padStart(2,'0');}).join('');}
   function gtvFill(otd){ if(otd==null||isNaN(otd)) return '#CBE3F4'; var t=Math.max(0,Math.min(1,(otd-95)/5)); return gtvHex([gtvLerp(179,0,t),gtvLerp(221,90,t),gtvLerp(243,150,t)]); }
@@ -5622,13 +5646,18 @@ const MAP_LABELS={
     }).join('');
   }
 
-  function gtvTile(label, n, val, cls, alerta){
+  // Sem valores em R$ — o painel de parede mostra só contagem de entregas.
+  // A segunda linha vira a participação daquele status na carteira aberta.
+  function gtvTile(label, n, cls, alerta, rodape){
     var pulse = (alerta && (n||0)>0) ? '<span class="gtv-pulse"></span>' : '';
-    var rs = gtvFmtRS(val);
     return '<div class="gtv-tile '+cls+'"><div class="gtv-accent"></div>'
       +'<div class="gtv-lbl">'+label+pulse+'</div>'
       +'<div class="gtv-row"><span class="gtv-num gtv-tnum">'+(n||0).toLocaleString('pt-BR')+'</span><span class="gtv-unit">NFs</span></div>'
-      +'<div class="gtv-tval">'+(rs||'—')+'</div></div>';
+      +'<div class="gtv-tval">'+(rodape||'—')+'</div></div>';
+  }
+  function gtvShare(n, total){
+    if(!total || !n) return '—';
+    return (n/total*100).toFixed(1).replace('.',',')+'% da carteira';
   }
 
   function gtvMapaSVG(regioes){
@@ -5711,7 +5740,7 @@ const MAP_LABELS={
   +'<div class="gtv-grid">'
 
     +'<div class="gtv-card">'
-      +'<div class="gtv-card-h"><div class="gtv-eyebrow">OTD · On-Time Delivery</div><div class="gtv-muted" style="font-weight:700;font-size:13px">'+(mc.nome||'').toUpperCase()+' · '+anoAtual+'</div></div>'
+      +'<div class="gtv-card-h"><div class="gtv-eyebrow">OTD · On-Time Delivery</div><div class="gtv-muted" style="font-weight:700;font-size:14px">'+(mc.nome||'').toUpperCase()+' · '+anoAtual+(mc.defasado?' · ÚLTIMO MÊS COM DADO':'')+'</div></div>'
       +'<div class="gtv-otd-body">'
         +'<div class="gtv-gauge"><div class="gtv-sweep"></div>'
           +'<svg viewBox="0 0 200 200">'
@@ -5739,12 +5768,14 @@ const MAP_LABELS={
     +'<div class="gtv-card">'
       +'<div class="gtv-card-h"><div class="gtv-eyebrow">Status das Entregas · Em Trânsito</div></div>'
       +'<div class="gtv-tiles">'
-        +gtvTile('CD · Ag. Expedição', st.hub, st.hub_val, 'gtv-base', false)
-        +gtvTile('Em Trânsito', st.trs, st.trs_val, 'gtv-alt', false)
-        +gtvTile('Em Atraso', st.trs_atr, st.trs_atr_val, 'gtv-warn', true)
-        +gtvTile('Tratativa', st.tratativa, st.tratativa_val, 'gtv-base', false)
-        +gtvTile('Ag. CTE', st.ag_cte, st.ag_cte_val, 'gtv-alt', false)
-        +gtvTile('Trânsito Agenda', st.transito_agenda, st.transito_agenda_val, 'gtv-base', false)
+        +gtvTile('CD · Ag. Expedição', st.hub, 'gtv-base', false, gtvShare(st.hub, st.aberto))
+        +gtvTile('Em Trânsito', st.trs, 'gtv-alt', false, gtvShare(st.trs, st.aberto))
+        +gtvTile('Em Atraso', st.trs_atr, 'gtv-warn', true, gtvShare(st.trs_atr, st.aberto))
+        +gtvTile('Tratativa', st.tratativa, 'gtv-base', false, gtvShare(st.tratativa, st.aberto))
+        +gtvTile('Ag. CTE', st.ag_cte, 'gtv-alt', false, gtvShare(st.ag_cte, st.aberto))
+        +gtvTile('Trânsito Agenda', st.transito_agenda, 'gtv-base', false, gtvShare(st.transito_agenda, st.aberto))
+        +gtvTile('Devolvidas', st.devolvida, 'gtv-dev', false, 'fora do OTD')
+        +gtvTile('Carteira Aberta', st.aberto, 'gtv-tot', false, 'soma dos 6 status')
       +'</div>'
     +'</div>'
 
