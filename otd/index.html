@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.2-notas-abertas-layout', date: '27/08/2026' };
+window.__BUILD__ = { version: 'v10.8-mes-por-entrega', date: '08/09/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -342,6 +342,10 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 /* Filtros — pill ativa em azul Genomma (mesmos botoes, so cor) */
 .fbtn.on{background:var(--gnm-grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px -5px rgba(0,114,188,.55)}
 .fbtn:hover{border-color:var(--gnm-blue);color:var(--gnm-blue)}
+/* v10.7: mes que existe na base mas nao tem registro NESTA aba */
+.fbtn-vazio{opacity:.42}
+.fbtn-vazio.on{opacity:1}
+.oft-chev{color:var(--text3)}
 /* Botoes principais em gradiente */
 .btn-primary,.btn-process{background:var(--gnm-grad)}
 .btn-primary:hover,.btn-process:hover{background:linear-gradient(135deg,#0090D0 0%,#005FA0 55%,#003A6B 100%)}
@@ -2826,9 +2830,210 @@ function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
 }
 
 // ============================================================
+// MES DE ENTREGA — criterio unico do painel  (v10.8)
+// ------------------------------------------------------------
+// Decisao de negocio: o mes de um atraso e o mes da ENTREGA.
+// O resumo por mes (payload.meses[m].off / .trs_atr) ja segue esse
+// criterio. O detalhe por NF (clientesOff[].nfs[].mes_nome) vem do
+// processar_otd.py com o mes de EMISSAO — dai o descasamento visto em
+// Set/2026: resumo 6 x detalhe 3, porque as NFs 66402/66403/66404
+// (Amazon) foram emitidas em 17/08 e entregues em 04/09.
+//
+// Regra validada contra a carga de 08/09/2026, gap zero nos 9 meses:
+//   NF entregue          -> mes da "Data Entrega Operacao"
+//   NF ainda em transito -> mes de emissao (nao existe entrega ainda)
+//
+// Enquanto o pipeline nao publicar o campo nfs[].mes_entrega, o painel
+// resolve o mes no proprio historico_mestre.csv, uma vez por sessao.
+// ============================================================
+const MESENT_CSV_URL = (typeof SUPABASE_URL!=='undefined' ? SUPABASE_URL : 'https://ennsbpibfnuwlvtodukg.supabase.co')
+  + '/storage/v1/object/public/dashboards/otd/historico_mestre.csv';
+const MESENT_NOMES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+let mesEntregaMap=null;
+let mesEntregaStatus='idle';   // idle | carregando | pronto | payload | erro
+
+// Mes de referencia de uma NF. Ordem: campo do payload (quando o pipeline
+// passar a publicar) -> mapa do arquivo mestre -> emissao (fallback e caso
+// legitimo das notas ainda em transito).
+function mesDaNF(n,c){
+  if(n && n.mes_entrega) return n.mes_entrega;
+  if(mesEntregaMap && n){
+    const m=mesEntregaMap[String(n.nf||'').trim()];
+    if(m) return m;
+  }
+  return (n&&n.mes_nome)||(c&&c.mes_nome)||'';
+}
+
+// Rotulo de mes de uma linha de cliente: um cliente pode ter NFs em vários
+// meses. Antes a tabela mostrava c.mes_nome, que é só o mês da PRIMEIRA nota
+// do grupo (a RAIA DROGASIL GO aparecia como "Mar" com notas de setembro).
+function mesLabel(c){
+  if(!c) return '—';
+  if(!Array.isArray(c.nfs)||!c.nfs.length) return c.mes_nome||'—';
+  const ms=[...new Set(c.nfs.map(n=>mesDaNF(n,c)).filter(Boolean))];
+  if(!ms.length) return c.mes_nome||'—';
+  if(ms.length===1) return ms[0];
+  const ordem=mesesDaBase();
+  ms.sort((a,b)=>ordem.indexOf(a)-ordem.indexOf(b));
+  return '<span title="'+ms.join(', ')+'">'+ms[ms.length-1]+' +'+(ms.length-1)+'</span>';
+}
+
+function mesEntregaNota(){
+  if(mesEntregaStatus==='carregando') return 'Conciliando os meses pela data de entrega…';
+  if(mesEntregaStatus==='erro')       return '⚠ Não foi possível ler o arquivo mestre — os meses abaixo estão por data de emissão e podem divergir do resumo.';
+  return '';
+}
+
+// Carrega uma vez por sessão. Não roda se o payload já trouxer mes_entrega.
+async function garantirMesEntrega(){
+  if(mesEntregaStatus!=='idle') return;
+  const co=(otdData&&otdData.clientesOff)||[];
+  if(!co.length) return;
+  if(co.some(c=>(c.nfs||[]).some(n=>n.mes_entrega))){ mesEntregaStatus='payload'; return; }
+  mesEntregaStatus='carregando';
+  try{
+    const resp=await fetch(MESENT_CSV_URL+'?_='+Date.now(),{cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const txt=await resp.text();
+    mesEntregaMap=mesEntregaParse(txt);
+    mesEntregaStatus='pronto';
+  }catch(e){
+    mesEntregaStatus='erro';
+    console.warn('[Mês de entrega] falha ao ler o histórico mestre:',e.message);
+  }
+  // redesenha as abas que dependem do mês
+  try{ renderAtrasos(); }catch(e){}
+  try{ renderOffTime(); }catch(e){}
+}
+
+function mesEntregaParse(txt){
+  const linhas=txt.split(/\r?\n/);
+  const split=l=>{const out=[];let cur='',q=false;
+    for(let i=0;i<l.length;i++){const ch=l[i];
+      if(ch==='"'){ if(q&&l[i+1]==='"'){cur+='"';i++;} else q=!q; }
+      else if(ch===';'&&!q){ out.push(cur); cur=''; }
+      else cur+=ch;}
+    out.push(cur); return out;};
+  const head=split(linhas[0]||'').map(h=>h.replace(/<[^>]*>/g,'').trim());
+  const iNF=head.indexOf('Nro NF');
+  const iEnt=head.indexOf('Data Entrega Operacao');
+  const mapa={};
+  if(iNF<0||iEnt<0) return mapa;
+  for(let i=1;i<linhas.length;i++){
+    if(!linhas[i]) continue;
+    const f=split(linhas[i]);
+    const nf=String(f[iNF]||'').trim(); if(!nf) continue;
+    const dt=String(f[iEnt]||'').trim(); if(!dt) continue;
+    const m=dt.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if(!m) continue;
+    const nome=MESENT_NOMES[parseInt(m[2],10)];
+    if(nome) mapa[nf]=nome;   // ultima ocorrencia da NF prevalece
+  }
+  return mapa;
+}
+
+// ============================================================
+// RECORTE MENSAL DOS ATRASOS + REGUA DE MESES  (v10.7)
+// ------------------------------------------------------------
+// clientesOff eh agregado por cliente|UF|cidade|situacao — SEM o mes.
+// O campo c.mes_nome guarda apenas o mes da PRIMEIRA NF do grupo, entao
+// filtrar mes no nivel do cliente escondia notas dos demais meses: um
+// cliente com atraso em Ago e Set aparecia so em Ago, e o filtro "Set"
+// devolvia lista vazia mesmo com o resumo por mes acusando N notas.
+// Agora o recorte acontece no nivel da NF (c.nfs[]) e o cliente eh
+// reagregado apenas com as notas daquele mes.
+// ============================================================
+const NOME_MES_RUL=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+// Todos os meses que existem na base (mesma fonte da aba OTD), em ordem.
+function mesesDaBase(){
+  const d=otdData; if(!d||!d.meses) return [];
+  return Object.keys(d.meses).map(function(k){return parseInt(k,10);})
+    .filter(function(n){return n>=1&&n<=12;})
+    .sort(function(a,b){return a-b;})
+    .map(function(n){return ((d.meses[n]||d.meses[String(n)])||{}).nome||NOME_MES_RUL[n];});
+}
+
+// Desenha TODOS os meses da base. Mes sem registro na aba fica esmaecido
+// (mas clicavel) em vez de sumir — some != inexistente.
+function montarBotoesMes(containerId, mesesComRegistro, onClick){
+  const box=document.getElementById(containerId);
+  const todos=mesesDaBase();
+  if(!box) return todos;
+  box.innerHTML='';
+  todos.forEach(function(m){
+    const temReg=mesesComRegistro.indexOf(m)>=0;
+    const b=document.createElement('button');
+    b.className='fbtn'+(temReg?'':' fbtn-vazio');
+    b.textContent=m;
+    if(!temReg) b.title='Nenhum registro neste mes';
+    b.onclick=function(){onClick(m,this);};
+    box.appendChild(b);
+  });
+  return todos;
+}
+
+// NFs de um cliente no mes pedido. null = base antiga sem detalhe por NF.
+function nfsDoMes(c, mesNome){
+  if(!Array.isArray(c.nfs)||!c.nfs.length) return null;
+  return c.nfs.filter(function(n){return mesDaNF(n,c)===mesNome;});
+}
+
+// Reagrega a lista de clientes considerando SO as NFs do mes pedido.
+function recortarPorMes(lista, mesNome){
+  if(!mesNome||mesNome==='todos') return lista||[];
+  const out=[];
+  (lista||[]).forEach(function(c){
+    const nfs=nfsDoMes(c,mesNome);
+    if(nfs===null){ if(c.mes_nome===mesNome) out.push(c); return; }  // base antiga
+    if(!nfs.length) return;
+    const dd=nfs.filter(function(n){return n.dias!=null&&!isNaN(n.dias);});
+    out.push(Object.assign({},c,{
+      mes_nome:mesNome,
+      qtd:nfs.length,
+      valor:Math.round(nfs.reduce(function(s,n){return s+(n.valor||0);},0)*100)/100,
+      dias_medio: dd.length? Math.round(dd.reduce(function(s,n){return s+n.dias;},0)/dd.length*10)/10 : null,
+      dias_max: nfs.reduce(function(mx,n){return Math.max(mx,n.dias||0);},0),
+      nfs:nfs
+    }));
+  });
+  return out;
+}
+
+// Meses que realmente tem NF em atraso na lista (nivel NF, nao cliente).
+function mesesComAtraso(lista){
+  const s={};
+  (lista||[]).forEach(function(c){
+    if(Array.isArray(c.nfs)&&c.nfs.length){
+      c.nfs.forEach(function(n){const m=mesDaNF(n,c); if(m) s[m]=1;});
+    } else if(c.mes_nome) s[c.mes_nome]=1;
+  });
+  return Object.keys(s);
+}
+
+// Achata clientes -> NFs, herdando cliente/cidade/UF/regiao/situacao do pai.
+function nfsAchatadas(lista){
+  const out=[];
+  (lista||[]).forEach(function(c){
+    (c.nfs||[]).forEach(function(n){
+      out.push({
+        nf:n.nf, pedido:n.pedido, valor:n.valor||0, dias:n.dias,
+        peso:n.peso, transp:n.transp||c.transp||'', mes_nome:mesDaNF(n,c),
+        mes_emissao:n.mes_nome||c.mes_nome||'',
+        cliente:c.cliente, cidade:c.cidade||'', uf:c.uf||'',
+        regiao:c.regiao||'', situacao:c.situacao||''
+      });
+    });
+  });
+  return out;
+}
+
+// ============================================================
 // RENDER OFF TIME CLIENTES
 // ============================================================
 let offTimeData_clientes=[];
+let offTimeMesDetalhe={};   // v10.7: mes_nome -> {nfs:[], resumo:n, valor:n}
 let offTimeFilter_state={regiao:'todas',mes:'todos'};
 let offTimePage=1;
 const OFFTIME_PER_PAGE=50;
@@ -2855,8 +3060,10 @@ function renderOffTime(){
     return c.situacao==='Entregue em Atraso';
   });
   const mesFiltro=otdFilter_state.type==='m'?NOME_MES[parseInt(otdFilter_state.val)]:null;
+  // v10.7: recorte no nivel da NF (antes filtrava c.mes_nome, que so guarda
+  // o mes da primeira nota do cliente e escondia os meses seguintes).
   offTimeData_clientes=mesFiltro
-    ?allClientes.filter(c=>c.mes_nome===mesFiltro)
+    ?recortarPorMes(allClientes,mesFiltro)
     :allClientes;
 
   // Totais somando vendas + bonificações (regra das 3 naturezas em todo o painel)
@@ -2879,6 +3086,7 @@ function renderOffTime(){
   }
   document.getElementById('offtime-empty').style.display='none';
   document.getElementById('offtime-content').style.display='block';
+  garantirMesEntrega();   // v10.8: resolve o mês pela data de entrega
 
   // KPIs
   const totalOffVal=ms.reduce((s,m)=>{
@@ -2905,13 +3113,10 @@ function renderOffTime(){
     b.onclick=function(){offTimeFilter('regiao',r,this);};regBtns.appendChild(b);
   });
 
-  // Filtros de mês a partir dos meses disponíveis
-  const mesesDisp=[...new Set(offTimeData_clientes.map(c=>c.mes_nome).filter(Boolean))];
-  const mesBtns=document.getElementById('offtime-mes-btns'); mesBtns.innerHTML='';
-  mesesDisp.forEach(m=>{
-    const b=document.createElement('button');b.className='fbtn';b.textContent=m;
-    b.onclick=function(){offTimeFilter('mes',m,this);};mesBtns.appendChild(b);
-  });
+  // Filtros de mês — régua única vinda da base (v10.7): todos os meses da base
+  // aparecem; os sem registro nesta aba ficam esmaecidos, mas continuam clicáveis.
+  const mesesComReg=mesesComAtraso(offTimeData_clientes);
+  const mesesDisp=montarBotoesMes('offtime-mes-btns',mesesComReg,function(m,btn){offTimeFilter('mes',m,btn);});
 
   // Restaura o último filtro usado, validando contra os dados atuais
   const sOff = filtrosLer().offtime;
@@ -2921,7 +3126,9 @@ function renderOffTime(){
   }
   offTimeSyncBotoes();
 
-  // Tabela por mês — vendas + bonificações
+  // Tabela por mês — vendas + bonificações (v10.7: linha clicável abre o
+  // detalhe das NFs entregues em atraso daquele mês).
+  offTimeMesDetalhe={};
   let rMes='';
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)]; if(!md)return;
@@ -2931,12 +3138,28 @@ function renderOffTime(){
     const fin=mOn+mOff; if(!fin)return;
     const otd=fin?((mOn/fin)*100).toFixed(1)+'%':'—';
     const offVal=md.off_val+(bm.off_val||0);
-    rMes+='<tr><td>'+md.nome+'</td>'
+
+    // Detalhe: NFs "Entregue em Atraso" com emissão neste mês.
+    // allClientes já está restrito a Entregue em Atraso; o recorte é por NF.
+    const nfsMes=nfsAchatadas(recortarPorMes(allClientes, md.nome))
+      .sort((a,b)=>(b.dias||0)-(a.dias||0));
+    offTimeMesDetalhe[md.nome]={nfs:nfsMes,resumo:mOff,valor:offVal};
+
+    const rid='oft-mes-'+m;
+    const dif=mOff-nfsMes.length;
+    const badge = nfsMes.length===0
+      ? '<span style="font-size:10px;color:#854F0B;margin-left:6px">sem detalhe</span>'
+      : (dif!==0 ? '<span style="font-size:10px;color:#854F0B;margin-left:6px" title="Resumo '+mOff+' x detalhe '+nfsMes.length+'">⚠ '+nfsMes.length+' detalhada(s)</span>' : '');
+
+    rMes+='<tr style="cursor:pointer" onclick="offTimeToggleMes(\''+md.nome+'\',\''+rid+'\',this)">'
+      +'<td style="font-weight:500"><span class="oft-chev" style="display:inline-block;width:10px;transition:transform .15s">▸</span> '+md.nome+badge+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+mOff+'</td>'
       +'<td class="r" style="color:#3B6D11">'+mOn+'</td>'
       +'<td class="r">'+fin+'</td>'
       +'<td class="r" style="color:'+(parseFloat(otd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+otd+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+fmtM(offVal)+'</td></tr>';
+      +'<td class="r" style="color:#A32D2D">'+fmtM(offVal)+'</td></tr>'
+      +'<tr id="'+rid+'" style="display:none"><td colspan="6" style="padding:0;background:var(--bg2)">'
+      +'<div id="'+rid+'-box" style="padding:10px 14px 14px 26px"></div></td></tr>';
   });
   if(!rMes) rMes='<tr><td colspan="6" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
   document.getElementById('offtime-mes-tbody').innerHTML=rMes;
@@ -3017,12 +3240,131 @@ function offTimeSearch(){
 
 function getOffTimeFiltered(){
   const search=(document.getElementById('offtime-search')?.value||'').toLowerCase();
-  return offTimeData_clientes.filter(c=>{
+  // v10.7: o mês recorta as NFs e reagrega o cliente, em vez de comparar
+  // c.mes_nome (que é só o mês da primeira nota do grupo).
+  const base=recortarPorMes(offTimeData_clientes,
+    offTimeFilter_state.mes!=='todos'?offTimeFilter_state.mes:null);
+  return base.filter(c=>{
     if(offTimeFilter_state.regiao!=='todas'&&c.regiao!==offTimeFilter_state.regiao) return false;
-    if(offTimeFilter_state.mes!=='todos'&&c.mes_nome!==offTimeFilter_state.mes) return false;
-    if(search&&!(c.cliente.toLowerCase().includes(search)||c.cidade.toLowerCase().includes(search)||c.uf.toLowerCase().includes(search))) return false;
+    if(search&&!((c.cliente||'').toLowerCase().includes(search)||(c.cidade||'').toLowerCase().includes(search)||(c.uf||'').toLowerCase().includes(search))) return false;
     return true;
   });
+}
+
+// ============================================================
+// DRILL-DOWN DO RESUMO POR MES (v10.7)
+// Abre a lista das NFs entregues em atraso do mes clicado e concilia
+// a contagem do resumo (payload.meses[m].off) com o detalhe por NF.
+// ============================================================
+function offTimeToggleMes(mesNome, rid, rowEl){
+  const tr=document.getElementById(rid); if(!tr) return;
+  const abrir = tr.style.display==='none';
+  const chev = rowEl && rowEl.querySelector('.oft-chev');
+  if(!abrir){
+    tr.style.display='none';
+    if(chev) chev.style.transform='';
+    return;
+  }
+  const box=document.getElementById(rid+'-box');
+  if(box && !box.dataset.pronto){
+    box.innerHTML=offTimeMesDetalheHTML(mesNome);
+    box.dataset.pronto='1';
+  }
+  tr.style.display='';
+  if(chev) chev.style.transform='rotate(90deg)';
+}
+
+function offTimeMesDetalheHTML(mesNome){
+  const det=offTimeMesDetalhe[mesNome]||{nfs:[],resumo:0};
+  const nfs=det.nfs||[];
+  const nota=mesEntregaNota();
+  const cab='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px">'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)">Notas entregues em atraso — '+mesNome+' <span style="text-transform:none;letter-spacing:0">(por data de entrega)</span></div>'
+    +'<span style="font-size:11px;color:var(--text2)">resumo: <b style="color:#A32D2D">'+det.resumo+'</b>'
+      +' · detalhadas: <b style="color:#A32D2D">'+nfs.length+'</b></span>'
+    +(nota?'<span style="font-size:11px;color:#854F0B">'+nota+'</span>':'')
+    +(nfs.length?'<button class="btn-sm" onclick="event.stopPropagation();offTimeExportMes(\''+mesNome+'\')">⬇ Excel</button>':'')
+    +'</div>';
+
+  if(!nfs.length){
+    return cab+'<div style="font-size:11px;color:#854F0B;line-height:1.5">'
+      +'O resumo acima conta <b>'+det.resumo+'</b> nota(s) entregue(s) em atraso neste mês, mas o dados.json não trouxe o detalhe por NF '
+      +'(campo <code>clientesOff[].nfs</code>) para elas. Reprocesse a base com o <b>atualizar.bat / processar_otd.py</b> mais recente para habilitar o drill-down. '
+      +'Notas sem destinatário identificado também não entram nesta lista.</div>';
+  }
+
+  const dd=nfs.filter(n=>n.dias!=null);
+  const diasMed=dd.length?(dd.reduce((s,n)=>s+n.dias,0)/dd.length).toFixed(1):null;
+  const valTot=nfs.reduce((s,n)=>s+(n.valor||0),0);
+  const dif=det.resumo-nfs.length;
+
+  let aviso='';
+  if(dif>0){
+    aviso='<div style="font-size:11px;color:#854F0B;margin-bottom:7px;line-height:1.5">'
+      +'⚠ <b>'+dif+'</b> nota(s) do resumo não aparecem no detalhe. Causas típicas: mês ainda não conciliado pela data '
+      +'de entrega (arquivo mestre indisponível), NF sem destinatário identificado (descartada da lista de clientes) '
+      +'ou base gerada por versão antiga do pipeline.</div>';
+  } else if(dif<0){
+    aviso='<div style="font-size:11px;color:#854F0B;margin-bottom:7px;line-height:1.5">'
+      +'⚠ O detalhe traz <b>'+(-dif)+'</b> nota(s) a mais que o resumo — possível NF com múltiplas ocorrências contada em duplicidade.</div>';
+  }
+
+  let linhas='';
+  nfs.forEach((n,i)=>{
+    const cor=REG_CORES[n.regiao]||'#888';
+    linhas+='<tr>'
+      +'<td style="color:var(--text3)">'+(i+1)+'</td>'
+      +'<td style="font-family:monospace;font-weight:600">'+(n.nf||'—')+'</td>'
+      +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
+      +'<td style="font-weight:500;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
+      +'<td style="color:var(--text2)">'+(n.cidade||'—')+'</td>'
+      +'<td style="font-weight:600">'+(n.uf||'—')+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
+      +'<td class="r" style="color:'+((n.dias||0)>3?'#A32D2D':'#854F0B')+';font-weight:600">'+(n.dias!=null?n.dias+'d':'—')+'</td>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(n.valor)+'</td>'
+      +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
+      +'</tr>';
+  });
+  const rodape='<tr style="background:var(--bg2);font-weight:600">'
+    +'<td colspan="8" style="text-align:right">Total</td>'
+    +'<td class="r">'+(diasMed!=null?diasMed+'d':'—')+'</td>'
+    +'<td class="r" style="color:#A32D2D">'+fmtM(valTot)+'</td>'
+    +'<td></td></tr>';
+
+  return cab+aviso
+    +'<div class="tw"><table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
+    +'<thead><tr><th>#</th><th>Nota</th><th>Pedido</th><th>Cliente</th><th>Cidade</th><th>UF</th><th>Região</th>'
+    +'<th>Transportadora</th><th class="r">Dias Atraso</th><th class="r">Valor</th><th class="r">Peso</th></tr></thead>'
+    +'<tbody>'+linhas+rodape+'</tbody></table></div>';
+}
+
+function offTimeExportMes(mesNome){
+  const det=offTimeMesDetalhe[mesNome]||{nfs:[]};
+  const nfs=det.nfs||[];
+  if(!nfs.length){ alert('Sem detalhe por NF para '+mesNome+'.'); return; }
+  const rows=nfs.map((n,i)=>({
+    '#': i+1,
+    'Mes Entrega': mesNome,
+    'Numero NF': n.nf||'',
+    'Pedido': n.pedido||'',
+    'Cliente': n.cliente||'',
+    'Cidade': n.cidade||'',
+    'UF': n.uf||'',
+    'Regiao': n.regiao||'',
+    'Transportadora': n.transp||'',
+    'Situacao': n.situacao||'Entregue em Atraso',
+    'Mes Emissao': n.mes_emissao||'',
+    'Dias Atraso': n.dias!=null?n.dias:'',
+    'Valor (R$)': n.valor||0,
+    'Peso (kg)': n.peso||0
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[{wch:5},{wch:7},{wch:14},{wch:14},{wch:35},{wch:18},{wch:5},{wch:14},{wch:30},{wch:20},{wch:12},{wch:11},{wch:16},{wch:12}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Off Time '+mesNome);
+  const stamp=new Date().toISOString().substring(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb,'offtime_'+mesNome.toLowerCase()+'_'+stamp+'.xlsx');
 }
 
 function renderOffTimeClientes(){
@@ -3036,7 +3378,10 @@ function renderOffTimeClientes(){
 
   let rows='';
   if(!slice.length){
-    rows='<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+    rows='<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">'
+      +(offTimeFilter_state.mes!=='todos'
+        ?'Nenhuma entrega em atraso em '+offTimeFilter_state.mes+' para os filtros atuais'
+        :'Nenhum cliente encontrado')+'</td></tr>';
   } else {
     const start=(offTimePage-1)*OFFTIME_PER_PAGE;
     slice.forEach((c,i)=>{
@@ -3048,7 +3393,7 @@ function renderOffTimeClientes(){
         +'<td style="font-weight:600">'+c.uf+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+c.regiao+'</span></td>'
         +'<td style="font-size:11px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.transp+'</td>'
-        +'<td style="color:var(--text2)">'+c.mes_nome+'</td>'
+        +'<td style="color:var(--text2)">'+mesLabel(c)+'</td>'
         +'<td class="r" style="color:#A32D2D;font-weight:700">'+c.qtd+'</td>'
         +'<td class="r" style="color:'+(c.dias_medio!=null?(c.dias_medio<=3?'#854F0B':'#A32D2D'):'var(--text2)')+'">'+(c.dias_medio!=null?c.dias_medio+'d':'—')+'</td>'
         +'<td class="r" style="color:#A32D2D">'+fmtM(c.valor)+'</td>'
@@ -3096,24 +3441,10 @@ function renderAtrasos(){
   }
   document.getElementById('atrasos-empty').style.display='none';
   document.getElementById('atrasos-content').style.display='block';
+  garantirMesEntrega();   // v10.8: resolve o mês pela data de entrega
 
-  // KPIs gerais (sem filtro)
-  const totalQtd=lista.reduce((s,c)=>s+c.qtd,0);
-  const totalVal=lista.reduce((s,c)=>s+c.valor,0);
-  const pend=lista.filter(c=>(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')).reduce((s,c)=>s+c.qtd,0);
-  const entAtr=lista.filter(c=>c.situacao==='Entregue em Atraso').reduce((s,c)=>s+c.qtd,0);
-  const diasArr=lista.filter(c=>c.dias_medio!=null);
-  const diasMed=diasArr.length
-    ? (diasArr.reduce((s,c)=>s+c.dias_medio*c.qtd,0)/diasArr.reduce((s,c)=>s+c.qtd,0)).toFixed(1)
-    : null;
-  const diasMax=lista.reduce((mx,c)=>Math.max(mx,c.dias_max||0),0);
-
-  document.getElementById('atrasos-kpis').innerHTML=
-    '<div class="kpi kpi-red"><div class="kpi-lbl">Total Atrasos</div><div class="kpi-val">'+totalQtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">NFs em atraso</div></div>'
-   +'<div class="kpi kpi-red"><div class="kpi-lbl">Em Trânsito em Atraso</div><div class="kpi-val">'+pend+'</div><div class="kpi-sub">ainda não entregues</div></div>'
-   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Entregues em Atraso</div><div class="kpi-val">'+entAtr+'</div><div class="kpi-sub">off time finalizadas</div></div>'
-   +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>'
-   +'<div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Maior Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMax>0?diasMax+'d':'—')+'</div><div class="kpi-sub">'+fmtM(totalVal)+' total</div></div>';
+  // KPIs agora são recalculados em renderAtrasosTabelas(), respeitando os
+  // filtros de situação / região / mês (v10.7).
 
   // Filtros: regiões e meses dinâmicos
   const regs=[...new Set(lista.map(c=>c.regiao).filter(Boolean))].sort();
@@ -3122,12 +3453,10 @@ function renderAtrasos(){
     const b=document.createElement('button');b.className='fbtn';b.textContent=r;
     b.onclick=function(){atrasosFilter('reg',r,this);};regBtns.appendChild(b);
   });
-  const meses=[...new Set(lista.map(c=>c.mes_nome).filter(Boolean))];
-  const mesBtns=document.getElementById('atrasos-mes-btns'); mesBtns.innerHTML='';
-  meses.forEach(m=>{
-    const b=document.createElement('button');b.className='fbtn';b.textContent=m;
-    b.onclick=function(){atrasosFilter('mes',m,this);};mesBtns.appendChild(b);
-  });
+  // Régua única de meses vinda da base (v10.7): todos os meses aparecem,
+  // em ordem; os sem NF em atraso ficam esmaecidos mas continuam clicáveis.
+  const mesesComReg=mesesComAtraso(lista);
+  const meses=montarBotoesMes('atrasos-mes-btns',mesesComReg,function(m,btn){atrasosFilter('mes',m,btn);});
 
   // Restaura o último filtro usado, validando contra os dados atuais
   // (região/mês que sumiram da base voltam para "Todas"/"Todos").
@@ -3165,10 +3494,14 @@ function atrasosSyncBotoes(){
 
 function getAtrasosFiltrado(){
   const search=(document.getElementById('atrasos-search')?.value||'').toLowerCase();
-  return (otdData?.clientesOff||[]).filter(c=>{
+  // v10.7: o mês recorta as NFs do cliente e reagrega — antes comparava
+  // c.mes_nome, que guarda só o mês da primeira nota do grupo, e por isso
+  // "Set" devolvia lista vazia mesmo com notas de setembro na base.
+  const base=recortarPorMes(otdData?.clientesOff||[],
+    atrasosFilter_state.mes!=='todos'?atrasosFilter_state.mes:null);
+  return base.filter(c=>{
     if(atrasosFilter_state.sit!=='todas' && c.situacao!==atrasosFilter_state.sit) return false;
     if(atrasosFilter_state.reg!=='todas' && c.regiao!==atrasosFilter_state.reg) return false;
-    if(atrasosFilter_state.mes!=='todos' && c.mes_nome!==atrasosFilter_state.mes) return false;
     if(search && !(
       (c.cliente||'').toLowerCase().includes(search) ||
       (c.cidade||'').toLowerCase().includes(search) ||
@@ -3182,6 +3515,30 @@ function getAtrasosFiltrado(){
 
 function renderAtrasosTabelas(){
   const filt=getAtrasosFiltrado();
+
+  // KPIs — refletem os filtros ativos (situação / região / mês)
+  const totalQtd=filt.reduce((s,c)=>s+c.qtd,0);
+  const totalVal=filt.reduce((s,c)=>s+c.valor,0);
+  const pend=filt.filter(c=>(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')).reduce((s,c)=>s+c.qtd,0);
+  const entAtr=filt.filter(c=>c.situacao==='Entregue em Atraso').reduce((s,c)=>s+c.qtd,0);
+  const diasArr=filt.filter(c=>c.dias_medio!=null);
+  const diasDen=diasArr.reduce((s,c)=>s+c.qtd,0);
+  const diasMed=diasDen>0
+    ? (diasArr.reduce((s,c)=>s+c.dias_medio*c.qtd,0)/diasDen).toFixed(1)
+    : null;
+  const diasMax=filt.reduce((mx,c)=>Math.max(mx,c.dias_max||0),0);
+  const escopoTxt=[
+    atrasosFilter_state.mes!=='todos'?atrasosFilter_state.mes:null,
+    atrasosFilter_state.reg!=='todas'?atrasosFilter_state.reg:null
+  ].filter(Boolean).join(' · ') || 'todos os meses';
+
+  const kpiBox=document.getElementById('atrasos-kpis');
+  if(kpiBox) kpiBox.innerHTML=
+    '<div class="kpi kpi-red"><div class="kpi-lbl">Total Atrasos</div><div class="kpi-val">'+totalQtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">NFs em atraso · '+escopoTxt+'</div></div>'
+   +'<div class="kpi kpi-red"><div class="kpi-lbl">Em Trânsito em Atraso</div><div class="kpi-val">'+pend+'</div><div class="kpi-sub">ainda não entregues</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Entregues em Atraso</div><div class="kpi-val">'+entAtr+'</div><div class="kpi-sub">off time finalizadas</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>'
+   +'<div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Maior Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMax>0?diasMax+'d':'—')+'</div><div class="kpi-sub">'+fmtM(totalVal)+' total</div></div>';
 
   // Por transportadora
   const transpMap={};
@@ -3255,7 +3612,10 @@ function renderAtrasosTabelas(){
 
   let rows='';
   if(!slice.length){
-    rows='<tr><td colspan="12" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+    rows='<tr><td colspan="12" style="color:var(--text3);text-align:center;padding:20px">'
+      +(atrasosFilter_state.mes!=='todos'
+        ?'Nenhum atraso em '+atrasosFilter_state.mes+' para os filtros atuais'
+        :'Nenhum cliente encontrado')+'</td></tr>';
   } else {
     const start=(atrasosPage-1)*ATRASOS_PER_PAGE;
     slice.forEach((c,i)=>{
@@ -3271,7 +3631,7 @@ function renderAtrasosTabelas(){
         +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+c.regiao+'</span></td>'
         +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.transp||'')+'">'+(c.transp||'—')+'</td>'
-        +'<td style="color:var(--text2)">'+(c.mes_nome||'—')+'</td>'
+        +'<td style="color:var(--text2)">'+mesLabel(c)+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+sitBg+';color:'+sitColor+';font-weight:500">'+c.situacao+'</span></td>'
         +'<td class="r" style="color:#A32D2D;font-weight:700">'+c.qtd+'</td>'
         +'<td class="r" style="color:'+(c.dias_medio!=null?(c.dias_medio<=3?'#854F0B':'#A32D2D'):'var(--text2)')+';font-weight:600">'+(c.dias_medio!=null?c.dias_medio+'d':'—')+'</td>'
@@ -3283,12 +3643,12 @@ function renderAtrasosTabelas(){
           +'<div style="padding:8px 14px 12px 28px">'
           +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:6px">Notas fiscais deste cliente ('+c.nfs.length+')</div>'
           +'<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
-          +'<thead><tr><th>Nota</th><th>Pedido</th><th>Transportadora</th><th>Mês</th><th class="r">Dias Atraso</th><th class="r">Valor</th><th class="r">Peso</th></tr></thead><tbody>'
+          +'<thead><tr><th>Nota</th><th>Pedido</th><th>Transportadora</th><th title="Mês da entrega; nota ainda em trânsito usa o mês de emissão">Mês</th><th class="r">Dias Atraso</th><th class="r">Valor</th><th class="r">Peso</th></tr></thead><tbody>'
           +c.nfs.map(n=>'<tr>'
             +'<td style="font-family:monospace;font-weight:600">'+(n.nf||'—')+'</td>'
             +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
             +'<td style="font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
-            +'<td style="color:var(--text2)">'+(n.mes_nome||'—')+'</td>'
+            +'<td style="color:var(--text2)" title="emissão: '+(n.mes_nome||'—')+'">'+(mesDaNF(n,c)||'—')+'</td>'
             +'<td class="r" style="color:'+((n.dias||0)>3?'#A32D2D':'#854F0B')+';font-weight:600">'+(n.dias!=null?n.dias+'d':'—')+'</td>'
             +'<td class="r" style="color:#A32D2D">'+fmtM(n.valor)+'</td>'
             +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
