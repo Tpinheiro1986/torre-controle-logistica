@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.8-mes-por-entrega', date: '08/09/2026' };
+window.__BUILD__ = { version: 'v10.9-status-cancelada', date: '30/09/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -484,6 +484,7 @@ table.dt th{color:#33536F}
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#3787C7; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Ag. Agendamento</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#C76137; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Agend. Confirmado</th>
                 <th style="text-align:left; font-size:10px; font-weight:500; color:#8A5A00; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Devolvida</th>
+                <th style="text-align:left; font-size:10px; font-weight:500; color:#6B7280; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0" title="NF-e com cancelamento homologado — fora do OTD e fora do faturamento">Cancelada</th>
               </tr>
             </thead>
             <tbody>
@@ -497,6 +498,7 @@ table.dt th{color:#33536F}
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3787C7" id="o-agcte">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#C76137" id="o-tag">—</span></td>
                 <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#8A5A00" id="o-dev">—</span></td>
+                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#6B7280" id="o-canc">—</span></td>
               </tr>
               <tr>
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-on-s">—</td>
@@ -508,6 +510,7 @@ table.dt th{color:#33536F}
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-agcte-s">—</td>
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-tag-s">—</td>
                 <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-dev-s">—</td>
+                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-canc-s">—</td>
               </tr>
             </tbody>
           </table>
@@ -555,6 +558,7 @@ table.dt th{color:#33536F}
             <div class="status-hl" style="background:#E6F0FB"><div style="font-size:9px;color:#3787C7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Ag. Agendamento</div><div style="font-size:24px;font-weight:700;color:#3787C7" id="o3-agcte">—</div><div style="font-size:11px;color:#3787C7;margin-top:2px" id="o3-agcte-val">—</div></div>
             <div class="status-hl" style="background:#FBEEE3"><div style="font-size:9px;color:#C76137;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Agend. Confirmado</div><div style="font-size:24px;font-weight:700;color:#C76137" id="o3-tag">—</div><div style="font-size:11px;color:#C76137;margin-top:2px" id="o3-tag-val">—</div></div>
             <div class="status-hl" style="background:#F5EDDF"><div style="font-size:9px;color:#8A5A00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Devolvida</div><div style="font-size:24px;font-weight:700;color:#8A5A00" id="o3-dev">—</div><div style="font-size:11px;color:#8A5A00;margin-top:2px" id="o3-dev-val">—</div></div>
+            <div class="status-hl" id="o3-canc-card" style="background:#EEEFF1;cursor:pointer" onclick="canceladasToggle()" title="NF-e com cancelamento homologado. Fora do OTD e fora do faturamento. Clique para ver a lista."><div style="font-size:9px;color:#4B5563;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px"><span class="canc-chev" style="display:inline-block;width:9px;transition:transform .15s">▸</span> Cancelada</div><div style="font-size:24px;font-weight:700;color:#4B5563" id="o3-canc">—</div><div style="font-size:11px;color:#4B5563;margin-top:2px" id="o3-canc-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
           </div>
@@ -562,6 +566,39 @@ table.dt th{color:#33536F}
           <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#0072BC">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
           <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#0072BC">Em Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
+        </div>
+        <!-- ============ CANCELADAS (v10.9) ============ -->
+        <div class="card" id="canceladas-card" style="display:none">
+          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">6</span>NFs Canceladas
+            <button onclick="event.stopPropagation();exportarCanceladasExcel(event)" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar para Excel
+            </button>
+          </div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            NF-e com evento de cancelamento homologado (tpEvento 110111) lido dos XMLs do ERP, mais as notas da lista manual do pipeline.
+            O cancelamento é fato fiscal e prevalece sobre o status do TMS: estas NFs ficam <strong>fora do OTD e fora do faturamento</strong>, mas continuam visíveis aqui para auditoria.
+            <span id="canceladas-count" style="font-weight:600;color:#4B5563;margin-left:6px"></span>
+          </p>
+          <div class="tw"><table class="dt" id="canceladas-table">
+            <thead><tr>
+              <th>#</th>
+              <th>Nº NF</th>
+              <th>Sér.</th>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Cidade</th>
+              <th>UF</th>
+              <th>Região</th>
+              <th>Transportadora</th>
+              <th>Emissão</th>
+              <th>Cancelamento</th>
+              <th>Origem</th>
+              <th>Justificativa</th>
+              <th class="r">Valor NF</th>
+            </tr></thead>
+            <tbody id="canceladas-tbody"></tbody>
+          </table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
@@ -3996,6 +4033,7 @@ var OTDRegras = (function () {
     'Tratativa Transportadora': 'Transito',
     'Tratativa Fiscal': 'Transito',
     'CD': 'CD',
+    'Cancelada': 'Cancelada',
     'Devolvida': 'Devolvida',
     'Desconsiderada': 'Desconsiderada',
     'Sem Regra': 'Sem Regra'
@@ -4150,6 +4188,12 @@ var OTDRegras = (function () {
     }
 
     var erp = semAcento(statusErp);
+
+    // R0 - cancelamento de NF-e homologado (v10.9). Fato fiscal: prevalece
+    // sobre qualquer status do TMS, inclusive "Entregue". A marcacao vem do
+    // processar_otd.py, que le os eventos 110111 na pasta de XMLs do ERP.
+    if (texto(campo(linha, 'Cancelada NFe', 'Cancelada NF-e')).toUpperCase() === 'S')
+      return resultado('Cancelada', 'R0-cancelada');
 
     // R1 - unico caso em que o status do ERP vence a ocorrencia
     if (erp.indexOf('desconsiderada') >= 0) return resultado('Desconsiderada', 'R1-status');
@@ -5073,6 +5117,7 @@ function renderOTDChart(d){
   let on_val=0,off_val=0,hub_val=0,trs_val=0,trs_atr_val=0;
   let trat=0,agcte=0,tag=0,dev=0;
   let trat_val=0,agcte_val=0,tag_val=0,dev_val=0;
+  let canc=0,canc_val=0;   // v10.9: canceladas — fora do OTD e do faturamento
   let fatBonif=0,qtdBonif=0; // bonificações por mês filtrado
   ms.forEach(m=>{
     // tentar chave numérica e string
@@ -5081,6 +5126,7 @@ function renderOTDChart(d){
     fat+=md.fat;qtd+=md.qtd;on+=md.on;off+=md.off;hub+=md.hub;trs+=md.trs;trs_atr+=(md.trs_atr||0);
     on_val+=md.on_val;off_val+=md.off_val;hub_val+=md.hub_val;trs_val+=md.trs_val;trs_atr_val+=(md.trs_atr_val||0);
     trat+=(md.tratativa||0); agcte+=(md.ag_cte||0); tag+=(md.transito_agenda||0); dev+=(md.devolvida||0);
+    canc+=(md.cancelada||0); canc_val+=(md.cancelada_val||0);
     trat_val+=(md.tratativa_val||0); agcte_val+=(md.ag_cte_val||0); tag_val+=(md.transito_agenda_val||0); dev_val+=(md.devolvida_val||0);
     const bmm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)];
     if(bmm){fatBonif+=(bmm.fat||0);qtdBonif+=(bmm.qtd||0);}
@@ -5125,6 +5171,9 @@ function renderOTDChart(d){
   // v10.0: Devolvida (ocorrencias 25 e 999) - fora do OTD, card proprio
   const devAll       = filtroAtivo ? dev                     : (d.totalDevolvidaAll!=null    ? d.totalDevolvidaAll    : dev);
   const devValAll    = filtroAtivo ? dev_val                 : (d.totalDevolvidaValAll!=null ? d.totalDevolvidaValAll : dev_val);
+  // v10.9: Cancelada — NÃO entra no total não finalizado; é balde próprio.
+  const cancAll      = filtroAtivo ? canc                    : (d.totalCanceladaAll!=null    ? d.totalCanceladaAll    : canc);
+  const cancValAll   = filtroAtivo ? canc_val                : (d.totalCanceladaValAll!=null ? d.totalCanceladaValAll : canc_val);
   // v9.7: Total não finalizado = TUDO que não entregou
   const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll + devAll;
   const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll + devValAll;
@@ -5152,6 +5201,7 @@ function renderOTDChart(d){
   document.getElementById('o-agcte').textContent=agcteAll;document.getElementById('o-agcte-s').textContent=fmtM(agcteValAll);
   document.getElementById('o-tag').textContent=tagAll;document.getElementById('o-tag-s').textContent=fmtM(tagValAll);
   document.getElementById('o-dev').textContent=devAll;document.getElementById('o-dev-s').textContent=fmtM(devValAll);
+  document.getElementById('o-canc').textContent=cancAll;document.getElementById('o-canc-s').textContent=fmtM(cancValAll);
   document.getElementById('o-otd').textContent=otdAll+'%';
   // Subtexto do OTD: mostra o filtro ativo claramente
   let otdLabel = onAll.toLocaleString('pt-BR')+' On Time de '+finAll.toLocaleString('pt-BR')+' finalizadas';
@@ -5204,6 +5254,8 @@ function renderOTDChart(d){
   document.getElementById('o3-agcte').textContent=agcteAll;document.getElementById('o3-agcte-val').textContent=fmtM(agcteValAll);
   document.getElementById('o3-tag').textContent=tagAll;document.getElementById('o3-tag-val').textContent=fmtM(tagValAll);
   document.getElementById('o3-dev').textContent=devAll;document.getElementById('o3-dev-val').textContent=fmtM(devValAll);
+  document.getElementById('o3-canc').textContent=cancAll;document.getElementById('o3-canc-val').textContent=fmtM(cancValAll);
+  renderCanceladas();
   document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
 
   // ---- BLOCO 1: Genomma vs Inovalab — calculado dos meses filtrados ----
@@ -5521,6 +5573,139 @@ function renderOTDChart(d){
       }}})
   document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
   } catch(e) { console.error('Erro bloco 5:', e); }
+}
+
+// ============================================================
+// CANCELADAS (v10.9)
+// NF-e com evento de cancelamento homologado (tpEvento 110111) lido dos XMLs
+// do ERP pelo processar_otd.py, mais as notas da lista manual do pipeline.
+// Cancelamento é fato fiscal: prevalece sobre o status do TMS, fica fora do
+// OTD e fora do faturamento. O painel mostra em card próprio para auditoria.
+// ============================================================
+let canceladasAberto = false;
+
+// Respeita o filtro de Quarter/Mês da aba OTD.
+function getCanceladasFiltrado(){
+  const lista = (otdData && otdData.canceladas) || [];
+  if(!lista.length) return [];
+  if(otdFilter_state.type === 'all') return lista;
+  const meses = new Set(getOTDMeses().map(m => NOME_MES[parseInt(m)]));
+  return lista.filter(c => meses.has(c.mes_nome));
+}
+
+function canceladasToggle(){
+  const card = document.getElementById('canceladas-card');
+  if(!card) return;
+  const lista = getCanceladasFiltrado();
+  if(!lista.length){
+    // Sem canceladas não há o que abrir — evita card vazio na tela.
+    return;
+  }
+  canceladasAberto = !canceladasAberto;
+  card.style.display = canceladasAberto ? 'block' : 'none';
+  const chev = document.querySelector('#o3-canc-card .canc-chev');
+  if(chev) chev.style.transform = canceladasAberto ? 'rotate(90deg)' : '';
+  if(canceladasAberto) card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function renderCanceladas(){
+  const card = document.getElementById('canceladas-card');
+  const tb   = document.getElementById('canceladas-tbody');
+  if(!card || !tb) return;
+
+  const lista = getCanceladasFiltrado();
+  const temPayload = Array.isArray(otdData && otdData.canceladas);
+  const cardKpi = document.getElementById('o3-canc-card');
+  if(cardKpi){
+    cardKpi.style.opacity = lista.length ? '1' : '.55';
+    cardKpi.style.cursor  = lista.length ? 'pointer' : 'default';
+    cardKpi.title = !temPayload
+      ? 'Esta base ainda não traz o detalhe das canceladas — rode o atualizar.bat com o processar_otd.py v10.9+.'
+      : (lista.length ? 'NF-e com cancelamento homologado. Fora do OTD e fora do faturamento. Clique para ver a lista.'
+                      : 'Nenhuma NF cancelada no período filtrado.');
+  }
+  if(!lista.length){
+    canceladasAberto = false;
+    card.style.display = 'none';
+    const chev = document.querySelector('#o3-canc-card .canc-chev');
+    if(chev) chev.style.transform = '';
+    if(otdData && !temPayload){
+      console.warn('[Canceladas] dados.json sem o campo "canceladas" — reprocesse a base (atualizar.bat) com o processar_otd.py v10.9+.');
+    }
+    return;
+  }
+
+  const total = lista.reduce((s,c)=>s+(c.valor||0),0);
+  const porOrigem = {};
+  lista.forEach(c => { const o=c.origem||'—'; porOrigem[o]=(porOrigem[o]||0)+1; });
+  document.getElementById('canceladas-count').textContent =
+    lista.length.toLocaleString('pt-BR') + ' NF(s) · ' + fmtM(total) + ' · '
+    + Object.entries(porOrigem).map(([o,n]) => n+' '+o).join(' · ');
+
+  tb.innerHTML = lista.map((c,i)=>{
+    const cor = REG_CORES[c.regiao] || '#888';
+    const corOrig = (c.origem === 'XML NF-e') ? '#0072BC' : '#854F0B';
+    return '<tr>'
+      +'<td style="color:var(--text3)">'+(i+1)+'</td>'
+      +'<td style="font-family:monospace;font-weight:600">'+(c.nf||'—')+'</td>'
+      +'<td style="color:var(--text2)">'+(c.serie||'—')+'</td>'
+      +'<td style="font-family:monospace;color:var(--text2)">'+(c.pedido||'—')+'</td>'
+      +'<td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.cliente||'')+'">'+(c.cliente||'—')+'</td>'
+      +'<td style="color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(c.cidade||'—')+'</td>'
+      +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+(c.regiao||'—')+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.transp||'')+'">'+(c.transp||'—')+'</td>'
+      +'<td style="color:var(--text2);white-space:nowrap">'+(c.dt_fat||'—')+'</td>'
+      +'<td style="white-space:nowrap;font-weight:600;color:#4B5563">'+(c.dt_cancel||'—')+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corOrig+'18;color:'+corOrig+';font-weight:500;white-space:nowrap">'+(c.origem||'—')+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.justificativa||'')+'">'+(c.justificativa||'—')+'</td>'
+      +'<td class="r" style="color:#4B5563;font-weight:500">'+fmtM(c.valor)+'</td>'
+      +'</tr>';
+  }).join('');
+
+  if(canceladasAberto) card.style.display = 'block';
+}
+
+function exportarCanceladasExcel(ev){
+  const btn = ev && ev.target ? ev.target.closest('button') : null;
+  const txt = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = 'Gerando...'; }
+  try{
+    const lista = getCanceladasFiltrado();
+    if(!lista.length){ alert('Nenhuma NF cancelada no período filtrado.'); return; }
+    const rows = lista.map((c,i)=>({
+      '#': i+1,
+      'Numero NF': c.nf||'',
+      'Serie': c.serie||'',
+      'Pedido': c.pedido||'',
+      'Cliente': c.cliente||'',
+      'Cidade': c.cidade||'',
+      'UF': c.uf||'',
+      'Regiao': c.regiao||'',
+      'Transportadora': c.transp||'',
+      'Empresa': c.emp||'',
+      'Data Emissao': c.dt_fat||'',
+      'Mes Emissao': c.mes_nome||'',
+      'Data Cancelamento': c.dt_cancel||'',
+      'Origem': c.origem||'',
+      'Protocolo': c.protocolo||'',
+      'Justificativa': c.justificativa||'',
+      'Valor (R$)': c.valor||0,
+      'Peso (kg)': c.peso||0
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{wch:5},{wch:12},{wch:6},{wch:14},{wch:35},{wch:18},{wch:5},{wch:14},{wch:28},{wch:10},
+                   {wch:13},{wch:7},{wch:16},{wch:14},{wch:20},{wch:40},{wch:14},{wch:11}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'NFs Canceladas');
+    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    XLSX.writeFile(wb, 'nfs_canceladas_' + stamp + '.xlsx');
+  } catch(e){
+    alert('Erro ao exportar: ' + e.message);
+    console.error(e);
+  } finally {
+    if(btn){ btn.disabled = false; btn.innerHTML = txt; }
+  }
 }
 
 // ============================================================
@@ -6327,6 +6512,19 @@ function pedidoInvalido(p){
 
 /* ---------- diagnóstico: por que a nota aparece (ou não) ---------- */
 function diagnosticar(r){
+  // R0 (v10.9) — cancelamento de NF-e homologado. Vem antes de tudo: é fato
+  // fiscal e prevalece sobre o que o TMS disser. A coluna é gravada no
+  // arquivo mestre pelo processar_otd.py a partir dos XMLs do ERP.
+  if(String(g(r,'Cancelada NFe')).trim().toUpperCase() === 'S'){
+    const quando = g(r,'Data Cancelamento');
+    const just   = g(r,'Justificativa Cancelamento');
+    const orig   = g(r,'Origem Cancelamento') || 'Lista manual';
+    return { entra:true, sit:'Cancelada', tom:'err', regra:'R0',
+      onde:'Painel (card Cancelada) · fora do OTD e fora do faturamento',
+      motivo:'NF-e com cancelamento homologado'+(quando?' em '+quando:'')+' ('+orig+').'
+             +(just?' Justificativa: '+just+'.':'')
+             +' O cancelamento prevalece sobre o status do TMS ("'+(g(r,'Status da Entrega')||'—')+'").' };
+  }
   const status  = g(r,'Status da Entrega');
   const ocor    = String(g(r,'Ocorrencia')).replace(/\.0$/,'');
   const cliente = g(r,'Cliente');
