@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.9-status-cancelada', date: '30/09/2026' };
+window.__BUILD__ = { version: 'v10.11-matriz-clientes', date: '06/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -73,6 +73,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg3);color:var(--
 .tab{font-size:13px;padding:12px 18px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
 .tab:hover{color:var(--text)}
 .tab.on{color:#0072BC;border-bottom-color:#0072BC;font-weight:500}
+
+/* v10.11: filtro global Matriz → Cliente (abas de consulta) */
+.cli-bar{background:var(--bg);border-bottom:0.5px solid var(--border);padding:8px 32px;display:none;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;position:sticky;top:54px;z-index:90}
+.cli-bar.on{display:flex}
+.cli-bar .fl{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.cli-bar select{padding:5px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-size:12px;max-width:320px;min-width:170px}
+.cli-bar select.ativo{border-color:#0072BC;background:#E6F1FB;color:#004A87;font-weight:600}
+.cli-bar .cli-seta{color:var(--text3);font-size:14px}
+.cli-chip-mat{font-size:10px;padding:2px 7px;border-radius:12px;background:#0072BC14;color:#004A87;font-weight:600;white-space:nowrap;cursor:pointer;display:inline-block;max-width:150px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.cli-chip-mat:hover{background:#0072BC2A}
+.cli-chip-mat.sem{background:#A32D2D14;color:#A32D2D}
+.cli-razao{display:block;font-size:10px;color:var(--text3);font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cli-aviso{font-size:11px;color:#004A87;background:#E6F1FB;border:0.5px solid #0072BC44;border-radius:6px;padding:6px 10px;margin-bottom:10px}
 
 /* CONTAINER */
 .container{max-width:1400px;margin:0 auto;padding:28px 32px}
@@ -429,6 +442,17 @@ table.dt th{color:#33536F}
     <div class="tab" onclick="switchTab('tv',this)" style="background:linear-gradient(90deg,#004A87,#00A7E7);color:#fff">📡 TV</div>
   </div>
 
+  <!-- v10.11: FILTRO GLOBAL MATRIZ → CLIENTE (vale para todas as abas de consulta) -->
+  <div class="cli-bar" id="cli-bar">
+    <span class="fl">Matriz</span>
+    <select id="cli-sel-mat" onchange="cliFiltroSet('mat',this.value)"><option value="todas">Todas</option></select>
+    <span class="cli-seta">▸</span>
+    <span class="fl">Cliente</span>
+    <select id="cli-sel-cli" onchange="cliFiltroSet('cli',this.value)"><option value="todos">Todos</option></select>
+    <button class="fbtn" id="cli-limpar" onclick="cliFiltroLimpar()" style="display:none">✕ Limpar filtro</button>
+    <span id="cli-bar-info" style="font-size:11px;color:var(--text2);margin-left:4px"></span>
+  </div>
+
   <div class="container">
 
     <!-- OTD DASHBOARD -->
@@ -559,8 +583,8 @@ table.dt th{color:#33536F}
             <div class="status-hl" style="background:#FBEEE3"><div style="font-size:9px;color:#C76137;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Agend. Confirmado</div><div style="font-size:24px;font-weight:700;color:#C76137" id="o3-tag">—</div><div style="font-size:11px;color:#C76137;margin-top:2px" id="o3-tag-val">—</div></div>
             <div class="status-hl" style="background:#F5EDDF"><div style="font-size:9px;color:#8A5A00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Devolvida</div><div style="font-size:24px;font-weight:700;color:#8A5A00" id="o3-dev">—</div><div style="font-size:11px;color:#8A5A00;margin-top:2px" id="o3-dev-val">—</div></div>
             <div class="status-hl" id="o3-canc-card" style="background:#EEEFF1;cursor:pointer" onclick="canceladasToggle()" title="NF-e com cancelamento homologado. Fora do OTD e fora do faturamento. Clique para ver a lista."><div style="font-size:9px;color:#4B5563;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px"><span class="canc-chev" style="display:inline-block;width:9px;transition:transform .15s">▸</span> Cancelada</div><div style="font-size:24px;font-weight:700;color:#4B5563" id="o3-canc">—</div><div style="font-size:11px;color:#4B5563;margin-top:2px" id="o3-canc-val">—</div></div>
-            <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total não finalizado</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar</div></div>
+            <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total em aberto</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar (sem devolvidas)</div></div>
           </div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
           <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#0072BC">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
@@ -586,6 +610,7 @@ table.dt th{color:#33536F}
               <th>Nº NF</th>
               <th>Sér.</th>
               <th>Pedido</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>Cidade</th>
               <th>UF</th>
@@ -601,12 +626,12 @@ table.dt th{color:#33536F}
           </table></div>
         </div>
         <div class="card">
-          <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora</div>
+          <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px">(acumulado — não segue o filtro de mês)</span></div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:8px">OTD = On Time / (On Time + Off Time). Pendentes não entram no OTD, mas indicam risco.</p>
           <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
-          <div class="slabel"><span class="slabel-num">5</span>Trânsito por região</div>
+          <div class="slabel"><span class="slabel-num">5</span>Trânsito por região <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px">(carteira atual — não segue o filtro de mês)</span></div>
           <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px" id="o5-kpis"></div>
           <div class="reg-grid" id="o5-cards"></div>
           <div style="background:var(--bg2);border-radius:var(--radius);padding:12px 14px">
@@ -625,6 +650,7 @@ table.dt th{color:#33536F}
         <p>Nenhuma base carregada ainda.</p>
       </div>
       <div id="atrasos-content" style="display:none">
+        <div id="atrasos-cli-aviso" style="display:none"></div>
         <div class="update-bar"><span class="update-dot" style="background:#A32D2D"></span><span id="atrasos-update-text">Painel de atrasos — pendentes em atraso e entregas off time</span></div>
 
         <!-- KPIs -->
@@ -701,6 +727,7 @@ table.dt th{color:#33536F}
           <div class="tw"><table class="dt" id="atrasos-clientes-table">
             <thead><tr>
               <th>#</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>Cidade</th>
               <th>UF</th>
@@ -726,6 +753,7 @@ table.dt th{color:#33536F}
         <p>Nenhuma base carregada ainda.</p>
       </div>
       <div id="transp-content" style="display:none">
+        <div id="transp-cli-aviso" style="display:none"></div>
 
         <!-- KPI row -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px" id="transp-kpis"></div>
@@ -818,12 +846,17 @@ table.dt th{color:#33536F}
         <p style="font-size:11px">Se a base já está carregada, rode o <strong>atualizar.bat</strong> com o <strong>processar_otd.py</strong> novo para gerar os dados de clientes.</p>
       </div>
       <div id="clientes-content" style="display:none">
+        <div id="clientes-cli-aviso" style="display:none"></div>
 
         <!-- KPIs -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px" id="clientes-kpis"></div>
 
         <!-- Filtros -->
         <div class="fbar" id="clientes-fbar">
+          <span class="fl">Visão</span>
+          <button class="fbtn on" id="clientes-v-cli" onclick="clientesVisao('cli')">Por Cliente</button>
+          <button class="fbtn" id="clientes-v-mat" onclick="clientesVisao('mat')" title="Agrupa os clientes pela Matriz do cadastro. Clique numa matriz para abrir os clientes dela.">Por Matriz</button>
+          <div class="fdiv"></div>
           <span class="fl">NFs</span>
           <button class="fbtn on" id="clientes-f-todas" onclick="clientesFilter('todas',this)">Todas</button>
           <button class="fbtn" id="clientes-f-aberto" onclick="clientesFilter('aberto',this)">Somente em aberto</button>
@@ -832,13 +865,13 @@ table.dt th{color:#33536F}
           <button class="fbtn on" id="clientes-r-todas" onclick="clientesFilterReg('todas',this)">Todas</button>
           <span id="clientes-reg-btns"></span>
           <div class="fdiv"></div>
-          <input id="clientes-search" type="text" placeholder="Buscar cliente, cidade, UF, nº da nota ou pedido..."
-            class="form-input" style="max-width:300px;padding:5px 12px;font-size:12px" oninput="clientesSearch()">
+          <input id="clientes-search" type="text" placeholder="Buscar matriz, cliente, razão social, CNPJ, cidade, UF, NF ou pedido..."
+            class="form-input" style="max-width:340px;padding:5px 12px;font-size:12px" oninput="clientesSearch()">
         </div>
 
         <!-- Quadro 1: performance por cliente -->
         <div class="card">
-          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">1</span>Performance por Cliente
+          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">1</span><span id="clientes-q1-titulo">Performance por Cliente</span>
             <button onclick="exportarClientesExcel(event)" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Exportar NFs (Excel)
@@ -850,8 +883,9 @@ table.dt th{color:#33536F}
           <div style="overflow-x:auto">
             <table class="dt">
               <thead><tr>
-                <th>Cliente</th>
-                <th>UF</th>
+                <th id="clientes-th1">Matriz</th>
+                <th id="clientes-th2">Cliente</th>
+                <th id="clientes-th3">UF</th>
                 <th class="r">Finalizadas</th>
                 <th class="r" style="color:#3B6D11">On Time</th>
                 <th class="r" style="color:#A32D2D">Off Time</th>
@@ -883,6 +917,7 @@ table.dt th{color:#33536F}
         <p>Nenhuma base carregada ainda.</p>
       </div>
       <div id="infull-content" style="display:none">
+        <div id="infull-cli-aviso" style="display:none"></div>
 
         <!-- KPIs -->
         <div class="krow" id="infull-kpis" style="margin-bottom:12px;grid-template-columns:repeat(6,minmax(0,1fr))"></div>
@@ -935,6 +970,7 @@ table.dt th{color:#33536F}
           <div class="tw"><table class="dt">
             <thead><tr>
               <th>#</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>UF</th>
               <th>Região</th>
@@ -957,6 +993,7 @@ table.dt th{color:#33536F}
             <thead><tr>
               <th>#</th>
               <th>Pedido</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>UF</th>
               <th>Transportadora</th>
@@ -993,6 +1030,7 @@ table.dt th{color:#33536F}
             <thead><tr>
               <th>#</th>
               <th>Pedido</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>UF</th>
               <th>Transp.</th>
@@ -1018,6 +1056,7 @@ table.dt th{color:#33536F}
         <p>Nenhuma base carregada ainda.</p>
       </div>
       <div id="offtime-content" style="display:none">
+        <div id="offtime-cli-aviso" style="display:none"></div>
         <!-- KPIs -->
         <div class="krow" id="offtime-kpis" style="margin-bottom:12px"></div>
 
@@ -1079,6 +1118,7 @@ table.dt th{color:#33536F}
           <div class="tw"><table class="dt" id="offtime-clientes-table">
             <thead><tr>
               <th>#</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>Cidade</th>
               <th>UF</th>
@@ -1104,6 +1144,7 @@ table.dt th{color:#33536F}
         <p style="font-size:11px">A base precisa ter as colunas <strong>Data Embarque</strong> e <strong>Tipo Ent.</strong> para o Impacto Agenda funcionar.</p>
       </div>
       <div id="leadtime-content" style="display:none">
+        <div id="leadtime-cli-aviso" style="display:none"></div>
 
         <!-- KPIs Brasil -->
         <div class="krow" id="leadtime-kpis" style="margin-bottom:12px;grid-template-columns:repeat(4,minmax(0,1fr))"></div>
@@ -1114,7 +1155,7 @@ table.dt th{color:#33536F}
           <button class="fbtn on" id="leadtime-m-all" onclick="leadTimeFilter('todos',this)">Todos</button>
           <span id="leadtime-mes-btns"></span>
           <div class="fdiv"></div>
-          <span style="font-size:10px;color:var(--text2)">O filtro afeta os quadros <strong>2</strong> e <strong>3</strong>. O quadro <strong>1</strong> sempre mostra a visão mês a mês.</span>
+          <span style="font-size:10px;color:var(--text2)">O filtro de mês afeta os quadros <strong>2</strong>, <strong>3</strong> e <strong>4</strong>. O quadro <strong>1</strong> sempre mostra a visão mês a mês. O filtro Matriz → Cliente vale para todos.</span>
         </div>
 
         <!-- 1. Faturamento % por Região × Mês -->
@@ -1171,6 +1212,30 @@ table.dt th{color:#33536F}
           </table></div>
         </div>
 
+        <!-- 4. Lead Time por Cliente (v10.11) -->
+        <div class="card" style="margin-top:10px">
+          <div class="slabel" style="flex-wrap:wrap"><span class="slabel-num">4</span>Lead Time por Cliente
+            <button onclick="exportarLeadTimeClientesExcel()" style="margin-left:auto;padding:6px 14px;background:#1D9E75;color:#fff;border:0;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">Exportar (Excel)</button>
+          </div>
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            Mesmas réguas do quadro 2, por cliente — segue o mês selecionado acima e o filtro Matriz → Cliente. Ordenado por volume de NFs entregues.
+            <span id="leadtime-cli-info" style="font-weight:600;margin-left:4px"></span>
+          </p>
+          <input id="leadtime-cli-search" type="text" placeholder="Buscar matriz, cliente ou UF..." class="form-input"
+            style="max-width:300px;padding:5px 12px;font-size:12px;margin-bottom:8px" oninput="renderLeadTimeClientes()">
+          <div class="tw"><table class="dt">
+            <thead><tr>
+              <th>#</th><th>Matriz</th><th>Cliente</th><th>UF</th>
+              <th class="r">NFs avaliadas</th>
+              <th class="r">Lead Time Total</th>
+              <th class="r">Lead Time Expedição</th>
+              <th class="r">Lead Time Transportes</th>
+              <th class="r">% Impacto Agenda</th>
+            </tr></thead>
+            <tbody id="leadtime-cli-tbody"></tbody>
+          </table></div>
+        </div>
+
       </div>
     </div>
 
@@ -1182,6 +1247,7 @@ table.dt th{color:#33536F}
         <p id="abertas-empty-hint" style="font-size:11px;display:none">O dados.json atual não tem o extrato de Notas em Aberto — reprocesse a base (atualizar.bat) com o pipeline v9.23+.</p>
       </div>
       <div id="abertas-content" style="display:none">
+        <div id="abertas-cli-aviso" style="display:none"></div>
         <div class="update-bar"><span class="update-dot" style="background:#0072BC"></span><span id="abertas-update-text">Extrato da carteira pendente — todas as NFs ainda não entregues, da emissão mais antiga para a mais nova</span></div>
 
         <!-- KPIs (somatória — acompanham os filtros) -->
@@ -1226,6 +1292,7 @@ table.dt th{color:#33536F}
               <th>#</th>
               <th>Nº NF</th>
               <th>Pedido</th>
+              <th>Matriz</th>
               <th>Cliente</th>
               <th>Cidade</th>
               <th>UF</th>
@@ -1253,6 +1320,7 @@ table.dt th{color:#33536F}
         <span id="consulta-update-text">Base completa do arquivo mestre — todas as NFs, inclusive as que os filtros de ingestão descartam e que por isso não aparecem em nenhum outro painel</span>
       </div>
 
+      <div id="consulta-cli-aviso" style="display:none"></div>
       <div class="krow" id="consulta-kpis" style="margin-bottom:12px"></div>
 
       <div class="card">
@@ -1264,14 +1332,14 @@ table.dt th{color:#33536F}
           </button>
         </div>
         <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
-          Todas as notas da base, sem filtro. Busque por número da NF, pedido, cliente, romaneio, conhecimento, cidade, UF ou transportadora.
+          Todas as notas da base (respeita só o filtro Matriz → Cliente do topo). Busque por número da NF, pedido, matriz, cliente, razão social, CNPJ, romaneio, conhecimento, cidade, UF ou transportadora.
           <strong>Para consultar várias NFs de uma vez</strong>, cole a lista separada por ponto e vírgula ou vírgula (ex.: <code>1634; 1635; 1636</code>), ou digite uma por uma e tecle Enter.
           Uma linha por NF, da emissão mais recente para a mais antiga. Quando a nota tem mais de uma ocorrência, vale a última — o histórico completo fica na ficha.
           Clique em qualquer linha para abrir a ficha completa da nota, com todos os campos do arquivo mestre.
         </p>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
-          <input id="consulta-input" type="text" placeholder="1634; 1635; 1636  ·  ou uma NF + Enter  ·  ou cliente, pedido, romaneio..."
+          <input id="consulta-input" type="text" placeholder="1634; 1635; 1636  ·  ou uma NF + Enter  ·  ou matriz, cliente, pedido, romaneio..."
             class="form-input" style="min-width:340px;flex:1;max-width:520px;padding:8px 12px;font-size:13px"
             oninput="consultaBuscar()" onkeydown="consultaKey(event)" autocomplete="off">
           <button class="fbtn" onclick="consultaAplicar()">Adicionar à lista</button>
@@ -1287,7 +1355,9 @@ table.dt th{color:#33536F}
             <th>Sér.</th>
             <th>Embarcador</th>
             <th>Transportadora</th>
+            <th>Matriz</th>
             <th>Cliente</th>
+            <th>Razão Social (TMS)</th>
             <th>CNPJ Cliente</th>
             <th>Cidade</th>
             <th>UF</th>
@@ -1416,6 +1486,8 @@ const TABS = {
 };
 
 function switchTab(id, btn){
+  abaAtual = id;
+  cliBarMontar();   // v10.11: barra Matriz → Cliente só nas abas de consulta
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   Object.values(TABS).forEach(s=>{
     const el=document.getElementById(s);
@@ -1499,8 +1571,235 @@ function filtrosLer(){
 
 // Limpa os filtros salvos e recarrega (útil se algo ficar "preso")
 function filtrosResetar(){
-  try{ localStorage.removeItem(FILTROS_KEY); }catch(e){}
+  try{ localStorage.removeItem(FILTROS_KEY); localStorage.removeItem(CLI_FILTRO_KEY); }catch(e){}
   location.reload();
+}
+
+// ============================================================
+// UTILITÁRIOS COMUNS (v10.11)
+// esc()       — escapa texto vindo da base (cliente, transportadora, cidade,
+//               NF...) antes de ir para innerHTML/atributos. Sem isso um nome
+//               com aspas quebrava tooltips e um nome com <tag> executava HTML.
+// normTxt()   — busca sem acento e sem caixa ("sao" acha "SÃO").
+// stampHoje() — data LOCAL para nome de arquivo (toISOString é UTC: export
+//               depois das 21h saía com a data do dia seguinte).
+// ============================================================
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function normTxt(s){
+  return String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+}
+function stampHoje(){
+  const d=new Date();
+  return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+}
+// 'dd/mm/aaaa' -> ms UTC (sem fuso: evita o dia "andar" com o horário de verão)
+function dataBR(s){
+  const m=String(s||'').match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  return m ? Date.UTC(+m[3], +m[2]-1, +m[1]) : null;
+}
+function mesBR(s){
+  const m=String(s||'').match(/^\d{2}\/(\d{2})\/\d{4}/);
+  return m ? parseInt(m[1],10) : null;
+}
+function diasEntre(a,b){
+  const x=dataBR(a), y=dataBR(b);
+  return (x==null||y==null) ? null : Math.round((y-x)/86400000);
+}
+// Parser CSV (separador ;) que respeita aspas e quebra de linha DENTRO do
+// campo (Justificativa, Descrição). Os parsers antigos quebravam a linha
+// antes de olhar as aspas e desalinhavam as colunas.
+function csvParseRobusto(text){
+  const rows=[]; let row=[], cell='', inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else inQ=false; }
+      else cell+=c;
+    } else if(c==='"') inQ=true;
+    else if(c===';'){ row.push(cell); cell=''; }
+    else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+    else if(c!=='\r') cell+=c;
+  }
+  if(cell.length || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+window.csvParseRobusto = csvParseRobusto;
+
+// v10.10 — definição ÚNICA de carteira em aberto. Mesma lista do
+// TIPOS_ABERTOS do processar_otd.py: mexer num exige mexer no outro.
+const TIPOS_ABERTOS = ['hub','transito','transito_atr','tratativa','ag_cte','transito_agenda'];
+function ehAberto(tipo){ return TIPOS_ABERTOS.indexOf(tipo) >= 0; }
+
+// ============================================================
+// FILTRO GLOBAL MATRIZ → CLIENTE (v10.11)
+// O cliente do painel é o "Abreviado" do cadastro do ERP (ESCD0704) e cada
+// um pertence a uma Matriz — o processar_otd.py resolve isso pelo CNPJ e
+// publica os campos matriz/cliente em todas as listas do dados.json.
+// A barra fica logo abaixo das abas e vale para todas as abas de consulta:
+// Atrasos, Transportadoras, Clientes, Off Time, In Full, Lead Time, Notas em
+// Aberto e Consultar NF. Escolher a Matriz restringe a lista de Clientes
+// (drill-down); escolher um Cliente direto já seleciona a Matriz dele.
+// Guardado por navegador, como os demais filtros.
+// ============================================================
+const CLI_FILTRO_KEY = 'torre-otd-cliente-v1';
+const CLI_TABS = ['atrasos','transp','clientes','offtime','infull','leadtime','abertas','consulta'];
+const SEM_CADASTRO = 'SEM CADASTRO';
+let cliFiltro = {mat:'todas', cli:'todos'};
+let cliIdx = null, cliIdxDe = null;
+let abaAtual = 'otd';
+
+function cliFiltroLer(){
+  try{
+    const s = JSON.parse(localStorage.getItem(CLI_FILTRO_KEY) || 'null');
+    if(s && typeof s.mat==='string' && typeof s.cli==='string') cliFiltro = {mat:s.mat, cli:s.cli};
+  }catch(e){}
+}
+function cliFiltroSalvar(){
+  try{ localStorage.setItem(CLI_FILTRO_KEY, JSON.stringify(cliFiltro)); }catch(e){}
+}
+cliFiltroLer();
+
+// Índice Matriz → Clientes a partir de tudo que o payload traz
+function cliIndice(){
+  if(typeof otdData==='undefined' || !otdData) return {mats:[], porMat:{}, cli2mat:{}, temMatriz:false, nCli:0};
+  if(cliIdx && cliIdxDe===otdData) return cliIdx;
+  const porMat={}, cli2mat={};
+  let temMatriz=false;
+  const add=(mat,cli)=>{
+    if(!cli) return;
+    if(mat) temMatriz=true;
+    const m = mat || cli2mat[cli] || SEM_CADASTRO;
+    if(!porMat[m]) porMat[m]={};
+    porMat[m][cli]=1;
+    if(!cli2mat[cli]) cli2mat[cli]=m;
+  };
+  (otdData.clientes||[]).forEach(c=>add(c.mat, c.n));
+  (otdData.clientesOff||[]).forEach(c=>add(c.matriz, c.cliente));
+  (otdData.notasAbertas||[]).forEach(n=>add(n.matriz, n.cliente));
+  ((otdData.inFull||{}).pedidos||[]).forEach(p=>add(p.matriz, p.cliente));
+  const mats = Object.keys(porMat).sort((a,b)=>((a===SEM_CADASTRO)-(b===SEM_CADASTRO)) || a.localeCompare(b,'pt-BR'));
+  cliIdx = {mats, porMat, cli2mat, temMatriz, nCli:Object.keys(cli2mat).length};
+  cliIdxDe = otdData;
+  return cliIdx;
+}
+function matDe(mat, cli){
+  if(mat) return mat;
+  return cliIndice().cli2mat[cli] || SEM_CADASTRO;
+}
+function cliAtivo(){ return cliFiltro.mat!=='todas' || cliFiltro.cli!=='todos'; }
+function passaCli(mat, cli){
+  if(cliFiltro.cli!=='todos' && (cli||'')!==cliFiltro.cli) return false;
+  if(cliFiltro.mat!=='todas' && matDe(mat,cli)!==cliFiltro.mat) return false;
+  return true;
+}
+function cliFiltroTexto(){
+  if(!cliAtivo()) return '';
+  return (cliFiltro.mat!=='todas' ? 'Matriz '+cliFiltro.mat : '')
+       + (cliFiltro.cli!=='todos' ? (cliFiltro.mat!=='todas'?' › ':'')+'Cliente '+cliFiltro.cli : '');
+}
+// Aviso padrão no topo de cada aba quando o filtro está ligado
+function cliAvisoHTML(extra){
+  if(!cliAtivo()) return '';
+  return '<div class="cli-aviso">Filtro ativo: <strong>'+esc(cliFiltroTexto())+'</strong>'
+    + (extra ? ' — '+extra : '')
+    + ' <button class="btn-sm" style="margin-left:6px" onclick="cliFiltroLimpar()">Limpar</button></div>';
+}
+function cliPintarAviso(id, extra){
+  const el=document.getElementById(id);
+  if(el){ el.innerHTML=cliAvisoHTML(extra); el.style.display=cliAtivo()?'block':'none'; }
+}
+// Chip da matriz nas tabelas — clicar filtra por ela (drill-down)
+// De-para CNPJ → [Abreviado, Matriz] publicado pelo pipeline (só os CNPJs da
+// base). Usado pela Consultar NF e pelo Excel "Todas as Notas", que leem o
+// historico_mestre.csv cru.
+function cadDeCNPJ(cnpj, razao){
+  const mapa=(typeof otdData!=='undefined' && otdData && otdData.cadastroClientes && otdData.cadastroClientes.mapa) || {};
+  let dg=String(cnpj||'').replace(/\.0$/,'').replace(/\D/g,'');
+  if(dg.length>11 && dg.length<14) dg=dg.padStart(14,'0');
+  const r=mapa[dg];
+  if(r) return {cli:r[0], mat:r[1], achou:true};
+  return {cli:String(razao||'').trim().slice(0,60)||'Cliente não identificado', mat:SEM_CADASTRO, achou:false};
+}
+function cliChipMat(mat){
+  const m = mat || SEM_CADASTRO;
+  return '<span class="cli-chip-mat'+(m===SEM_CADASTRO?' sem':'')+'" data-m="'+esc(m)+'"'
+    + ' onclick="cliFiltroDeChip(event,this)" title="'+esc(m)+' — clique para filtrar por esta matriz">'+esc(m)+'</span>';
+}
+function cliFiltroDeChip(ev, el){
+  if(ev) ev.stopPropagation();
+  cliFiltroSet('mat', el.getAttribute('data-m'));
+}
+
+function cliBarMontar(){
+  const bar=document.getElementById('cli-bar');
+  if(!bar) return;
+  bar.classList.toggle('on', CLI_TABS.indexOf(abaAtual)>=0);
+  const ix=cliIndice();
+  // valida o filtro salvo contra a base atual
+  if(cliFiltro.mat!=='todas' && !ix.porMat[cliFiltro.mat]) cliFiltro.mat='todas';
+  if(cliFiltro.cli!=='todos' && !ix.cli2mat[cliFiltro.cli]) cliFiltro.cli='todos';
+  if(cliFiltro.cli!=='todos' && cliFiltro.mat!=='todas' && !ix.porMat[cliFiltro.mat][cliFiltro.cli]) cliFiltro.cli='todos';
+
+  const selM=document.getElementById('cli-sel-mat'), selC=document.getElementById('cli-sel-cli');
+  selM.innerHTML='<option value="todas">Todas ('+ix.mats.length+')</option>'
+    + ix.mats.map(m=>{
+        const n=Object.keys(ix.porMat[m]).length;
+        return '<option value="'+esc(m)+'">'+esc(m)+' · '+n+' cliente'+(n>1?'s':'')+'</option>';
+      }).join('');
+  selM.value=cliFiltro.mat;
+  const clis = (cliFiltro.mat==='todas' ? Object.keys(ix.cli2mat) : Object.keys(ix.porMat[cliFiltro.mat]||{}))
+    .sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  selC.innerHTML='<option value="todos">Todos ('+clis.length+')</option>'
+    + clis.map(c=>'<option value="'+esc(c)+'">'+esc(c)+(cliFiltro.mat==='todas'?'  —  '+esc(ix.cli2mat[c]):'')+'</option>').join('');
+  selC.value=cliFiltro.cli;
+  selM.classList.toggle('ativo', cliFiltro.mat!=='todas');
+  selC.classList.toggle('ativo', cliFiltro.cli!=='todos');
+  document.getElementById('cli-limpar').style.display = cliAtivo() ? '' : 'none';
+  const info=document.getElementById('cli-bar-info');
+  if(!ix.temMatriz && ix.nCli){
+    info.innerHTML='<span style="color:#854F0B">⚠ Esta base ainda não tem o cadastro Matriz → Cliente — rode o atualizar.bat com o processar_otd.py v10.11.</span>';
+  } else {
+    const semCad=Object.keys(ix.porMat[SEM_CADASTRO]||{}).length;
+    info.innerHTML = cliAtivo()
+      ? 'Filtro aplicado em todas as abas de consulta.'
+      : ix.mats.length+' matrizes · '+ix.nCli+' clientes'
+        + (semCad?' · <span style="color:#A32D2D" title="Clientes da base sem cadastro no ESCD0704 — veja clientes_sem_cadastro.csv">'+semCad+' sem cadastro</span>':'');
+  }
+}
+
+function cliFiltroSet(tipo, val){
+  if(tipo==='mat'){ cliFiltro.mat = val || 'todas'; cliFiltro.cli = 'todos'; }
+  else {
+    cliFiltro.cli = val || 'todos';
+    if(cliFiltro.cli!=='todos'){ const m=cliIndice().cli2mat[cliFiltro.cli]; if(m) cliFiltro.mat=m; }
+  }
+  cliFiltroSalvar();
+  cliBarMontar();
+  cliRerenderAba();
+}
+function cliFiltroLimpar(){
+  cliFiltro = {mat:'todas', cli:'todos'};
+  cliFiltroSalvar();
+  cliBarMontar();
+  cliRerenderAba();
+}
+// Só a aba visível é redesenhada; as outras redesenham ao trocar de aba
+// (switchTab já chama o render de cada uma).
+function cliRerenderAba(){
+  const mapa={
+    atrasos:()=>{ atrasosPage=1; renderAtrasos(); },
+    transp:()=>renderTransp(),
+    clientes:()=>renderClientes(),
+    offtime:()=>renderOffTime(),
+    infull:()=>renderInFull(),
+    leadtime:()=>renderLeadTimes(),
+    abertas:()=>renderAbertas(),
+    consulta:()=>{ if(typeof window.consultaRefiltrar==='function') window.consultaRefiltrar(); }
+  };
+  const f=mapa[abaAtual];
+  if(f){ try{ f(); }catch(e){ console.error('[Filtro Matriz/Cliente]', e); } }
 }
 
 // ============================================================
@@ -2306,25 +2605,24 @@ async function processOTD(file){
 function renderTransp(){
   if(!otdData) return;
   const d = otdData;
-  const list = d.otd || []; // transpList from processOTD
+  // v10.11: com filtro Matriz/Cliente a lista é recalculada só com as NFs
+  // desse(s) cliente(s); sem filtro vale o quadro oficial do pipeline.
+  const list = transpLista();
+  window.__transpLista = list;
+  cliPintarAviso('transp-cli-aviso', 'entregas, OTD, prazo médio e carteira recalculados só com as NFs deste recorte.');
 
   // Recalculate prazo_medio if missing (e.g. loaded from storage without it)
   list.forEach(t => {
     if(t.prazo_medio == null && t.dias_n > 0) {
       t.prazo_medio = Math.round(t.dias_sum / t.dias_n * 10) / 10;
     }
-    // Se dias_n não existe mas prazo_medio existe, ok — manter
     if(t.otd == null && t.fin > 0) {
       t.otd = Math.round(t.on / t.fin * 1000) / 10;
     }
-    // Compatibilidade com JSON antigo: se faltar fin_val, infere (zero)
-    // O painel mostrará '—' até a base ser reprocessada com Python v9.4+
     if(t.fin_val == null) t.fin_val = 0;
-    // Compatibilidade com JSON v9.5 e anteriores (sem subcategorias)
     if(t.tratativa == null) t.tratativa = 0;
     if(t.ag_cte == null) t.ag_cte = 0;
     if(t.transito_agenda == null) t.transito_agenda = 0;
-    // Also fix nested ufs and regs
     (t.ufs||[]).forEach(u => {
       if(u.prazo_medio == null && u.dias_n > 0) u.prazo_medio = Math.round(u.dias_sum / u.dias_n * 10) / 10;
       if(u.otd == null && u.fin > 0) u.otd = Math.round(u.on / u.fin * 1000) / 10;
@@ -2338,21 +2636,26 @@ function renderTransp(){
   // Only show transportadoras with at least 1 finalized delivery
   const fin = list.filter(t => t.fin > 0);
 
-  // Para ranking prazo médio, incluir transportadoras mesmo sem dias_n (pode ter prazo_medio direto)
-  // Garante que fin com prazo_medio não nulo aparece no ranking
   fin.forEach(t => {
     if(t.prazo_medio == null && t.fin > 0 && t.dias_sum > 0) {
       t.prazo_medio = Math.round(t.dias_sum / Math.max(t.dias_n||1, 1) * 10) / 10;
     }
   });
 
-  document.getElementById('transp-empty').style.display = fin.length ? 'none' : 'block';
-  document.getElementById('transp-content').style.display = fin.length ? 'block' : 'none';
-  if(!fin.length) return;
+  const vazio = !fin.length;
+  document.getElementById('transp-empty').style.display = vazio && !cliAtivo() ? 'block' : 'none';
+  document.getElementById('transp-content').style.display = vazio && !cliAtivo() ? 'none' : 'block';
+  document.getElementById('transp-detalhe').style.display = 'none';
+  if(vazio){
+    // com filtro de cliente sem entrega finalizada: limpa os quadros em vez de sumir com a aba
+    document.getElementById('transp-kpis').innerHTML = '';
+    document.getElementById('transp-tbody').innerHTML = '<tr><td colspan="15" style="color:var(--text3);text-align:center;padding:20px">Nenhuma entrega finalizada para '+esc(cliFiltroTexto()||'os filtros atuais')+'</td></tr>';
+    document.getElementById('transp-ranking-otd').innerHTML = '';
+    document.getElementById('transp-ranking-prazo').innerHTML = '';
+    return;
+  }
 
-  // Nota do quadro 1: avisa explicitamente quando o drill-down por NF não está
-  // disponível (dados.json gerado antes do processar_otd.py com nfs_pend).
-  // Sem isso a feature sumia em silêncio e parecia bug no painel.
+  // Nota do quadro 1
   const notaQ1 = document.getElementById('transp-q1-nota');
   if(notaQ1){
     const temDrill = fin.some(t => Array.isArray(t.nfs_pend) && t.nfs_pend.length > 0);
@@ -2360,10 +2663,9 @@ function renderTransp(){
                        +(t.tratativa||0)+(t.ag_cte||0)+(t.transito_agenda||0), 0);
     const base = 'Apenas entregas finalizadas (On Time + Off Time). Prazo médio = dias entre emissão e entrega efetiva.';
     if(temDrill){
-      notaQ1.innerHTML = base + ' <span style="color:#0072BC;font-weight:600">Clique na transportadora para abrir as NFs pendentes.</span>';
+      notaQ1.innerHTML = base + ' <span style="color:#0072BC;font-weight:600">Clique na transportadora para abrir as NFs em aberto.</span>';
     } else if(pendGeral > 0){
       notaQ1.innerHTML = base + ' <span style="color:#854F0B;font-weight:600">⚠ Detalhe por NF indisponível nesta base — rode o atualizar.bat com o processar_otd.py novo para habilitar o drill-down.</span>';
-      console.warn('[Transportadoras] dados.json sem o campo nfs_pend — drill-down desabilitado. Reprocesse a base (atualizar.bat).');
     } else {
       notaQ1.innerHTML = base;
     }
@@ -2372,9 +2674,9 @@ function renderTransp(){
   // KPIs
   const totFin = fin.reduce((s,t)=>s+t.fin,0);
   const totOn  = fin.reduce((s,t)=>s+t.on,0);
-  const totOff = fin.reduce((s,t)=>s+t.off,0);
-  const diasArr = fin.filter(t=>t.prazo_medio!=null);
-  const prazoGeral = diasArr.length ? (diasArr.reduce((s,t)=>s+(t.prazo_medio*t.dias_n),0)/diasArr.reduce((s,t)=>s+t.dias_n,0)) : null;
+  const diasArr = fin.filter(t=>t.prazo_medio!=null && t.dias_n>0);
+  const diasDen = diasArr.reduce((s,t)=>s+t.dias_n,0);
+  const prazoGeral = diasDen ? (diasArr.reduce((s,t)=>s+(t.prazo_medio*t.dias_n),0)/diasDen) : null;
   const otdGeral = totFin ? (totOn/totFin*100) : null;
   const melhor = fin.filter(t=>t.otd!=null).sort((a,b)=>b.otd-a.otd)[0];
   const pior   = fin.filter(t=>t.otd!=null).sort((a,b)=>a.otd-b.otd)[0];
@@ -2396,28 +2698,33 @@ function renderTransp(){
   document.getElementById('transp-kpis').innerHTML = kpis.map((k,i)=>`
     <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:11px 13px">
       <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${k.l}</div>
-      <div style="font-size:18px;font-weight:700;color:${i===0?'var(--text)':i===1?kco(k.v,95,80,false):i===2?kco(parseFloat(k.v),3,5,true):'var(--text)'}">${k.v}</div>
-      <div style="font-size:10px;color:var(--text2);margin-top:3px">${k.s}</div>
+      <div style="font-size:18px;font-weight:700;color:${i===0?'var(--text)':i===1?kco(k.v,95,80,false):i===2?kco(parseFloat(k.v),3,5,true):'var(--text)'}">${esc(k.v)}</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:3px">${esc(k.s)}</div>
     </div>`).join('');
 
   // Main table
   const otdC = v => v==null?'color:var(--text2)':v>=99?'color:#004A87;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
-  const maxFin = fin[0]?.fin || 1;
 
+  // Barra "N de M NFs": M = NFs do escopo (finalizadas + em aberto), sem devolvida (v10.10)
   const totalNFsGeral = (list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0)+(x.tratativa||0)+(x.ag_cte||0)+(x.transito_agenda||0),0)||1);
   window.__transpNFs = {};
+  window.__transpFin = fin;
   document.getElementById('transp-tbody').innerHTML = fin.map((t, ti) => {
-    // v9.13: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
-    // Recalculado no JS para funcionar com JSON de qualquer versão.
+    // Valor Pendente = carteira em aberto (TIPOS_ABERTOS). Recalculado no JS
+    // para funcionar com JSON de qualquer versão.
     const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
                        + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
-    const nfsP = Array.isArray(t.nfs_pend) ? t.nfs_pend : [];
+    // v10.10: drill-down só com a carteira em aberto — normaliza também um
+    // dados.json antigo que ainda traga devolvidas dentro de nfs_pend.
+    const nfsP = (Array.isArray(t.nfs_pend) ? t.nfs_pend : []).filter(n => ehAberto(n.tipo));
     window.__transpNFs[ti] = nfsP;
     const temNF = nfsP.length > 0;
+    // v10.11: o onclick leva só o índice — o nome da transportadora não vai
+    // mais para dentro do atributo (aspas/barra no nome quebravam o clique).
     return `
-    <tr style="cursor:pointer" onclick="transpToggleNF(${ti}, this, '${t.n.replace(/'/g,"\\'")}')">
-      <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${temNF?'<span class="tr-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':''}${t.n}</td>
+    <tr style="cursor:pointer" onclick="transpToggleNF(${ti}, this)">
+      <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.n)}">${temNF?'<span class="tr-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':''}${esc(t.n)}</td>
       <td class="r">${t.fin}</td>
       <td class="r" style="color:#3B6D11">${t.on}</td>
       <td class="r" style="color:#A32D2D">${t.off}</td>
@@ -2448,7 +2755,7 @@ function renderTransp(){
   document.getElementById('transp-ranking-otd').innerHTML = byOTD.map((t,i)=>`
     <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border)">
       <span style="font-size:10px;color:var(--text3);width:16px;flex-shrink:0">${i+1}</span>
-      <span style="flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.n}</span>
+      <span style="flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.n)}">${esc(t.n)}</span>
       <span style="font-size:12px;font-weight:600;${otdC(t.otd)}">${t.otd.toFixed(1)}%</span>
       <span style="font-size:10px;color:var(--text2)">${t.fin} NFs</span>
     </div>`).join('');
@@ -2456,10 +2763,67 @@ function renderTransp(){
   document.getElementById('transp-ranking-prazo').innerHTML = byPrazo.map((t,i)=>`
     <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border)">
       <span style="font-size:10px;color:var(--text3);width:16px;flex-shrink:0">${i+1}</span>
-      <span style="flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.n}</span>
+      <span style="flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(t.n)}">${esc(t.n)}</span>
       <span style="font-size:12px;font-weight:600;${prazoC(t.prazo_medio)}">${t.prazo_medio.toFixed(1)}d</span>
       <span style="font-size:10px;color:var(--text2)">${t.fin} NFs</span>
     </div>`).join('');
+}
+
+// ------------------------------------------------------------
+// v10.11: Transportadoras recalculadas a partir das NFs dos clientes
+// (clientes[].nfs traz TODAS as NFs do escopo). Mesmas réguas do
+// processar_otd.py: prazo = emissão → entrega entre 0 e 60 dias; Valor
+// Pendente e drill-down = carteira em aberto (TIPOS_ABERTOS).
+// ------------------------------------------------------------
+function transpLista(){
+  const d = otdData || {};
+  if(!cliAtivo()) return d.otd || [];
+  const mapa = {};
+  (d.clientes||[]).forEach(c=>{
+    if(!passaCli(c.mat, c.n)) return;
+    (c.nfs||[]).forEach(n=>{
+      const t = n.transp; if(!t) return;
+      if(!mapa[t]) mapa[t] = {n:t,fin:0,on:0,off:0,hub:0,trs:0,trs_atr:0,tratativa:0,ag_cte:0,transito_agenda:0,devolvida:0,
+        hub_val:0,trs_val:0,trs_atr_val:0,nao_val:0,tratativa_val:0,ag_cte_val:0,transito_agenda_val:0,devolvida_val:0,
+        on_val:0,off_val:0,fin_val:0,dias_sum:0,dias_n:0,_uf:{},_reg:{},nfs_pend:[]};
+      const tp = mapa[t], v = n.valor||0, tipo = n.tipo;
+      const reg = n.regiao || REGIOES_MAP[n.uf] || 'Outros';
+      if(tipo==='on_time' || tipo==='off_time'){
+        const on = tipo==='on_time';
+        tp.fin++; tp[on?'on':'off']++; tp.fin_val+=v; tp[on?'on_val':'off_val']+=v;
+        const dias = diasEntre(n.dt_fat, n.dt_ent);
+        if(dias!=null && dias>=0 && dias<=60){
+          tp.dias_sum+=dias; tp.dias_n++;
+          const u = tp._uf[n.uf] || (tp._uf[n.uf]={uf:n.uf,reg:reg,fin:0,on:0,off:0,dias_sum:0,dias_n:0});
+          u.fin++; u[on?'on':'off']++; u.dias_sum+=dias; u.dias_n++;
+          const rg = tp._reg[reg] || (tp._reg[reg]={reg:reg,fin:0,on:0,off:0,dias_sum:0,dias_n:0});
+          rg.fin++; rg[on?'on':'off']++; rg.dias_sum+=dias; rg.dias_n++;
+        }
+      }
+      else if(tipo==='hub'){ tp.hub++; tp.hub_val+=v; }
+      else if(tipo==='transito'){ tp.trs++; tp.trs_val+=v; }
+      else if(tipo==='transito_atr'){ tp.trs_atr++; tp.trs_atr_val+=v; }
+      else if(tipo==='tratativa'||tipo==='ag_cte'||tipo==='transito_agenda'||tipo==='devolvida'){ tp[tipo]++; tp[tipo+'_val']+=v; }
+      if(ehAberto(tipo)){
+        tp.nao_val+=v;
+        tp.nfs_pend.push({nf:n.nf, pedido:n.pedido, cliente:c.n, matriz:c.mat, regiao:reg, uf:n.uf,
+                          dt_fat:n.dt_fat, dt_prev:n.dt_prev, valor:v, peso:n.peso, tipo:tipo});
+      }
+    });
+  });
+  const ORD = {hub:0,transito:1,transito_atr:2,tratativa:3,ag_cte:4,transito_agenda:5};
+  const ordData = s => { const x=dataBR(s); return x==null?Infinity:x; };
+  const pct = (a,b)=> b>0 ? Math.round(a/b*1000)/10 : null;
+  const med = (s,n)=> n>0 ? Math.round(s/n*10)/10 : null;
+  return Object.values(mapa).map(tp=>{
+    tp.otd = pct(tp.on, tp.fin);
+    tp.prazo_medio = med(tp.dias_sum, tp.dias_n);
+    tp.ufs  = Object.values(tp._uf).map(u=>Object.assign(u,{otd:pct(u.on,u.fin), prazo_medio:med(u.dias_sum,u.dias_n)})).sort((a,b)=>b.fin-a.fin);
+    tp.regs = Object.values(tp._reg).map(r=>Object.assign(r,{otd:pct(r.on,r.fin), prazo_medio:med(r.dias_sum,r.dias_n)})).sort((a,b)=>b.fin-a.fin);
+    tp.nfs_pend.sort((a,b)=>(ORD[a.tipo]-ORD[b.tipo]) || (ordData(a.dt_prev)-ordData(b.dt_prev)));
+    delete tp._uf; delete tp._reg;
+    return tp;
+  }).sort((a,b)=>b.fin-a.fin);
 }
 
 // Drill-down do quadro 1 (Transportadoras) — carteira pendente por NF,
@@ -2473,9 +2837,10 @@ const TRANSP_STATUS = [
   {k:'transito_agenda', lbl:'Trânsito Agenda',      cor:'#C76137', bg:'#FBEEE3'}
 ];
 
-function transpToggleNF(ti, rowEl, nome){
+function transpToggleNF(ti, rowEl){
   // Mantém o comportamento antigo: seleciona a transportadora nos quadros 2 e 3
-  if(typeof showTranspDetalhe==='function' && nome) showTranspDetalhe(nome, true);
+  const t = (window.__transpFin||[])[ti];
+  if(t) showTranspDetalhe(t, true);
   const d = document.getElementById('trp-d-'+ti);
   if(!d) return;
   const abrir = d.style.display==='none';
@@ -2490,13 +2855,12 @@ function transpToggleNF(ti, rowEl, nome){
   const mapS = {}; TRANSP_STATUS.forEach(s => mapS[s.k] = s);
   let html = '<div style="padding:10px 14px 14px 26px">';
   if(!nfs.length){
-    html += '<div style="padding:12px;color:var(--text3);font-size:12px">Nenhuma NF pendente para esta transportadora.</div></div>';
+    html += '<div style="padding:12px;color:var(--text3);font-size:12px">Nenhuma NF em aberto para esta transportadora.</div></div>';
     cell.innerHTML = html; cell.dataset.done = '1'; return;
   }
-  // Linha de resumo: total + contagem por situação (mesma sequência do quadro)
   const totalVal = nfs.reduce((a,n)=>a+(n.valor||0),0);
   const totalPeso = nfs.reduce((a,n)=>a+(n.peso||0),0);
-  let resumo = '<span style="font-weight:600;color:#A32D2D">'+nfs.length+' NF(s) pendente(s)</span>'
+  let resumo = '<span style="font-weight:600;color:#A32D2D">'+nfs.length+' NF(s) em aberto</span>'
              + '<span style="margin:0 8px;color:var(--border2)">|</span>'
              + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>'
              + (totalPeso>0?'<span style="margin:0 8px;color:var(--border2)">|</span><span style="font-weight:600;color:var(--text2)">'+fmtKgTotal(totalPeso)+'</span>':'');
@@ -2507,21 +2871,22 @@ function transpToggleNF(ti, rowEl, nome){
   });
   html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
   html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
-    + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Cliente</th><th>Região</th><th>UF</th>'
+    + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Matriz</th><th>Cliente</th><th>Região</th><th>UF</th>'
     + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th class="r">Valor NF</th><th class="r">Peso</th></tr></thead><tbody>'
     + nfs.map((n,i)=>{
         const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888', bg:'var(--bg2)'};
         const corReg = REG_CORES[n.regiao] || '#888';
         return '<tr>'
           + '<td style="color:var(--text3)">'+(i+1)+'</td>'
-          + '<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
-          + '<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
-          + '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
-          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
-          + '<td style="font-weight:600">'+(n.uf||'—')+'</td>'
-          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
-          + '<td style="color:var(--text2)">'+(n.dt_fat||'—')+'</td>'
-          + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
+          + '<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+esc(n.nf||'—')+'</td>'
+          + '<td style="font-family:monospace;color:var(--text2)">'+esc(n.pedido||'—')+'</td>'
+          + '<td>'+cliChipMat(matDe(n.matriz, n.cliente))+'</td>'
+          + '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cliente||'')+'">'+esc(n.cliente||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
+          + '<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span></td>'
+          + '<td style="color:var(--text2)">'+esc(n.dt_fat||'—')+'</td>'
+          + '<td style="color:var(--text2)">'+esc(n.dt_prev||'—')+'</td>'
           + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
           + '<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
           + '</tr>';
@@ -2537,16 +2902,20 @@ function transpToggleNF(ti, rowEl, nome){
 // Drill-down leva TODAS as NFs (entregues + em aberto) — por isso tem
 // Data de Entrega e o filtro "Somente em aberto".
 // ============================================================
-let clientesFilter_state = {nfs:'todas', reg:'todas'};
+let clientesFilter_state = {nfs:'todas', reg:'todas', vis:'cli'};
 let clientesPage = 1;
 const CLIENTES_PER_PAGE = 50;
+const CLIENTES_COLS = 17;
 
-// Situações: as 6 pendentes (mesma paleta do painel) + as 2 finalizadas
+// Situações: as 6 em aberto (mesma paleta do painel) + as finalizadas.
+// v10.10: Devolvida e Cancelada ganharam rótulo (antes caíam no fallback cinza).
 const CLI_STATUS = TRANSP_STATUS.concat([
-  {k:'off_time', lbl:'Entregue em Atraso', cor:'#854F0B', bg:'#FAEEDA'},
-  {k:'on_time',  lbl:'Entregue no Prazo',  cor:'#3B6D11', bg:'#EAF3DE'}
+  {k:'off_time',  lbl:'Entregue em Atraso', cor:'#854F0B', bg:'#FAEEDA'},
+  {k:'on_time',   lbl:'Entregue no Prazo',  cor:'#3B6D11', bg:'#EAF3DE'},
+  {k:'devolvida', lbl:'Devolvida',          cor:'#6B4E16', bg:'#F3ECDD'},
+  {k:'cancelada', lbl:'Cancelada',          cor:'#4B5563', bg:'#ECEDEF'}
 ]);
-const CLI_ABERTO = ['hub','transito','transito_atr','tratativa','ag_cte','transito_agenda'];
+const CLI_ABERTO = TIPOS_ABERTOS;
 
 function renderClientes(){
   const lista = (otdData && otdData.clientes) || [];
@@ -2557,20 +2926,34 @@ function renderClientes(){
     if(otdData) console.warn('[Clientes] dados.json sem o campo "clientes" — rode o atualizar.bat com o processar_otd.py novo.');
     return;
   }
+  cliPintarAviso('clientes-cli-aviso');
 
-  // Botões de região (a partir dos dados)
+  // Botões de região — reconstruídos a cada render (v10.11: antes eram
+  // montados uma vez só e não acompanhavam uma base nova).
   const regs = [...new Set(lista.map(c=>c.regiao).filter(Boolean))].sort();
+  if(clientesFilter_state.reg!=='todas' && !regs.includes(clientesFilter_state.reg)) clientesFilter_state.reg='todas';
   const regBtns = document.getElementById('clientes-reg-btns');
-  if(regBtns && !regBtns.dataset.done){
+  if(regBtns){
     regBtns.innerHTML = '';
     regs.forEach(r=>{
-      const b=document.createElement('button'); b.className='fbtn'; b.textContent=r;
+      const b=document.createElement('button'); b.className='fbtn'+(clientesFilter_state.reg===r?' on':''); b.textContent=r;
       b.onclick=function(){ clientesFilterReg(r,this); };
       regBtns.appendChild(b);
     });
-    regBtns.dataset.done = '1';
+    const todas=document.getElementById('clientes-r-todas');
+    if(todas) todas.classList.toggle('on', clientesFilter_state.reg==='todas');
   }
+  document.getElementById('clientes-v-cli').classList.toggle('on', clientesFilter_state.vis==='cli');
+  document.getElementById('clientes-v-mat').classList.toggle('on', clientesFilter_state.vis==='mat');
 
+  clientesPage = 1;
+  renderClientesTabela();
+}
+
+function clientesVisao(v){
+  clientesFilter_state.vis = v;
+  document.getElementById('clientes-v-cli').classList.toggle('on', v==='cli');
+  document.getElementById('clientes-v-mat').classList.toggle('on', v==='mat');
   clientesPage = 1;
   renderClientesTabela();
 }
@@ -2603,20 +2986,19 @@ function clientesSearch(){
 // (são o histórico do cliente) — o filtro age sobre a lista de NFs e
 // esconde quem não tem nada em aberto.
 function getClientesFiltrados(){
-  const busca = (document.getElementById('clientes-search')?.value || '').trim().toLowerCase();
+  const busca = normTxt(document.getElementById('clientes-search')?.value || '');
   const soAberto = clientesFilter_state.nfs === 'aberto';
   const out = [];
   ((otdData && otdData.clientes) || []).forEach(c => {
+    if(!passaCli(c.mat, c.n)) return;
     if(clientesFilter_state.reg !== 'todas' && c.regiao !== clientesFilter_state.reg) return;
     let nfs = Array.isArray(c.nfs) ? c.nfs : [];
-    if(soAberto) nfs = nfs.filter(n => CLI_ABERTO.includes(n.tipo));
+    if(soAberto) nfs = nfs.filter(n => ehAberto(n.tipo));
     if(busca){
-      const achouCli = (c.n||'').toLowerCase().includes(busca) || (c.uf||'').toLowerCase().includes(busca)
-                    || (c.cidade||'').toLowerCase().includes(busca);
+      const achouCli = [c.n, c.mat, c.razao, c.cnpj, c.uf, c.cidade].some(v => normTxt(v).includes(busca));
       if(!achouCli){
         // busca também casa por número de nota / pedido dentro do cliente
-        const nfsBusca = nfs.filter(n => String(n.nf||'').toLowerCase().includes(busca)
-                                      || String(n.pedido||'').toLowerCase().includes(busca));
+        const nfsBusca = nfs.filter(n => normTxt(n.nf).includes(busca) || normTxt(n.pedido).includes(busca));
         if(!nfsBusca.length) return;
         nfs = nfsBusca;
       }
@@ -2627,24 +3009,58 @@ function getClientesFiltrados(){
   return out;
 }
 
+// v10.11: visão "Por Matriz" — soma os clientes (já filtrados) da mesma matriz
+function agruparPorMatriz(lista){
+  const mapa = {};
+  const campos = ['fin','on','off','hub','trs','trs_atr','tratativa','ag_cte','transito_agenda','devolvida',
+                  'fin_val','hub_val','trs_val','trs_atr_val','tratativa_val','ag_cte_val','transito_agenda_val','dias_sum','dias_n'];
+  lista.forEach(c => {
+    const m = matDe(c.mat, c.n);
+    if(!mapa[m]){ mapa[m] = {n:m, mat:m, _clientes:[], _nfs:[], _ufs:{}}; campos.forEach(k=>mapa[m][k]=0); }
+    const x = mapa[m];
+    campos.forEach(k => x[k] += (c[k]||0));
+    x._clientes.push(c);
+    x._nfs = x._nfs.concat((c._nfs||[]).map(n=>Object.assign({_cli:c.n}, n)));
+    if(c.uf) x._ufs[c.uf] = (x._ufs[c.uf]||0) + 1;
+  });
+  return Object.values(mapa).map(x => {
+    const ufs = Object.entries(x._ufs).sort((a,b)=>b[1]-a[1]);
+    x.uf = ufs.length ? ufs[0][0] : '';
+    x.uf_extra = Math.max(ufs.length-1, 0);
+    x.regiao = REGIOES_MAP[x.uf] || 'Outros';
+    x.otd = x.fin>0 ? Math.round(x.on/x.fin*1000)/10 : null;
+    x.prazo_medio = x.dias_n>0 ? Math.round(x.dias_sum/x.dias_n*10)/10 : null;
+    return x;
+  }).sort((a,b)=>(b.fin+b.hub+b.trs+b.trs_atr+b.tratativa+b.ag_cte+b.transito_agenda)
+               -(a.fin+a.hub+a.trs+a.trs_atr+a.tratativa+a.ag_cte+a.transito_agenda));
+}
+
 function renderClientesTabela(){
-  const lista = getClientesFiltrados();
+  const clientes = getClientesFiltrados();
+  const porMatriz = clientesFilter_state.vis === 'mat';
+  const lista = porMatriz ? agruparPorMatriz(clientes) : clientes;
   const total = lista.length;
   const pages = Math.ceil(total/CLIENTES_PER_PAGE) || 1;
   if(clientesPage > pages) clientesPage = pages;
+  if(clientesPage < 1) clientesPage = 1;
   const slice = lista.slice((clientesPage-1)*CLIENTES_PER_PAGE, clientesPage*CLIENTES_PER_PAGE);
 
-  // KPIs (respeitam os filtros)
-  const tFin  = lista.reduce((s,c)=>s+(c.fin||0),0);
-  const tOn   = lista.reduce((s,c)=>s+(c.on||0),0);
-  const tPend = lista.reduce((s,c)=>s+(c.hub||0)+(c.trs||0)+(c.trs_atr||0)+(c.tratativa||0)+(c.ag_cte||0)+(c.transito_agenda||0),0);
-  const tAtr  = lista.reduce((s,c)=>s+(c.trs_atr||0),0);
-  const tPendVal = lista.reduce((s,c)=>s+(c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
+  document.getElementById('clientes-q1-titulo').textContent = porMatriz ? 'Performance por Matriz' : 'Performance por Cliente';
+  document.getElementById('clientes-th1').textContent = 'Matriz';
+  document.getElementById('clientes-th2').textContent = porMatriz ? 'Clientes' : 'Cliente';
+
+  // KPIs (respeitam os filtros) — sempre sobre os clientes, nas duas visões
+  const tFin  = clientes.reduce((s,c)=>s+(c.fin||0),0);
+  const tOn   = clientes.reduce((s,c)=>s+(c.on||0),0);
+  const tPend = clientes.reduce((s,c)=>s+(c.hub||0)+(c.trs||0)+(c.trs_atr||0)+(c.tratativa||0)+(c.ag_cte||0)+(c.transito_agenda||0),0);
+  const tAtr  = clientes.reduce((s,c)=>s+(c.trs_atr||0),0);
+  const tPendVal = clientes.reduce((s,c)=>s+(c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
                      +(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0),0);
+  const nMat = new Set(clientes.map(c=>matDe(c.mat,c.n))).size;
   const otdGeral = tFin>0 ? (tOn/tFin*100) : null;
   const corOTD = v => v==null?'var(--text2)':v>=99?'#004A87':v>=80?'#378ADD':'#E24B4A';
   document.getElementById('clientes-kpis').innerHTML =
-     kpiBox('Clientes', total.toLocaleString('pt-BR'), 'na seleção atual', 'var(--text)')
+     kpiBox('Clientes', clientes.length.toLocaleString('pt-BR'), nMat.toLocaleString('pt-BR')+' matriz(es) na seleção', 'var(--text)')
     +kpiBox('OTD Geral', otdGeral!=null?otdGeral.toFixed(1)+'%':'—', tOn.toLocaleString('pt-BR')+' de '+tFin.toLocaleString('pt-BR')+' finalizadas', corOTD(otdGeral))
     +kpiBox('NFs em Aberto', tPend.toLocaleString('pt-BR'), 'ainda não entregues', '#854F0B')
     +kpiBox('Em Trânsito em Atraso', tAtr.toLocaleString('pt-BR'), 'atenção imediata', '#A32D2D')
@@ -2656,7 +3072,8 @@ function renderClientesTabela(){
   window.__clientesNFs = {};
   let rows = '';
   if(!slice.length){
-    rows = '<tr><td colspan="16" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+    rows = '<tr><td colspan="'+CLIENTES_COLS+'" style="color:var(--text3);text-align:center;padding:20px">'
+         + (porMatriz?'Nenhuma matriz encontrada':'Nenhum cliente encontrado')+'</td></tr>';
   } else {
     slice.forEach((c, ci) => {
       window.__clientesNFs[ci] = c._nfs || [];
@@ -2664,11 +3081,26 @@ function renderClientesTabela(){
       const valPend = (c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
                     +(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0);
       const corReg = REG_CORES[c.regiao] || '#888';
-      rows += '<tr'+(temNF?' style="cursor:pointer" onclick="clientesToggleNF('+ci+',this)"':'')+'>'
-        +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.n||'')+'">'
-          +(temNF?'<span class="cli-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':'')+(c.n||'—')+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:600;white-space:nowrap" title="'+(c.regiao||'')+'">'
-          +(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</span></td>'
+      let col1, col2, clique;
+      if(porMatriz){
+        // drill-down: clicar na matriz filtra por ela e abre os clientes
+        clique = ' style="cursor:pointer" data-m="'+esc(c.n)+'" onclick="clientesAbrirMatriz(this)" title="Clique para ver os clientes desta matriz"';
+        col1 = '<td style="font-weight:600;white-space:nowrap"><span class="cli-chev" style="display:inline-block;width:9px;color:var(--text3)">▸</span> '+cliChipMat(c.n)+'</td>';
+        const nomes = c._clientes.map(x=>x.n);
+        col2 = '<td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(nomes.join(', '))+'">'
+             + '<strong>'+nomes.length+'</strong> <span style="color:var(--text2);font-size:11px">'+esc(nomes.slice(0,3).join(', '))+(nomes.length>3?'…':'')+'</span></td>';
+      } else {
+        clique = temNF ? ' style="cursor:pointer" onclick="clientesToggleNF('+ci+',this)"' : '';
+        col1 = '<td>'+cliChipMat(c.mat)+'</td>';
+        const tip = (c.razao?'Razão social: '+c.razao:'') + (c.cnpj?' · CNPJ '+c.cnpj+((c.cnpj_extra||0)>0?' (+'+c.cnpj_extra+')':''):'');
+        col2 = '<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(tip)+'">'
+          +(temNF?'<span class="cli-chev" style="display:inline-block;width:9px;transition:transform .15s;color:var(--text3)">▸</span> ':'')+esc(c.n||'—')
+          +(c.razao && c.razao!==c.n ? '<span class="cli-razao">'+esc(c.razao)+'</span>' : '')+'</td>';
+      }
+      rows += '<tr'+clique+'>'
+        +col1+col2
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:600;white-space:nowrap" title="'+esc(c.regiao||'')+'">'
+          +esc(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</span></td>'
         +'<td class="r">'+(c.fin||0)+'</td>'
         +'<td class="r" style="color:#3B6D11">'+(c.on||0)+'</td>'
         +'<td class="r" style="color:'+((c.off||0)>0?'#A32D2D':'var(--text2)')+'">'+(c.off||0)+'</td>'
@@ -2688,7 +3120,7 @@ function renderClientesTabela(){
           +'<div style="font-size:9px;color:var(--text2);margin-top:2px">'+(c._nfs||[]).length+' NF(s) na lista</div>'
         +'</td>'
         +'</tr>';
-      if(temNF) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="16" style="padding:0;background:var(--bg2)"></td></tr>';
+      if(temNF && !porMatriz) rows += '<tr id="cli-d-'+ci+'" style="display:none"><td colspan="'+CLIENTES_COLS+'" style="padding:0;background:var(--bg2)"></td></tr>';
     });
   }
   document.getElementById('clientes-tbody').innerHTML = rows;
@@ -2696,19 +3128,27 @@ function renderClientesTabela(){
   // Nota do quadro
   const nota = document.getElementById('clientes-q1-nota');
   if(nota){
-    nota.innerHTML = 'OTD e Prazo Médio consideram só entregas finalizadas. Valor Pendente = tudo que ainda não foi entregue.'
-      + ' <span style="color:#0072BC;font-weight:600">Clique no cliente para abrir as NFs.</span>'
+    nota.innerHTML = 'OTD e Prazo Médio consideram só entregas finalizadas. Valor Pendente = carteira em aberto (sem devolvidas).'
+      + (porMatriz
+          ? ' <span style="color:#0072BC;font-weight:600">Clique na matriz para abrir os clientes dela.</span>'
+          : ' <span style="color:#0072BC;font-weight:600">Clique no cliente para abrir as NFs · clique na matriz para filtrar por ela.</span>')
       + (clientesFilter_state.nfs==='aberto' ? ' <span style="color:#854F0B;font-weight:600">Filtro ativo: só NFs em aberto.</span>' : '');
   }
 
   // Paginação
-  let pag = '<span>'+total.toLocaleString('pt-BR')+' cliente(s)</span><span style="margin:0 8px">|</span>';
+  let pag = '<span>'+total.toLocaleString('pt-BR')+(porMatriz?' matriz(es)':' cliente(s)')+'</span><span style="margin:0 8px">|</span>';
   if(pages > 1){
     pag += '<button class="btn-sm" onclick="clientesPaginar(-1)" '+(clientesPage<=1?'disabled':'')+'>← Ant</button>';
     pag += '<span style="margin:0 6px">Pág '+clientesPage+' de '+pages+'</span>';
     pag += '<button class="btn-sm" onclick="clientesPaginar(1)" '+(clientesPage>=pages?'disabled':'')+'>Próx →</button>';
   }
   document.getElementById('clientes-paginacao').innerHTML = pag;
+}
+
+// Drill-down da visão Por Matriz → filtra pela matriz e mostra os clientes
+function clientesAbrirMatriz(el){
+  clientesFilter_state.vis = 'cli';
+  cliFiltroSet('mat', el.getAttribute('data-m'));
 }
 
 function kpiBox(lbl, val, sub, cor){
@@ -2764,16 +3204,16 @@ function clientesToggleNF(ci, rowEl){
         const corReg = REG_CORES[n.regiao] || '#888';
         return '<tr>'
           + '<td style="color:var(--text3)">'+(i+1)+'</td>'
-          + '<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
-          + '<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
-          + '<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
-          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
-          + '<td style="font-weight:600">'+(n.uf||'—')+'</td>'
-          + '<td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cidade||'')+'">'+(n.cidade||'—')+'</td>'
-          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
-          + '<td style="color:var(--text2)">'+(n.dt_fat||'—')+'</td>'
-          + '<td style="color:var(--text2)">'+(n.dt_prev||'—')+'</td>'
-          + '<td style="color:'+(n.dt_ent?'var(--text)':'var(--text3)')+';font-weight:'+(n.dt_ent?'500':'400')+'">'+(n.dt_ent||'—')+'</td>'
+          + '<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+esc(n.nf||'—')+'</td>'
+          + '<td style="font-family:monospace;color:var(--text2)">'+esc(n.pedido||'—')+'</td>'
+          + '<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.transp||'')+'">'+esc(n.transp||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
+          + '<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
+          + '<td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cidade||'')+'">'+esc(n.cidade||'—')+'</td>'
+          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span></td>'
+          + '<td style="color:var(--text2)">'+esc(n.dt_fat||'—')+'</td>'
+          + '<td style="color:var(--text2)">'+esc(n.dt_prev||'—')+'</td>'
+          + '<td style="color:'+(n.dt_ent?'var(--text)':'var(--text3)')+';font-weight:'+(n.dt_ent?'500':'400')+'">'+esc(n.dt_ent||'—')+'</td>'
           + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
           + '<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
           + '</tr>';
@@ -2783,7 +3223,7 @@ function clientesToggleNF(ci, rowEl){
   cell.dataset.done = '1';
 }
 
-// Excel: 1 linha por NF, respeitando os filtros da tela
+// Excel: 1 linha por NF, respeitando os filtros da tela (Matriz/Cliente inclusos)
 function exportarClientesExcel(ev){
   const btn = ev && ev.target ? ev.target.closest('button') : null;
   const txt = btn ? btn.innerHTML : '';
@@ -2796,7 +3236,10 @@ function exportarClientesExcel(ev){
     lista.forEach(c => (c._nfs||[]).forEach(n => {
       rows.push({
         '#': ++seq,
+        'Matriz': matDe(c.mat, c.n),
         'Cliente': c.n,
+        'Razao Social (TMS)': c.razao||'',
+        'CNPJ': c.cnpj||'',
         'Numero NF': n.nf||'',
         'Pedido': n.pedido||'',
         'Transportadora': n.transp||'',
@@ -2813,14 +3256,15 @@ function exportarClientesExcel(ev){
     }));
     if(!rows.length){ alert('Nenhuma NF para exportar nos filtros atuais.'); return; }
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{wch:5},{wch:38},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:20},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14},{wch:12}];
+    ws['!cols'] = [{wch:5},{wch:18},{wch:18},{wch:38},{wch:16},{wch:12},{wch:14},{wch:30},{wch:14},{wch:5},{wch:20},{wch:22},{wch:16},{wch:14},{wch:13},{wch:14},{wch:12}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'NFs por Cliente');
     let nome = 'clientes_nfs';
+    if(cliFiltro.mat!=='todas') nome += '_' + cliFiltro.mat.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
+    if(cliFiltro.cli!=='todos') nome += '_' + cliFiltro.cli.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
     if(clientesFilter_state.nfs==='aberto') nome += '_em-aberto';
     if(clientesFilter_state.reg!=='todas')  nome += '_' + clientesFilter_state.reg;
-    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
-    XLSX.writeFile(wb, nome + '_' + stamp + '.xlsx');
+    XLSX.writeFile(wb, nome + '_' + stampHoje() + '.xlsx');
   } catch(e){
     alert('Erro ao exportar: ' + e.message);
     console.error(e);
@@ -2829,11 +3273,14 @@ function exportarClientesExcel(ev){
   }
 }
 
-function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
-  const t = (otdData.otd||[]).find(x=>x.n===nome);
+function showTranspDetalhe(ref, semScroll){  if(!otdData) return;
+  // v10.11: recebe o objeto da lista que está na tela (com filtro Matriz/
+  // Cliente ela é recalculada) ou, por compatibilidade, o nome.
+  const t = (typeof ref==='object' && ref) ? ref
+          : (window.__transpLista||otdData.otd||[]).find(x=>x.n===ref);
   if(!t) return;
   document.getElementById('transp-detalhe').style.display='block';
-  document.getElementById('transp-sel-nome').textContent=nome;
+  document.getElementById('transp-sel-nome').textContent=t.n;
 
   const otdC = v => v==null?'color:var(--text2)':v>=99?'color:#004A87;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
@@ -2842,7 +3289,7 @@ function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
   const regs = (t.regs||[]).sort((a,b)=>b.fin-a.fin);
   document.getElementById('transp-reg-tbody').innerHTML = regs.map(r=>`
     <tr>
-      <td style="font-weight:500">${r.reg}</td>
+      <td style="font-weight:500">${esc(r.reg)}</td>
       <td class="r">${r.fin}</td>
       <td class="r" style="color:#3B6D11">${r.on}</td>
       <td class="r" style="${otdC(r.otd)}">${r.otd!=null?r.otd.toFixed(1)+'%':'—'}</td>
@@ -2853,8 +3300,8 @@ function showTranspDetalhe(nome, semScroll){  if(!otdData) return;
   const ufs = (t.ufs||[]).sort((a,b)=>b.fin-a.fin);
   document.getElementById('transp-uf-tbody').innerHTML = ufs.map(u=>`
     <tr>
-      <td style="font-weight:600">${u.uf}</td>
-      <td style="font-size:10px;color:var(--text2)">${u.reg}</td>
+      <td style="font-weight:600">${esc(u.uf)}</td>
+      <td style="font-size:10px;color:var(--text2)">${esc(u.reg)}</td>
       <td class="r">${u.fin}</td>
       <td class="r" style="color:#3B6D11">${u.on}</td>
       <td class="r" style="${otdC(u.otd)}">${u.otd!=null?u.otd.toFixed(1)+'%':'—'}</td>
@@ -2945,21 +3392,16 @@ async function garantirMesEntrega(){
 }
 
 function mesEntregaParse(txt){
-  const linhas=txt.split(/\r?\n/);
-  const split=l=>{const out=[];let cur='',q=false;
-    for(let i=0;i<l.length;i++){const ch=l[i];
-      if(ch==='"'){ if(q&&l[i+1]==='"'){cur+='"';i++;} else q=!q; }
-      else if(ch===';'&&!q){ out.push(cur); cur=''; }
-      else cur+=ch;}
-    out.push(cur); return out;};
-  const head=split(linhas[0]||'').map(h=>h.replace(/<[^>]*>/g,'').trim());
+  // v10.11: parser que respeita quebra de linha dentro de campo entre aspas
+  const linhas=csvParseRobusto(txt);
+  const head=(linhas[0]||[]).map(h=>String(h).replace(/<[^>]*>/g,'').trim());
   const iNF=head.indexOf('Nro NF');
   const iEnt=head.indexOf('Data Entrega Operacao');
   const mapa={};
   if(iNF<0||iEnt<0) return mapa;
   for(let i=1;i<linhas.length;i++){
-    if(!linhas[i]) continue;
-    const f=split(linhas[i]);
+    const f=linhas[i];
+    if(!f || f.length<2) continue;
     const nf=String(f[iNF]||'').trim(); if(!nf) continue;
     const dt=String(f[iEnt]||'').trim(); if(!dt) continue;
     const m=dt.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
@@ -3058,7 +3500,7 @@ function nfsAchatadas(lista){
         nf:n.nf, pedido:n.pedido, valor:n.valor||0, dias:n.dias,
         peso:n.peso, transp:n.transp||c.transp||'', mes_nome:mesDaNF(n,c),
         mes_emissao:n.mes_nome||c.mes_nome||'',
-        cliente:c.cliente, cidade:c.cidade||'', uf:c.uf||'',
+        cliente:c.cliente, matriz:matDe(c.matriz,c.cliente), cidade:c.cidade||'', uf:c.uf||'',
         regiao:c.regiao||'', situacao:c.situacao||''
       });
     });
@@ -3068,12 +3510,49 @@ function nfsAchatadas(lista){
 
 // ============================================================
 // RENDER OFF TIME CLIENTES
+// v10.11: a aba tem filtros PRÓPRIOS (Região e Mês) + o filtro global
+// Matriz/Cliente. Antes ela também herdava, sem avisar, o filtro de
+// mês/quarter salvo na aba OTD — KPIs e resumo mostravam um mês enquanto a
+// régua da aba mostrava outro. Agora todos os quadros seguem os mesmos
+// filtros: KPIs, Resumo por Mês, Off Time por Região e a lista.
 // ============================================================
 let offTimeData_clientes=[];
 let offTimeMesDetalhe={};   // v10.7: mes_nome -> {nfs:[], resumo:n, valor:n}
 let offTimeFilter_state={regiao:'todas',mes:'todos'};
 let offTimePage=1;
 const OFFTIME_PER_PAGE=50;
+const OFFTIME_COLS=11;
+
+// On/Off por mês de ENTREGA (mesma régua do payload.meses). Sem filtro de
+// cliente/região usa o número oficial do pipeline; com filtro, recalcula a
+// partir das NFs dos clientes (clientes[].nfs).
+function offTimeResumoMeses(){
+  const d=otdData||{}; const res={};
+  const reg=offTimeFilter_state.regiao;
+  const add=(nome,k,v)=>{ if(!nome) return; const x=res[nome]||(res[nome]={on:0,off:0,off_val:0}); x[k]+=v; };
+  if(!cliAtivo() && reg==='todas'){
+    Object.keys(d.meses||{}).forEach(k=>{
+      const md=d.meses[k]; const bm=(d.bonif_mes||{})[k]||{};
+      add(md.nome,'on',(md.on||0)+(bm.on||0));
+      add(md.nome,'off',(md.off||0)+(bm.off||0));
+      add(md.nome,'off_val',(md.off_val||0)+(bm.off_val||0));
+    });
+    return res;
+  }
+  (d.clientes||[]).forEach(c=>{
+    if(!passaCli(c.mat,c.n)) return;
+    (c.nfs||[]).forEach(n=>{
+      if(n.tipo!=='on_time' && n.tipo!=='off_time') return;
+      if(reg!=='todas' && n.regiao!==reg) return;
+      if(!n.dt_fat) return;                         // o pipeline ignora NF sem emissão
+      const m=mesBR(n.dt_ent)||mesBR(n.dt_fat);
+      const nome=NOME_MES_RUL[m];
+      if(n.tipo==='on_time') add(nome,'on',1);
+      else { add(nome,'off',1); add(nome,'off_val',n.valor||0); }
+    });
+  });
+  return res;
+}
 
 function renderOffTime(){
   if(!otdData){
@@ -3082,78 +3561,29 @@ function renderOffTime(){
     return;
   }
   const d=otdData;
-  const ms=getOTDMeses();
-
-  // Filtrar clientesOff:
-  //   (a) MANTÉM apenas registros marcados como "Entregue em Atraso" — esta aba é só Off Time
-  //       (pendentes em atraso ficam na aba "Atrasos")
-  //   (b) Compatibilidade reversa: se o JSON antigo não tem o campo "situacao",
-  //       considera todos os registros (eram só off_time naquela versão).
-  //   (c) PROTEÇÃO: descarta registros sem cliente válido (eram NFs sem destinatário,
-  //       sintoma típico de natureza fora do escopo carregada do JSON antigo)
-  const allClientes=(d.clientesOff||[]).filter(c=>{
-    if(!c.cliente || c.cliente==='Cliente não identificado') return false;
-    if(c.situacao==null) return true; // JSON antigo sem 'situacao' — aceita
-    return c.situacao==='Entregue em Atraso';
-  });
-  const mesFiltro=otdFilter_state.type==='m'?NOME_MES[parseInt(otdFilter_state.val)]:null;
-  // v10.7: recorte no nivel da NF (antes filtrava c.mes_nome, que so guarda
-  // o mes da primeira nota do cliente e escondia os meses seguintes).
-  offTimeData_clientes=mesFiltro
-    ?recortarPorMes(allClientes,mesFiltro)
-    :allClientes;
-
-  // Totais somando vendas + bonificações (regra das 3 naturezas em todo o painel)
-  const totalOff=ms.reduce((s,m)=>{
-    const md=d.meses[m]||d.meses[String(m)]||{};
-    const bm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
-    return s+(md.off||0)+(bm.off||0);
-  },0);
-  const totalOn=ms.reduce((s,m)=>{
-    const md=d.meses[m]||d.meses[String(m)]||{};
-    const bm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
-    return s+(md.on||0)+(bm.on||0);
-  },0);
-  const totalFin=totalOff+totalOn;
-
-  if(!totalFin){
-    document.getElementById('offtime-empty').style.display='block';
-    document.getElementById('offtime-content').style.display='none';
-    return;
-  }
   document.getElementById('offtime-empty').style.display='none';
   document.getElementById('offtime-content').style.display='block';
   garantirMesEntrega();   // v10.8: resolve o mês pela data de entrega
+  cliPintarAviso('offtime-cli-aviso','KPIs e resumo recalculados só com as NFs deste recorte.');
 
-  // KPIs
-  const totalOffVal=ms.reduce((s,m)=>{
-    const md=d.meses[m]||d.meses[String(m)]||{};
-    const bm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
-    return s+(md.off_val||0)+(bm.off_val||0);
-  },0);
-  const otdPct=totalFin?((totalOn/totalFin)*100).toFixed(1):'—';
-  const diasMedClientes=offTimeData_clientes.filter(c=>c.dias_medio!=null);
-  const diasMed=diasMedClientes.length?(diasMedClientes.reduce((s,c)=>s+(c.dias_medio*c.qtd),0)/diasMedClientes.reduce((s,c)=>s+c.qtd,0)).toFixed(1):null;
+  // clientesOff: só "Entregue em Atraso" (pendentes em atraso ficam na aba
+  // Atrasos), com cliente válido e dentro do filtro Matriz/Cliente.
+  const allClientes=(d.clientesOff||[]).filter(c=>{
+    if(!c.cliente || c.cliente==='Cliente não identificado') return false;
+    if(!passaCli(c.matriz,c.cliente)) return false;
+    if(c.situacao==null) return true; // JSON antigo sem 'situacao' — aceita
+    return c.situacao==='Entregue em Atraso';
+  });
 
-  document.getElementById('offtime-kpis').innerHTML=
-    '<div class="kpi kpi-red"><div class="kpi-lbl">Total Off Time</div><div class="kpi-val">'+totalOff.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas em atraso</div></div>'
-   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Total On Time</div><div class="kpi-val">'+totalOn.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas no prazo</div></div>'
-   +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#0072BC">'+otdPct+'%</div><div class="kpi-sub">'+totalFin+' finalizadas</div></div>'
-   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">impacto financeiro</div></div>'
-   +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D;font-size:20px">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>';
-
-  // Filtros de região
-  const regioes=[...new Set(offTimeData_clientes.map(c=>c.regiao))].sort();
+  // Botões de região (todas as regiões com atraso no recorte de cliente)
+  const regioes=[...new Set(allClientes.map(c=>c.regiao).filter(Boolean))].sort();
   const regBtns=document.getElementById('offtime-reg-btns'); regBtns.innerHTML='';
   regioes.forEach(r=>{
     const b=document.createElement('button');b.className='fbtn';b.textContent=r;
     b.onclick=function(){offTimeFilter('regiao',r,this);};regBtns.appendChild(b);
   });
-
-  // Filtros de mês — régua única vinda da base (v10.7): todos os meses da base
-  // aparecem; os sem registro nesta aba ficam esmaecidos, mas continuam clicáveis.
-  const mesesComReg=mesesComAtraso(offTimeData_clientes);
-  const mesesDisp=montarBotoesMes('offtime-mes-btns',mesesComReg,function(m,btn){offTimeFilter('mes',m,btn);});
+  // Régua de meses vinda da base (v10.7)
+  const mesesDisp=montarBotoesMes('offtime-mes-btns',mesesComAtraso(allClientes),function(m,btn){offTimeFilter('mes',m,btn);});
 
   // Restaura o último filtro usado, validando contra os dados atuais
   const sOff = filtrosLer().offtime;
@@ -3162,76 +3592,77 @@ function renderOffTime(){
     offTimeFilter_state.mes    = mesesDisp.includes(sOff.mes)  ? sOff.mes    : 'todos';
   }
   offTimeSyncBotoes();
+  const mesSel = offTimeFilter_state.mes!=='todos' ? offTimeFilter_state.mes : null;
+  const regSel = offTimeFilter_state.regiao;
 
-  // Tabela por mês — vendas + bonificações (v10.7: linha clicável abre o
-  // detalhe das NFs entregues em atraso daquele mês).
+  // Clientes no recorte de região (o de mês é aplicado por NF, abaixo)
+  const doRecorteReg = regSel==='todas' ? allClientes : allClientes.filter(c=>c.regiao===regSel);
+  offTimeData_clientes = doRecorteReg;
+
+  // KPIs — seguem Região + Mês + Matriz/Cliente
+  const resumo = offTimeResumoMeses();
+  const mesesConta = mesSel ? [mesSel] : mesesDisp;
+  let totalOff=0,totalOn=0,totalOffVal=0;
+  mesesConta.forEach(m=>{ const x=resumo[m]; if(!x) return; totalOff+=x.off; totalOn+=x.on; totalOffVal+=x.off_val; });
+  const totalFin=totalOff+totalOn;
+  const otdPct=totalFin?((totalOn/totalFin)*100).toFixed(1)+'%':'—';
+  const listaKpi=recortarPorMes(doRecorteReg, mesSel);
+  const diasMedClientes=listaKpi.filter(c=>c.dias_medio!=null);
+  const diasDen=diasMedClientes.reduce((s,c)=>s+c.qtd,0);
+  const diasMed=diasDen?(diasMedClientes.reduce((s,c)=>s+(c.dias_medio*c.qtd),0)/diasDen).toFixed(1):null;
+  const escopo=[mesSel, regSel!=='todas'?regSel:null].filter(Boolean).join(' · ')||'todos os meses';
+
+  document.getElementById('offtime-kpis').innerHTML=
+    '<div class="kpi kpi-red"><div class="kpi-lbl">Total Off Time</div><div class="kpi-val">'+totalOff.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas em atraso · '+esc(escopo)+'</div></div>'
+   +'<div class="kpi kpi-grn"><div class="kpi-lbl">Total On Time</div><div class="kpi-val">'+totalOn.toLocaleString('pt-BR')+'</div><div class="kpi-sub">entregas no prazo</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">OTD Geral</div><div class="kpi-val" style="color:#0072BC">'+otdPct+'</div><div class="kpi-sub">'+totalFin.toLocaleString('pt-BR')+' finalizadas</div></div>'
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">Valor Off Time</div><div class="kpi-val" style="font-size:16px">'+fmtM(totalOffVal)+'</div><div class="kpi-sub">impacto financeiro</div></div>'
+   +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D;font-size:20px">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>';
+
+  // Resumo por mês (todos os meses; o mês filtrado fica destacado).
+  // Linha clicável abre o detalhe das NFs entregues em atraso do mês.
   offTimeMesDetalhe={};
   let rMes='';
-  ms.forEach(m=>{
-    const md=d.meses[m]||d.meses[String(m)]; if(!md)return;
-    const bm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
-    const mOff=md.off+(bm.off||0);
-    const mOn =md.on+(bm.on||0);
-    const fin=mOn+mOff; if(!fin)return;
-    const otd=fin?((mOn/fin)*100).toFixed(1)+'%':'—';
-    const offVal=md.off_val+(bm.off_val||0);
-
-    // Detalhe: NFs "Entregue em Atraso" com emissão neste mês.
-    // allClientes já está restrito a Entregue em Atraso; o recorte é por NF.
-    const nfsMes=nfsAchatadas(recortarPorMes(allClientes, md.nome))
-      .sort((a,b)=>(b.dias||0)-(a.dias||0));
-    offTimeMesDetalhe[md.nome]={nfs:nfsMes,resumo:mOff,valor:offVal};
-
-    const rid='oft-mes-'+m;
+  mesesDisp.forEach((nome,idx)=>{
+    const x=resumo[nome]; if(!x) return;
+    const mOff=x.off, mOn=x.on, fin=mOn+mOff; if(!fin) return;
+    const otd=((mOn/fin)*100).toFixed(1)+'%';
+    const nfsMes=nfsAchatadas(recortarPorMes(doRecorteReg, nome)).sort((a,b)=>(b.dias||0)-(a.dias||0));
+    offTimeMesDetalhe[nome]={nfs:nfsMes,resumo:mOff,valor:x.off_val};
+    const rid='oft-mes-'+idx;
     const dif=mOff-nfsMes.length;
-    const badge = nfsMes.length===0
+    const badge = nfsMes.length===0 && mOff>0
       ? '<span style="font-size:10px;color:#854F0B;margin-left:6px">sem detalhe</span>'
       : (dif!==0 ? '<span style="font-size:10px;color:#854F0B;margin-left:6px" title="Resumo '+mOff+' x detalhe '+nfsMes.length+'">⚠ '+nfsMes.length+' detalhada(s)</span>' : '');
-
-    rMes+='<tr style="cursor:pointer" onclick="offTimeToggleMes(\''+md.nome+'\',\''+rid+'\',this)">'
-      +'<td style="font-weight:500"><span class="oft-chev" style="display:inline-block;width:10px;transition:transform .15s">▸</span> '+md.nome+badge+'</td>'
+    const destaque = mesSel===nome ? ';background:#E6F1FB' : '';
+    rMes+='<tr style="cursor:pointer'+destaque+'" data-mes="'+esc(nome)+'" data-rid="'+rid+'" onclick="offTimeToggleMes(this.dataset.mes,this.dataset.rid,this)">'
+      +'<td style="font-weight:500"><span class="oft-chev" style="display:inline-block;width:10px;transition:transform .15s">▸</span> '+esc(nome)+badge+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+mOff+'</td>'
       +'<td class="r" style="color:#3B6D11">'+mOn+'</td>'
       +'<td class="r">'+fin+'</td>'
       +'<td class="r" style="color:'+(parseFloat(otd)>=95?'#3B6D11':'#A32D2D')+';font-weight:600">'+otd+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+fmtM(offVal)+'</td></tr>'
+      +'<td class="r" style="color:#A32D2D">'+fmtM(x.off_val)+'</td></tr>'
       +'<tr id="'+rid+'" style="display:none"><td colspan="6" style="padding:0;background:var(--bg2)">'
       +'<div id="'+rid+'-box" style="padding:10px 14px 14px 26px"></div></td></tr>';
   });
-  if(!rMes) rMes='<tr><td colspan="6" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
+  if(!rMes) rMes='<tr><td colspan="6" style="color:var(--text3);text-align:center;padding:14px">Sem entregas finalizadas para os filtros atuais</td></tr>';
   document.getElementById('offtime-mes-tbody').innerHTML=rMes;
 
-  // Tabela por região
+  // Off Time por região — recorte de mês + cliente (todas as regiões, para comparar)
   const regMap2={};
-  offTimeData_clientes.forEach(c=>{
+  recortarPorMes(allClientes, mesSel).forEach(c=>{
     if(!regMap2[c.regiao]) regMap2[c.regiao]={reg:c.regiao,qtd:0,valor:0,dias_sum:0,dias_n:0};
     regMap2[c.regiao].qtd+=c.qtd;
     regMap2[c.regiao].valor+=c.valor;
     if(c.dias_medio!=null){regMap2[c.regiao].dias_sum+=c.dias_medio*c.qtd;regMap2[c.regiao].dias_n+=c.qtd;}
   });
-
-  // Fallback: se clientesOff vazio, usar dados de regioes off_time via transpList
-  if(Object.keys(regMap2).length===0){
-    const transpList=d.otd||[];
-    transpList.forEach(t=>{
-      (t.ufs||[]).forEach(u=>{
-        const reg=u.reg||(window.REGIOES_MAP||{})[u.uf]||'Outros';
-        if((u.off||0)>0){
-          if(!regMap2[reg]) regMap2[reg]={reg,qtd:0,valor:0,dias_sum:0,dias_n:0};
-          regMap2[reg].qtd+=(u.off||0);
-          regMap2[reg].valor+=(u.off_val||0);
-        }
-      });
-    });
-  }
-
   const totalOffReg=Object.values(regMap2).reduce((s,r)=>s+r.qtd,0)||1;
   let rReg='';
   Object.values(regMap2).sort((a,b)=>b.qtd-a.qtd).forEach(r=>{
     const cor=REG_CORES[r.reg]||'#888';
     const diasMedReg=r.dias_n>0?(r.dias_sum/r.dias_n).toFixed(1):null;
-    rReg+='<tr>'
-      +'<td style="font-weight:600;border-left:3px solid '+cor+'">'+r.reg+'</td>'
+    rReg+='<tr'+(regSel===r.reg?' style="background:#E6F1FB"':'')+'>'
+      +'<td style="font-weight:600;border-left:3px solid '+cor+'">'+esc(r.reg)+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+r.qtd+'</td>'
       +'<td class="r">'+((r.qtd/totalOffReg)*100).toFixed(1)+'%</td>'
       +'<td class="r">'+(diasMedReg!=null?diasMedReg+'d':'—')+'</td>'
@@ -3240,7 +3671,6 @@ function renderOffTime(){
   if(!rReg) rReg='<tr><td colspan="5" style="color:var(--text3);text-align:center;padding:14px">Sem dados</td></tr>';
   document.getElementById('offtime-regiao-tbody').innerHTML=rReg;
 
-  // Renderizar lista de clientes
   offTimePage=1;
   renderOffTimeClientes();
 }
@@ -3248,10 +3678,9 @@ function renderOffTime(){
 function offTimeFilter(tipo,val,btn){
   if(tipo==='regiao') offTimeFilter_state.regiao = val;
   else                offTimeFilter_state.mes    = val;
-  offTimeSyncBotoes();
   filtrosSalvar();
-  offTimePage=1;
-  renderOffTimeClientes();
+  // v10.11: redesenha a aba inteira — KPIs, resumo e regiões seguem o filtro
+  renderOffTime();
 }
 
 // Marca no fbar do Off Time os botões do filtro ativo (região e mês independentes)
@@ -3276,22 +3705,19 @@ function offTimeSearch(){
 }
 
 function getOffTimeFiltered(){
-  const search=(document.getElementById('offtime-search')?.value||'').toLowerCase();
-  // v10.7: o mês recorta as NFs e reagrega o cliente, em vez de comparar
-  // c.mes_nome (que é só o mês da primeira nota do grupo).
+  const search=normTxt(document.getElementById('offtime-search')?.value||'');
+  // recorte de mês por NF (v10.7); região e Matriz/Cliente já aplicados em offTimeData_clientes
   const base=recortarPorMes(offTimeData_clientes,
     offTimeFilter_state.mes!=='todos'?offTimeFilter_state.mes:null);
   return base.filter(c=>{
-    if(offTimeFilter_state.regiao!=='todas'&&c.regiao!==offTimeFilter_state.regiao) return false;
-    if(search&&!((c.cliente||'').toLowerCase().includes(search)||(c.cidade||'').toLowerCase().includes(search)||(c.uf||'').toLowerCase().includes(search))) return false;
+    if(search && ![c.cliente, matDe(c.matriz,c.cliente), c.cidade, c.uf, c.transp].some(v=>normTxt(v).includes(search))
+       && !(c.nfs||[]).some(n=>normTxt(n.nf).includes(search)||normTxt(n.pedido).includes(search))) return false;
     return true;
   });
 }
 
 // ============================================================
 // DRILL-DOWN DO RESUMO POR MES (v10.7)
-// Abre a lista das NFs entregues em atraso do mes clicado e concilia
-// a contagem do resumo (payload.meses[m].off) com o detalhe por NF.
 // ============================================================
 function offTimeToggleMes(mesNome, rid, rowEl){
   const tr=document.getElementById(rid); if(!tr) return;
@@ -3316,11 +3742,11 @@ function offTimeMesDetalheHTML(mesNome){
   const nfs=det.nfs||[];
   const nota=mesEntregaNota();
   const cab='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px">'
-    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)">Notas entregues em atraso — '+mesNome+' <span style="text-transform:none;letter-spacing:0">(por data de entrega)</span></div>'
+    +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)">Notas entregues em atraso — '+esc(mesNome)+' <span style="text-transform:none;letter-spacing:0">(por data de entrega)</span></div>'
     +'<span style="font-size:11px;color:var(--text2)">resumo: <b style="color:#A32D2D">'+det.resumo+'</b>'
       +' · detalhadas: <b style="color:#A32D2D">'+nfs.length+'</b></span>'
     +(nota?'<span style="font-size:11px;color:#854F0B">'+nota+'</span>':'')
-    +(nfs.length?'<button class="btn-sm" onclick="event.stopPropagation();offTimeExportMes(\''+mesNome+'\')">⬇ Excel</button>':'')
+    +(nfs.length?'<button class="btn-sm" data-mes="'+esc(mesNome)+'" onclick="event.stopPropagation();offTimeExportMes(this.dataset.mes)">⬇ Excel</button>':'')
     +'</div>';
 
   if(!nfs.length){
@@ -3351,27 +3777,28 @@ function offTimeMesDetalheHTML(mesNome){
     const cor=REG_CORES[n.regiao]||'#888';
     linhas+='<tr>'
       +'<td style="color:var(--text3)">'+(i+1)+'</td>'
-      +'<td style="font-family:monospace;font-weight:600">'+(n.nf||'—')+'</td>'
-      +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
-      +'<td style="font-weight:500;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
-      +'<td style="color:var(--text2)">'+(n.cidade||'—')+'</td>'
-      +'<td style="font-weight:600">'+(n.uf||'—')+'</td>'
-      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
-      +'<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
+      +'<td style="font-family:monospace;font-weight:600">'+esc(n.nf||'—')+'</td>'
+      +'<td style="font-family:monospace;color:var(--text2)">'+esc(n.pedido||'—')+'</td>'
+      +'<td>'+cliChipMat(n.matriz)+'</td>'
+      +'<td style="font-weight:500;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cliente||'')+'">'+esc(n.cliente||'—')+'</td>'
+      +'<td style="color:var(--text2)">'+esc(n.cidade||'—')+'</td>'
+      +'<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.transp||'')+'">'+esc(n.transp||'—')+'</td>'
       +'<td class="r" style="color:'+((n.dias||0)>3?'#A32D2D':'#854F0B')+';font-weight:600">'+(n.dias!=null?n.dias+'d':'—')+'</td>'
       +'<td class="r" style="color:#A32D2D">'+fmtM(n.valor)+'</td>'
       +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
       +'</tr>';
   });
   const rodape='<tr style="background:var(--bg2);font-weight:600">'
-    +'<td colspan="8" style="text-align:right">Total</td>'
+    +'<td colspan="9" style="text-align:right">Total</td>'
     +'<td class="r">'+(diasMed!=null?diasMed+'d':'—')+'</td>'
     +'<td class="r" style="color:#A32D2D">'+fmtM(valTot)+'</td>'
     +'<td></td></tr>';
 
   return cab+aviso
     +'<div class="tw"><table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
-    +'<thead><tr><th>#</th><th>Nota</th><th>Pedido</th><th>Cliente</th><th>Cidade</th><th>UF</th><th>Região</th>'
+    +'<thead><tr><th>#</th><th>Nota</th><th>Pedido</th><th>Matriz</th><th>Cliente</th><th>Cidade</th><th>UF</th><th>Região</th>'
     +'<th>Transportadora</th><th class="r">Dias Atraso</th><th class="r">Valor</th><th class="r">Peso</th></tr></thead>'
     +'<tbody>'+linhas+rodape+'</tbody></table></div>';
 }
@@ -3385,6 +3812,7 @@ function offTimeExportMes(mesNome){
     'Mes Entrega': mesNome,
     'Numero NF': n.nf||'',
     'Pedido': n.pedido||'',
+    'Matriz': n.matriz||'',
     'Cliente': n.cliente||'',
     'Cidade': n.cidade||'',
     'UF': n.uf||'',
@@ -3397,11 +3825,10 @@ function offTimeExportMes(mesNome){
     'Peso (kg)': n.peso||0
   }));
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws['!cols']=[{wch:5},{wch:7},{wch:14},{wch:14},{wch:35},{wch:18},{wch:5},{wch:14},{wch:30},{wch:20},{wch:12},{wch:11},{wch:16},{wch:12}];
+  ws['!cols']=[{wch:5},{wch:7},{wch:14},{wch:14},{wch:18},{wch:24},{wch:18},{wch:5},{wch:14},{wch:30},{wch:20},{wch:12},{wch:11},{wch:16},{wch:12}];
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Off Time '+mesNome);
-  const stamp=new Date().toISOString().substring(0,10).replace(/-/g,'');
-  XLSX.writeFile(wb,'offtime_'+mesNome.toLowerCase()+'_'+stamp+'.xlsx');
+  XLSX.writeFile(wb,'offtime_'+mesNome.toLowerCase()+'_'+stampHoje()+'.xlsx');
 }
 
 function renderOffTimeClientes(){
@@ -3409,15 +3836,16 @@ function renderOffTimeClientes(){
   const total=filtered.length;
   const pages=Math.ceil(total/OFFTIME_PER_PAGE)||1;
   if(offTimePage>pages) offTimePage=pages;
+  if(offTimePage<1) offTimePage=1;
   const slice=filtered.slice((offTimePage-1)*OFFTIME_PER_PAGE, offTimePage*OFFTIME_PER_PAGE);
 
   document.getElementById('offtime-count').textContent=total+' cliente(s) com atraso';
 
   let rows='';
   if(!slice.length){
-    rows='<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">'
+    rows='<tr><td colspan="'+OFFTIME_COLS+'" style="color:var(--text3);text-align:center;padding:20px">'
       +(offTimeFilter_state.mes!=='todos'
-        ?'Nenhuma entrega em atraso em '+offTimeFilter_state.mes+' para os filtros atuais'
+        ?'Nenhuma entrega em atraso em '+esc(offTimeFilter_state.mes)+' para os filtros atuais'
         :'Nenhum cliente encontrado')+'</td></tr>';
   } else {
     const start=(offTimePage-1)*OFFTIME_PER_PAGE;
@@ -3425,11 +3853,12 @@ function renderOffTimeClientes(){
       const cor=REG_CORES[c.regiao]||'#888';
       rows+='<tr>'
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
-        +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
-        +'<td style="color:var(--text2)">'+c.cidade+'</td>'
-        +'<td style="font-weight:600">'+c.uf+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+c.regiao+'</span></td>'
-        +'<td style="font-size:11px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.transp+'</td>'
+        +'<td>'+cliChipMat(matDe(c.matriz,c.cliente))+'</td>'
+        +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.cliente)+'">'+esc(c.cliente)+'</td>'
+        +'<td style="color:var(--text2)">'+esc(c.cidade)+'</td>'
+        +'<td style="font-weight:600">'+esc(c.uf)+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+esc(c.regiao)+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.transp)+'">'+esc(c.transp)+((c.transp_extra||0)>0?' <span style="color:var(--text3)">+'+c.transp_extra+'</span>':'')+'</td>'
         +'<td style="color:var(--text2)">'+mesLabel(c)+'</td>'
         +'<td class="r" style="color:#A32D2D;font-weight:700">'+c.qtd+'</td>'
         +'<td class="r" style="color:'+(c.dias_medio!=null?(c.dias_medio<=3?'#854F0B':'#A32D2D'):'var(--text2)')+'">'+(c.dias_medio!=null?c.dias_medio+'d':'—')+'</td>'
@@ -3439,7 +3868,6 @@ function renderOffTimeClientes(){
   }
   document.getElementById('offtime-clientes-tbody').innerHTML=rows;
 
-  // Paginação
   let pag='<span>'+total+' registros</span><span style="margin:0 8px">|</span>';
   if(pages>1){
     pag+='<button class="btn-sm" onclick="offTimePaginar(-1)" '+(offTimePage<=1?'disabled':'')+'>← Ant</button>';
@@ -3462,6 +3890,7 @@ function offTimePaginar(dir){
 let atrasosFilter_state={sit:'todas',reg:'todas',mes:'todos'};
 let atrasosPage=1;
 const ATRASOS_PER_PAGE=50;
+const ATRASOS_COLS=13;
 
 function renderAtrasos(){
   if(!otdData){
@@ -3479,6 +3908,7 @@ function renderAtrasos(){
   document.getElementById('atrasos-empty').style.display='none';
   document.getElementById('atrasos-content').style.display='block';
   garantirMesEntrega();   // v10.8: resolve o mês pela data de entrega
+  cliPintarAviso('atrasos-cli-aviso');
 
   // KPIs agora são recalculados em renderAtrasosTabelas(), respeitando os
   // filtros de situação / região / mês (v10.7).
@@ -3530,21 +3960,19 @@ function atrasosSyncBotoes(){
 }
 
 function getAtrasosFiltrado(){
-  const search=(document.getElementById('atrasos-search')?.value||'').toLowerCase();
+  const search=normTxt(document.getElementById('atrasos-search')?.value||'');
   // v10.7: o mês recorta as NFs do cliente e reagrega — antes comparava
   // c.mes_nome, que guarda só o mês da primeira nota do grupo, e por isso
   // "Set" devolvia lista vazia mesmo com notas de setembro na base.
   const base=recortarPorMes(otdData?.clientesOff||[],
     atrasosFilter_state.mes!=='todos'?atrasosFilter_state.mes:null);
   return base.filter(c=>{
+    if(!passaCli(c.matriz, c.cliente)) return false;              // v10.11: Matriz → Cliente
     if(atrasosFilter_state.sit!=='todas' && c.situacao!==atrasosFilter_state.sit) return false;
     if(atrasosFilter_state.reg!=='todas' && c.regiao!==atrasosFilter_state.reg) return false;
     if(search && !(
-      (c.cliente||'').toLowerCase().includes(search) ||
-      (c.cidade||'').toLowerCase().includes(search) ||
-      (c.uf||'').toLowerCase().includes(search) ||
-      (c.transp||'').toLowerCase().includes(search) ||
-      (c.nfs||[]).some(n=>String(n.nf||'').toLowerCase().includes(search) || String(n.pedido||'').toLowerCase().includes(search))
+      [c.cliente, matDe(c.matriz,c.cliente), c.cidade, c.uf, c.transp].some(v=>normTxt(v).includes(search)) ||
+      (c.nfs||[]).some(n=>normTxt(n.nf).includes(search) || normTxt(n.pedido).includes(search) || normTxt(n.transp).includes(search))
     )) return false;
     return true;
   });
@@ -3577,18 +4005,26 @@ function renderAtrasosTabelas(){
    +'<div class="kpi"><div class="kpi-lbl">Dias Médios Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMed!=null?diasMed+'d':'—')+'</div><div class="kpi-sub">por entrega</div></div>'
    +'<div class="kpi" style="border-left:3px solid #A32D2D"><div class="kpi-lbl">Maior Atraso</div><div class="kpi-val" style="color:#A32D2D">'+(diasMax>0?diasMax+'d':'—')+'</div><div class="kpi-sub">'+fmtM(totalVal)+' total</div></div>';
 
-  // Por transportadora
+  // Por transportadora — v10.11: agregado NF a NF (antes o grupo inteiro do
+  // cliente ia para a transportadora da PRIMEIRA nota, e um cliente com NFs de
+  // duas transportadoras jogava todos os atrasos numa só).
   const transpMap={};
-  filt.forEach(c=>{
-    const t=c.transp||'(sem transportadora)';
+  const somaT=(t,qtd,valor,pend,dias,diasMax)=>{
+    t=t||'(sem transportadora)';
     if(!transpMap[t]) transpMap[t]={t,qtd:0,pend:0,off:0,valor:0,dias_sum:0,dias_n:0,dias_max:0};
     const x=transpMap[t];
-    x.qtd+=c.qtd;
-    x.valor+=c.valor;
-    if((c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso')) x.pend+=c.qtd;
-    else x.off+=c.qtd;
-    if(c.dias_medio!=null){x.dias_sum+=c.dias_medio*c.qtd;x.dias_n+=c.qtd;}
-    if((c.dias_max||0)>x.dias_max) x.dias_max=c.dias_max;
+    x.qtd+=qtd; x.valor+=valor;
+    if(pend) x.pend+=qtd; else x.off+=qtd;
+    if(dias!=null){ x.dias_sum+=dias*qtd; x.dias_n+=qtd; }
+    if((diasMax||0)>x.dias_max) x.dias_max=diasMax;
+  };
+  filt.forEach(c=>{
+    const pend=(c.situacao==='Em Trânsito em Atraso'||c.situacao==='Pendente em Atraso');
+    if(Array.isArray(c.nfs) && c.nfs.length){
+      c.nfs.forEach(n=>somaT(n.transp||c.transp, 1, n.valor||0, pend, (n.dias!=null&&!isNaN(n.dias))?n.dias:null, n.dias||0));
+    } else {
+      somaT(c.transp, c.qtd, c.valor, pend, c.dias_medio, c.dias_max);   // base antiga sem detalhe por NF
+    }
   });
   const transpArr=Object.values(transpMap).sort((a,b)=>b.qtd-a.qtd);
   const maxQtdT=transpArr[0]?.qtd||1;
@@ -3597,7 +4033,7 @@ function renderAtrasosTabelas(){
     const dm=t.dias_n>0?(t.dias_sum/t.dias_n).toFixed(1):'—';
     const pendPct=t.qtd>0?(t.pend/t.qtd*100):0;
     rTransp+='<tr>'
-      +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+t.t+'">'+t.t+'</td>'
+      +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(t.t)+'">'+esc(t.t)+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:700">'+t.qtd+'</td>'
       +'<td class="r" style="color:#A32D2D">'+(t.pend||'—')+'</td>'
       +'<td class="r" style="color:#854F0B">'+(t.off||'—')+'</td>'
@@ -3628,7 +4064,7 @@ function renderAtrasosTabelas(){
     const cor=REG_CORES[r.reg]||'#888';
     const dm=r.dias_n>0?(r.dias_sum/r.dias_n).toFixed(1):'—';
     rReg+='<tr>'
-      +'<td style="font-weight:600;border-left:3px solid '+cor+'">'+r.reg+'</td>'
+      +'<td style="font-weight:600;border-left:3px solid '+cor+'">'+esc(r.reg)+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:700">'+r.qtd+'</td>'
       +'<td class="r">'+((r.qtd/totalReg)*100).toFixed(1)+'%</td>'
       +'<td class="r">'+(dm!=='—'?dm+'d':'—')+'</td>'
@@ -3649,9 +4085,9 @@ function renderAtrasosTabelas(){
 
   let rows='';
   if(!slice.length){
-    rows='<tr><td colspan="12" style="color:var(--text3);text-align:center;padding:20px">'
+    rows='<tr><td colspan="'+ATRASOS_COLS+'" style="color:var(--text3);text-align:center;padding:20px">'
       +(atrasosFilter_state.mes!=='todos'
-        ?'Nenhum atraso em '+atrasosFilter_state.mes+' para os filtros atuais'
+        ?'Nenhum atraso em '+esc(atrasosFilter_state.mes)+' para os filtros atuais'
         :'Nenhum cliente encontrado')+'</td></tr>';
   } else {
     const start=(atrasosPage-1)*ATRASOS_PER_PAGE;
@@ -3663,29 +4099,30 @@ function renderAtrasosTabelas(){
       const rid='atr-d-'+i;
       rows+='<tr'+(temNF?' style="cursor:pointer" onclick="atrasosToggleNF(\''+rid+'\',this)"':'')+'>'
         +'<td style="color:var(--text3);white-space:nowrap">'+(temNF?'<span class="atr-chev" style="display:inline-block;width:9px;transition:transform .15s">▸</span> ':'')+(start+i+1)+'</td>'
-        +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
-        +'<td style="color:var(--text2)">'+(c.cidade||'—')+'</td>'
-        +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+c.regiao+'</span></td>'
-        +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.transp||'')+'">'+(c.transp||'—')+'</td>'
+        +'<td>'+cliChipMat(matDe(c.matriz,c.cliente))+'</td>'
+        +'<td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.cliente)+'">'+esc(c.cliente)+'</td>'
+        +'<td style="color:var(--text2)">'+esc(c.cidade||'—')+'</td>'
+        +'<td style="font-weight:600">'+esc(c.uf||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+esc(c.regiao)+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.transp||'')+'">'+esc(c.transp||'—')+((c.transp_extra||0)>0?' <span style="color:var(--text3)" title="NFs com mais de uma transportadora — veja o detalhe">+'+c.transp_extra+'</span>':'')+'</td>'
         +'<td style="color:var(--text2)">'+mesLabel(c)+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+sitBg+';color:'+sitColor+';font-weight:500">'+c.situacao+'</span></td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+sitBg+';color:'+sitColor+';font-weight:500">'+esc(c.situacao)+'</span></td>'
         +'<td class="r" style="color:#A32D2D;font-weight:700">'+c.qtd+'</td>'
         +'<td class="r" style="color:'+(c.dias_medio!=null?(c.dias_medio<=3?'#854F0B':'#A32D2D'):'var(--text2)')+';font-weight:600">'+(c.dias_medio!=null?c.dias_medio+'d':'—')+'</td>'
         +'<td class="r" style="color:#A32D2D;font-weight:600">'+(c.dias_max>0?c.dias_max+'d':'—')+'</td>'
         +'<td class="r" style="color:#A32D2D">'+fmtM(c.valor)+'</td>'
         +'</tr>';
       if(temNF){
-        rows+='<tr id="'+rid+'" style="display:none"><td colspan="12" style="padding:0;background:var(--bg2)">'
+        rows+='<tr id="'+rid+'" style="display:none"><td colspan="'+ATRASOS_COLS+'" style="padding:0;background:var(--bg2)">'
           +'<div style="padding:8px 14px 12px 28px">'
           +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:6px">Notas fiscais deste cliente ('+c.nfs.length+')</div>'
           +'<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
           +'<thead><tr><th>Nota</th><th>Pedido</th><th>Transportadora</th><th title="Mês da entrega; nota ainda em trânsito usa o mês de emissão">Mês</th><th class="r">Dias Atraso</th><th class="r">Valor</th><th class="r">Peso</th></tr></thead><tbody>'
           +c.nfs.map(n=>'<tr>'
-            +'<td style="font-family:monospace;font-weight:600">'+(n.nf||'—')+'</td>'
-            +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
-            +'<td style="font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
-            +'<td style="color:var(--text2)" title="emissão: '+(n.mes_nome||'—')+'">'+(mesDaNF(n,c)||'—')+'</td>'
+            +'<td style="font-family:monospace;font-weight:600">'+esc(n.nf||'—')+'</td>'
+            +'<td style="font-family:monospace;color:var(--text2)">'+esc(n.pedido||'—')+'</td>'
+            +'<td style="font-size:11px;color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.transp||'')+'">'+esc(n.transp||'—')+'</td>'
+            +'<td style="color:var(--text2)" title="emissão: '+esc(n.mes_nome||'—')+'">'+esc(mesDaNF(n,c)||'—')+'</td>'
             +'<td class="r" style="color:'+((n.dias||0)>3?'#A32D2D':'#854F0B')+';font-weight:600">'+(n.dias!=null?n.dias+'d':'—')+'</td>'
             +'<td class="r" style="color:#A32D2D">'+fmtM(n.valor)+'</td>'
             +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
@@ -3779,6 +4216,7 @@ function renderAbertas(){
     return;
   }
   empty.style.display='none'; content.style.display='block';
+  cliPintarAviso('abertas-cli-aviso');
 
   // Pills de Situação — só as que existem na base, na ordem do quadro
   const sitBtns = document.getElementById('abertas-sit-btns'); sitBtns.innerHTML='';
@@ -3801,7 +4239,7 @@ function renderAbertas(){
   // Select de Transportadora
   const transps=[...new Set(lista.map(n=>n.transp).filter(Boolean))].sort();
   const sel=document.getElementById('abertas-transp-sel');
-  sel.innerHTML='<option value="todas">Todas</option>'+transps.map(t=>'<option value="'+t.replace(/"/g,'&quot;')+'">'+t+'</option>').join('');
+  sel.innerHTML='<option value="todas">Todas</option>'+transps.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join('');
 
   // Restaura o último filtro usado, validando contra os dados atuais
   const sAb = filtrosLer().abertas;
@@ -3848,19 +4286,14 @@ function abertasSearch(){
 }
 
 function getAbertasFiltrado(){
-  const search=(document.getElementById('abertas-search')?.value||'').toLowerCase();
+  const search=normTxt(document.getElementById('abertas-search')?.value||'');
   return (otdData?.notasAbertas||[]).filter(n=>{
+    if(!passaCli(n.matriz, n.cliente)) return false;              // v10.11: Matriz → Cliente
     if(abertasFilter_state.sit!=='todas' && n.tipo!==abertasFilter_state.sit) return false;
     if(abertasFilter_state.reg!=='todas' && n.regiao!==abertasFilter_state.reg) return false;
     if(abertasFilter_state.transp!=='todas' && n.transp!==abertasFilter_state.transp) return false;
-    if(search && !(
-      String(n.nf||'').toLowerCase().includes(search) ||
-      String(n.pedido||'').toLowerCase().includes(search) ||
-      (n.cliente||'').toLowerCase().includes(search) ||
-      (n.cidade||'').toLowerCase().includes(search) ||
-      (n.uf||'').toLowerCase().includes(search) ||
-      (n.transp||'').toLowerCase().includes(search)
-    )) return false;
+    if(search && ![n.nf, n.pedido, n.cliente, matDe(n.matriz,n.cliente), n.cidade, n.uf, n.transp]
+                   .some(v=>normTxt(v).includes(search))) return false;
     return true;
   });
 }
@@ -3882,7 +4315,7 @@ function renderAbertasTabela(){
    +'<div class="kpi"><div class="kpi-lbl">Valor Total</div><div class="kpi-val" style="color:#0072BC">'+fmtM(totalVal)+'</div><div class="kpi-sub">carteira pendente</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">Peso Total</div><div class="kpi-val" style="color:#004A87">'+fmtKgTotal(totalPeso)+'</div><div class="kpi-sub">soma das NFs</div></div>'
    +'<div class="kpi kpi-red"><div class="kpi-lbl">Em Atraso</div><div class="kpi-val">'+emAtraso.length.toLocaleString('pt-BR')+'</div><div class="kpi-sub">'+pctAtraso+'% da carteira · '+fmtM(valAtraso)+'</div></div>'
-   +'<div class="kpi kpi-amb"><div class="kpi-lbl">NF mais antiga</div><div class="kpi-val">'+(maisAntiga>0?maisAntiga+'d':'—')+'</div><div class="kpi-sub">'+(nfAntiga?('NF '+(nfAntiga.nf||'—')+' · '+(nfAntiga.dt_fat||'—')):'em aberto')+'</div></div>';
+   +'<div class="kpi kpi-amb"><div class="kpi-lbl">NF mais antiga</div><div class="kpi-val">'+(maisAntiga>0?maisAntiga+'d':'—')+'</div><div class="kpi-sub">'+(nfAntiga?('NF '+esc(nfAntiga.nf||'—')+' · '+esc(nfAntiga.dt_fat||'—')):'em aberto')+'</div></div>';
 
   // ---- Tabela (já vem ordenada do pipeline; reforça a ordem aqui) ----
   const ordenado=[...filt].sort((a,b)=>String(a.dt_fat_iso||'9999-12-31').localeCompare(String(b.dt_fat_iso||'9999-12-31')));
@@ -3896,7 +4329,7 @@ function renderAbertasTabela(){
   const mapS={}; TRANSP_STATUS.forEach(s=>mapS[s.k]=s);
   let rows='';
   if(!slice.length){
-    rows='<tr><td colspan="15" style="color:var(--text3);text-align:center;padding:20px">Nenhuma NF encontrada para os filtros atuais</td></tr>';
+    rows='<tr><td colspan="16" style="color:var(--text3);text-align:center;padding:20px">Nenhuma NF encontrada para os filtros atuais</td></tr>';
   } else {
     slice.forEach((n,i)=>{
       const s=mapS[n.tipo]||{lbl:n.tipo||'—',cor:'#888'};
@@ -3904,16 +4337,17 @@ function renderAbertasTabela(){
       const abertoC=(n.dias_aberto||0)>30?'#A32D2D':(n.dias_aberto||0)>15?'#854F0B':'var(--text2)';
       rows+='<tr>'
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
-        +'<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+(n.nf||'—')+'</td>'
-        +'<td style="font-family:monospace;color:var(--text2)">'+(n.pedido||'—')+'</td>'
-        +'<td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cliente||'')+'">'+(n.cliente||'—')+'</td>'
-        +'<td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.cidade||'')+'">'+(n.cidade||'—')+'</td>'
-        +'<td style="font-weight:600">'+(n.uf||'—')+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(n.regiao||'—')+'</span></td>'
-        +'<td style="font-size:11px;color:var(--text2);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(n.transp||'')+'">'+(n.transp||'—')+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+s.lbl+'</span></td>'
-        +'<td style="color:var(--text2);white-space:nowrap">'+(n.dt_fat||'—')+'</td>'
-        +'<td style="color:'+(n.dias_atraso!=null?'#A32D2D':'var(--text2)')+';white-space:nowrap">'+(n.dt_prev||'—')+'</td>'
+        +'<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+esc(n.nf||'—')+'</td>'
+        +'<td style="font-family:monospace;color:var(--text2)">'+esc(n.pedido||'—')+'</td>'
+        +'<td>'+cliChipMat(matDe(n.matriz,n.cliente))+'</td>'
+        +'<td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cliente||'')+'">'+esc(n.cliente||'—')+'</td>'
+        +'<td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cidade||'')+'">'+esc(n.cidade||'—')+'</td>'
+        +'<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.transp||'')+'">'+esc(n.transp||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span></td>'
+        +'<td style="color:var(--text2);white-space:nowrap">'+esc(n.dt_fat||'—')+'</td>'
+        +'<td style="color:'+(n.dias_atraso!=null?'#A32D2D':'var(--text2)')+';white-space:nowrap">'+esc(n.dt_prev||'—')+'</td>'
         +'<td class="r" style="color:'+abertoC+';font-weight:600">'+(n.dias_aberto!=null?n.dias_aberto+'d':'—')+'</td>'
         +'<td class="r" style="color:#A32D2D;font-weight:'+(n.dias_atraso!=null?'700':'400')+'">'+(n.dias_atraso!=null?n.dias_atraso+'d':'—')+'</td>'
         +'<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
@@ -3952,6 +4386,7 @@ function exportarAbertasExcel(ev){
       '#': i+1,
       'Numero NF': n.nf||'',
       'Pedido': n.pedido||'',
+      'Matriz': matDe(n.matriz,n.cliente),
       'Cliente': n.cliente||'',
       'Cidade': n.cidade||'',
       'UF': n.uf||'',
@@ -3966,14 +4401,16 @@ function exportarAbertasExcel(ev){
       'Peso (kg)': n.peso||0
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{wch:5},{wch:12},{wch:14},{wch:38},{wch:20},{wch:5},{wch:14},{wch:30},{wch:22},{wch:16},{wch:14},{wch:13},{wch:11},{wch:14},{wch:12}];
+    ws['!cols'] = [{wch:5},{wch:12},{wch:14},{wch:18},{wch:30},{wch:20},{wch:5},{wch:14},{wch:30},{wch:22},{wch:16},{wch:14},{wch:13},{wch:11},{wch:14},{wch:12}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Notas em Aberto');
     let nome = 'notas_em_aberto';
+    if(cliFiltro.mat!=='todas') nome += '_' + cliFiltro.mat.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
+    if(cliFiltro.cli!=='todos') nome += '_' + cliFiltro.cli.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
     if(abertasFilter_state.sit!=='todas')    nome += '_' + abertasFilter_state.sit;
     if(abertasFilter_state.reg!=='todas')    nome += '_' + abertasFilter_state.reg;
     if(abertasFilter_state.transp!=='todas') nome += '_' + abertasFilter_state.transp.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
-    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    const stamp = stampHoje();
     XLSX.writeFile(wb, nome + '_' + stamp + '.xlsx');
   } catch(e){
     alert('Erro ao exportar: ' + e.message);
@@ -4018,7 +4455,7 @@ function exportarAbertasExcel(ev){
 var OTDRegras = (function () {
   'use strict';
 
-  var VERSAO_REGRAS = 'v10.0-2026-08-17';
+  var VERSAO_REGRAS = 'v10.11-2026-10-06';   // espelho do classificar() do processar_otd.py
 
   // -- 1. Macros do painel ---------------------------------------------------
   var MACRO = {
@@ -4033,6 +4470,7 @@ var OTDRegras = (function () {
     'Tratativa Transportadora': 'Transito',
     'Tratativa Fiscal': 'Transito',
     'CD': 'CD',
+    'Em Atraso': 'Em Atraso',
     'Cancelada': 'Cancelada',
     'Devolvida': 'Devolvida',
     'Desconsiderada': 'Desconsiderada',
@@ -4051,7 +4489,9 @@ var OTDRegras = (function () {
   // ERP devolve esses casos como "Entregue no Prazo" - o que inflava o OTD.
   var OCOR_ENTREGUE = [1];
   var OCOR_OFF_TIME = [2];
-  var OCOR_DEVOLVIDA = [25, 999];
+  // v10.11: 420 e 421 também são devolução no pipeline (OCOR_DEVOLVIDA do
+  // processar_otd.py). Antes o Excel "Todas as Notas" dizia Tratativa.
+  var OCOR_DEVOLVIDA = [25, 999, 420, 421];
   var OCOR_DESCONSIDERADA = [998];
 
   // Como decidir On Time x Off Time numa NF entregue.
@@ -4156,12 +4596,13 @@ var OTDRegras = (function () {
   // -- 4. Motor --------------------------------------------------------------
   // Precedencia (a primeira que casa decide):
   //   R1 Desconsiderada - sufixo '- Desconsiderada' no status ou ocorrencia 998
-  //   R2 Devolvida      - ocorrencia 25 ou 999
+  //   R2 Devolvida      - ocorrencia 25, 999, 420 ou 421
   //   R3 Entregue       - ocorrencia 1 (avalia prazo) ou 2 (sempre Off Time)
   //   R4 Entregue (ERP) - sem ocorrencia finalizadora, status do ERP diz entregue
-  //   R5 CD             - sem CTE, sem romaneio e sem data de inicio de transporte
-  //   R6 Transito       - tem CTE ou romaneio; sub-status pela ocorrencia
-  //   R7 Sem Regra      - ocorrencia fora do de-para aprovado
+  //   R5 Em Atraso      - nao entregue e Data Max Entrega ja venceu
+  //   R6 CD             - sem CTE, sem romaneio e sem data de inicio de transporte
+  //   R7 Transito       - tem CTE ou romaneio; sub-status pela ocorrencia
+  //   R8 Sem Regra      - ocorrencia fora do de-para aprovado
   function classificar(linha, hoje) {
     if (!hoje) { hoje = new Date(); }
     hoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
@@ -4233,21 +4674,26 @@ var OTDRegras = (function () {
     else if (dtPrevisao.getTime() < hoje.getTime()) prazo = 'Em Atraso';
     else prazo = 'No Prazo';
 
-    // R5 - ainda no centro de distribuicao: nada indica que a carga saiu
+    // R5 - previsao vencida = Em Atraso, seja qual for o sub-status (decisao
+    // da operacao; precede CD, Transito, Agendamento e Tratativa — igual ao
+    // pipeline. Antes o JS nao tinha esta regra e o Excel divergia do painel).
+    if (prazo === 'Em Atraso') return resultado('Em Atraso', 'R5-prazo-vencido', prazo);
+
+    // R6 - ainda no centro de distribuicao: nada indica que a carga saiu
     var temCte = preenchido(cte);
     var temRomaneio = preenchido(romaneio);
-    var temInicio = data(iniTransp) !== null;
-    if (!temCte && !temRomaneio && !temInicio) return resultado('CD', 'R5-cd', prazo);
+    var temInicio = preenchido(iniTransp);
+    if (!temCte && !temRomaneio && !temInicio) return resultado('CD', 'R6-cd', prazo);
 
-    // R6 - tem CTE ou romaneio: saiu do CD. A ocorrencia define o sub-status
-    if (ocor === null) return resultado('Em Transito', 'R6-transito-sem-ocor', prazo);
+    // R7 - tem CTE ou romaneio: saiu do CD. A ocorrencia define o sub-status
+    if (ocor === null) return resultado('Em Transito', 'R7-transito-sem-ocor', prazo);
     if (Object.prototype.hasOwnProperty.call(OCOR_TRANSITO, ocor)) {
-      return resultado(OCOR_TRANSITO[ocor], 'R6-ocor' + ocor, prazo);
+      return resultado(OCOR_TRANSITO[ocor], 'R7-ocor' + ocor, prazo);
     }
 
-    // R7 - ocorrencia nunca aprovada. Fica visivel e fora do OTD, para aparecer
+    // R8 - ocorrencia nunca aprovada. Fica visivel e fora do OTD, para aparecer
     // no dia seguinte em vez de sumir dentro de um default.
-    return resultado('Sem Regra', 'R7-ocor' + ocor, prazo);
+    return resultado('Sem Regra', 'R8-ocor' + ocor, prazo);
   }
 
   // -- 5. Apoio --------------------------------------------------------------
@@ -4405,6 +4851,10 @@ async function exportarTodasNotasExcel(ev){
       // v9.8: adicionar coluna "Status Painel" derivada das regras de negócio
       // v10.0: motor novo - recebe a linha inteira e acha as colunas sozinho
       const _r = OTDRegras.classificar(obj);
+      // v10.11: cliente padronizado pelo cadastro (Matriz → Cliente)
+      const _c = cadDeCNPJ(obj['CNPJ Cliente'], obj['Cliente']);
+      obj['Matriz'] = _c.mat;
+      obj['Cliente Padrao'] = _c.cli;
       obj['Status Painel'] = _r.status_painel;
       obj['Macro'] = _r.macro;
       obj['Prazo'] = _r.prazo;
@@ -4416,6 +4866,7 @@ async function exportarTodasNotasExcel(ev){
     const headersFinal = [];
     let inseriu = false;
     for(const h of headers){
+      if(h === 'Cliente'){ headersFinal.push('Matriz'); headersFinal.push('Cliente Padrao'); }
       headersFinal.push(h);
       if(h === 'Status da Entrega' && !inseriu){
         headersFinal.push('Status Painel');
@@ -4439,7 +4890,7 @@ async function exportarTodasNotasExcel(ev){
     });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Todas as Notas');
-    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    const stamp = stampHoje();
     XLSX.writeFile(wb, 'todas_as_notas_' + stamp + '.xlsx');
 
   } catch(e) {
@@ -4463,6 +4914,7 @@ function exportarAtrasosExcel(){
       c.nfs.forEach(n=>{
         rows.push({
           '#': ++seq,
+          'Matriz': matDe(c.matriz,c.cliente),
           'Cliente': c.cliente,
           'Cidade': c.cidade||'',
           'UF': c.uf||'',
@@ -4471,7 +4923,9 @@ function exportarAtrasosExcel(){
           'Numero NF': n.nf||'',
           'Pedido': n.pedido||'',
           'Transportadora': n.transp||c.transp||'',
-          'Mes Embarque': n.mes_nome||c.mes_nome||'',
+          // v10.11: mesmo critério da tela (mês da ENTREGA; em trânsito = emissão)
+          'Mes Entrega': mesDaNF(n,c)||'',
+          'Mes Emissao': n.mes_nome||c.mes_nome||'',
           'Dias Atraso': n.dias!=null?n.dias:'',
           'Valor (R$)': n.valor||0,
           'Peso (kg)': n.peso||0
@@ -4481,6 +4935,7 @@ function exportarAtrasosExcel(){
       // Fallback: dados.json antigo sem detalhe de NF — exporta a linha agregada
       rows.push({
         '#': ++seq,
+        'Matriz': matDe(c.matriz,c.cliente),
         'Cliente': c.cliente,
         'Cidade': c.cidade||'',
         'UF': c.uf||'',
@@ -4489,7 +4944,8 @@ function exportarAtrasosExcel(){
         'Numero NF': '',
         'Pedido': '',
         'Transportadora': c.transp||'',
-        'Mes Embarque': c.mes_nome||'',
+        'Mes Entrega': c.mes_nome||'',
+        'Mes Emissao': c.mes_nome||'',
         'Dias Atraso': c.dias_medio!=null?c.dias_medio:'',
         'Valor (R$)': c.valor||0,
         'Peso (kg)': ''
@@ -4497,14 +4953,16 @@ function exportarAtrasosExcel(){
     }
   });
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:5},{wch:35},{wch:18},{wch:5},{wch:14},{wch:22},{wch:14},{wch:14},{wch:30},{wch:12},{wch:11},{wch:16},{wch:12}];
+  ws['!cols'] = [{wch:5},{wch:18},{wch:30},{wch:18},{wch:5},{wch:14},{wch:22},{wch:14},{wch:14},{wch:30},{wch:11},{wch:11},{wch:11},{wch:16},{wch:12}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'NFs em Atraso');
   let nome = 'atrasos_nf';
+  if(cliFiltro.mat!=='todas') nome += '_' + cliFiltro.mat.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
+  if(cliFiltro.cli!=='todos') nome += '_' + cliFiltro.cli.replace(/[^A-Za-z0-9]+/g,'-').substring(0,20);
   if(atrasosFilter_state.sit!=='todas') nome += '_' + atrasosFilter_state.sit.replace(/ /g,'-');
   if(atrasosFilter_state.reg!=='todas') nome += '_' + atrasosFilter_state.reg;
   if(atrasosFilter_state.mes!=='todos') nome += '_' + atrasosFilter_state.mes;
-  const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+  const stamp = stampHoje();
   nome += '_' + stamp + '.xlsx';
   XLSX.writeFile(wb, nome);
 }
@@ -4524,23 +4982,65 @@ let inFullPageCli = 1;
 let inFullPagePed = 1;
 const INFULL_PER_PAGE = 50;
 
+// v10.11: com filtro Matriz/Cliente o In Full inteiro (KPIs, resumo por mês,
+// distribuição, top 20, clientes e pedidos) é recalculado a partir da lista
+// de pedidos — mesmas regras do processar_otd.py.
+function inFullEfetivo(){
+  const inf = (otdData && otdData.inFull) || null;
+  if(!inf || !cliAtivo()) return inf;
+  const peds = (inf.pedidos||[]).filter(p=>passaCli(p.matriz, p.cliente));
+  const r2 = v => Math.round(v*100)/100;
+  const total = peds.length, inFull = peds.filter(p=>p.in_full).length;
+  const porMes = {}, porCli = {}, dist = {1:0,2:0,3:0,4:0,5:0};
+  peds.forEach(p=>{
+    if(p.mes){
+      const m = porMes[p.mes] || (porMes[p.mes]={mes:p.mes, nome:p.mes_nome||NOME_MES[p.mes]||('M'+p.mes), total:0, in_full:0, fracionados:0, valor_total:0, valor_fracionado:0});
+      m.total++; m.valor_total+=p.valor||0;
+      if(p.in_full) m.in_full++; else { m.fracionados++; m.valor_fracionado+=p.valor||0; }
+    }
+    const c = porCli[p.cliente] || (porCli[p.cliente]={cliente:p.cliente, matriz:p.matriz, uf:p.uf, regiao:p.regiao, total:0, in_full:0, fracionados:0, soma_romaneios:0, valor_total:0, valor_fracionado:0});
+    c.total++; c.soma_romaneios+=p.n_romaneios; c.valor_total+=p.valor||0;
+    if(p.in_full) c.in_full++; else { c.fracionados++; c.valor_fracionado+=p.valor||0; }
+    dist[Math.min(p.n_romaneios,5)]++;
+  });
+  return {
+    total_pedidos: total, in_full_qtd: inFull, fracionados_qtd: total-inFull,
+    com_2_romaneios: peds.filter(p=>p.n_romaneios===2).length,
+    com_3_romaneios: peds.filter(p=>p.n_romaneios===3).length,
+    com_4mais_romaneios: peds.filter(p=>p.n_romaneios>=4).length,
+    in_full_pct: total ? Math.round(inFull/total*1000)/10 : 0,
+    valor_in_full: r2(peds.filter(p=>p.in_full).reduce((s,p)=>s+(p.valor||0),0)),
+    valor_fracionados: r2(peds.filter(p=>!p.in_full).reduce((s,p)=>s+(p.valor||0),0)),
+    por_mes: Object.values(porMes).sort((a,b)=>a.mes-b.mes).map(m=>Object.assign(m,{pct:m.total?Math.round(m.in_full/m.total*1000)/10:0, valor_total:r2(m.valor_total), valor_fracionado:r2(m.valor_fracionado)})),
+    por_cliente: Object.values(porCli).map(c=>Object.assign(c,{pct:c.total?Math.round(c.in_full/c.total*1000)/10:0, rom_medio:c.total?Math.round(c.soma_romaneios/c.total*100)/100:0, valor_total:r2(c.valor_total), valor_fracionado:r2(c.valor_fracionado)})).sort((a,b)=>b.total-a.total),
+    distribuicao: dist,
+    top_fracionados: peds.slice().sort((a,b)=>b.n_romaneios-a.n_romaneios).slice(0,20),
+    pedidos: peds
+  };
+}
+// Lead Time Transportes do recorte (KPI do In Full)
+function ltTransportesRecorte(){
+  if(!cliAtivo()) return otdData.lead_time_brasil && otdData.lead_time_brasil.lt_trans;
+  let s=0,n=0;
+  (otdData.clientes||[]).forEach(c=>{ if(!passaCli(c.mat,c.n)) return;
+    (c.nfs||[]).forEach(x=>{ const v=x.lt&&x.lt[2]; if(v!=null){ s+=v; n++; } }); });
+  return n ? Math.round(s/n*10)/10 : null;
+}
+const INFULL_STATUS_COR = {'Em Trânsito em Atraso':'#A32D2D','Em Trânsito':'#0072BC','Em Rota':'#854F0B','Devolvido':'#6B4E16','Finalizado':'#3B6D11'};
+
 function renderInFull(){
-  if(!otdData || !otdData.inFull){
+  if(!otdData || !otdData.inFull || !otdData.inFull.total_pedidos){
     document.getElementById('infull-empty').style.display='block';
     document.getElementById('infull-content').style.display='none';
     return;
   }
-  const inf = otdData.inFull;
-  if(!inf.total_pedidos){
-    document.getElementById('infull-empty').style.display='block';
-    document.getElementById('infull-content').style.display='none';
-    return;
-  }
+  const inf = inFullEfetivo();
   document.getElementById('infull-empty').style.display='none';
   document.getElementById('infull-content').style.display='block';
+  cliPintarAviso('infull-cli-aviso', inf.total_pedidos ? 'KPIs, resumo e listas recalculados só com os pedidos deste recorte.' : 'nenhum pedido com romaneio neste recorte.');
 
   // KPIs
-  const ltt = otdData.lead_time_brasil && otdData.lead_time_brasil.lt_trans;
+  const ltt = ltTransportesRecorte();
   const corLTT = ltt == null ? 'var(--text2)' : ltt <= 5 ? '#3B6D11' : ltt <= 10 ? '#854F0B' : '#A32D2D';
   document.getElementById('infull-kpis').innerHTML =
     '<div class="kpi kpi-blu"><div class="kpi-lbl">Total Pedidos</div><div class="kpi-val">'+inf.total_pedidos.toLocaleString('pt-BR')+'</div><div class="kpi-sub">com pelo menos 1 romaneio</div></div>'
@@ -4548,7 +5048,7 @@ function renderInFull(){
    +'<div class="kpi kpi-red"><div class="kpi-lbl">Fracionados</div><div class="kpi-val">'+inf.fracionados_qtd.toLocaleString('pt-BR')+'</div><div class="kpi-sub">2+ romaneios</div></div>'
    +'<div class="kpi"><div class="kpi-lbl">% In Full Geral</div><div class="kpi-val" style="color:'+(inf.in_full_pct>=85?'#3B6D11':inf.in_full_pct>=70?'#854F0B':'#A32D2D')+'">'+inf.in_full_pct+'%</div><div class="kpi-sub">acumulado</div></div>'
    +'<div class="kpi kpi-amb"><div class="kpi-lbl">3+ Romaneios</div><div class="kpi-val">'+(inf.com_3_romaneios + inf.com_4mais_romaneios)+'</div><div class="kpi-sub">'+inf.com_3_romaneios+' c/ 3 · '+inf.com_4mais_romaneios+' c/ 4+</div></div>'
-   +'<div class="kpi"><div class="kpi-lbl">Lead Time Transportes</div><div class="kpi-val" style="color:'+corLTT+'">'+(ltt!=null?ltt.toFixed(1)+'d':'—')+'</div><div class="kpi-sub">Embarque → Entrega · Brasil</div></div>';
+   +'<div class="kpi"><div class="kpi-lbl">Lead Time Transportes</div><div class="kpi-val" style="color:'+corLTT+'">'+(ltt!=null?ltt.toFixed(1)+'d':'—')+'</div><div class="kpi-sub">Embarque → Entrega · '+(cliAtivo()?'recorte':'Brasil')+'</div></div>';
 
   // Filtros mês (removidos da interface — verificação defensiva caso elemento exista)
   const mesBtns = document.getElementById('infull-mes-btns');
@@ -4567,7 +5067,7 @@ function renderInFull(){
   inf.por_mes.forEach(m => {
     const cor = m.pct >= 85 ? '#3B6D11' : m.pct >= 70 ? '#854F0B' : '#A32D2D';
     rMes += '<tr>'
-      +'<td><strong>'+m.nome+'</strong></td>'
+      +'<td><strong>'+esc(m.nome)+'</strong></td>'
       +'<td class="r">'+m.total.toLocaleString('pt-BR')+'</td>'
       +'<td class="r" style="color:#3B6D11;font-weight:600">'+m.in_full+'</td>'
       +'<td class="r" style="color:#A32D2D">'+m.fracionados+'</td>'
@@ -4590,7 +5090,7 @@ function renderInFull(){
 
   // Distribuicao (bloco 2)
   const dist = inf.distribuicao || {};
-  const maxDist = Math.max.apply(null, Object.values(dist));
+  const maxDist = Math.max.apply(null, Object.values(dist).concat([0]));
   const distLabels = {1:'1 romaneio', 2:'2 romaneios', 3:'3 romaneios', 4:'4 romaneios', 5:'5+ romaneios'};
   const distCores  = {1:'#3B6D11', 2:'#EF9F27', 3:'#A32D2D', 4:'#7F1818', 5:'#4A0000'};
   let distHtml = '';
@@ -4611,23 +5111,23 @@ function renderInFull(){
 
   // Top 20 fracionados (bloco 4)
   let rTop = '';
-  inf.top_fracionados.slice(0,20).forEach((p,i) => {
-    const corStatus = p.status === 'Em Trânsito em Atraso' ? '#A32D2D' :
-                      p.status === 'Em Trânsito' ? '#0072BC' :
-                      p.status === 'Em Rota' ? '#854F0B' : '#3B6D11';
+  (inf.top_fracionados||[]).slice(0,20).forEach((p,i) => {
+    const corStatus = INFULL_STATUS_COR[p.status] || '#3B6D11';
     rTop += '<tr>'
       +'<td style="color:var(--text3)">'+(i+1)+'</td>'
-      +'<td style="font-family:monospace;font-weight:600">'+p.pedido+'</td>'
-      +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.cliente+'">'+p.cliente+'</td>'
-      +'<td>'+p.uf+'</td>'
-      +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.transp+'">'+p.transp+'</td>'
-      +'<td>'+p.mes_nome+'</td>'
+      +'<td style="font-family:monospace;font-weight:600">'+esc(p.pedido)+'</td>'
+      +'<td>'+cliChipMat(matDe(p.matriz,p.cliente))+'</td>'
+      +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(p.cliente)+'">'+esc(p.cliente)+'</td>'
+      +'<td>'+esc(p.uf)+'</td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(p.transp)+'">'+esc(p.transp)+'</td>'
+      +'<td>'+esc(p.mes_nome)+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:700">'+p.n_romaneios+'</td>'
       +'<td class="r">'+p.n_nfs+'</td>'
-      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corStatus+'22;color:'+corStatus+';font-weight:500">'+p.status+'</span></td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corStatus+'22;color:'+corStatus+';font-weight:500">'+esc(p.status)+'</span></td>'
       +'<td class="r">'+fmtM(p.valor)+'</td>'
       +'</tr>';
   });
+  if(!rTop) rTop = '<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:14px">Sem pedidos fracionados</td></tr>';
   document.getElementById('infull-top-tbody').innerHTML = rTop;
 
   inFullPageCli = 1;
@@ -4675,16 +5175,17 @@ function inFullSyncBotoesPed(){
 
 function getInFullClientesFiltrados(){
   if(!otdData || !otdData.inFull) return [];
-  const search = (document.getElementById('infull-cli-search')?.value || '').toLowerCase();
-  let lista = otdData.inFull.por_cliente.slice();
+  const inf = inFullEfetivo();
+  const search = normTxt(document.getElementById('infull-cli-search')?.value || '');
+  let lista = (inf.por_cliente||[]).slice();
   // Filtro por mes: precisa recalcular agregando os pedidos por cliente naquele mes
   if(inFullFilter_state.mes !== 'todos'){
     const mesFiltro = parseInt(inFullFilter_state.mes);
     const agg = {};
-    otdData.inFull.pedidos.forEach(p => {
+    (inf.pedidos||[]).forEach(p => {
       if(p.mes !== mesFiltro) return;
       const c = p.cliente;
-      if(!agg[c]) agg[c] = {cliente:c, uf:p.uf, regiao:p.regiao, total:0, in_full:0, fracionados:0, soma_rom:0, valor_total:0, valor_fracionado:0};
+      if(!agg[c]) agg[c] = {cliente:c, matriz:p.matriz, uf:p.uf, regiao:p.regiao, total:0, in_full:0, fracionados:0, soma_rom:0, valor_total:0, valor_fracionado:0};
       const x = agg[c];
       x.total++;
       x.soma_rom += p.n_romaneios;
@@ -4700,7 +5201,7 @@ function getInFullClientesFiltrados(){
       valor_fracionado: Math.round(x.valor_fracionado*100)/100,
     })).sort((a,b)=>b.total-a.total);
   }
-  if(search) lista = lista.filter(c => c.cliente.toLowerCase().includes(search) || (c.uf||'').toLowerCase().includes(search));
+  if(search) lista = lista.filter(c => [c.cliente, matDe(c.matriz,c.cliente), c.uf].some(v=>normTxt(v).includes(search)));
   return lista;
 }
 
@@ -4713,7 +5214,7 @@ function renderInFullClientes(){
 
   let rows = '';
   if(!slice.length){
-    rows = '<tr><td colspan="10" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
+    rows = '<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:20px">Nenhum cliente encontrado</td></tr>';
   } else {
     const start = (inFullPageCli-1)*INFULL_PER_PAGE;
     slice.forEach((c,i) => {
@@ -4721,9 +5222,10 @@ function renderInFullClientes(){
       const corReg = REG_CORES[c.regiao] || '#888';
       rows += '<tr>'
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
-        +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.cliente+'">'+c.cliente+'</td>'
-        +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+(c.regiao||'—')+'</span></td>'
+        +'<td>'+cliChipMat(matDe(c.matriz,c.cliente))+'</td>'
+        +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.cliente)+'">'+esc(c.cliente)+'</td>'
+        +'<td style="font-weight:600">'+esc(c.uf||'—')+'</td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(c.regiao||'—')+'</span></td>'
         +'<td class="r">'+c.total+'</td>'
         +'<td class="r" style="color:#3B6D11;font-weight:600">'+c.in_full+'</td>'
         +'<td class="r" style="color:#A32D2D">'+c.fracionados+'</td>'
@@ -4746,8 +5248,8 @@ function renderInFullClientes(){
 
 function getInFullPedidosFiltrados(){
   if(!otdData || !otdData.inFull) return [];
-  const search = (document.getElementById('infull-ped-search')?.value || '').toLowerCase();
-  let lista = otdData.inFull.pedidos.slice();
+  const search = normTxt(document.getElementById('infull-ped-search')?.value || '');
+  let lista = (inFullEfetivo().pedidos||[]).slice();
   if(inFullFilter_state.mes !== 'todos'){
     const mesFiltro = parseInt(inFullFilter_state.mes);
     lista = lista.filter(p => p.mes === mesFiltro);
@@ -4755,11 +5257,7 @@ function getInFullPedidosFiltrados(){
   if(inFullFilter_state.ped === 'in_full') lista = lista.filter(p => p.in_full);
   else if(inFullFilter_state.ped === 'fracionados') lista = lista.filter(p => !p.in_full);
   if(search) lista = lista.filter(p =>
-    p.pedido.toLowerCase().includes(search) ||
-    (p.cliente||'').toLowerCase().includes(search) ||
-    (p.transp||'').toLowerCase().includes(search) ||
-    (p.uf||'').toLowerCase().includes(search)
-  );
+    [p.pedido, p.cliente, matDe(p.matriz,p.cliente), p.transp, p.uf].some(v=>normTxt(v).includes(search)));
   return lista;
 }
 
@@ -4774,25 +5272,24 @@ function renderInFullPedidos(){
 
   let rows = '';
   if(!slice.length){
-    rows = '<tr><td colspan="11" style="color:var(--text3);text-align:center;padding:20px">Nenhum pedido encontrado</td></tr>';
+    rows = '<tr><td colspan="12" style="color:var(--text3);text-align:center;padding:20px">Nenhum pedido encontrado</td></tr>';
   } else {
     const start = (inFullPagePed-1)*INFULL_PER_PAGE;
     slice.forEach((p,i) => {
-      const corStatus = p.status === 'Em Trânsito em Atraso' ? '#A32D2D' :
-                        p.status === 'Em Trânsito' ? '#0072BC' :
-                        p.status === 'Em Rota' ? '#854F0B' : '#3B6D11';
+      const corStatus = INFULL_STATUS_COR[p.status] || '#3B6D11';
       const corRom = p.n_romaneios === 1 ? '#3B6D11' : p.n_romaneios === 2 ? '#854F0B' : '#A32D2D';
       rows += '<tr>'
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
-        +'<td style="font-family:monospace;font-weight:500">'+p.pedido+'</td>'
-        +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.cliente+'">'+p.cliente+'</td>'
-        +'<td>'+p.uf+'</td>'
-        +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.transp+'">'+p.transp+'</td>'
-        +'<td>'+p.mes_nome+'</td>'
-        +'<td style="color:var(--text2)">'+p.data_emissao+'</td>'
+        +'<td style="font-family:monospace;font-weight:500">'+esc(p.pedido)+'</td>'
+        +'<td>'+cliChipMat(matDe(p.matriz,p.cliente))+'</td>'
+        +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(p.cliente)+'">'+esc(p.cliente)+'</td>'
+        +'<td>'+esc(p.uf)+'</td>'
+        +'<td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(p.transp)+'">'+esc(p.transp)+'</td>'
+        +'<td>'+esc(p.mes_nome)+'</td>'
+        +'<td style="color:var(--text2)">'+esc(p.data_emissao)+'</td>'
         +'<td class="r" style="color:'+corRom+';font-weight:'+(p.n_romaneios>1?'700':'500')+'">'+p.n_romaneios+'</td>'
         +'<td class="r">'+p.n_nfs+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corStatus+'22;color:'+corStatus+';font-weight:500">'+p.status+'</span></td>'
+        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corStatus+'22;color:'+corStatus+';font-weight:500">'+esc(p.status)+'</span></td>'
         +'<td class="r">'+fmtM(p.valor)+'</td>'
         +'</tr>';
     });
@@ -4828,6 +5325,7 @@ function exportarInFullExcel(ev, tipo){
       const lista = getInFullClientesFiltrados();
       const rows = lista.map((c,i) => ({
         '#': i+1,
+        'Matriz': matDe(c.matriz,c.cliente),
         'Cliente': c.cliente,
         'UF': c.uf || '',
         'Regiao': c.regiao || '',
@@ -4840,13 +5338,14 @@ function exportarInFullExcel(ev, tipo){
         'Valor Fracionado': c.valor_fracionado,
       }));
       ws = XLSX.utils.json_to_sheet(rows);
-      ws['!cols'] = [{wch:5},{wch:38},{wch:5},{wch:14},{wch:12},{wch:8},{wch:10},{wch:10},{wch:12},{wch:14},{wch:16}];
+      ws['!cols'] = [{wch:5},{wch:18},{wch:30},{wch:5},{wch:14},{wch:12},{wch:8},{wch:10},{wch:10},{wch:12},{wch:14},{wch:16}];
       nome = 'in_full_clientes';
     } else {
       const lista = getInFullPedidosFiltrados();
       const rows = lista.map((p,i) => ({
         '#': i+1,
         'Pedido': p.pedido,
+        'Matriz': matDe(p.matriz,p.cliente),
         'Cliente': p.cliente,
         'Cidade': p.cidade || '',
         'UF': p.uf,
@@ -4861,12 +5360,12 @@ function exportarInFullExcel(ev, tipo){
         'Valor': p.valor,
       }));
       ws = XLSX.utils.json_to_sheet(rows);
-      ws['!cols'] = [{wch:5},{wch:16},{wch:38},{wch:18},{wch:5},{wch:14},{wch:30},{wch:6},{wch:12},{wch:10},{wch:6},{wch:22},{wch:9},{wch:14}];
+      ws['!cols'] = [{wch:5},{wch:16},{wch:18},{wch:30},{wch:18},{wch:5},{wch:14},{wch:30},{wch:6},{wch:12},{wch:10},{wch:6},{wch:22},{wch:9},{wch:14}];
       nome = 'in_full_pedidos';
     }
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, tipo === 'cliente' ? 'Clientes' : 'Pedidos');
-    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    const stamp = stampHoje();
     XLSX.writeFile(wb, nome + '_' + stamp + '.xlsx');
   } catch(e) {
     alert('Erro ao exportar: ' + e.message);
@@ -4903,12 +5402,17 @@ async function loadOTDFromStorage(){
     if(desatualizado){ mostrarBannerDesatualizado(desatualizado); }
 
     renderOTD(payload);
+    cliBarMontar();   // v10.11: monta Matriz → Cliente com a base nova
     if(typeof renderTransp==='function') renderTransp();
     if(typeof renderClientes==='function') renderClientes();
     if(typeof renderOffTime==='function') renderOffTime();
     if(typeof renderAtrasos==='function') renderAtrasos();
     if(typeof renderInFull==='function') renderInFull();
     if(typeof renderLeadTimes==='function') renderLeadTimes();
+    // v10.11: Notas em Aberto também é redesenhada ao chegar a base (antes a
+    // aba aberta antes do dados.json ficava em "Nenhuma base carregada").
+    if(typeof renderAbertas==='function') renderAbertas();
+    if(typeof window.consultaRefiltrar==='function') window.consultaRefiltrar();
   }catch(e){
     console.error('Erro ao carregar dados.json:', e);
   }
@@ -5011,7 +5515,8 @@ function renderOTD(payload){
   document.getElementById('otd-empty').style.display='none';
   document.getElementById('otd-content').style.display='block';
   document.getElementById('otd-update-text').innerHTML=
-    'Base: <strong>'+payload.base_nome+'</strong> &nbsp;·&nbsp; Atualizado em: <strong>'+payload.atualizado+'</strong>';
+    'Base: <strong>'+esc(payload.base_nome)+'</strong> &nbsp;·&nbsp; Atualizado em: <strong>'+esc(payload.atualizado)+'</strong>'
+    + (payload.cadastroClientes ? ' &nbsp;·&nbsp; Cadastro de clientes: <strong>'+esc(String(payload.cadastroClientes.fonte||'—').split(' (')[0])+'</strong>' : '');
 
   // Build filter buttons - garantir MK como números
   const MK=Object.keys(payload.meses).map(Number).sort((a,b)=>a-b);
@@ -5092,9 +5597,8 @@ function otdFilter(v,btn,type){
   btn.classList.add('on');
   filtrosSalvar();
   renderOTDChart(otdData);
-  // Re-renderiza abas dependentes para refletir o filtro
-  if(typeof renderOffTime==='function') renderOffTime();
-  if(typeof renderAtrasos==='function') renderAtrasos();
+  // v10.11: Off Time e Atrasos têm filtros próprios — não herdam mais o
+  // mês/quarter da aba OTD (era a causa de KPIs e régua divergentes).
 }
 
 function getOTDMeses(){
@@ -5174,9 +5678,11 @@ function renderOTDChart(d){
   // v10.9: Cancelada — NÃO entra no total não finalizado; é balde próprio.
   const cancAll      = filtroAtivo ? canc                    : (d.totalCanceladaAll!=null    ? d.totalCanceladaAll    : canc);
   const cancValAll   = filtroAtivo ? canc_val                : (d.totalCanceladaValAll!=null ? d.totalCanceladaValAll : canc_val);
-  // v9.7: Total não finalizado = TUDO que não entregou
-  const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll + devAll;
-  const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll + devValAll;
+  // v10.10: Total em aberto = carteira em aberto (TIPOS_ABERTOS). Devolvida
+  // tem card próprio e NÃO entra — antes entrava, e o rodapé do quadro 3
+  // (7 tipos) não fechava com as linhas mensais (6 tipos).
+  const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll;
+  const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll;
 
   document.getElementById('o-fat').textContent=fmtM(fatTotal);
   document.getElementById('o-fat-s').textContent=qtdTotal.toLocaleString('pt-BR')+' NFs (vendas + bonif)';
@@ -5202,7 +5708,7 @@ function renderOTDChart(d){
   document.getElementById('o-tag').textContent=tagAll;document.getElementById('o-tag-s').textContent=fmtM(tagValAll);
   document.getElementById('o-dev').textContent=devAll;document.getElementById('o-dev-s').textContent=fmtM(devValAll);
   document.getElementById('o-canc').textContent=cancAll;document.getElementById('o-canc-s').textContent=fmtM(cancValAll);
-  document.getElementById('o-otd').textContent=otdAll+'%';
+  document.getElementById('o-otd').textContent=otdAll==='—'?'—':otdAll+'%';   // v10.11: sem "—%"
   // Subtexto do OTD: mostra o filtro ativo claramente
   let otdLabel = onAll.toLocaleString('pt-BR')+' On Time de '+finAll.toLocaleString('pt-BR')+' finalizadas';
   if(otdFilter_state.type==='q')      otdLabel = '['+otdFilter_state.val+'] '+otdLabel;
@@ -5212,9 +5718,16 @@ function renderOTDChart(d){
   const otdSubEl2 = document.getElementById('o-otd-s');
   if(otdSubEl2) otdSubEl2.textContent = otdLabel;
 
-  // OTD por empresa (v9.11) — calcula direto de empresa_total do payload
+  // OTD por empresa (v9.11) — v10.11: com filtro de mês/quarter usa os meses
+  // filtrados (on_genomma/off_genomma...); no Acumulado, empresa_total.
   try {
-    const et = d.empresa_total || {};
+    let et = d.empresa_total || {};
+    if(filtroAtivo){
+      const g={on:0,off:0}, i={on:0,off:0};
+      ms.forEach(m=>{ const md=d.meses[m]||d.meses[String(m)]; if(!md) return;
+        g.on+=md.on_genomma||0; g.off+=md.off_genomma||0; i.on+=md.on_inovalab||0; i.off+=md.off_inovalab||0; });
+      et = {GENOMMA:g, INOVALAB:i};
+    }
     const corOTD = v => v == null ? 'var(--text2)' : v >= 99 ? '#3B6D11' : v >= 80 ? '#854F0B' : '#A32D2D';
     const empBlock = (empKey, label) => {
       const e = et[empKey] || {on:0, off:0};
@@ -5240,7 +5753,7 @@ function renderOTDChart(d){
   } catch(e) { console.error('Erro no card OTD por empresa:', e); }
 
   document.getElementById('o2-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=offAll;
-  document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll+'%';
+  document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll==='—'?'—':otdAll+'%';
   // Barra de progresso no topo: % entregue no escopo (entregas / total escopo)
   try {
     const totEscopo = (finAll||0) + (nfinAll||0);
@@ -5266,8 +5779,11 @@ function renderOTDChart(d){
     iFat+=md.fat_inovalab||0;
     gOn+=md.on_genomma||0;  gOff+=md.off_genomma||0;
     iOn+=md.on_inovalab||0; iOff+=md.off_inovalab||0;
-    // qtd = todas as notas do mês por empresa (proporcional ao faturamento)
-    if(md.fat>0){
+    // v10.11: quantidade exata por empresa (o pipeline publica qtd_genomma /
+    // qtd_inovalab). Fallback proporcional só para base antiga.
+    if(md.qtd_genomma!=null || md.qtd_inovalab!=null){
+      gQtd+=md.qtd_genomma||0; iQtd+=md.qtd_inovalab||0;
+    } else if(md.fat>0){
       gQtd+=Math.round(md.qtd*(md.fat_genomma||0)/md.fat);
       iQtd+=Math.round(md.qtd*(md.fat_inovalab||0)/md.fat);
     }
@@ -5388,14 +5904,16 @@ function renderOTDChart(d){
     const mFinVal=md.on_val+md.off_val+(bmm.on_val||0)+(bmm.off_val||0);
     const mQtd=md.qtd+(bmm.qtd||0);
     const mO=mFin?((mOn/mFin)*100).toFixed(1)+'%':'—';
-    r2+='<tr><td>'+md.nome+'/'+new Date().getFullYear()+'</td>'
+    // v10.11: sem "/ano" — o payload agrupa por mês e o ano corrente aplicado
+    // a meses do ano anterior (em janeiro) mostrava "Dez/2027".
+    r2+='<tr><td>'+md.nome+'</td>'
       +'<td class="r" style="color:#3B6D11">'+mOn.toLocaleString('pt-BR')+'</td>'
       +'<td class="r" style="color:'+(mOff>0?'#A32D2D':'var(--text2)')+'">'+mOff+'</td>'
       +'<td class="r">'+mFin.toLocaleString('pt-BR')+'</td>'
       +'<td class="r">'+fmtM(mFinVal)+'</td>'
       +'<td class="r" style="color:#3B6D11;font-weight:600">'+mO+'</td></tr>';
   });
-  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+otdAll+'%</td></tr>';
+  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+(otdAll==='—'?'—':otdAll+'%')+'</td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
 
   try {
@@ -5432,7 +5950,7 @@ function renderOTDChart(d){
       +'<td class="r">'+(tot||'—')+'</td>'
       +'<td class="r">'+(totVal>0?fmtM(totVal):'—')+'</td></tr>';
   });
-  r3+='<tr class="tr-total"><td>Total Pendente</td>'
+  r3+='<tr class="tr-total"><td>Total em aberto</td>'
     +'<td class="r" style="color:#854F0B">'+hubAll+'</td>'
     +'<td class="r" style="color:#854F0B">'+fmtM(hubValAll)+'</td>'
     +'<td class="r" style="color:#0072BC">'+trsAll+'</td>'
@@ -5451,9 +5969,10 @@ function renderOTDChart(d){
   const qColors={'Q1':'#0072BC','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
   let rPrev='';
   prevQ.forEach(p=>{
-    const cor=qColors[p.q]||'#888';
+    // v10.11: quarter de outro ano vem como "Q1/27" — cor pela base do rótulo
+    const cor=qColors[p.q]||qColors[String(p.q).split('/')[0]]||'#888';
     rPrev+='<tr>'
-      +'<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+p.q+'</strong></span></td>'
+      +'<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+esc(p.q)+'</strong></span></td>'
       +'<td class="r" style="color:#854F0B">'+(p.hub>0?p.hub:'—')+'</td>'
       +'<td class="r" style="color:#0072BC">'+(p.transito>0?p.transito:'—')+'</td>'
       +'<td class="r" style="color:#A32D2D;font-weight:600">'+((p.transito_atr||0)>0?p.transito_atr:'—')+'</td>'
@@ -5469,7 +5988,7 @@ function renderOTDChart(d){
     hub:a.hub+(p.hub||0),trs:a.trs+(p.transito||0),trs_atr:a.trs_atr+(p.transito_atr||0),
     trat:a.trat+(p.tratativa||0),agcte:a.agcte+(p.ag_cte||0),tag:a.tag+(p.transito_agenda||0)
   }),{qtd:0,valor:0,hub:0,trs:0,trs_atr:0,trat:0,agcte:0,tag:0});
-  rPrev+='<tr class="tr-total"><td>Total Pendente</td>'
+  rPrev+='<tr class="tr-total"><td>Total em aberto</td>'
     +'<td class="r" style="color:#854F0B">'+(totPrev.hub||0)+'</td>'
     +'<td class="r" style="color:#0072BC">'+(totPrev.trs||0)+'</td>'
     +'<td class="r" style="color:#A32D2D;font-weight:600">'+(totPrev.trs_atr||0)+'</td>'
@@ -5504,7 +6023,7 @@ function renderOTDChart(d){
     // Python ser rodado com a v9.7).
     const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
                        + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
-    return'<tr><td>'+t.n+'</td>'
+    return'<tr><td>'+esc(t.n)+'</td>'
       +'<td class="r">'+(t.fin||'—')+'</td>'
       +'<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'
       +'<td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td>'
@@ -5647,18 +6166,19 @@ function renderCanceladas(){
     const corOrig = (c.origem === 'XML NF-e') ? '#0072BC' : '#854F0B';
     return '<tr>'
       +'<td style="color:var(--text3)">'+(i+1)+'</td>'
-      +'<td style="font-family:monospace;font-weight:600">'+(c.nf||'—')+'</td>'
-      +'<td style="color:var(--text2)">'+(c.serie||'—')+'</td>'
-      +'<td style="font-family:monospace;color:var(--text2)">'+(c.pedido||'—')+'</td>'
-      +'<td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.cliente||'')+'">'+(c.cliente||'—')+'</td>'
-      +'<td style="color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(c.cidade||'—')+'</td>'
-      +'<td style="font-weight:600">'+(c.uf||'—')+'</td>'
-      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+(c.regiao||'—')+'</span></td>'
-      +'<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.transp||'')+'">'+(c.transp||'—')+'</td>'
-      +'<td style="color:var(--text2);white-space:nowrap">'+(c.dt_fat||'—')+'</td>'
-      +'<td style="white-space:nowrap;font-weight:600;color:#4B5563">'+(c.dt_cancel||'—')+'</td>'
-      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corOrig+'18;color:'+corOrig+';font-weight:500;white-space:nowrap">'+(c.origem||'—')+'</span></td>'
-      +'<td style="font-size:11px;color:var(--text2);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(c.justificativa||'')+'">'+(c.justificativa||'—')+'</td>'
+      +'<td style="font-family:monospace;font-weight:600">'+esc(c.nf||'—')+'</td>'
+      +'<td style="color:var(--text2)">'+esc(c.serie||'—')+'</td>'
+      +'<td style="font-family:monospace;color:var(--text2)">'+esc(c.pedido||'—')+'</td>'
+      +'<td>'+cliChipMat(matDe(c.matriz,c.cliente))+'</td>'
+      +'<td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.cliente||'')+'">'+esc(c.cliente||'—')+'</td>'
+      +'<td style="color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(c.cidade||'—')+'</td>'
+      +'<td style="font-weight:600">'+esc(c.uf||'—')+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+cor+'18;color:'+cor+';font-weight:500">'+esc(c.regiao||'—')+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.transp||'')+'">'+esc(c.transp||'—')+'</td>'
+      +'<td style="color:var(--text2);white-space:nowrap">'+esc(c.dt_fat||'—')+'</td>'
+      +'<td style="white-space:nowrap;font-weight:600;color:#4B5563">'+esc(c.dt_cancel||'—')+'</td>'
+      +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corOrig+'18;color:'+corOrig+';font-weight:500;white-space:nowrap">'+esc(c.origem||'—')+'</span></td>'
+      +'<td style="font-size:11px;color:var(--text2);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.justificativa||'')+'">'+esc(c.justificativa||'—')+'</td>'
       +'<td class="r" style="color:#4B5563;font-weight:500">'+fmtM(c.valor)+'</td>'
       +'</tr>';
   }).join('');
@@ -5678,6 +6198,7 @@ function exportarCanceladasExcel(ev){
       'Numero NF': c.nf||'',
       'Serie': c.serie||'',
       'Pedido': c.pedido||'',
+      'Matriz': matDe(c.matriz,c.cliente),
       'Cliente': c.cliente||'',
       'Cidade': c.cidade||'',
       'UF': c.uf||'',
@@ -5694,11 +6215,11 @@ function exportarCanceladasExcel(ev){
       'Peso (kg)': c.peso||0
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [{wch:5},{wch:12},{wch:6},{wch:14},{wch:35},{wch:18},{wch:5},{wch:14},{wch:28},{wch:10},
+    ws['!cols'] = [{wch:5},{wch:12},{wch:6},{wch:14},{wch:18},{wch:30},{wch:18},{wch:5},{wch:14},{wch:28},{wch:10},
                    {wch:13},{wch:7},{wch:16},{wch:14},{wch:20},{wch:40},{wch:14},{wch:11}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'NFs Canceladas');
-    const stamp = new Date().toISOString().substring(0,10).replace(/-/g,'');
+    const stamp = stampHoje();
     XLSX.writeFile(wb, 'nfs_canceladas_' + stamp + '.xlsx');
   } catch(e){
     alert('Erro ao exportar: ' + e.message);
@@ -5712,6 +6233,82 @@ function exportarCanceladasExcel(ev){
 // RENDER LEAD TIME & IMPACTO AGENDA
 // ============================================================
 let leadTime_state = { mes: 'todos' };
+const LT_REGS = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+
+// v10.11: fonte dos quadros da aba Lead Time. Sem filtro Matriz/Cliente usa
+// os números oficiais do payload; com filtro recalcula a partir das NFs dos
+// clientes (clientes[].nfs traz lt = [total, expedição, transportes] e
+// ia = impacto de agenda por NF, calculados pelo pipeline com as MESMAS
+// réguas). Mês de referência = mês de emissão, como no pipeline.
+function ltFonte(){
+  const d = otdData || {};
+  if(!cliAtivo()) return {fat:d.fat_regiao_mes||{}, br:d.lead_time_brasil||{}, regs:d.lead_times_regiao||[], imp:d.impacto_agenda||[]};
+  const fat={}; LT_REGS.forEach(r=>fat[r]={});
+  const novoLT=()=>({ts:0,tn:0,es:0,en:0,xs:0,xn:0});
+  const br={0:novoLT()}, reg={}; LT_REGS.forEach(r=>reg[r]={0:novoLT()});
+  const novoIA=()=>({qtd_avaliadas:0,qtd_com_impacto:0,soma:0,max:0,val:0});
+  const imp={}; LT_REGS.forEach(r=>imp[r]={0:novoIA()});
+  const somaLT=(b,lt)=>{ if(lt[0]!=null){b.ts+=lt[0];b.tn++;} if(lt[1]!=null){b.es+=lt[1];b.en++;} if(lt[2]!=null){b.xs+=lt[2];b.xn++;} };
+  (d.clientes||[]).forEach(c=>{
+    if(!passaCli(c.mat,c.n)) return;
+    (c.nfs||[]).forEach(n=>{
+      const r = REGIOES_MAP[n.uf];
+      const m = mesBR(n.dt_fat);
+      if(r && m){
+        const f = fat[r][m] || (fat[r][m]={fat:0,qtd:0});
+        f.fat += n.valor||0; f.qtd++;
+      }
+      const lt = n.lt || [null,null,null];
+      const alvos=[br[0]];
+      if(m){ alvos.push(br[m]||(br[m]=novoLT())); }
+      if(reg[r]){ alvos.push(reg[r][0]); if(m) alvos.push(reg[r][m]||(reg[r][m]=novoLT())); }
+      alvos.forEach(b=>somaLT(b,lt));
+      if(imp[r] && n.ia!=null){
+        [0,m].forEach(k=>{
+          if(k==null) return;
+          const b = imp[r][k] || (imp[r][k]=novoIA());
+          b.qtd_avaliadas++;
+          if(n.ia>0){ b.qtd_com_impacto++; b.soma+=n.ia; b.val+=n.valor||0; if(n.ia>b.max) b.max=n.ia; }
+        });
+      }
+    });
+  });
+  const med=(s,n)=>n>0?Math.round(s/n*10)/10:null;
+  const matLT=b=>({lt_total:med(b.ts,b.tn), lt_exp:med(b.es,b.en), lt_trans:med(b.xs,b.xn), n_total:b.tn, n_exp:b.en, n_trans:b.xn});
+  const matIA=b=>({qtd_avaliadas:b.qtd_avaliadas, qtd_com_impacto:b.qtd_com_impacto,
+    pct_impacto:b.qtd_avaliadas?Math.round(b.qtd_com_impacto/b.qtd_avaliadas*1000)/10:0,
+    dias_medio:b.qtd_com_impacto?Math.round(b.soma/b.qtd_com_impacto*10)/10:0, dias_max:b.max, valor_impactado:Math.round(b.val*100)/100});
+  const brOut = matLT(br[0]); brOut.por_mes={};
+  Object.keys(br).forEach(k=>{ if(+k) brOut.por_mes[k]=matLT(br[k]); });
+  const regsOut = LT_REGS.map(r=>{ const o=Object.assign({regiao:r}, matLT(reg[r][0])); o.por_mes={};
+    Object.keys(reg[r]).forEach(k=>{ if(+k) o.por_mes[k]=matLT(reg[r][k]); }); return o; });
+  const impOut = LT_REGS.map(r=>{ const o=Object.assign({regiao:r}, matIA(imp[r][0])); o.por_mes={};
+    Object.keys(imp[r]).forEach(k=>{ if(+k) o.por_mes[k]=matIA(imp[r][k]); }); return o; });
+  Object.keys(fat).forEach(r=>Object.keys(fat[r]).forEach(m=>{ fat[r][m].fat=Math.round(fat[r][m].fat*100)/100; }));
+  return {fat, br:brOut, regs:regsOut, imp:impOut};
+}
+
+// Lead time por cliente (quadro 4) — respeita Matriz/Cliente e o mês da aba
+function ltPorCliente(){
+  const mesNum = leadTime_state.mes==='todos' ? null : parseInt(leadTime_state.mes,10);
+  const out=[];
+  ((otdData&&otdData.clientes)||[]).forEach(c=>{
+    if(!passaCli(c.mat,c.n)) return;
+    const b={ts:0,tn:0,es:0,en:0,xs:0,xn:0,av:0,imp:0};
+    (c.nfs||[]).forEach(n=>{
+      if(mesNum!=null && mesBR(n.dt_fat)!==mesNum) return;
+      const lt=n.lt||[null,null,null];
+      if(lt[0]!=null){b.ts+=lt[0];b.tn++;} if(lt[1]!=null){b.es+=lt[1];b.en++;} if(lt[2]!=null){b.xs+=lt[2];b.xn++;}
+      if(n.ia!=null && REGIOES_MAP[n.uf]){ b.av++; if(n.ia>0) b.imp++; }
+    });
+    if(!b.tn && !b.en) return;
+    const med=(s,n)=>n>0?Math.round(s/n*10)/10:null;
+    out.push({mat:matDe(c.mat,c.n), n:c.n, uf:c.uf, uf_extra:c.uf_extra||0, regiao:c.regiao,
+      n_total:b.tn, lt_total:med(b.ts,b.tn), lt_exp:med(b.es,b.en), lt_trans:med(b.xs,b.xn),
+      pct_impacto:b.av?Math.round(b.imp/b.av*1000)/10:null, n_av:b.av});
+  });
+  return out.sort((a,b)=>b.n_total-a.n_total);
+}
 
 function leadTimeFilter(mes, btn){
   leadTime_state.mes = mes;
@@ -5731,14 +6328,17 @@ function renderLeadTimes(){
   }
   document.getElementById('leadtime-empty').style.display = 'none';
   document.getElementById('leadtime-content').style.display = 'block';
+  cliPintarAviso('leadtime-cli-aviso', 'faturamento, lead times e impacto de agenda recalculados só com as NFs deste recorte.');
+  const F = ltFonte();
+  window.__ltFonte = F;
 
-  const fatReg  = otdData.fat_regiao_mes || {};
+  const fatReg  = F.fat || {};
   const REGS    = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
   const NOME_MES_LT = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
   // --- (0) Construir botões de filtro de mês ---
   // Coletar todos os meses presentes nos dados de Lead Time
-  const ltBR_full = otdData.lead_time_brasil || {};
+  const ltBR_full = otdData.lead_time_brasil || {};   // régua de meses = base inteira
   const mesesDisponiveis = new Set();
   if(ltBR_full.por_mes) Object.keys(ltBR_full.por_mes).forEach(m => mesesDisponiveis.add(parseInt(m)));
   // Fallback: se não tem por_mes (base antiga), tira filtro e segue
@@ -5766,7 +6366,8 @@ function renderLeadTimes(){
     leadTime_state.mes = 'todos';
   }
 
-  // --- (1) Faturamento % por Região × Mês — não depende do filtro ---
+  // --- (1) Faturamento % por Região × Mês — não depende do filtro de mês
+  //         (segue o filtro Matriz/Cliente quando ativo) ---
   const mesesSet = new Set();
   REGS.forEach(reg => {
     Object.keys(fatReg[reg]||{}).forEach(m => mesesSet.add(parseInt(m)));
@@ -5815,9 +6416,10 @@ function renderLeadTimes(){
 
 function renderLeadTimes_quadros_2_3(){
   if(!otdData) return;
-  const ltBR_full = otdData.lead_time_brasil || {};
-  const ltRegs_full = otdData.lead_times_regiao || [];
-  const impacto_full = otdData.impacto_agenda || [];
+  const F = window.__ltFonte || ltFonte();   // calculado em renderLeadTimes (não depende do mês)
+  const ltBR_full = F.br || {};
+  const ltRegs_full = F.regs || [];
+  const impacto_full = F.imp || [];
   const REGS = ['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
   const NOME_MES_LT = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const corLT = v => v == null ? 'var(--text2)' : v <= 5 ? '#3B6D11' : v <= 10 ? '#854F0B' : '#A32D2D';
@@ -5846,13 +6448,13 @@ function renderLeadTimes_quadros_2_3(){
   const ltBR = getLTBrasil() || { lt_total:null, lt_exp:null, lt_trans:null, n_total:0 };
 
   // --- Labels de período ---
-  const labelPeriodo = mesAtual === 'todos' ? '(acumulado)' : '('+NOME_MES_LT[mesNum]+')';
+  const labelPeriodo = (mesAtual === 'todos' ? '(acumulado)' : '('+NOME_MES_LT[mesNum]+')') + (cliAtivo()?' · '+cliFiltroTexto():'');
   document.getElementById('leadtime-mes-label-2').textContent = labelPeriodo;
   document.getElementById('leadtime-mes-label-3').textContent = labelPeriodo;
 
   // --- KPIs Brasil (refletem o filtro também) ---
   document.getElementById('leadtime-kpis').innerHTML =
-    '<div class="kpi kpi-blu"><div class="kpi-lbl">Lead Time Total Brasil</div>'
+    '<div class="kpi kpi-blu"><div class="kpi-lbl">Lead Time Total '+(cliAtivo()?'do recorte':'Brasil')+'</div>'
     +'<div class="kpi-val" style="color:'+corLT(ltBR.lt_total)+'">'
     +(ltBR.lt_total!=null ? ltBR.lt_total.toFixed(1)+'d' : '—')
     +'</div><div class="kpi-sub">Emissão → Entrega '+labelPeriodo+'</div></div>'
@@ -5939,6 +6541,48 @@ function renderLeadTimes_quadros_2_3(){
     +'<td class="r">'+(maxDias>0 ? maxDias+' d' : '—')+'</td>'
     +'<td class="r" style="color:#A32D2D">'+fmtM(valImp)+'</td>'
     +'</tr>';
+
+  renderLeadTimeClientes();
+}
+
+// ---- (4) Lead Time por Cliente (v10.11) ----
+const LT_CLI_MAX = 50;
+function renderLeadTimeClientes(){
+  const tb=document.getElementById('leadtime-cli-tbody'); if(!tb) return;
+  const busca=normTxt(document.getElementById('leadtime-cli-search')?.value||'');
+  const corLT = v => v == null ? 'var(--text2)' : v <= 5 ? '#3B6D11' : v <= 10 ? '#854F0B' : '#A32D2D';
+  const lista=ltPorCliente().filter(c=>!busca || [c.mat,c.n,c.uf].some(v=>normTxt(v).includes(busca)));
+  window.__ltClientes = lista;
+  const slice=lista.slice(0,LT_CLI_MAX);
+  tb.innerHTML = slice.length ? slice.map((c,i)=>'<tr>'
+      +'<td style="color:var(--text3)">'+(i+1)+'</td>'
+      +'<td>'+cliChipMat(c.mat)+'</td>'
+      +'<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.n)+'">'+esc(c.n)+'</td>'
+      +'<td style="font-weight:600">'+esc(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</td>'
+      +'<td class="r" style="color:var(--text2)">'+c.n_total.toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:'+corLT(c.lt_total)+';font-weight:600">'+(c.lt_total!=null?c.lt_total.toFixed(1)+' d':'—')+'</td>'
+      +'<td class="r" style="color:'+corLT(c.lt_exp)+';font-weight:600">'+(c.lt_exp!=null?c.lt_exp.toFixed(1)+' d':'—')+'</td>'
+      +'<td class="r" style="color:'+corLT(c.lt_trans)+';font-weight:600">'+(c.lt_trans!=null?c.lt_trans.toFixed(1)+' d':'—')+'</td>'
+      +'<td class="r" style="color:'+((c.pct_impacto||0)>=30?'#A32D2D':(c.pct_impacto||0)>=15?'#854F0B':'#3B6D11')+'">'+(c.pct_impacto!=null?c.pct_impacto.toFixed(1)+'%':'—')+'</td>'
+      +'</tr>').join('')
+    : '<tr><td colspan="9" style="color:var(--text3);text-align:center;padding:14px">'
+      + (((otdData&&otdData.clientes)||[]).some(c=>(c.nfs||[]).some(n=>n.lt))
+          ? 'Nenhum cliente com NF entregue no período'
+          : 'Esta base ainda não traz o lead time por NF — rode o atualizar.bat com o processar_otd.py v10.11.')
+      + '</td></tr>';
+  const info=document.getElementById('leadtime-cli-info');
+  if(info) info.textContent = lista.length>LT_CLI_MAX ? 'Mostrando '+LT_CLI_MAX+' de '+lista.length+' clientes (os de maior volume) — o Excel traz todos.' : lista.length+' cliente(s)';
+}
+function exportarLeadTimeClientesExcel(){
+  const lista = window.__ltClientes || ltPorCliente();
+  if(!lista.length){ alert('Nenhum cliente para exportar nos filtros atuais.'); return; }
+  const rows = lista.map((c,i)=>({'#':i+1,'Matriz':c.mat,'Cliente':c.n,'UF':c.uf||'','Regiao':c.regiao||'',
+    'NFs avaliadas':c.n_total,'Lead Time Total (d)':c.lt_total,'Lead Time Expedicao (d)':c.lt_exp,
+    'Lead Time Transportes (d)':c.lt_trans,'% Impacto Agenda':c.pct_impacto}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[{wch:5},{wch:18},{wch:30},{wch:5},{wch:14},{wch:12},{wch:16},{wch:18},{wch:20},{wch:16}];
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Lead Time por Cliente');
+  XLSX.writeFile(wb,'lead_time_clientes'+(leadTime_state.mes!=='todos'?'_'+NOME_MES[parseInt(leadTime_state.mes,10)]:'')+'_'+stampHoje()+'.xlsx');
 }
 
 // ============================================================
@@ -6242,7 +6886,7 @@ const MAP_LABELS={
       var w=((t.fin||0)/maxfin*100).toFixed(1);
       var nome=(t.n||'').substring(0,34);
       return '<div class="gtv-rkrow"><span class="gtv-rkpos">'+String(i+1).padStart(2,'0')+'</span>'
-        +'<span class="gtv-rkname">'+nome+'</span>'
+        +'<span class="gtv-rkname">'+esc(nome)+'</span>'
         +'<span class="gtv-rkotd gtv-tnum">'+gtvFmtPct(t.otd)+'</span>'
         +'<span class="gtv-rkbarwrap"><span class="gtv-rkbar"><i style="width:'+w+'%"></i></span>'
         +'<span class="gtv-rkfin gtv-tnum">'+((t.fin||0).toLocaleString('pt-BR'))+'</span></span></div>';
@@ -6416,23 +7060,15 @@ function fatiarTermos(txt){
 
 /* ---------- CSV ---------- */
 function parseCSV(txt){
-  const linhas = txt.split(/\r?\n/).filter(l=>l.length);
-  const split = l => {
-    const out=[]; let cur='', q=false;
-    for(let i=0;i<l.length;i++){
-      const c=l[i];
-      if(c==='"'){ if(q && l[i+1]==='"'){cur+='"';i++;} else q=!q; }
-      else if(c===';' && !q){ out.push(cur); cur=''; }
-      else cur+=c;
-    }
-    out.push(cur); return out;
-  };
-  const head = split(linhas[0]).map(h=>h.replace(/<[^>]*>/g,'').trim());
+  // v10.11: parser comum que respeita quebra de linha dentro de campo entre
+  // aspas (Justificativa/Descrição). O anterior quebrava a linha antes.
+  const linhas = window.csvParseRobusto(txt).filter(l=>l.length>1 || String(l[0]||'').length);
+  const head = (linhas[0]||[]).map(h=>String(h).replace(/<[^>]*>/g,'').trim());
   const idx={}; head.forEach((h,i)=>{ if(idx[h]===undefined) idx[h]=i; });
   const iNF = idx['Nro NF'];
   const rows=[]; let ignoradas=0;
   for(let i=1;i<linhas.length;i++){
-    const c=split(linhas[i]);
+    const c=linhas[i];
     if(c.every(v=>!String(v).trim())){ ignoradas++; continue; }          // linha em branco
     if(iNF!==undefined && !String(c[iNF]??'').trim()){ ignoradas++; continue; } // linha sem número de NF
     rows.push(c);
@@ -6510,8 +7146,18 @@ function pedidoInvalido(p){
   return (!isNaN(n) && n===0);
 }
 
-/* ---------- diagnóstico: por que a nota aparece (ou não) ---------- */
+/* ---------- diagnóstico: por que a nota aparece (ou não) ----------
+   v10.11: espelho do classificar() do processar_otd.py — devolução inclui
+   420/421 e "previsão vencida" (R5) vem antes de CD e dos sub-status.
+   Resultado guardado por linha: KPIs e tabela chamavam isto milhares de
+   vezes a cada tecla. */
+const _diagCache = new WeakMap();
 function diagnosticar(r){
+  let d=_diagCache.get(r);
+  if(!d){ d=diagnosticarSemCache(r); _diagCache.set(r,d); }
+  return d;
+}
+function diagnosticarSemCache(r){
   // R0 (v10.9) — cancelamento de NF-e homologado. Vem antes de tudo: é fato
   // fiscal e prevalece sobre o que o TMS disser. A coluna é gravada no
   // arquivo mestre pelo processar_otd.py a partir dos XMLs do ERP.
@@ -6566,8 +7212,8 @@ function diagnosticar(r){
     return { entra:false, sit:'Desconsiderada', tom:'err', regra:'R1', onde:'Nenhum painel', motivo };
   }
 
-  if(ocor==='25' || ocor==='999'){
-    return { entra:true, sit:'Devolvida', tom:'amb', regra:'R2', onde:'Painel (macro Devolvida) · fora do cálculo de OTD',
+  if(ocor==='25' || ocor==='999' || ocor==='420' || ocor==='421'){
+    return { entra:true, sit:'Devolvida', tom:'amb', regra:'R2', onde:'Painel (macro Devolvida) · fora do cálculo de OTD e fora de Notas em Aberto',
       motivo:'Ocorrência '+ocor+' — devolução. Conta como Devolvida e sai do cálculo de OTD por regra, mas continua visível no painel.' };
   }
 
@@ -6583,20 +7229,26 @@ function diagnosticar(r){
       onde:'OTD', motivo:'Sem ocorrência finalizadora, mas o status do ERP diz Entregue.' };
   }
 
+  if(cortePrazo()==='Em Atraso'){
+    const ondeEsta = (!cte && !rom && !iniTr) ? 'ainda no CD' : ('ocorrência '+(ocor||'vazia'));
+    return { entra:true, sit:'Em Atraso', tom:'err', regra:'R5 · prazo vencido',
+      onde:'OTD + Notas em Aberto', motivo:'Não entregue e a Data Max Entrega ('+(g(r,'Data Max Entrega')||'—')+') já passou — previsão vencida vira Em Atraso, qualquer que seja o sub-status ('+ondeEsta+').' };
+  }
+
   if(!cte && !rom && !iniTr){
     const c=cortePrazo();
-    return { entra:true, sit:'CD · '+c, tom:(c==='Em Atraso'?'err':'blu'), regra:'R5',
+    return { entra:true, sit:'CD · '+c, tom:'blu', regra:'R6',
       onde:'OTD + Notas em Aberto', motivo:'Sem CT-e, sem romaneio e sem início de transporte — ainda não saiu do CD.' };
   }
 
   const sub = OCOR_TRANSITO[ocor];
   if(sub !== undefined){
     const c=cortePrazo();
-    return { entra:true, sit:sub+' · '+c, tom:(c==='Em Atraso'?'err':'blu'), regra:'R6 · ocor '+(ocor||'vazia'),
+    return { entra:true, sit:sub+' · '+c, tom:'blu', regra:'R7 · ocor '+(ocor||'vazia'),
       onde:'OTD + Notas em Aberto', motivo:'Tem CT-e ou romaneio; a ocorrência '+(ocor||'(vazia)')+' define o sub-status de trânsito.' };
   }
 
-  return { entra:false, sit:'Sem Regra', tom:'err', regra:'R7', onde:'Nenhum painel',
+  return { entra:false, sit:'Sem Regra', tom:'err', regra:'R8', onde:'Nenhum painel',
     motivo:'Ocorrência '+ocor+' não está no de-para aprovado. A nota cai em alarme e fica fora do OTD.' };
 }
 
@@ -6636,11 +7288,20 @@ const CAMPOS_BUSCA = ['Nro NF','Pedido','Cliente','CNPJ Cliente','Romaneio','Con
 
 // Casa um termo isolado: NF exata tem prioridade; senão, busca parcial em
 // QUALQUER ocorrência da nota.
+// Cliente padronizado (Matriz → Cliente) da nota, guardado na própria nota
+function cadNota(n){
+  if(!n._cad) n._cad = cadDeCNPJ(g(n.atual,'CNPJ Cliente'), g(n.atual,'Cliente'));
+  return n._cad;
+}
 function casar(termo){
-  const t=termo.toLowerCase();
+  const t=normTxt(termo);
   const exato = st.notas.filter(n => g(n.atual,'Nro NF').toLowerCase() === t);
   if(exato.length) return exato;
-  return st.notas.filter(n => n.rows.some(r => CAMPOS_BUSCA.some(c => String(g(r,c)).toLowerCase().includes(t))));
+  return st.notas.filter(n => {
+    const c=cadNota(n);
+    if(normTxt(c.cli).includes(t) || normTxt(c.mat).includes(t)) return true;
+    return n.rows.some(r => CAMPOS_BUSCA.some(campo => normTxt(g(r,campo)).includes(t)));
+  });
 }
 
 function termosAtivos(){
@@ -6663,15 +7324,27 @@ function buscar(){
 }
 
 function aplicarRecorte(){
+  if(cliAtivo()) st.resultado = st.resultado.filter(n => { const c=cadNota(n); return passaCli(c.mat, c.cli); });
   if(st.soFora) st.resultado = st.resultado.filter(n => !diagnosticar(n.atual).entra);
 }
 
+// v10.11: chamado quando o filtro Matriz → Cliente muda ou a base recarrega
+window.consultaRefiltrar = function(){
+  cliPintarAviso('consulta-cli-aviso');
+  if(!st.carregado) return;
+  st.notas.forEach(n=>{ delete n._cad; });   // o de-para pode ter mudado
+  st.page=1; buscar(); renderChips(); renderKpis(); renderTabela();
+};
+
 /* ---------- ações ---------- */
+// v10.11: busca com debounce — antes varria a base inteira a cada tecla
+let _buscaTimer=null;
 window.consultaBuscar = function(){
   st.termo = document.getElementById('consulta-input').value || '';
   st.page = 1;
   if(!st.carregado){ carregar(); return; }
-  buscar(); renderChips(); renderKpis(); renderTabela();
+  clearTimeout(_buscaTimer);
+  _buscaTimer = setTimeout(()=>{ buscar(); renderChips(); renderKpis(); renderTabela(); }, 250);
 };
 
 window.consultaKey = function(ev){
@@ -6712,7 +7385,7 @@ window.consultaLimpar = function(){
 /* ---------- render ---------- */
 const TOM={ok:'#3B6D11',amb:'#854F0B',err:'#A32D2D',blu:'#0072BC'};
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const COLSPAN = 25;
+const COLSPAN = 27;
 
 function renderChips(){
   const box=document.getElementById('consulta-chips'); if(!box) return;
@@ -6803,7 +7476,9 @@ function renderTabela(){
       +'<td>'+esc(dash(g(r,'Serie NF')))+'</td>'
       +'<td>'+esc(g(r,'Embarcador').replace(/ (DO BRASIL )?LTDA\.?$/i,''))+'</td>'
       +'<td>'+esc(g(r,'Transportador'))+'</td>'
-      +'<td>'+esc(g(r,'Cliente'))+'</td>'
+      +'<td>'+cliChipMat(cadNota(n).mat)+'</td>'
+      +'<td style="font-weight:500">'+esc(cadNota(n).cli)+'</td>'
+      +'<td style="font-size:11px;color:var(--text2)">'+esc(g(r,'Cliente'))+'</td>'
       +'<td>'+esc(dash(g(r,'CNPJ Cliente')))+'</td>'
       +'<td>'+esc(dash(g(r,'Cidade Destino')))+'</td>'
       +'<td>'+esc(dash(g(r,'UF Destino')))+'</td>'
@@ -6893,6 +7568,9 @@ window.exportarConsultaExcel = function(ev){
     const r=n.atual, o={};
     st.head.forEach((h,ci)=>{ o[h]=String(r[ci]??'').trim(); });
     const d=diagnosticar(r);
+    const c=cadNota(n);
+    o['[Matriz]']=c.mat;
+    o['[Cliente padrão]']=c.cli;
     o['[Ocorrências na NF]']=n.rows.length;
     o['[Situação no painel]']=d.sit;
     o['[Aparece no painel]']=d.entra?'Sim':'Não';
@@ -6904,11 +7582,13 @@ window.exportarConsultaExcel = function(ev){
   const ws=XLSX.utils.json_to_sheet(dados);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Consulta NF');
-  XLSX.writeFile(wb, 'consulta-nf-'+new Date().toISOString().slice(0,10)+'.xlsx');
+  XLSX.writeFile(wb, 'consulta-nf-'+stampHoje()+'.xlsx');
 };
 
 /* ---------- init ---------- */
 window.initConsulta = function(){
+  cliPintarAviso('consulta-cli-aviso');
+  if(st.carregado){ st.page=1; buscar(); }   // reaplica o filtro Matriz → Cliente
   renderChips(); renderKpis(); renderTabela();
   if(!st.carregado) carregar();
   const inp=document.getElementById('consulta-input');
