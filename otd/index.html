@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.11-matriz-clientes', date: '06/10/2026' };
+window.__BUILD__ = { version: 'v10.12-homologacao', date: '15/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1640,6 +1640,18 @@ function csvParseRobusto(text){
 }
 window.csvParseRobusto = csvParseRobusto;
 
+// v10.12 — NF-e emitida em AMBIENTE DE HOMOLOGAÇÃO (teste, sem valor fiscal).
+// O ERP grava Cliente = "NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR
+// FISCAL", com o CNPJ do cliente real e o MESMO número de uma NF real
+// (ex.: 66792 teste x 66792 RAIA). A linha de homologação é desconsiderada
+// em tudo; a NF real de mesmo número segue normal. Espelho de
+// eh_nf_homologacao() do processar_otd.py.
+function ehNfHomologacao(cliente){
+  const t=String(cliente||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+  return t.indexOf('AMBIENTE DE HOMOLOGACAO')>=0 || (t.indexOf('HOMOLOGACAO')>=0 && t.indexOf('SEM VALOR FISCAL')>=0);
+}
+window.ehNfHomologacao = ehNfHomologacao;
+
 // v10.10 — definição ÚNICA de carteira em aberto. Mesma lista do
 // TIPOS_ABERTOS do processar_otd.py: mexer num exige mexer no outro.
 const TIPOS_ABERTOS = ['hub','transito','transito_atr','tratativa','ag_cte','transito_agenda'];
@@ -2129,7 +2141,7 @@ async function processOTD(file){
 
   // Filtra dataset pelo escopo (3 naturezas) — descarta TRANSFERENCIA/AMOSTRA/OUTRA SAIDA
   const totalAntesFiltroPedido = processed.length;
-  const comPedido = processed.filter(r => pedidoValido(getPedido(r)));
+  const comPedido = processed.filter(r => pedidoValido(getPedido(r)) && !ehNfHomologacao(col(r,'Cliente','Razao Social','Razão Social','Destinatário')));  // v10.12: fora NF de homologação
   const semPedidoCount = totalAntesFiltroPedido - comPedido.length;
   if(typeof log==='function') log('NFs descartadas por Pedido vazio/zero: '+semPedidoCount,'info');
   const escopo = comPedido.filter(r=>NATUREZAS_ESCOPO.includes(getNatureza(r)));
@@ -3479,12 +3491,14 @@ function mesEntregaParse(txt){
   const head=(linhas[0]||[]).map(h=>String(h).replace(/<[^>]*>/g,'').trim());
   const iNF=head.indexOf('Nro NF');
   const iEnt=head.indexOf('Data Entrega Operacao');
+  const iCli=head.indexOf('Cliente');               // v10.12: ignora NF de homologação
   const mapa={};
   if(iNF<0||iEnt<0) return mapa;
   for(let i=1;i<linhas.length;i++){
     const f=linhas[i];
     if(!f || f.length<2) continue;
     const nf=String(f[iNF]||'').trim(); if(!nf) continue;
+    if(iCli>=0 && ehNfHomologacao(f[iCli])) continue;
     const dt=String(f[iEnt]||'').trim(); if(!dt) continue;
     const m=dt.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
     if(!m) continue;
@@ -4622,7 +4636,7 @@ function exportarAbertasExcel(ev){
 var OTDRegras = (function () {
   'use strict';
 
-  var VERSAO_REGRAS = 'v10.11-2026-10-06';   // espelho do classificar() do processar_otd.py
+  var VERSAO_REGRAS = 'v10.12-2026-10-15';   // espelho do classificar() do processar_otd.py
 
   // -- 1. Macros do painel ---------------------------------------------------
   var MACRO = {
@@ -4796,6 +4810,12 @@ var OTDRegras = (function () {
     }
 
     var erp = semAcento(statusErp);
+
+    // R1-homologacao (v10.12) - NF-e emitida em ambiente de homologacao, sem
+    // valor fiscal. Vem ANTES do R0: a NF de teste pode ter o mesmo numero de
+    // uma NF real e nao deve herdar nada dela.
+    if (window.ehNfHomologacao(campo(linha, 'Cliente', 'Razao Social', 'Destinatario')))
+      return resultado('Desconsiderada', 'R1-homologacao');
 
     // R0 - cancelamento de NF-e homologado (v10.9). Fato fiscal: prevalece
     // sobre qualquer status do TMS, inclusive "Entregue". A marcacao vem do
@@ -7333,7 +7353,10 @@ const dash = v => (v===''||v==null) ? '—' : v;
 function agrupar(rows){
   const map=new Map();
   rows.forEach((r,i)=>{
-    const k = g(r,'Nro NF')+'|'+g(r,'Serie NF')+'|'+g(r,'Embarcador');
+    // v10.12: a NF de homologação tem o MESMO número/série/embarcador de uma
+    // NF real — sem separar, as duas viravam uma nota só e valia a última.
+    const k = g(r,'Nro NF')+'|'+g(r,'Serie NF')+'|'+g(r,'Embarcador')
+            + (window.ehNfHomologacao(g(r,'Cliente')) ? '|HOMOLOGACAO' : '');
     if(!map.has(k)) map.set(k,[]);
     map.get(k).push({r,i});
   });
@@ -7388,6 +7411,13 @@ function diagnosticar(r){
   return d;
 }
 function diagnosticarSemCache(r){
+  // R1-homologação (v10.12) — antes de tudo, inclusive do R0: NF-e de teste
+  // sem valor fiscal. Some de todos os painéis; aqui aparece só para consulta.
+  if(window.ehNfHomologacao(g(r,'Cliente'))){
+    return { entra:false, sit:'Desconsiderada', tom:'err', regra:'R1 · homologação', onde:'Nenhum painel',
+      motivo:'NF-e emitida em ambiente de HOMOLOGAÇÃO (teste, sem valor fiscal). Desconsiderada em todas as visões. '
+            +'Se existir NF real com o mesmo número, ela aparece em linha própria e segue normalmente.' };
+  }
   // R0 (v10.9) — cancelamento de NF-e homologado. Vem antes de tudo: é fato
   // fiscal e prevalece sobre o que o TMS disser. A coluna é gravada no
   // arquivo mestre pelo processar_otd.py a partir dos XMLs do ERP.
