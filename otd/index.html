@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.12-homologacao', date: '15/10/2026' };
+window.__BUILD__ = { version: 'v10.13-serie3-historico', date: '27/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -343,6 +343,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 .topnav .nav-back{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.28)}
 .topnav .nav-back:hover{background:rgba(255,255,255,.12)}
 .topnav .btn-sm{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.28)}
+.topnav .btn-sm.serie3-on{background:#F5A623;border-color:#F5A623;color:#1a1a1a;font-weight:600}
 .topnav .btn-sm:hover{background:rgba(255,255,255,.12)}
 .topnav .user-chip{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20)}
 .topnav .user-em{color:rgba(255,255,255,.85)}
@@ -432,6 +433,7 @@ table.dt th{color:#33536F}
       <a class="nav-back" href="../index.html">← Início</a>
       <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
       <div class="user-chip"><div class="user-av" id="user-av">?</div><span class="user-em" id="user-em">—</span></div>
+      <button class="btn-sm" id="btn-serie3" onclick="toggleSerie3()" title="NFs de série 3 ficam fora de todas as visões. Clique para incluir ou excluir.">Série 3: fora</button>
       <button class="btn-sm" onclick="doLogout()">Sair</button>
     </div>
   </div>
@@ -1652,6 +1654,41 @@ function ehNfHomologacao(cliente){
 }
 window.ehNfHomologacao = ehNfHomologacao;
 
+// v10.13 — SÉRIES DESCONSIDERADAS. NF de série 3 fica fora de TODAS as
+// visões por padrão (decisão da operação, 27/10/2026), nas duas empresas.
+// O botão "Série 3" ao lado do Sair inclui/exclui de novo: a escolha fica
+// salva neste navegador e troca o arquivo carregado entre
+//   otd/dados.json            (sem série 3 — padrão)
+//   otd/dados_com_serie3.json (com série 3)
+// ambos gerados pelo processar_otd.py v10.13. Espelho de SERIES_FORA do pipeline.
+const SERIES_FORA = ['3'];
+const SERIE3_KEY = 'otd_incluir_serie3';
+function serie3Incluida(){
+  try { return localStorage.getItem(SERIE3_KEY) === '1'; } catch(_) { return false; }
+}
+function normSerie(v){ return String(v==null?'':v).replace(/<[^>]*>/g,'').trim().replace(/\.0+$/,'').replace(/^0+(?=\d)/,''); }
+function ehSerieDesconsiderada(serie){
+  return !serie3Incluida() && SERIES_FORA.indexOf(normSerie(serie)) >= 0;
+}
+window.serie3Incluida = serie3Incluida;
+window.ehSerieDesconsiderada = ehSerieDesconsiderada;
+function pintarBotaoSerie3(aviso){
+  const b=document.getElementById('btn-serie3'); if(!b) return;
+  const on=serie3Incluida();
+  b.textContent = on ? 'Série 3: incluída' : 'Série 3: fora';
+  b.classList.toggle('serie3-on', on);
+  b.title = (on ? 'NFs de série 3 estão INCLUÍDAS em todas as visões. Clique para excluir.'
+                : 'NFs de série 3 estão fora de todas as visões. Clique para incluir.')
+          + (aviso ? '\n\n' + aviso : '');
+}
+window.toggleSerie3 = function(){
+  const on = !serie3Incluida();
+  try { localStorage.setItem(SERIE3_KEY, on ? '1' : '0'); } catch(_) {}
+  // Recarrega: KPIs, abas, Consultar NF e exportações passam a usar a escolha nova.
+  location.reload();
+};
+document.addEventListener('DOMContentLoaded', ()=>pintarBotaoSerie3());
+
 // v10.10 — definição ÚNICA de carteira em aberto. Mesma lista do
 // TIPOS_ABERTOS do processar_otd.py: mexer num exige mexer no outro.
 const TIPOS_ABERTOS = ['hub','transito','transito_atr','tratativa','ag_cte','transito_agenda'];
@@ -2141,7 +2178,10 @@ async function processOTD(file){
 
   // Filtra dataset pelo escopo (3 naturezas) — descarta TRANSFERENCIA/AMOSTRA/OUTRA SAIDA
   const totalAntesFiltroPedido = processed.length;
-  const comPedido = processed.filter(r => pedidoValido(getPedido(r)) && !ehNfHomologacao(col(r,'Cliente','Razao Social','Razão Social','Destinatário')));  // v10.12: fora NF de homologação
+  // v10.13: série 3 vem com Pedido = 0 — com o botão "Série 3: incluída" ela entra mesmo sem pedido.
+  const ehS3 = r => SERIES_FORA.indexOf(normSerie(col(r,'Serie NF','Série NF','Serie','Série'))) >= 0;
+  const comPedido = processed.filter(r => (pedidoValido(getPedido(r)) || (serie3Incluida() && ehS3(r))) && !ehNfHomologacao(col(r,'Cliente','Razao Social','Razão Social','Destinatário'))  // v10.12: fora NF de homologação
+                                     && !ehSerieDesconsiderada(col(r,'Serie NF','Série NF','Serie','Série')));                                  // v10.13: fora série 3
   const semPedidoCount = totalAntesFiltroPedido - comPedido.length;
   if(typeof log==='function') log('NFs descartadas por Pedido vazio/zero: '+semPedidoCount,'info');
   const escopo = comPedido.filter(r=>NATUREZAS_ESCOPO.includes(getNatureza(r)));
@@ -3492,6 +3532,7 @@ function mesEntregaParse(txt){
   const iNF=head.indexOf('Nro NF');
   const iEnt=head.indexOf('Data Entrega Operacao');
   const iCli=head.indexOf('Cliente');               // v10.12: ignora NF de homologação
+  const iSer=head.indexOf('Serie NF');              // v10.13: ignora série desconsiderada
   const mapa={};
   if(iNF<0||iEnt<0) return mapa;
   for(let i=1;i<linhas.length;i++){
@@ -3499,6 +3540,7 @@ function mesEntregaParse(txt){
     if(!f || f.length<2) continue;
     const nf=String(f[iNF]||'').trim(); if(!nf) continue;
     if(iCli>=0 && ehNfHomologacao(f[iCli])) continue;
+    if(iSer>=0 && ehSerieDesconsiderada(f[iSer])) continue;
     const dt=String(f[iEnt]||'').trim(); if(!dt) continue;
     const m=dt.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
     if(!m) continue;
@@ -4636,7 +4678,7 @@ function exportarAbertasExcel(ev){
 var OTDRegras = (function () {
   'use strict';
 
-  var VERSAO_REGRAS = 'v10.12-2026-10-15';   // espelho do classificar() do processar_otd.py
+  var VERSAO_REGRAS = 'v10.13-2026-10-27';   // espelho do classificar() do processar_otd.py
 
   // -- 1. Macros do painel ---------------------------------------------------
   var MACRO = {
@@ -4776,7 +4818,7 @@ var OTDRegras = (function () {
 
   // -- 4. Motor --------------------------------------------------------------
   // Precedencia (a primeira que casa decide):
-  //   R1 Desconsiderada - sufixo '- Desconsiderada' no status ou ocorrencia 998
+  //   R1 Desconsiderada - homologacao, serie 3, sufixo '- Desconsiderada' ou ocorrencia 998
   //   R2 Devolvida      - ocorrencia 25, 999, 420 ou 421
   //   R3 Entregue       - ocorrencia 1 (avalia prazo) ou 2 (sempre Off Time)
   //   R4 Entregue (ERP) - sem ocorrencia finalizadora, status do ERP diz entregue
@@ -4816,6 +4858,11 @@ var OTDRegras = (function () {
     // uma NF real e nao deve herdar nada dela.
     if (window.ehNfHomologacao(campo(linha, 'Cliente', 'Razao Social', 'Destinatario')))
       return resultado('Desconsiderada', 'R1-homologacao');
+
+    // R1-serie3 (v10.13) - serie desconsiderada (padrao: serie 3, Genomma e
+    // Inovalab). Botao "Serie 3" no topo inclui de novo.
+    if (window.ehSerieDesconsiderada(campo(linha, 'Serie NF', 'Série NF', 'Serie')))
+      return resultado('Desconsiderada', 'R1-serie3');
 
     // R0 - cancelamento de NF-e homologado (v10.9). Fato fiscal: prevalece
     // sobre qualquer status do TMS, inclusive "Entregue". A marcacao vem do
@@ -5598,17 +5645,31 @@ async function loadOTDFromStorage(){
     // que faz upload da base e salva o JSON la). Cache-bust agressivo para garantir
     // que sempre pega a versao mais recente.
     let payload = null;
+    // v10.13: com o botão "Série 3: incluída" lê a versão que mantém a série 3.
+    let arquivo = serie3Incluida() ? 'otd/dados_com_serie3.json' : 'otd/dados.json';
+    pintarBotaoSerie3();
     try {
-      const {data:pubUrlData} = sb.storage.from('dashboards').getPublicUrl('otd/dados.json');
+      const {data:pubUrlData} = sb.storage.from('dashboards').getPublicUrl(arquivo);
       if(pubUrlData && pubUrlData.publicUrl){
         const url = pubUrlData.publicUrl + '?_=' + Date.now();
         const resp = await fetch(url, {cache:'no-store', headers:{'Cache-Control':'no-cache'}});
         if(resp.ok){ payload = await resp.json(); }
       }
     } catch(_){}
+    // v10.13: pipeline antigo ainda não gerou dados_com_serie3.json — cai para o padrão e avisa no botão.
+    if(!payload && arquivo !== 'otd/dados.json'){
+      console.warn('[Série 3] otd/dados_com_serie3.json não existe — rode o atualizar.bat com o processar_otd.py v10.13. Usando dados.json (sem série 3).');
+      pintarBotaoSerie3('Atenção: os indicadores ainda estão SEM série 3 — o arquivo com série 3 será gerado na próxima atualização (processar_otd.py v10.13).');
+      arquivo = 'otd/dados.json';
+      try {
+        const {data:pub2} = sb.storage.from('dashboards').getPublicUrl(arquivo);
+        const resp2 = await fetch(pub2.publicUrl + '?_=' + Date.now(), {cache:'no-store'});
+        if(resp2.ok){ payload = await resp2.json(); }
+      } catch(_){}
+    }
     // Fallback via SDK do Supabase
     if(!payload){
-      const {data,error}=await sb.storage.from('dashboards').download('otd/dados.json');
+      const {data,error}=await sb.storage.from('dashboards').download(arquivo);
       if(error) return;
       payload = JSON.parse(await data.text());
     }
@@ -7418,6 +7479,12 @@ function diagnosticarSemCache(r){
       motivo:'NF-e emitida em ambiente de HOMOLOGAÇÃO (teste, sem valor fiscal). Desconsiderada em todas as visões. '
             +'Se existir NF real com o mesmo número, ela aparece em linha própria e segue normalmente.' };
   }
+  // R1-série3 (v10.13) — série desconsiderada (série 3, nas duas empresas).
+  if(window.ehSerieDesconsiderada(g(r,'Serie NF'))){
+    return { entra:false, sit:'Desconsiderada', tom:'err', regra:'R1 · série 3', onde:'Nenhum painel',
+      motivo:'NF de série '+normSerie(g(r,'Serie NF'))+' — desconsiderada em todas as visões por decisão da operação. '
+            +'Para incluí-la, use o botão "Série 3" no topo da tela.' };
+  }
   // R0 (v10.9) — cancelamento de NF-e homologado. Vem antes de tudo: é fato
   // fiscal e prevalece sobre o que o TMS disser. A coluna é gravada no
   // arquivo mestre pelo processar_otd.py a partir dos XMLs do ERP.
@@ -7453,7 +7520,8 @@ function diagnosticarSemCache(r){
     return dMax >= hoje ? 'No Prazo' : 'Em Atraso';
   };
 
-  if(pedidoInvalido(pedido)){
+  const s3Incluida = window.serie3Incluida() && SERIES_FORA.indexOf(normSerie(g(r,'Serie NF'))) >= 0;  // v10.13
+  if(pedidoInvalido(pedido) && !s3Incluida){
     return { entra:false, sit:'Descartada na ingestão', tom:'err', regra:'INGEST · pedido',
       onde:'Nenhum painel',
       motivo:'Campo Pedido vazio ou zero. O filtro v8.2 remove a linha antes de qualquer classificação.'
@@ -7761,6 +7829,7 @@ function renderTabela(){
       +'<td>'+(d.entra?'<span class="badge badge-ok">Sim</span>':'<span class="badge badge-err">Não</span>')+'</td>'
       +'</tr>'
       +'<tr id="consulta-det-'+key+'" style="display:none"><td colspan="'+COLSPAN+'" style="background:var(--bg2);padding:16px">'
+        +'<div class="hnf-box" data-hnf="'+esc(chaveHNF(r))+'" style="margin-bottom:16px"></div>'
         + (nOcor>1 ? historicoHTML(n) : '')
         +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Ficha completa · NF '+esc(g(r,'Nro NF'))+' · '+(nOcor>1?'última ocorrência · ':'')+'todos os '+st.head.length+' campos do arquivo mestre</div>'
         +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 22px;font-size:11.5px">'
@@ -7816,8 +7885,97 @@ window.consultaPage = function(d){ st.page+=d; renderTabela(); window.scrollTo({
 
 window.consultaDetalhe = function(key){
   const el=document.getElementById('consulta-det-'+key);
-  if(el) el.style.display = (el.style.display==='none' ? 'table-row' : 'none');
+  if(!el) return;
+  el.style.display = (el.style.display==='none' ? 'table-row' : 'none');
+  if(el.style.display!=='none'){
+    const box=el.querySelector('.hnf-box');
+    if(box && !box.dataset.done) pintarLinhaDoTempo(box);
+  }
 };
+
+/* ---------- v10.13: LINHA DO TEMPO DA NF (otd/historico_nf.json) ----------
+   Gerado pelo historico_nf.py: 1 evento por dia em que algo mudou na NF.
+   Evento = [AAAA-MM-DD, código do painel, {campos que mudaram}]. */
+const HNF_URL = CSV_URL.replace(/historico_mestre\.csv$/,'historico_nf.json');
+const HNF_CAMPOS = [['st','Status ERP'],['oc','Ocorrência'],['ds','Descrição'],['do','Data ocorrência'],['ob','Observação'],
+  ['rm','Romaneio'],['ct','CT-e'],['em','Embarque'],['it','Início transp.'],['mx','Data Max Entrega'],['ag','Agendamento'],
+  ['en','Entrega'],['tr','Transportadora']];
+const HNF_ROTULO = { hub:'CD', transito:'Em Trânsito', transito_agenda:'Agendamento Confirmado', ag_cte:'Aguardando Agendamento',
+  tratativa:'Tratativa', transito_atr:'Em Atraso', on_time:'Entregue · On Time', off_time:'Entregue · Off Time',
+  devolvida:'Devolvida', cancelada:'Cancelada', desconsiderada:'Desconsiderada', serie3:'Desconsiderada · série 3',
+  sem_pedido:'Descartada · sem pedido', sem_regra:'Sem Regra', erro:'—' };
+const HNF_TOM = { hub:'blu', transito:'blu', transito_agenda:'blu', ag_cte:'blu', tratativa:'amb', transito_atr:'err',
+  on_time:'ok', off_time:'amb', devolvida:'amb', cancelada:'err', desconsiderada:'err', serie3:'err', sem_pedido:'err', sem_regra:'err' };
+const HNF_ABERTOS = ['hub','transito','transito_agenda','ag_cte','tratativa'];
+let _hnf=null, _hnfP=null;
+function carregarHNF(){
+  if(!_hnfP){
+    _hnfP = fetch(HNF_URL+'?_='+Date.now(), {cache:'no-store'})
+      .then(r => r.ok ? r.json() : null).catch(() => null)
+      .then(j => (_hnf = j));
+  }
+  return _hnfP;
+}
+function chaveHNF(r){
+  const nf = String(g(r,'Nro NF')).replace(/\.0+$/,'').replace(/\D/g,'').replace(/^0+(?=\d)/,'');
+  return nf+'|'+g(r,'Serie NF')+'|'+g(r,'Embarcador')+(window.ehNfHomologacao(g(r,'Cliente')) ? '|HOMOLOGACAO' : '');
+}
+function rotuloHNF(cod, est){
+  let t = HNF_ROTULO[cod] || cod;
+  const oc = String(est.oc||'').replace(/\.0$/,'');
+  if(cod==='transito' && ['28','84','91','807'].indexOf(oc)>=0) t='Em Rota de Entrega';
+  if(cod==='ag_cte' && oc==='601') t='Agendamento Solicitado';
+  if(cod==='tratativa' && OCOR_TRANSITO[oc]) t=OCOR_TRANSITO[oc];
+  if(HNF_ABERTOS.indexOf(cod)>=0) t += est.mx ? ' · No Prazo' : ' · Sem Prazo';
+  return t;
+}
+const dIso = s => { const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1],+m[2]-1,+m[3]) : null; };
+const isoBR = s => { const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[3]+'/'+m[2]+'/'+m[1] : s; };
+async function pintarLinhaDoTempo(box){
+  box.dataset.done='1';
+  const tit='<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Linha do tempo da NF — o que mudou a cada dia e como o painel a classificava</div>';
+  box.innerHTML = tit+'<div style="font-size:11px;color:var(--text3)">Carregando histórico...</div>';
+  const h = await carregarHNF();
+  if(!h || !h.notas){
+    box.innerHTML = tit+'<div style="font-size:11px;color:var(--text3)">Histórico ainda não disponível — será gerado na próxima execução do atualizar.bat (processar_otd.py v10.13).</div>';
+    return;
+  }
+  const evs = h.notas[box.dataset.hnf];
+  if(!evs || !evs.length){
+    box.innerHTML = tit+'<div style="font-size:11px;color:var(--text3)">Sem histórico para esta NF (ela ainda não passou por nenhuma execução do pipeline desde '+isoBR((h.datas||[])[0]||'')+').</div>';
+    return;
+  }
+  const ultimaFoto = dIso((h.datas||[]).slice(-1)[0]) || new Date();
+  const est={};
+  let linhas='';
+  evs.forEach((ev,i)=>{
+    const [data, cod, delta] = ev;
+    const antes = Object.assign({}, est);
+    Object.assign(est, delta);
+    const ini = dIso(data);
+    const fim = i<evs.length-1 ? dIso(evs[i+1][0]) : ultimaFoto;
+    const dias = (ini && fim) ? Math.round((fim-ini)/86400000) : null;
+    const mudou = HNF_CAMPOS.filter(([c]) => c in delta).map(([c,lbl]) => {
+      const de = antes[c]||'', para = delta[c]||'';
+      return '<div><span style="color:var(--text3)">'+lbl+':</span> '
+        + (i>0 && de ? '<s style="color:var(--text3)">'+esc(de)+'</s> → ' : '')
+        + (para ? '<b>'+esc(para)+'</b>' : '<i style="color:var(--text3)">(apagado)</i>')+'</div>';
+    }).join('') || '<span style="color:var(--text3)">nenhum campo — só a classificação mudou (ex.: o prazo venceu)</span>';
+    const t = HNF_TOM[cod] || 'blu';
+    const ult = i===evs.length-1;
+    linhas += '<tr'+(ult?' style="background:#0072BC12"':'')+'>'
+      +'<td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td>'
+      +'<td><span class="badge" style="background:'+TOM[t]+'1F;color:'+TOM[t]+'">'+esc(rotuloHNF(cod, est))+'</span>'+(ult?' <span class="badge badge-proc">atual</span>':'')+'</td>'
+      +'<td class="r">'+(dias==null?'—':dias+(ult?'+':''))+'</td>'
+      +'<td style="font-size:10.5px;line-height:1.5">'+mudou+'</td></tr>';
+  });
+  box.innerHTML = tit
+    +'<div class="tw" style="max-width:1100px"><table class="dt" style="font-size:11px;width:100%;table-layout:auto">'
+    +'<thead><tr><th style="width:90px">Dia</th><th style="width:250px">Situação no painel</th><th class="r" style="width:50px">Dias</th><th>O que mudou</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'
+    +'<div style="font-size:10px;color:var(--text3);margin-top:4px;max-width:1100px">Uma foto por atualização do painel (dias úteis), desde '+isoBR((h.datas||[])[0]||'')
+    +'. Mostra só a última ocorrência de cada foto — duas ocorrências lançadas no mesmo dia aparecem como uma. '
+    +'A situação de dias antigos é recalculada com as regras atuais. Dias = tempo até a próxima mudança.</div>';
+}
 
 /* ---------- export: todos os campos do mestre + diagnóstico ---------- */
 window.exportarConsultaExcel = function(ev){
