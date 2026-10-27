@@ -343,6 +343,23 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 .topnav .nav-back{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.28)}
 .topnav .nav-back:hover{background:rgba(255,255,255,.12)}
 .topnav .btn-sm{color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.28)}
+.hnf-trilho{display:flex;align-items:flex-start;overflow-x:auto;padding:4px 2px 10px;gap:0;max-width:calc(100vw - 80px)}
+.hnf-no{flex:0 0 156px;width:156px;min-width:156px;max-width:156px;position:relative;text-align:center;padding:0 5px;box-sizing:border-box}
+.hnf-box,.hnf-box *{white-space:normal}
+.hnf-no *{overflow-wrap:anywhere}
+.hnf-no:not(:first-child)::before{content:'';position:absolute;top:21px;right:calc(50% + 24px);width:calc(100% - 48px);height:3px;background:var(--c);opacity:.55;border-radius:2px}
+.hnf-fant::before{background:none!important;border-top:3px dashed var(--c);height:0!important}
+.hnf-ic{position:relative;width:44px;height:44px;margin:0 auto 6px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent);border:2px solid var(--c)}
+.hnf-fant .hnf-ic{border-style:dashed;background:transparent}
+.hnf-atual .hnf-ic{background:var(--c);color:#fff;box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 22%,transparent)}
+.hnf-bd{position:absolute;right:-5px;bottom:-4px;width:19px;height:19px;border-radius:50%;background:var(--bg,#fff);border:1.5px solid var(--c);color:var(--c);display:flex;align-items:center;justify-content:center}
+.hnf-lb{font-size:11.5px;font-weight:700;color:var(--c);line-height:1.25}
+.hnf-sb{font-size:10.5px;color:var(--text2);margin-top:2px}
+.hnf-nt{font-size:10px;color:var(--text2);margin-top:5px;line-height:1.45;text-align:left;background:var(--bg);border-radius:6px;padding:5px 7px}
+.hnf-nt s{color:var(--text3)}
+.hnf-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:10px;margin-top:2px;padding-top:6px;border-top:0.5px solid var(--border2)}
+.hnf-leg>span{display:inline-flex;align-items:center;gap:4px}
+.hnf-leg>span>span{color:var(--text2)}
 .topnav .btn-sm.serie3-on{background:#F5A623;border-color:#F5A623;color:#1a1a1a;font-weight:600}
 .topnav .btn-sm:hover{background:rgba(255,255,255,.12)}
 .topnav .user-chip{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20)}
@@ -7829,7 +7846,7 @@ function renderTabela(){
       +'<td>'+(d.entra?'<span class="badge badge-ok">Sim</span>':'<span class="badge badge-err">Não</span>')+'</td>'
       +'</tr>'
       +'<tr id="consulta-det-'+key+'" style="display:none"><td colspan="'+COLSPAN+'" style="background:var(--bg2);padding:16px">'
-        +'<div class="hnf-box" data-hnf="'+esc(chaveHNF(r))+'" style="margin-bottom:16px"></div>'
+        +'<div class="hnf-box" data-hnf="'+esc(chaveHNF(r))+'" data-emi="'+esc(g(r,'Data Emissao'))+'" style="margin-bottom:16px"></div>'
         + (nOcor>1 ? historicoHTML(n) : '')
         +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Ficha completa · NF '+esc(g(r,'Nro NF'))+' · '+(nOcor>1?'última ocorrência · ':'')+'todos os '+st.head.length+' campos do arquivo mestre</div>'
         +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 22px;font-size:11.5px">'
@@ -7931,9 +7948,73 @@ function rotuloHNF(cod, est){
 }
 const dIso = s => { const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1],+m[2]-1,+m[3]) : null; };
 const isoBR = s => { const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[3]+'/'+m[2]+'/'+m[1] : s; };
+/* v10.13b: linha do tempo HORIZONTAL com ícones de logística.
+   Cada nó = uma etapa (eventos seguidos na mesma situação são agrupados e
+   as mudanças dentro dela — reagendamento, nova ocorrência — viram notas). */
+const HNF_ICO = {
+  nf:   '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
+  cd:   '<path d="M3 21V9l9-6 9 6v12"/><path d="M7 21v-8h10v8"/><line x1="7" y1="17" x2="17" y2="17"/>',
+  truck:'<rect x="1" y="6" width="13" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/>',
+  rota: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>',
+  agok: '<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 15.5 11 17.5 15 13.5"/>',
+  agwait:'<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="15.5" r="2.8"/><path d="M12 14.2v1.4l.9.6"/>',
+  trat: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  box:  '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/>',
+  dev:  '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+  canc: '<circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+  ban:  '<circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/>',
+  semr: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  flag: '<path d="M4 22V4"/><path d="M4 4h12l-2 4 2 4H4"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
+  check:'<polyline points="5 12.5 10 17 19 7.5"/>'
+};
+const svgI = (k, sz) => '<svg viewBox="0 0 24 24" width="'+(sz||22)+'" height="'+(sz||22)+'" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+HNF_ICO[k]+'</svg>';
+const HNF_COR = { ok:'#3B6D11', amb:'#B26A00', err:'#A32D2D', blu:'#0072BC', cin:'#7A7F87' };
+
+// etapa padrão de cada código do pipeline (usa o estado acumulado da NF)
+function etapaHNF(cod, est){
+  const oc = String(est.oc||'').replace(/\.0$/,'');
+  const saiu = !!(est.rm && !/^0+$/.test(est.rm)) || !!est.ct || !!est.it;
+  switch(cod){
+    case 'hub':             return {k:'cd',   l:'CD',                        i:'cd',    t:'blu'};
+    case 'transito':        return ['28','84','91','807'].indexOf(oc)>=0
+                                 ? {k:'rota', l:'Em Rota de Entrega',        i:'rota',  t:'blu'}
+                                 : {k:'tr',   l:'Em Trânsito',               i:'truck', t:'blu'};
+    case 'ag_cte':          return {k:'agw',  l:oc==='601'?'Agendamento Solicitado':'Aguardando Agendamento', i:'agwait', t:'blu'};
+    case 'transito_agenda': return {k:'ag',   l:'Trânsito Agenda · Confirmado', i:'agok', t:'blu'};
+    case 'tratativa':       return {k:'trat', l:OCOR_TRANSITO[oc] || 'Tratativa', i:'trat', t:'amb'};
+    case 'transito_atr':    return saiu
+                                 ? {k:'atr',  l:'Em Trânsito em Atraso',     i:'truck', t:'err', b:'clock'}
+                                 : {k:'atrcd',l:'Em Atraso no CD',           i:'cd',    t:'err', b:'clock'};
+    case 'on_time':         return {k:'ent',  l:'Entregue · On Time',        i:'box',   t:'ok',  b:'check', fim:1};
+    case 'off_time':        return {k:'entx', l:'Entregue · Off Time',       i:'box',   t:'amb', b:'clock', fim:1};
+    case 'devolvida':       return {k:'dev',  l:'Devolvida',                 i:'dev',   t:'amb', fim:1};
+    case 'cancelada':       return {k:'canc', l:'Cancelada',                 i:'canc',  t:'err', fim:1};
+    case 'serie3':          return {k:'s3',   l:'Desconsiderada · série 3',  i:'ban',   t:'cin', fim:1};
+    case 'sem_pedido':      return {k:'sp',   l:'Descartada · sem pedido',   i:'ban',   t:'cin'};
+    case 'desconsiderada':  return {k:'desc', l:'Desconsiderada',            i:'ban',   t:'cin', fim:1};
+    case 'sem_regra':       return {k:'sr',   l:'Sem Regra',                 i:'semr',  t:'err'};
+    default:                return {k:cod,    l:cod,                         i:'semr',  t:'cin'};
+  }
+}
+const ddmm = s => { const m=String(s||'').match(/^(\d{2})\/(\d{2})\/(\d{4})/); return m ? m[1]+'/'+m[2] : (s||''); };
+// mudanças relevantes de um evento, em texto curto
+function notasHNF(delta, antes, primeiro){
+  const n=[]; const tr=(lbl,c,f)=>{ if(!(c in delta)) return; const de=antes[c], pa=delta[c];
+    n.push(lbl+' '+(!primeiro && de ? '<s>'+esc(f(de))+'</s> → ' : '')+'<b>'+esc(pa?f(pa):'—')+'</b>'); };
+  if('oc' in delta) n.push('Ocor. <b>'+esc(delta.ds || delta.oc || '—')+'</b>');
+  tr('Agenda','ag',ddmm); tr('Prazo','mx',ddmm);
+  tr('Romaneio','rm',v=>String(v).replace(/^0+/,''));
+  tr('Embarque','em',ddmm); tr('CT-e','ct',v=>v); tr('Entrega','en',ddmm);
+  if('st' in delta && !primeiro) n.push('ERP <b>'+esc(delta.st||'—')+'</b>');
+  if('tr' in delta && !primeiro) n.push('Transp. <b>'+esc(delta.tr||'—')+'</b>');
+  if(!('oc' in delta) && 'do' in delta && !primeiro) n.push('Ocorrência relançada em <b>'+esc(ddmm(delta.do))+'</b>');
+  return n;
+}
+
 async function pintarLinhaDoTempo(box){
   box.dataset.done='1';
-  const tit='<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Linha do tempo da NF — o que mudou a cada dia e como o painel a classificava</div>';
+  const tit='<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Linha do tempo da NF</div>';
   box.innerHTML = tit+'<div style="font-size:11px;color:var(--text3)">Carregando histórico...</div>';
   const h = await carregarHNF();
   if(!h || !h.notas){
@@ -7946,35 +8027,84 @@ async function pintarLinhaDoTempo(box){
     return;
   }
   const ultimaFoto = dIso((h.datas||[]).slice(-1)[0]) || new Date();
-  const est={};
-  let linhas='';
+
+  // 1) agrupa eventos seguidos na mesma etapa
+  const est={}, etapas=[];
   evs.forEach((ev,i)=>{
     const [data, cod, delta] = ev;
-    const antes = Object.assign({}, est);
-    Object.assign(est, delta);
-    const ini = dIso(data);
-    const fim = i<evs.length-1 ? dIso(evs[i+1][0]) : ultimaFoto;
-    const dias = (ini && fim) ? Math.round((fim-ini)/86400000) : null;
-    const mudou = HNF_CAMPOS.filter(([c]) => c in delta).map(([c,lbl]) => {
-      const de = antes[c]||'', para = delta[c]||'';
-      return '<div><span style="color:var(--text3)">'+lbl+':</span> '
-        + (i>0 && de ? '<s style="color:var(--text3)">'+esc(de)+'</s> → ' : '')
-        + (para ? '<b>'+esc(para)+'</b>' : '<i style="color:var(--text3)">(apagado)</i>')+'</div>';
-    }).join('') || '<span style="color:var(--text3)">nenhum campo — só a classificação mudou (ex.: o prazo venceu)</span>';
-    const t = HNF_TOM[cod] || 'blu';
-    const ult = i===evs.length-1;
-    linhas += '<tr'+(ult?' style="background:#0072BC12"':'')+'>'
-      +'<td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td>'
-      +'<td><span class="badge" style="background:'+TOM[t]+'1F;color:'+TOM[t]+'">'+esc(rotuloHNF(cod, est))+'</span>'+(ult?' <span class="badge badge-proc">atual</span>':'')+'</td>'
-      +'<td class="r">'+(dias==null?'—':dias+(ult?'+':''))+'</td>'
-      +'<td style="font-size:10.5px;line-height:1.5">'+mudou+'</td></tr>';
+    const antes = Object.assign({}, est); Object.assign(est, delta);
+    const e = etapaHNF(cod, est);
+    const notas = notasHNF(delta, antes, i===0);
+    let cur = etapas[etapas.length-1];
+    if(!cur || cur.k!==e.k){ cur = Object.assign({ini:data, notas:[]}, e); etapas.push(cur); }
+    else if(notas.length) notas[0] = '<span style="color:var(--text3)">'+isoBR(data).slice(0,5)+'</span> '+notas[0];
+    cur.notas.push(...notas);
+    cur.est = Object.assign({}, est);
   });
-  box.innerHTML = tit
-    +'<div class="tw" style="max-width:1100px"><table class="dt" style="font-size:11px;width:100%;table-layout:auto">'
-    +'<thead><tr><th style="width:90px">Dia</th><th style="width:250px">Situação no painel</th><th class="r" style="width:50px">Dias</th><th>O que mudou</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'
-    +'<div style="font-size:10px;color:var(--text3);margin-top:4px;max-width:1100px">Uma foto por atualização do painel (dias úteis), desde '+isoBR((h.datas||[])[0]||'')
-    +'. Mostra só a última ocorrência de cada foto — duas ocorrências lançadas no mesmo dia aparecem como uma. '
-    +'A situação de dias antigos é recalculada com as regras atuais. Dias = tempo até a próxima mudança.</div>';
+  etapas.forEach((e,i)=>{
+    const fim = i<etapas.length-1 ? dIso(etapas[i+1].ini) : ultimaFoto;
+    e.dias = Math.max(0, Math.round((fim - dIso(e.ini))/86400000));
+  });
+  const atual = etapas[etapas.length-1];
+  const encerrada = !!atual.fim;
+
+  // 2) nós: emissão + etapas + (se aberta) meta de entrega
+  const emi = box.dataset.emi || '';
+  const no = (cor, icone, badge, lbl, sub, extra, opts) => {
+    opts = opts || {};
+    return '<div class="hnf-no'+(opts.atual?' hnf-atual':'')+(opts.fantasma?' hnf-fant':'')+'" style="--c:'+cor+'">'
+      +'<div class="hnf-ic">'+svgI(icone)+(badge?'<span class="hnf-bd">'+svgI(badge,11)+'</span>':'')+'</div>'
+      +'<div class="hnf-lb">'+lbl+'</div><div class="hnf-sb">'+sub+'</div>'
+      +(extra?'<div class="hnf-nt">'+extra+'</div>':'')+'</div>';
+  };
+  let html='<div class="hnf-trilho">';
+  if(emi){
+    const d0 = dBR(emi), d1 = dIso(etapas[0].ini);
+    html += no(HNF_COR.cin,'nf',null,'NF emitida', esc(emi.slice(0,10)), (d0&&d1)? Math.round((d1-d0)/86400000)+' d até a 1ª foto':'');
+  }
+  etapas.forEach((e,i)=>{
+    const ult = i===etapas.length-1;
+    html += no(HNF_COR[e.t], e.i, e.b, esc(e.l),
+      isoBR(e.ini)+(e.fim ? '' : ' · <b>'+e.dias+(ult?'+':'')+' d</b>'),
+      e.notas.slice(0,5).map(x=>'<div>'+x+'</div>').join('') + (e.notas.length>5?'<div style="color:var(--text3)">+'+(e.notas.length-5)+' mudança(s)</div>':''),
+      {atual:ult});
+  });
+  if(!encerrada){
+    const mx = atual.est && atual.est.mx;
+    const vencida = mx && dBR(mx) && dBR(mx) < ultimaFoto;
+    html += no(vencida?HNF_COR.err:HNF_COR.cin, 'flag', null, 'Entrega',
+      mx ? (vencida?'prevista ':'previsão ')+esc(mx) : 'sem previsão', vencida ? 'prazo vencido' : 'aguardando', {fantasma:1});
+  }
+  html += '</div>';
+
+  // 3) resumo + legenda + detalhe dia a dia (tabela anterior, recolhida)
+  const d0 = dBR(emi);
+  const totDias = d0 ? Math.round(((encerrada ? dIso(atual.ini) : ultimaFoto) - d0)/86400000) : null;
+  const resumo = '<div style="font-size:11.5px;margin:2px 0 10px">'
+    + '<b>'+etapas.length+'</b> etapa(s)'
+    + (totDias!=null ? ' · <b>'+totDias+' dias</b> da emissão '+(encerrada?'até '+esc(atual.l.toLowerCase()):'até hoje (em aberto)') : '')
+    + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l)+'</b></div>';
+  const LEG=[['cd','CD','blu'],['agwait','Ag. agendamento','blu'],['agok','Trânsito agenda','blu'],['truck','Em trânsito','blu'],
+    ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso','err'],['box','Entregue','ok'],
+    ['dev','Devolvida','amb'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
+  const legenda = '<div class="hnf-leg">'+LEG.map(([i,l,t])=>'<span style="color:'+HNF_COR[t]+'">'+svgI(i,13)+'<span>'+l+'</span></span>').join('')+'</div>';
+
+  let linhas='';
+  const est2={};
+  evs.forEach((ev,i)=>{
+    const [data, cod, delta] = ev; const antes=Object.assign({},est2); Object.assign(est2,delta);
+    const mud = HNF_CAMPOS.filter(([c]) => c in delta).map(([c,lbl]) =>
+      '<div><span style="color:var(--text3)">'+lbl+':</span> '+(i>0&&antes[c]?'<s style="color:var(--text3)">'+esc(antes[c])+'</s> → ':'')
+      +(delta[c]?'<b>'+esc(delta[c])+'</b>':'<i style="color:var(--text3)">(apagado)</i>')+'</div>').join('')
+      || '<span style="color:var(--text3)">só a classificação mudou (ex.: o prazo venceu)</span>';
+    const e=etapaHNF(cod,est2);
+    linhas+='<tr><td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td><td><span class="badge" style="background:'+HNF_COR[e.t]+'1F;color:'+HNF_COR[e.t]+'">'+esc(e.l)+'</span></td><td style="font-size:10.5px;line-height:1.5">'+mud+'</td></tr>';
+  });
+  box.innerHTML = tit + resumo + html + legenda
+    +'<details style="margin-top:8px;max-width:1100px"><summary style="cursor:pointer;font-size:11px;color:var(--text2)">Ver detalhe dia a dia ('+evs.length+' registro(s))</summary>'
+    +'<div class="tw" style="margin-top:6px"><table class="dt" style="font-size:11px;width:100%"><thead><tr><th style="width:90px">Dia</th><th style="width:230px">Situação no painel</th><th>O que mudou</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'
+    +'<div style="font-size:10px;color:var(--text3);margin-top:4px">Uma foto por atualização do painel (dias úteis), desde '+isoBR((h.datas||[])[0]||'')
+    +'. Só a última ocorrência de cada foto aparece. A situação de dias antigos é recalculada com as regras atuais.</div></details>';
 }
 
 /* ---------- export: todos os campos do mestre + diagnóstico ---------- */
