@@ -4577,7 +4577,8 @@ function renderAbertasTabela(){
       const s=mapS[n.tipo]||{lbl:n.tipo||'—',cor:'#888'};
       const corReg=REG_CORES[n.regiao]||'#888';
       const abertoC=(n.dias_aberto||0)>30?'#A32D2D':(n.dias_aberto||0)>15?'#854F0B':'var(--text2)';
-      rows+='<tr>'
+      const idA='abertas-det-'+(start+i);
+      rows+='<tr style="cursor:pointer" onclick="abertasDetalhe(\''+idA+'\')" title="Clique para ver a linha do tempo da NF">'
         +'<td style="color:var(--text3)">'+(start+i+1)+'</td>'
         +'<td style="font-family:monospace;font-weight:600;color:'+s.cor+'">'+esc(n.nf||'—')+'</td>'
         +'<td style="font-family:monospace;color:var(--text2)">'+esc(n.pedido||'—')+'</td>'
@@ -4594,7 +4595,10 @@ function renderAbertasTabela(){
         +'<td class="r" style="color:#A32D2D;font-weight:'+(n.dias_atraso!=null?'700':'400')+'">'+(n.dias_atraso!=null?n.dias_atraso+'d':'—')+'</td>'
         +'<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
         +'<td class="r" style="color:var(--text2)">'+fmtKg(n.peso)+'</td>'
-        +'</tr>';
+        +'</tr>'
+        +'<tr id="'+idA+'" style="display:none"><td colspan="16" style="background:var(--bg2);padding:14px 16px">'
+          +'<div class="hnf-box" data-nf="'+esc(n.nf||'')+'" data-emp="'+esc(n.emp||'')+'" data-serie="'+esc(n.serie||'')+'" data-emb="'+esc(n.embarcador||'')+'" data-emi="'+esc(n.dt_fat||'')+'"></div>'
+        +'</td></tr>';
     });
   }
   document.getElementById('abertas-tbody').innerHTML=rows;
@@ -4607,6 +4611,16 @@ function renderAbertasTabela(){
     pag+='<button class="btn-sm" onclick="abertasPaginar(1)" '+(abertasPage>=pages?'disabled':'')+'>Próx →</button>';
   }
   document.getElementById('abertas-paginacao').innerHTML=pag;
+}
+
+// v10.13c: abre/fecha a linha do tempo da NF (mesma da Consultar NF)
+function abertasDetalhe(id){
+  const el=document.getElementById(id); if(!el) return;
+  el.style.display = el.style.display==='none' ? 'table-row' : 'none';
+  if(el.style.display!=='none'){
+    const box=el.querySelector('.hnf-box');
+    if(box && !box.dataset.done && typeof window.hnfPintar==='function') window.hnfPintar(box);
+  }
 }
 
 function abertasPaginar(dir){
@@ -7818,7 +7832,7 @@ function renderTabela(){
     const selo = nOcor>1
       ? ' <span style="font-size:9px;font-weight:600;padding:1px 5px;border-radius:8px;background:var(--bg3);color:var(--text2)" title="'+nOcor+' ocorrências nesta NF — vale a última, de '+esc(g(r,'Data Ocorrencia')||'data não informada')+'">'+nOcor+'ª de '+nOcor+'</span>'
       : '';
-    html+='<tr style="cursor:pointer" onclick="consultaDetalhe('+key+')" title="Clique para ver a ficha completa">'
+    html+='<tr style="cursor:pointer" onclick="consultaDetalhe('+key+')" title="Clique para ver a linha do tempo da NF">'
       +'<td style="font-weight:600">'+esc(g(r,'Nro NF'))+'</td>'
       +'<td>'+esc(dash(g(r,'Serie NF')))+'</td>'
       +'<td>'+esc(g(r,'Embarcador').replace(/ (DO BRASIL )?LTDA\.?$/i,''))+'</td>'
@@ -7850,12 +7864,6 @@ function renderTabela(){
       +'<tr id="consulta-det-'+key+'" style="display:none"><td colspan="'+COLSPAN+'" style="background:var(--bg2);padding:16px">'
         +'<div class="hnf-box" data-hnf="'+esc(chaveHNF(r))+'" data-emi="'+esc(g(r,'Data Emissao'))+'" style="margin-bottom:16px"></div>'
         + (nOcor>1 ? historicoHTML(n) : '')
-        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Ficha completa · NF '+esc(g(r,'Nro NF'))+' · '+(nOcor>1?'última ocorrência · ':'')+'todos os '+st.head.length+' campos do arquivo mestre</div>'
-        +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 22px;font-size:11.5px">'
-          + st.head.map((h,ci)=>
-              '<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">'+esc(h)+'</div>'
-              +'<div style="word-break:break-word">'+esc(dash(String(r[ci]??'').trim()))+'</div></div>').join('')
-        +'</div>'
         +'<div style="margin-top:12px;padding:10px 12px;border-left:3px solid '+TOM[d.tom]+';background:var(--bg);font-size:12px;line-height:1.55">'
           +'<strong>Situação no painel:</strong> '+esc(d.sit)+' &nbsp;·&nbsp; <strong>Regra:</strong> '+esc(d.regra)+' &nbsp;·&nbsp; <strong>Onde aparece:</strong> '+esc(d.onde)+'<br>'
           +esc(d.motivo)
@@ -7876,7 +7884,7 @@ function renderTabela(){
       ? '<button class="fbtn" onclick="consultaPage(-1)" '+(st.page<=1?'disabled':'')+'>Anterior</button>'
         +'<button class="fbtn" onclick="consultaPage(1)" '+(st.page>=pages?'disabled':'')+'>Próxima</button>'
       : '')
-    + '<span style="margin-left:auto;color:var(--text3)">Emissão da mais nova para a mais antiga · clique na linha para abrir a ficha</span>';
+    + '<span style="margin-left:auto;color:var(--text3)">Emissão da mais nova para a mais antiga · clique na linha para ver a linha do tempo</span>';
 }
 
 // Histórico de ocorrências da NF, da mais antiga para a mais recente
@@ -7900,6 +7908,7 @@ function historicoHTML(n){
   return h+'</tbody></table></div>';
 }
 
+window.hnfPintar = pintarLinhaDoTempo;   // v10.13c: usado também por Notas em Aberto
 window.consultaPage = function(d){ st.page+=d; renderTabela(); window.scrollTo({top:0,behavior:'smooth'}); };
 
 window.consultaDetalhe = function(key){
@@ -8023,6 +8032,21 @@ function notasHNF(delta, antes, primeiro){
   return n;
 }
 
+// Notas em Aberto só tem nº da NF + empresa: acha a chave NF|Série|Embarcador.
+// Prefere série 1 e ignora homologação; com série/embarcador informados, casa exato.
+function resolverChaveHNF(h, nf, emp, serie, emb){
+  nf = String(nf||'').replace(/\.0+$/,'').replace(/\D/g,'').replace(/^0+(?=\d)/,'');
+  if(!nf) return null;
+  if(serie && emb && h.notas[nf+'|'+serie+'|'+emb]) return nf+'|'+serie+'|'+emb;
+  const inov = String(emp||'').toUpperCase().indexOf('INOVALAB')>=0;
+  const cand = Object.keys(h.notas).filter(k=>{
+    const p=k.split('|'); if(p[0]!==nf || p[3]) return false;
+    if(serie && p[1]!==String(serie)) return false;
+    return emp ? ((p[2].toUpperCase().indexOf('INOVALAB')>=0)===inov) : true;
+  });
+  cand.sort((a,b)=>(a.split('|')[1]==='1'?0:1)-(b.split('|')[1]==='1'?0:1));
+  return cand[0] || null;
+}
 async function pintarLinhaDoTempo(box){
   box.dataset.done='1';
   const tit='<div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Linha do tempo da NF</div>';
@@ -8032,7 +8056,9 @@ async function pintarLinhaDoTempo(box){
     box.innerHTML = tit+'<div style="font-size:11px;color:var(--text3)">Histórico ainda não disponível — será gerado na próxima execução do atualizar.bat (processar_otd.py v10.13).</div>';
     return;
   }
-  const evs = h.notas[box.dataset.hnf];
+  let chave = box.dataset.hnf;
+  if(!chave || !h.notas[chave]) chave = resolverChaveHNF(h, box.dataset.nf, box.dataset.emp, box.dataset.serie, box.dataset.emb) || chave;
+  const evs = h.notas[chave];
   if(!evs || !evs.length){
     box.innerHTML = tit+'<div style="font-size:11px;color:var(--text3)">Sem histórico para esta NF (ela ainda não passou por nenhuma execução do pipeline desde '+isoBR((h.datas||[])[0]||'')+').</div>';
     return;
@@ -8100,7 +8126,7 @@ async function pintarLinhaDoTempo(box){
   const resumo = '<div style="font-size:11.5px;margin:2px 0 10px">'
     + '<b>'+etapas.length+'</b> etapa(s)'
     + (totDias!=null ? ' · <b>'+totDias+' dias</b> da emissão '+(encerrada?'até '+esc(atual.l.toLowerCase()):'até hoje (em aberto)') : '')
-    + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l)+'</b></div>';
+    + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l+(atual.atraso?' · em atraso':''))+'</b></div>';
   const LEG=[['cd','CD','blu'],['agwait','Ag. agendamento','blu'],['agok','Trânsito agenda','blu'],['truck','Em trânsito','blu'],
     ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso (marca vermelha sobre a etapa)','err'],['box','Entregue','ok'],
     ['dev','Devolvida','amb'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
