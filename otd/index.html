@@ -355,6 +355,8 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 .hnf-bd{position:absolute;right:-5px;bottom:-4px;width:19px;height:19px;border-radius:50%;background:var(--bg,#fff);border:1.5px solid var(--c);color:var(--c);display:flex;align-items:center;justify-content:center}
 .hnf-lb{font-size:11.5px;font-weight:700;color:var(--c);line-height:1.25}
 .hnf-sb{font-size:10.5px;color:var(--text2);margin-top:2px}
+.hnf-oc{font-size:10px;color:var(--text1,var(--text));margin-top:2px;line-height:1.3;font-weight:500}
+.hnf-tag{display:inline-block;margin-top:3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:#A32D2D;border-radius:8px;padding:1px 7px}
 .hnf-nt{font-size:10px;color:var(--text2);margin-top:5px;line-height:1.45;text-align:left;background:var(--bg);border-radius:6px;padding:5px 7px}
 .hnf-nt s{color:var(--text3)}
 .hnf-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:10px;margin-top:2px;padding-top:6px;border-top:0.5px solid var(--border2)}
@@ -7971,21 +7973,29 @@ const HNF_ICO = {
 const svgI = (k, sz) => '<svg viewBox="0 0 24 24" width="'+(sz||22)+'" height="'+(sz||22)+'" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+HNF_ICO[k]+'</svg>';
 const HNF_COR = { ok:'#3B6D11', amb:'#B26A00', err:'#A32D2D', blu:'#0072BC', cin:'#7A7F87' };
 
-// etapa padrão de cada código do pipeline (usa o estado acumulado da NF)
+// etapa de cada evento. v10.13c: a ETAPA vem da ocorrência (CD, agenda,
+// trânsito, rota, tratativa) e o ATRASO é uma marca sobre ela — antes o
+// "Em Atraso" engolia todas as ocorrências seguintes num nó só.
+const HNF_ABERTO = ['hub','transito','ag_cte','transito_agenda','tratativa','transito_atr'];
 function etapaHNF(cod, est){
   const oc = String(est.oc||'').replace(/\.0$/,'');
   const saiu = !!(est.rm && !/^0+$/.test(est.rm)) || !!est.ct || !!est.it;
+  if(HNF_ABERTO.indexOf(cod)>=0){
+    const atraso = cod==='transito_atr';
+    let e;
+    if(!saiu)                                   e={k:'cd',  l:'CD',                          i:'cd',     t:'blu'};
+    else if(oc==='600')                         e={k:'agw', l:'Aguardando Agendamento',      i:'agwait', t:'blu'};
+    else if(oc==='601')                         e={k:'ags', l:'Agendamento Solicitado',      i:'agwait', t:'blu'};
+    else if(oc==='602')                         e={k:'ag',  l:'Trânsito Agenda · Confirmado', i:'agok',  t:'blu'};
+    else if(['28','84','91','807'].indexOf(oc)>=0) e={k:'rota',l:'Em Rota de Entrega',      i:'rota',   t:'blu'};
+    else if(OCOR_TRANSITO[oc] && /^Tratativa/.test(OCOR_TRANSITO[oc]))
+                                                e={k:'trat',l:OCOR_TRANSITO[oc],             i:'trat',   t:'amb'};
+    else                                        e={k:'tr',  l:'Em Trânsito',                 i:'truck',  t:'blu'};
+    e.oc = oc; e.atraso = atraso;
+    if(atraso){ e.t='err'; e.b='clock'; }
+    return e;
+  }
   switch(cod){
-    case 'hub':             return {k:'cd',   l:'CD',                        i:'cd',    t:'blu'};
-    case 'transito':        return ['28','84','91','807'].indexOf(oc)>=0
-                                 ? {k:'rota', l:'Em Rota de Entrega',        i:'rota',  t:'blu'}
-                                 : {k:'tr',   l:'Em Trânsito',               i:'truck', t:'blu'};
-    case 'ag_cte':          return {k:'agw',  l:oc==='601'?'Agendamento Solicitado':'Aguardando Agendamento', i:'agwait', t:'blu'};
-    case 'transito_agenda': return {k:'ag',   l:'Trânsito Agenda · Confirmado', i:'agok', t:'blu'};
-    case 'tratativa':       return {k:'trat', l:OCOR_TRANSITO[oc] || 'Tratativa', i:'trat', t:'amb'};
-    case 'transito_atr':    return saiu
-                                 ? {k:'atr',  l:'Em Trânsito em Atraso',     i:'truck', t:'err', b:'clock'}
-                                 : {k:'atrcd',l:'Em Atraso no CD',           i:'cd',    t:'err', b:'clock'};
     case 'on_time':         return {k:'ent',  l:'Entregue · On Time',        i:'box',   t:'ok',  b:'check', fim:1};
     case 'off_time':        return {k:'entx', l:'Entregue · Off Time',       i:'box',   t:'amb', b:'clock', fim:1};
     case 'devolvida':       return {k:'dev',  l:'Devolvida',                 i:'dev',   t:'amb', fim:1};
@@ -8002,13 +8012,14 @@ const ddmm = s => { const m=String(s||'').match(/^(\d{2})\/(\d{2})\/(\d{4})/); r
 function notasHNF(delta, antes, primeiro){
   const n=[]; const tr=(lbl,c,f)=>{ if(!(c in delta)) return; const de=antes[c], pa=delta[c];
     n.push(lbl+' '+(!primeiro && de ? '<s>'+esc(f(de))+'</s> → ' : '')+'<b>'+esc(pa?f(pa):'—')+'</b>'); };
-  if('oc' in delta) n.push('Ocor. <b>'+esc(delta.ds || delta.oc || '—')+'</b>');
+  if('ob' in delta && delta.ob){ const o=delta.ob; n.push('<span title="'+esc(o)+'">Obs. <i>'+esc(o.length>90?o.slice(0,88)+'…':o)+'</i></span>'); }
   tr('Agenda','ag',ddmm); tr('Prazo','mx',ddmm);
   tr('Romaneio','rm',v=>String(v).replace(/^0+/,''));
   tr('Embarque','em',ddmm); tr('CT-e','ct',v=>v); tr('Entrega','en',ddmm);
   if('st' in delta && !primeiro) n.push('ERP <b>'+esc(delta.st||'—')+'</b>');
   if('tr' in delta && !primeiro) n.push('Transp. <b>'+esc(delta.tr||'—')+'</b>');
   if(!('oc' in delta) && 'do' in delta && !primeiro) n.push('Ocorrência relançada em <b>'+esc(ddmm(delta.do))+'</b>');
+  if(!('oc' in delta) && 'ds' in delta && !delta.ds && !primeiro) n.push('<span style="color:var(--text3)">descrição da ocorrência apagada no TMS</span>');
   return n;
 }
 
@@ -8036,7 +8047,8 @@ async function pintarLinhaDoTempo(box){
     const e = etapaHNF(cod, est);
     const notas = notasHNF(delta, antes, i===0);
     let cur = etapas[etapas.length-1];
-    if(!cur || cur.k!==e.k){ cur = Object.assign({ini:data, notas:[]}, e); etapas.push(cur); }
+    const nova = !cur || cur.k!==e.k || (e.oc!==undefined && cur.oc!==e.oc) || !!cur.atraso!==!!e.atraso;
+    if(nova){ cur = Object.assign({ini:data, notas:[], ds:est.ds||''}, e); etapas.push(cur); }
     else if(notas.length) notas[0] = '<span style="color:var(--text3)">'+isoBR(data).slice(0,5)+'</span> '+notas[0];
     cur.notas.push(...notas);
     cur.est = Object.assign({}, est);
@@ -8054,7 +8066,10 @@ async function pintarLinhaDoTempo(box){
     opts = opts || {};
     return '<div class="hnf-no'+(opts.atual?' hnf-atual':'')+(opts.fantasma?' hnf-fant':'')+'" style="--c:'+cor+'">'
       +'<div class="hnf-ic">'+svgI(icone)+(badge?'<span class="hnf-bd">'+svgI(badge,11)+'</span>':'')+'</div>'
-      +'<div class="hnf-lb">'+lbl+'</div><div class="hnf-sb">'+sub+'</div>'
+      +'<div class="hnf-lb">'+lbl+'</div>'
+      +(opts.ocor?'<div class="hnf-oc">'+opts.ocor+'</div>':'')
+      +(opts.atraso?'<div class="hnf-tag">em atraso</div>':'')
+      +'<div class="hnf-sb">'+sub+'</div>'
       +(extra?'<div class="hnf-nt">'+extra+'</div>':'')+'</div>';
   };
   let html='<div class="hnf-trilho">';
@@ -8067,7 +8082,9 @@ async function pintarLinhaDoTempo(box){
     html += no(HNF_COR[e.t], e.i, e.b, esc(e.l),
       isoBR(e.ini)+(e.fim ? '' : ' · <b>'+e.dias+(ult?'+':'')+' d</b>'),
       e.notas.slice(0,5).map(x=>'<div>'+x+'</div>').join('') + (e.notas.length>5?'<div style="color:var(--text3)">+'+(e.notas.length-5)+' mudança(s)</div>':''),
-      {atual:ult});
+      {atual:ult, atraso:e.atraso,
+       ocor: e.oc ? esc(e.ds && e.ds.indexOf(e.oc+'-')===0 ? e.oc+' · '+e.ds.slice(e.oc.length+1) : (e.ds||'Ocorrência '+e.oc))
+             : (e.oc===''? '<span style="color:var(--text3)">sem ocorrência</span>' : '')});
   });
   if(!encerrada){
     const mx = atual.est && atual.est.mx;
@@ -8085,7 +8102,7 @@ async function pintarLinhaDoTempo(box){
     + (totDias!=null ? ' · <b>'+totDias+' dias</b> da emissão '+(encerrada?'até '+esc(atual.l.toLowerCase()):'até hoje (em aberto)') : '')
     + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l)+'</b></div>';
   const LEG=[['cd','CD','blu'],['agwait','Ag. agendamento','blu'],['agok','Trânsito agenda','blu'],['truck','Em trânsito','blu'],
-    ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso','err'],['box','Entregue','ok'],
+    ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso (marca vermelha sobre a etapa)','err'],['box','Entregue','ok'],
     ['dev','Devolvida','amb'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
   const legenda = '<div class="hnf-leg">'+LEG.map(([i,l,t])=>'<span style="color:'+HNF_COR[t]+'">'+svgI(i,13)+'<span>'+l+'</span></span>').join('')+'</div>';
 
@@ -8098,7 +8115,7 @@ async function pintarLinhaDoTempo(box){
       +(delta[c]?'<b>'+esc(delta[c])+'</b>':'<i style="color:var(--text3)">(apagado)</i>')+'</div>').join('')
       || '<span style="color:var(--text3)">só a classificação mudou (ex.: o prazo venceu)</span>';
     const e=etapaHNF(cod,est2);
-    linhas+='<tr><td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td><td><span class="badge" style="background:'+HNF_COR[e.t]+'1F;color:'+HNF_COR[e.t]+'">'+esc(e.l)+'</span></td><td style="font-size:10.5px;line-height:1.5">'+mud+'</td></tr>';
+    linhas+='<tr><td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td><td><span class="badge" style="background:'+HNF_COR[e.t]+'1F;color:'+HNF_COR[e.t]+'">'+esc(e.l+(e.atraso?' · em atraso':''))+'</span></td><td style="font-size:10.5px;line-height:1.5">'+mud+'</td></tr>';
   });
   box.innerHTML = tit + resumo + html + legenda
     +'<details style="margin-top:8px;max-width:1100px"><summary style="cursor:pointer;font-size:11px;color:var(--text2)">Ver detalhe dia a dia ('+evs.length+' registro(s))</summary>'
