@@ -1313,7 +1313,7 @@ table.dt th{color:#33536F}
             </button>
           </div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
-            Ordenado por data de faturamento (mais antiga primeiro). NFs entregues, devolvidas e desconsideradas não aparecem aqui.
+            Ordenado por dias em aberto (mais antiga primeiro) e, no empate, por dias de atraso (maior primeiro). NFs entregues, devolvidas e desconsideradas não aparecem aqui.
             <span id="abertas-count" style="font-weight:600;color:#0072BC;margin-left:6px"></span>
           </p>
           <div style="margin-bottom:10px">
@@ -4540,6 +4540,14 @@ function getAbertasFiltrado(){
   });
 }
 
+// v10.13d: ordem da carteira — dias em aberto ↓, depois dias de atraso ↓
+function ordemAbertas(a,b){
+  const da=(a.dias_aberto==null?-1:a.dias_aberto), db=(b.dias_aberto==null?-1:b.dias_aberto);
+  if(db!==da) return db-da;
+  const aa=(a.dias_atraso==null?-1:a.dias_atraso), ab=(b.dias_atraso==null?-1:b.dias_atraso);
+  if(ab!==aa) return ab-aa;
+  return String(a.nf||'').localeCompare(String(b.nf||''),'pt-BR',{numeric:true});
+}
 function renderAbertasTabela(){
   const filt = getAbertasFiltrado();
 
@@ -4560,7 +4568,8 @@ function renderAbertasTabela(){
    +'<div class="kpi kpi-amb"><div class="kpi-lbl">NF mais antiga</div><div class="kpi-val">'+(maisAntiga>0?maisAntiga+'d':'—')+'</div><div class="kpi-sub">'+(nfAntiga?('NF '+esc(nfAntiga.nf||'—')+' · '+esc(nfAntiga.dt_fat||'—')):'em aberto')+'</div></div>';
 
   // ---- Tabela (já vem ordenada do pipeline; reforça a ordem aqui) ----
-  const ordenado=[...filt].sort((a,b)=>String(a.dt_fat_iso||'9999-12-31').localeCompare(String(b.dt_fat_iso||'9999-12-31')));
+  // v10.13d: 1º dias em aberto (mais velho primeiro), 2º dias de atraso (maior primeiro)
+  const ordenado=[...filt].sort(ordemAbertas);
   const total=ordenado.length;
   const pages=Math.ceil(total/ABERTAS_PER_PAGE)||1;
   if(abertasPage>pages) abertasPage=pages;
@@ -4635,7 +4644,7 @@ function exportarAbertasExcel(ev){
   const txt = btn ? btn.innerHTML : '';
   if(btn){ btn.disabled = true; btn.innerHTML = 'Gerando...'; }
   try{
-    const filt=[...getAbertasFiltrado()].sort((a,b)=>String(a.dt_fat_iso||'9999-12-31').localeCompare(String(b.dt_fat_iso||'9999-12-31')));
+    const filt=[...getAbertasFiltrado()].sort(ordemAbertas);
     if(!filt.length){ alert('Nenhuma NF em aberto para exportar nos filtros atuais.'); return; }
     const mapS={}; TRANSP_STATUS.forEach(s=>mapS[s.k]=s);
     const rows=filt.map((n,i)=>({
@@ -7926,7 +7935,7 @@ window.consultaDetalhe = function(key){
    Evento = [AAAA-MM-DD, código do painel, {campos que mudaram}]. */
 const HNF_URL = CSV_URL.replace(/historico_mestre\.csv$/,'historico_nf.json');
 const HNF_CAMPOS = [['st','Status ERP'],['oc','Ocorrência'],['ds','Descrição'],['do','Data ocorrência'],['ob','Observação'],
-  ['rm','Romaneio'],['ct','CT-e'],['em','Embarque'],['it','Início transp.'],['mx','Data Max Entrega'],['ag','Agendamento'],
+  ['rm','Romaneio'],['ct','CT-e'],['em','Embarque'],['it','Início transp.'],['mx','Previsão de entrega'],['ag','Agendamento'],
   ['en','Entrega'],['tr','Transportadora']];
 const HNF_ROTULO = { hub:'CD', transito:'Em Trânsito', transito_agenda:'Agendamento Confirmado', ag_cte:'Aguardando Agendamento',
   tratativa:'Tratativa', transito_atr:'Em Atraso', on_time:'Entregue · On Time', off_time:'Entregue · Off Time',
@@ -7965,6 +7974,7 @@ const isoBR = s => { const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return
 const HNF_ICO = {
   nf:   '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
   cd:   '<path d="M3 21V9l9-6 9 6v12"/><path d="M7 21v-8h10v8"/><line x1="7" y1="17" x2="17" y2="17"/>',
+  exp:  '<line x1="1" y1="9" x2="4" y2="9"/><line x1="0.5" y1="12.5" x2="3.5" y2="12.5"/><rect x="5.5" y="6" width="10" height="10" rx="1"/><path d="M15.5 9h3.5l3 3v4h-6.5"/><circle cx="9" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/>',
   truck:'<rect x="1" y="6" width="13" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/>',
   rota: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>',
   agok: '<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 15.5 11 17.5 15 13.5"/>',
@@ -8022,7 +8032,7 @@ function notasHNF(delta, antes, primeiro){
   const n=[]; const tr=(lbl,c,f)=>{ if(!(c in delta)) return; const de=antes[c], pa=delta[c];
     n.push(lbl+' '+(!primeiro && de ? '<s>'+esc(f(de))+'</s> → ' : '')+'<b>'+esc(pa?f(pa):'—')+'</b>'); };
   if('ob' in delta && delta.ob){ const o=delta.ob; n.push('<span title="'+esc(o)+'">Obs. <i>'+esc(o.length>90?o.slice(0,88)+'…':o)+'</i></span>'); }
-  tr('Agenda','ag',ddmm); tr('Prazo','mx',ddmm);
+  tr('Agenda','ag',ddmm); tr('Previsão de entrega','mx',ddmm);
   tr('Romaneio','rm',v=>String(v).replace(/^0+/,''));
   tr('Embarque','em',ddmm); tr('CT-e','ct',v=>v); tr('Entrega','en',ddmm);
   if('st' in delta && !primeiro) n.push('ERP <b>'+esc(delta.st||'—')+'</b>');
@@ -8065,128 +8075,83 @@ async function pintarLinhaDoTempo(box){
   }
   const ultimaFoto = dIso((h.datas||[]).slice(-1)[0]) || new Date();
 
-  // 1) agrupa eventos seguidos na mesma etapa
+  // 1) v10.13d — etapas na ordem física da NF:
+  //    NF emitida (= ainda no CD) → Expedição (romaneio / início do transporte)
+  //    → uma etapa por OCORRÊNCIA, datada pela Data da Ocorrência do TMS
+  //    → Entregue / Devolvida... ou o marco "Previsão de entrega".
+  //    O atraso NÃO cria etapa: é uma marca sobre a etapa em que a NF estava
+  //    quando a previsão venceu (a data da foto não aparece como etapa).
+  const emi = box.dataset.emi || '';
+  const tsDe = v => { const t=tsBR(v); return t===-Infinity ? null : t; };
+  const tsFoto = d => { const x=dIso(d); return x ? x.getTime() : null; };
   const est={}, etapas=[];
+  const ocLbl = (oc, ds) => oc ? esc(ds && ds.indexOf(oc+'-')===0 ? oc+' · '+ds.slice(oc.length+1) : (ds||'Ocorrência '+oc)) : '';
+  const nfNo = { k:'emit', l:'NF emitida', i:'nf', t:'cin', ts:tsDe(emi), dt:emi.slice(0,10), notas:[], est:{} };
+  etapas.push(nfNo);
+  let expNo=null, avisoVenc=null;
+  const notaCD = (delta, antes, primeiro) => notasHNF(delta, antes, primeiro).filter(x=>!/^ERP |^Transp\. /.test(x));
   evs.forEach((ev,i)=>{
     const [data, cod, delta] = ev;
     const antes = Object.assign({}, est); Object.assign(est, delta);
     const e = etapaHNF(cod, est);
-    const notas = notasHNF(delta, antes, i===0);
+    const saiu = !!(est.rm && !/^0+$/.test(est.rm)) || !!est.ct || !!est.it || !!est.em;
     let cur = etapas[etapas.length-1];
-    const nova = !cur || cur.k!==e.k || (e.oc!==undefined && cur.oc!==e.oc) || !!cur.atraso!==!!e.atraso;
-    if(nova){ cur = Object.assign({ini:data, notas:[], ds:est.ds||''}, e); etapas.push(cur); }
-    else if(notas.length) notas[0] = '<span style="color:var(--text3)">'+isoBR(data).slice(0,5)+'</span> '+notas[0];
-    cur.notas.push(...notas);
-    cur.est = Object.assign({}, est);
-  });
-  etapas.forEach((e,i)=>{
-    const fim = i<etapas.length-1 ? dIso(etapas[i+1].ini) : ultimaFoto;
-    e.dias = Math.max(0, Math.round((fim - dIso(e.ini))/86400000));
-  });
-  const atual = etapas[etapas.length-1];
-  const encerrada = !!atual.fim;
 
-  // 2) nós: emissão + etapas + (se aberta) meta de entrega
-  const emi = box.dataset.emi || '';
-  const no = (cor, icone, badge, lbl, sub, extra, opts) => {
-    opts = opts || {};
-    return '<div class="hnf-no'+(opts.atual?' hnf-atual':'')+(opts.fantasma?' hnf-fant':'')+'" style="--c:'+cor+'">'
-      +'<div class="hnf-ic">'+svgI(icone)+(badge?'<span class="hnf-bd">'+svgI(badge,11)+'</span>':'')+'</div>'
-      +'<div class="hnf-lb">'+lbl+'</div>'
-      +(opts.ocor?'<div class="hnf-oc">'+opts.ocor+'</div>':'')
-      +(opts.atraso?'<div class="hnf-tag">em atraso</div>':'')
-      +'<div class="hnf-sb">'+sub+'</div>'
-      +(extra?'<div class="hnf-nt">'+extra+'</div>':'')+'</div>';
-  };
-  let html='<div class="hnf-trilho">';
-  if(emi){
-    const d0 = dBR(emi), d1 = dIso(etapas[0].ini);
-    html += no(HNF_COR.cin,'nf',null,'NF emitida', esc(emi.slice(0,10)), (d0&&d1)? Math.round((d1-d0)/86400000)+' d até a 1ª foto':'');
-  }
-  etapas.forEach((e,i)=>{
-    const ult = i===etapas.length-1;
-    html += no(HNF_COR[e.t], e.i, e.b, esc(e.l),
-      isoBR(e.ini)+(e.fim ? '' : ' · <b>'+e.dias+(ult?'+':'')+' d</b>'),
-      e.notas.slice(0,5).map(x=>'<div>'+x+'</div>').join('') + (e.notas.length>5?'<div style="color:var(--text3)">+'+(e.notas.length-5)+' mudança(s)</div>':''),
-      {atual:ult, atraso:e.atraso,
-       ocor: e.oc ? esc(e.ds && e.ds.indexOf(e.oc+'-')===0 ? e.oc+' · '+e.ds.slice(e.oc.length+1) : (e.ds||'Ocorrência '+e.oc))
-             : (e.oc===''? '<span style="color:var(--text3)">sem ocorrência</span>' : '')});
-  });
-  if(!encerrada){
-    const mx = atual.est && atual.est.mx;
-    const vencida = mx && dBR(mx) && dBR(mx) < ultimaFoto;
-    html += no(vencida?HNF_COR.err:HNF_COR.cin, 'flag', null, 'Entrega',
-      mx ? (vencida?'prevista ':'previsão ')+esc(mx) : 'sem previsão', vencida ? 'prazo vencido' : 'aguardando', {fantasma:1});
-  }
-  html += '</div>';
-
-  // 3) resumo + legenda + detalhe dia a dia (tabela anterior, recolhida)
-  const d0 = dBR(emi);
-  const totDias = d0 ? Math.round(((encerrada ? dIso(atual.ini) : ultimaFoto) - d0)/86400000) : null;
-  const resumo = '<div style="font-size:11.5px;margin:2px 0 10px">'
-    + '<b>'+etapas.length+'</b> etapa(s)'
-    + (totDias!=null ? ' · <b>'+totDias+' dias</b> da emissão '+(encerrada?'até '+esc(atual.l.toLowerCase()):'até hoje (em aberto)') : '')
-    + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l+(atual.atraso?' · em atraso':''))+'</b></div>';
-  const LEG=[['cd','CD','blu'],['agwait','Ag. agendamento','blu'],['agok','Trânsito agenda','blu'],['truck','Em trânsito','blu'],
-    ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso (marca vermelha sobre a etapa)','err'],['box','Entregue','ok'],
-    ['dev','Devolvida','amb'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
-  const legenda = '<div class="hnf-leg">'+LEG.map(([i,l,t])=>'<span style="color:'+HNF_COR[t]+'">'+svgI(i,13)+'<span>'+l+'</span></span>').join('')+'</div>';
-
-  let linhas='';
-  const est2={};
-  evs.forEach((ev,i)=>{
-    const [data, cod, delta] = ev; const antes=Object.assign({},est2); Object.assign(est2,delta);
-    const mud = HNF_CAMPOS.filter(([c]) => c in delta).map(([c,lbl]) =>
-      '<div><span style="color:var(--text3)">'+lbl+':</span> '+(i>0&&antes[c]?'<s style="color:var(--text3)">'+esc(antes[c])+'</s> → ':'')
-      +(delta[c]?'<b>'+esc(delta[c])+'</b>':'<i style="color:var(--text3)">(apagado)</i>')+'</div>').join('')
-      || '<span style="color:var(--text3)">só a classificação mudou (ex.: o prazo venceu)</span>';
-    const e=etapaHNF(cod,est2);
-    linhas+='<tr><td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td><td><span class="badge" style="background:'+HNF_COR[e.t]+'1F;color:'+HNF_COR[e.t]+'">'+esc(e.l+(e.atraso?' · em atraso':''))+'</span></td><td style="font-size:10.5px;line-height:1.5">'+mud+'</td></tr>';
-  });
-  box.innerHTML = tit + resumo + html + legenda
-    +'<details style="margin-top:8px;max-width:1100px"><summary style="cursor:pointer;font-size:11px;color:var(--text2)">Ver detalhe dia a dia ('+evs.length+' registro(s))</summary>'
-    +'<div class="tw" style="margin-top:6px"><table class="dt" style="font-size:11px;width:100%"><thead><tr><th style="width:90px">Dia</th><th style="width:230px">Situação no painel</th><th>O que mudou</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'
-    +'<div style="font-size:10px;color:var(--text3);margin-top:4px">Uma foto por atualização do painel (dias úteis), desde '+isoBR((h.datas||[])[0]||'')
-    +'. Só a última ocorrência de cada foto aparece. A situação de dias antigos é recalculada com as regras atuais.</div></details>';
-}
-
-/* ---------- export: todos os campos do mestre + diagnóstico ---------- */
-window.exportarConsultaExcel = function(ev){
-  if(ev) ev.stopPropagation();
-  const lista=st.resultado;
-  if(!lista.length) return;
-  const dados=lista.map(n=>{
-    const r=n.atual, o={};
-    st.head.forEach((h,ci)=>{ o[h]=String(r[ci]??'').trim(); });
-    const d=diagnosticar(r);
-    const c=cadNota(n);
-    o['[Matriz]']=c.mat;
-    o['[Cliente padrão]']=c.cli;
-    o['[Ocorrências na NF]']=n.rows.length;
-    o['[Situação no painel]']=d.sit;
-    o['[Aparece no painel]']=d.entra?'Sim':'Não';
-    o['[Onde aparece]']=d.onde;
-    o['[Regra]']=d.regra;
-    o['[Motivo]']=d.motivo;
-    return o;
-  });
-  const ws=XLSX.utils.json_to_sheet(dados);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Consulta NF');
-  XLSX.writeFile(wb, 'consulta-nf-'+stampHoje()+'.xlsx');
-};
-
-/* ---------- init ---------- */
-window.initConsulta = function(){
-  cliPintarAviso('consulta-cli-aviso');
-  if(st.carregado){ st.page=1; buscar(); }   // reaplica o filtro Matriz → Cliente
-  renderChips(); renderKpis(); renderTabela();
-  if(!st.carregado) carregar();
-  const inp=document.getElementById('consulta-input');
-  if(inp) setTimeout(()=>inp.focus(), 80);
-};
-
-})();
-</script>
-</body>
-</html>
+    // a) ainda no CD: tudo fica no nó "NF emitida"
+    if(!saiu && !e.fim){
+      if('oc' in delta && est.oc) nfNo.notas.push('Ocor. <b>'+ocLbl(est.oc,est.ds)+'</b>'+(est.do?' <span style="color:var(--text3)">('+esc(ddmm(est.do))+')</span>':''));
+      nfNo.notas.push(...notaCD(delta, antes, i===0).filter(x=>!/^Ocor/.test(x)));
+      if(e.atraso){ nfNo.atraso=1; nfNo.t='err'; nfNo.b='clock'; nfNo.l='NF emitida · no CD'; }
+      nfNo.est=Object.assign({},est); nfNo.cd=1;
+      return;
+    }
+    // b) saiu: cria a Expedição (uma vez)
+    if(saiu && !expNo){
+      const tsExp = tsDe(est.em) || tsDe(est.it) || tsFoto(data);
+      expNo = { k:'exp', l:'Expedição', i:'exp', t:'blu', ts:tsExp, dt:(est.em||est.it||isoBR(data)).slice(0,16), notas:[], est:{} };
+      if(est.rm) expNo.notas.push('Romaneio <b>'+esc(String(est.rm).replace(/^0+/,''))+'</b>');
+      if(est.em) expNo.notas.push('Embarque <b>'+esc(est.em.slice(0,16))+'</b>');
+      if(est.it) expNo.notas.push('Início transp. <b>'+esc(ddmm(est.it))+'</b>');
+      if(est.ct) expNo.notas.push('CT-e <b>'+esc(est.ct)+'</b>');
+      if(est.tr) expNo.notas.push('Transp. <b>'+esc(est.tr)+'</b>');
+      if(est.mx) expNo.notas.push('Previsão de entrega <b>'+esc(ddmm(est.mx))+'</b>');
+      expNo.est=Object.assign({},est);
+      etapas.push(expNo); cur=expNo;
+    }
+    // c) final (entregue, devolvida, cancelada...)
+    if(e.fim){
+      const tsF = tsDe(est.en) || tsDe(est.do) || tsFoto(data);
+      const no = Object.assign({}, e, { ts:tsF, dt:(est.en||est.do||isoBR(data)).slice(0,16), notas:[], est:Object.assign({},est), ocx:ocLbl(est.oc,est.ds) });
+      if(est.mx) no.notas.push('Previsão de entrega <b>'+esc(ddmm(est.mx))+'</b>');
+      if(est.ob && 'ob' in delta) no.notas.push('<span title="'+esc(est.ob)+'">Obs. <i>'+esc(est.ob.length>90?est.ob.slice(0,88)+'…':est.ob)+'</i></span>');
+      etapas.push(no);
+      return;
+    }
+    // d) em trânsito: nova etapa quando muda a OCORRÊNCIA
+    const ocAtual = est.oc || '';
+    const ehNovaOc = !cur.oc_k || cur.oc_k!==ocAtual;
+    if(ehNovaOc && (ocAtual || cur===expNo)){
+      const tsDo = tsDe(est.do);
+      const doCD = cur===expNo && tsDo && expNo.ts && tsDo < expNo.ts;   // ocorrência lançada ainda no CD (já está em "NF emitida")
+      if(doCD){ cur.oc_k = ocAtual; }
+      else if(ocAtual || cur!==expNo){
+        let tsO = tsDo;
+        if(!tsO || (expNo.ts && tsO < expNo.ts)) tsO = expNo.ts || tsFoto(data);
+        cur = Object.assign({}, e, { oc_k:ocAtual, ts:tsO, dt:(tsDe(est.do) && tsO===tsDe(est.do) ? est.do : (expNo.dt||isoBR(data))).slice(0,16),
+                                     notas:[], ocx:ocLbl(ocAtual, est.ds), atraso:0, t:e.atraso?'blu':e.t, b:null });
+        if(e.k==='trat') cur.t='amb';
+        if(est.ob) cur.notas.push('<span title="'+esc(est.ob)+'">Obs. <i>'+esc(est.ob.length>90?est.ob.slice(0,88)+'…':est.ob)+'</i></span>');
+        etapas.push(cur);
+      } else { cur.oc_k = ocAtual; }
+    } else {
+      // mesma ocorrência: relançamento, reagendamento, nova previsão → nota
+      notaCD(delta, antes, false).filter(x=>!/^Romaneio|^Embarque|^Início/.test(x)).forEach(x=>cur.notas.push(x));
+    }
+    // marca de atraso sobre a etapa corrente (sem criar etapa nova)
+    if(e.atraso && !cur.atraso){
+      cur.atraso=1; cur.t='err'; cur.b='clock';
+      const chv = est.mx||'?';
+      if(est.mx && avisoVenc!==chv) cur.notas.push('<span style="color:#A32D2D">Previsão de entrega <b>'+esc(ddmm(est.mx))+'</b> vencida — atraso começa aqui</span>');
+      avisoVenc = chv;
+    }
+    cur.est=Object.ass
