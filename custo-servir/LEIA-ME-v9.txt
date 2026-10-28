@@ -1,0 +1,102 @@
+=====================================================================
+ CUSTO DE SERVIR - VERSAO 9 (correcoes da auditoria)        28/10/2026
+=====================================================================
+
+O QUE FOI CORRIGIDO NO PAINEL (index.html)
+------------------------------------------
+Todos os numeros agora sao calculados a partir da base detalhada de
+CT-es (ctes_raw.json), a mesma usada na exportacao do Excel. Com isso:
+
+ A1  Filtro CIF/FOB passa a valer em todas as abas (antes so no Excel).
+     Observacao: o Outbound nao tem CT-e FOB; os 696 FOB sao Reversa.
+ A2  Filtro Regiao vale em Dashboard, Transportadoras, Quarter e
+     Fat. Transportadora (antes era ignorado nessas abas).
+ A3  Grafico CIF vs FOB respeita ano, quarter, mes e regiao.
+ A4  Quantidade de CT-es respeita o filtro Empresa.
+ A5  R$/kg = frete dos CT-es COM peso / peso desses CT-es, sempre no
+     periodo filtrado. Cobertura de peso exibida ao lado.
+ A6  Reentrega e Complementar filtrados por periodo/empresa, mostrados
+     como "dentro do Outbound / dentro do total". O grafico de rosca
+     nao soma mais a reentrega em cima do Outbound (dupla contagem).
+ A7  CT-es por empresa sao contados, nao mais estimados.
+ A8  Tabela por quarter da Fat. Transportadora respeita todos os filtros.
+ A9  Clientes: ordenacao escolhida pelo usuario (Frete, %CTS ou
+     Mercadoria); colunas novas Part. do frete e Frete/CT-e; todos os
+     clientes entram (antes so top 200, o total nao fechava).
+     Ranking por %CTS exige pelo menos 5 CT-es.
+ A10 Botoes de quarter em ordem cronologica; botoes de mes mostram so o
+     ano escolhido.
+ A11 Mes parcial marcado com * e aviso na barra superior.
+ A12 Semaforo relativo: verde ate 85% da referencia do escopo, vermelho
+     a partir de 125%. A referencia (%CTS total da visao) aparece na
+     legenda.
+ +   Tabela "Custo por kg por regiao" e grafico "Participacao no frete"
+     da aba Fat. Transportadora, que existiam no HTML mas nunca eram
+     preenchidos, agora funcionam.
+ +   Transportadora agrupada por CNPJ raiz (ATIVA aparecia em 2 linhas).
+ +   Avisos de qualidade: CT-es sem mercadoria, % do frete com peso,
+     2024 nao carregado.
+ +   Linha de Total em todas as tabelas; "Metodologia e formulas" no
+     rodape do Dashboard.
+ +   Excel: abas novas "Por transportadora" e "Por cliente"; colunas
+     Sub-operacao, Tipo CT-e, Tomador, Matriz Cliente e R$/kg.
+
+Conciliacao feita em teste: totais por operacao identicos a base
+(Outbound R$ 18.502.832,37 / 8.144 CT-es; Inbound R$ 2.640.393,50;
+Reversa R$ 133.047,97); filtros combinados conferidos registro a
+registro; soma dos clientes = total Outbound; Outbound + Inbound +
+Devolucao = total da Fat. Transportadora.
+
+O QUE MUDOU NO PIPELINE (processar_cte.py v9)
+---------------------------------------------
+ - A chave do Supabase SAIU do codigo. O script le, nesta ordem:
+   variavel SUPABASE_SERVICE_KEY, variavel SUPABASE_KEY (ja definida
+   pelo ATUALIZAR_TUDO.bat), arquivo .env na pasta custo-servir ou na
+   pasta torre-controle-logistica (que ja existe e esta no .gitignore).
+   O publicar.py tambem foi ajustado.
+ - ANOS_FILTRO inclui 2024.
+ - CNPJ da Inovalab corrigido (60.698.771/0001-26).
+ - Novos campos: tipo de CT-e (complementar = tpCTe 1), tomador do
+   servico (quem paga o frete) e matriz do cliente no ctes_raw.json.
+ - Peso da transportadora por ano e por mes (antes saia zerado).
+ - Conferencia de carga a cada execucao: lidos = aceitos + duplicados
+   + cancelados + rejeitados (por motivo e por ano). Gravada em
+   cte_conferencia.json e no log.
+ - Opcao --sem-publicar para testar sem enviar nada ao Supabase.
+ Os totais da base atual foram conferidos: v8 e v9 geram exatamente
+ os mesmos numeros.
+
+BACKUP
+------
+Os arquivos originais (v8) estao em custo-servir\_backup_v8\
+(pasta incluida no .gitignore porque o v8 tinha a chave no codigo).
+Para voltar: copie de la para custo-servir\.
+
+PASSOS PARA VOCE
+----------------
+1. URGENTE - trocar a chave do Supabase (a antiga esta exposta no
+   GitHub publico) e tornar o repositorio privado.
+   Depois de gerar a nova chave, atualize em DOIS lugares:
+     - torre-controle-logistica\.env  (SUPABASE_SERVICE_KEY=...)
+     - torre-controle-logistica\ATUALIZAR_TUDO.bat (linha SUPABASE_KEY)
+2. Carregar 2024 e os campos novos (uma vez, com o Y: conectado):
+     REPROCESSAR_TUDO.bat
+   No fim, abra cte_conferencia.json: "aceitos_por_ano" mostra se
+   havia XMLs de 2024 no Y:. Se aparecer 0 para 2024, os XMLs desse
+   ano nao estao na pasta RECEIVED e precisam ser obtidos.
+3. Publicar o painel (index.html) como de costume (commit/push).
+   Antes do push, confira que _backup_v8 nao entrou no commit.
+4. Conferir: CTRL+F5 na pagina, filtrar Regiao = Nordeste e ver que
+   os KPIs do Dashboard mudam.
+
+ABA NOVA: COMPARATIVO ANUAL (v9.1)
+----------------------------------
+- Compara o mesmo periodo em dois anos (padrao: jan ate o ultimo mes
+  fechado). O mes parcial sai dos dois anos, a menos que seja marcado.
+- Manchete automatica, KPIs com variacao, frete e %CTS mes a mes,
+  ponte volume x custo, cascata por cliente, dispersao
+  "custo cresceu mais que o volume?" e tabela por cliente com efeito
+  volume, efeito custo e sinal (Novo, Sem envios, Custo > volume,
+  Eficiencia). Botao "Exportar comparativo" gera o Excel da tabela.
+- Vale para Outbound (por cliente) e Inbound/Reversa (por remetente).
+- Respeita os filtros Empresa, Tipo e Regiao da barra.

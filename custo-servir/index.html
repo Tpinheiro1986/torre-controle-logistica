@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Custo de Servir — Torre de Controle</title>
-<!-- v9 · 28/out/2026 · cálculos a partir de ctes_raw.json -->
+<!-- v9.1 · 28/out/2026 · cálculos a partir de ctes_raw.json · aba Comparativo Anual -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -92,6 +92,33 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
   .g2,.g3,.g32{grid-template-columns:1fr!important}
   #cli-search{float:none!important;display:block;margin-top:8px;width:100%}
 }
+/* ── Comparativo anual ─────────────────────────────── */
+.yoy-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--text2)}
+.yoy-row label{display:flex;align-items:center;gap:6px}
+.yoy-row select{font-size:12px;padding:4px 8px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);font-weight:600}
+.yoy-chk input{accent-color:var(--green)}
+.yoy-head{background:var(--bg);border:0.5px solid var(--border);border-left:3px solid var(--text);border-radius:var(--rl);padding:12px 16px;margin-bottom:10px;font-size:14px;line-height:1.5}
+.yoy-head b{font-weight:700}
+.yoy-head .sub2{font-size:11px;color:var(--text2);margin-top:2px}
+.dl{font-size:11px;font-weight:600;margin-top:4px;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.dl .ant{font-weight:400;color:var(--text2)}
+.up-bad,.dn-bad{color:var(--red)}
+.up-good,.dn-good{color:var(--green)}
+.neu{color:var(--text2)}
+.yoy-leg{display:flex;gap:14px;margin-bottom:8px;font-size:11px;color:var(--text2);flex-wrap:wrap}
+.yoy-leg span{display:inline-flex;align-items:center;gap:5px}
+.yoy-leg i{width:12px;height:10px;border-radius:2px;display:inline-block}
+.tag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap;display:inline-block}
+.tag-novo{background:var(--blue-lt);color:var(--blue)}
+.tag-perd{background:var(--bg2);color:var(--text2);border:0.5px solid var(--border2)}
+.tag-ruim{background:#FCEBEB;color:var(--red)}
+.tag-bom{background:var(--green-lt);color:var(--green-dk)}
+.dbar{position:relative;height:8px;width:90px;background:var(--bg2);border-radius:3px;display:inline-block;vertical-align:middle}
+.dbar::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--border2)}
+.dbar i{position:absolute;top:0;bottom:0;border-radius:2px}
+.yoy-tb td.sep,.yoy-tb th.sep{border-left:0.5px solid var(--border2)}
+.slbl{flex-wrap:wrap;row-gap:6px}
+@media(max-width:900px){#yoy-search{float:none!important;width:100%;min-width:0!important}.yoy-head{font-size:12px}}
 </style>
 </head>
 <body>
@@ -130,6 +157,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
   </div>
   <div class="tabs">
     <div class="tab on" onclick="goTab('dash',this)">Dashboard</div>
+    <div class="tab" onclick="goTab('yoy',this)">Comparativo Anual</div>
     <div class="tab" onclick="goTab('transp',this)">Transportadoras</div>
     <div class="tab" onclick="goTab('regiao',this)">Regiões / UF</div>
     <div class="tab" id="tab-cli" onclick="goTab('cliente',this)">Clientes</div>
@@ -181,6 +209,56 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div style="position:relative;height:150px"><canvas id="c3"></canvas></div>
           <div class="note" id="c3-note"></div></div>
         <details class="met"><summary>Metodologia e fórmulas</summary><div id="met-txt"></div></details>
+      </div>
+
+
+      <!-- COMPARATIVO ANUAL (gerencial) -->
+      <div class="sec" id="sec-yoy" style="display:none">
+        <div class="card yoy-ctl">
+          <div class="yoy-row">
+            <label>Comparar <select id="yoy-a1" onchange="yoySet()"></select></label>
+            <label>com <select id="yoy-a0" onchange="yoySet()"></select></label>
+            <label>de <select id="yoy-m0" onchange="yoySet()"></select></label>
+            <label>até <select id="yoy-m1" onchange="yoySet()"></select></label>
+            <label class="yoy-chk"><input type="checkbox" id="yoy-parc" onchange="yoySet()"> incluir mês parcial</label>
+            <label><span id="yoy-cli-lbl">Cliente</span> <input id="yoy-cli" list="yoy-cli-list" placeholder="Todos — digite para buscar" autocomplete="off" onchange="yoyCli(this.value)" style="font-size:12px;padding:4px 8px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);min-width:230px"></label>
+            <datalist id="yoy-cli-list"></datalist>
+            <button class="sortb" id="yoy-cli-x" onclick="yoyCli('')" style="display:none">✕ todos</button>
+            <button class="sortb" onclick="yoyExport()" style="margin-left:auto">Exportar comparativo</button>
+          </div>
+          <div class="note" id="yoy-aviso"></div>
+        </div>
+
+        <div class="yoy-head" id="yoy-head"></div>
+        <div class="krow k5" id="k-yoy"></div>
+
+        <div class="g2" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div class="card"><div class="slbl"><span class="sn">1</span>Frete por mês — mesmo mês, ano contra ano</div>
+            <div class="yoy-leg" id="leg-yoy1"></div>
+            <div style="position:relative;height:240px"><canvas id="c-yoy-mes"></canvas></div></div>
+          <div class="card"><div class="slbl"><span class="sn">2</span>%CTS por mês — ano contra ano</div>
+            <div class="yoy-leg" id="leg-yoy2"></div>
+            <div style="position:relative;height:240px"><canvas id="c-yoy-pct"></canvas></div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:10px"><div class="slbl"><span class="sn">3</span><span id="yoy-top-tit">10 maiores clientes — frete ano contra ano</span></div>
+          <div class="yoy-leg" id="leg-yoy3"></div>
+          <div id="yoy-top-wrap" style="position:relative;height:420px"><canvas id="c-yoy-top"></canvas></div>
+          <div class="note">Ordenados pelo frete do ano atual. Ao lado de cada par de barras: a variação do frete. Clique numa barra ou numa linha da tabela para ver só aquele cliente (por filial, com entregas e devoluções).</div></div>
+
+        <div class="card"><div class="slbl"><span class="sn">4</span><span id="yoy-tb-tit">Comparativo por cliente</span>
+            <span style="margin-left:8px;text-transform:none;letter-spacing:0;font-weight:400">ordenar:</span>
+            <button class="sortb on" data-y="abs" onclick="yoySort(this)">Maior variação</button>
+            <button class="sortb" data-y="up" onclick="yoySort(this)">Maiores aumentos</button>
+            <button class="sortb" data-y="down" onclick="yoySort(this)">Maiores reduções</button>
+            <button class="sortb" data-y="f1" onclick="yoySort(this)">Frete atual</button>
+            <button class="sortb" data-y="pp" onclick="yoySort(this)">Piora do %CTS</button>
+            <input id="yoy-search" oninput="yoyQ=this.value.trim().toLowerCase();rYoyTable()" placeholder="Buscar…" autocomplete="off"
+              style="float:right;font-size:11px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);min-width:180px;outline:none">
+          </div>
+          <div class="tw"><table class="dt yoy-tb"><thead id="th-yoy"></thead><tbody id="tb-yoy"></tbody></table></div>
+          <div class="note" id="yoy-tb-note"></div>
+        </div>
       </div>
 
       <!-- TRANSPORTADORAS -->
@@ -544,15 +622,19 @@ function prep(raw){
     x.q='Q'+Math.ceil(x.mes/3)+'/'+yy(x.ano);
     const tc=(x.tc||'').replace(/\D/g,'');
     x.tr=tc.length>=8?tc.slice(0,8):('N:'+(x.tn||'Sem nome'));          // transportadora = CNPJ raiz (matriz + filiais)
-    const cc=(x.cc||'').replace(/\D/g,'');
-    const mz=x.mz||MZ[cc]||'';
-    x.cg=mz?('MZ:'+mz):(cc.length>=8?'R:'+cc.slice(0,8):'N:'+(x.cn||'?'));  // cliente = matriz (de-para) ou CNPJ raiz
+    // cliente da operação: no Outbound/Inbound é o destinatário; na Reversa é quem devolve (remetente)
+    const rev=x.o==='REV';
+    const cc=((rev?x.rc:x.cc)||'').replace(/\D/g,'');
+    x.cliN=(rev?x.rn:x.cn)||'';
+    const mz=x.mzc||(rev?'':x.mz)||MZ[cc]||'';
+    x.cg=mz?('MZ:'+mz):(cc.length>=8?'R:'+cc.slice(0,8):'N:'+(x.cliN||'?'));  // cliente = matriz (de-para) ou CNPJ raiz
     x.cgn=mz;
-    x.fil=cc||x.cn||'?';
+    x.fil=cc||x.cliN||'?';
+    x.filAb=(rev?x.abc:(x.abc||x.ab))||'';
     x.ree=x.sop==='REENTREGA';
     x.com=x.sop==='COMPLEMENTAR'||x.tpc==='1';
     (tnCount[x.tr]=tnCount[x.tr]||{})[x.tn]=((tnCount[x.tr]||{})[x.tn]||0)+1;
-    if(!mz){(cnCount[x.cg]=cnCount[x.cg]||{})[x.cn]=((cnCount[x.cg]||{})[x.cn]||0)+1;}
+    if(!mz){(cnCount[x.cg]=cnCount[x.cg]||{})[x.cliN]=((cnCount[x.cg]||{})[x.cliN]||0)+1;}
     return x;
   });
   const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0][0];
@@ -574,7 +656,7 @@ function nomeTr(k){return META.tn[k]||String(k).replace(/^N:/,'');}
 function nomeCli(k){return k.startsWith('MZ:')?k.slice(3):(META.cn[k]||k.replace(/^(R|N):/,''));}
 
 // ── FILTROS ────────────────────────────────────────────────────────
-const TIDS=['dash','transp','regiao','cliente','remetente','quarter','fatransp','custo'];
+const TIDS=['dash','yoy','transp','regiao','cliente','remetente','quarter','fatransp','custo'];
 const F={emp:'all',ano:'all',qtr:'all',mes:'all',tipo:'all',reg:'all'};
 function mesKeyF(){ // F.mes = 'ANO-MES' (ex.: '2026-1'); formato antigo = só o mês
   if(F.mes==='all')return null;
@@ -763,8 +845,8 @@ function fil(btn){
 
 function renderAll(){renderTab(curTab);}
 function renderTab(id){
-  const fn={dash:rDash,transp:rTr,regiao:rReg,cliente:rCli,remetente:rRem,quarter:rQ,fatransp:rFatTransp,custo:rCusto}[id];
-  const escopo=id==='fatransp'?filt(null):(id==='custo'?filt('outbound'):filt(curOp));
+  const fn={dash:rDash,yoy:rYoY,transp:rTr,regiao:rReg,cliente:rCli,remetente:rRem,quarter:rQ,fatransp:rFatTransp,custo:rCusto}[id];
+  const escopo=id==='fatransp'?filt(null):(id==='custo'?filt('outbound'):(id==='yoy'?filt(curOp,{per:1}):filt(curOp)));
   document.getElementById('ubar-dq').innerHTML=qualidade(escopo);
   if(fn)fn();
 }
@@ -1188,6 +1270,332 @@ window.addEventListener('load',()=>{
   if(av)av.textContent='GL';if(em)em.textContent='Genomma Lab';
   loadData();
 });
+
+// ════════════════════════════════════════════════════════════════════
+//  COMPARATIVO ANUAL — visão gerencial ano contra ano
+//  • Sempre compara períodos equivalentes (mesmos meses nos dois anos).
+//  • Mês parcial fica fora por padrão (os dois anos perdem o mesmo mês).
+//  • Usa os filtros de Empresa, Tipo e Região da barra; o período é
+//    escolhido aqui (os filtros Ano/Quarter/Mês da barra não se aplicam).
+//  • Decomposição por cliente: Δfrete = efeito volume + efeito custo
+//      volume = (merc_atual − merc_anterior) × %CTS_anterior
+//      custo  = (%CTS_atual − %CTS_anterior) × merc_atual
+//    (cliente novo ou sem mercadoria → toda a variação vai para volume)
+// ════════════════════════════════════════════════════════════════════
+const YOY={a0:null,a1:null,m0:1,m1:12,parc:false,sort:'abs',ok:false,cli:null};
+let YOY_CLI_MAP={};
+let yoyQ='',YOY_DATA=null;
+const COR_ANT='#A0A09A';
+const MES_LONGO=['','jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+function yoyInit(){
+  const anos=[...new Set(R.map(r=>r.ano))].sort((a,b)=>a-b);
+  const opt=(arr,fn)=>arr.map(v=>'<option value="'+v+'">'+fn(v)+'</option>').join('');
+  document.getElementById('yoy-a1').innerHTML=opt([...anos].reverse(),v=>v);
+  document.getElementById('yoy-a0').innerHTML=opt([...anos].reverse(),v=>v);
+  const ms=[1,2,3,4,5,6,7,8,9,10,11,12];
+  document.getElementById('yoy-m0').innerHTML=opt(ms,m=>MNOM[m]);
+  document.getElementById('yoy-m1').innerHTML=opt(ms,m=>MNOM[m]);
+  YOY.a1=anos[anos.length-1];
+  YOY.a0=anos.length>1?anos[anos.length-2]:anos[0];
+  // último mês fechado do ano atual
+  const mesesA1=R.filter(r=>r.ano===YOY.a1).map(r=>r.mes);
+  let ult=Math.max(...mesesA1);
+  if(META.partialKey&&META.partialKey===YOY.a1+'-'+pad(ult))ult=Math.max(1,ult-1);
+  YOY.m0=1;YOY.m1=ult;
+  yoySync();YOY.ok=true;
+}
+function yoySync(){
+  document.getElementById('yoy-a1').value=YOY.a1;document.getElementById('yoy-a0').value=YOY.a0;
+  document.getElementById('yoy-m0').value=YOY.m0;document.getElementById('yoy-m1').value=YOY.m1;
+  document.getElementById('yoy-parc').checked=YOY.parc;
+}
+function yoySet(){
+  YOY.a1=+document.getElementById('yoy-a1').value;YOY.a0=+document.getElementById('yoy-a0').value;
+  YOY.m0=+document.getElementById('yoy-m0').value;YOY.m1=+document.getElementById('yoy-m1').value;
+  YOY.parc=document.getElementById('yoy-parc').checked;
+  if(YOY.m1<YOY.m0){const t=YOY.m0;YOY.m0=YOY.m1;YOY.m1=t;yoySync();}
+  rYoY();
+}
+function yoySort(btn){YOY.sort=btn.dataset.y;document.querySelectorAll('.sortb[data-y]').forEach(b=>b.classList.toggle('on',b===btn));rYoyTable();}
+
+// Δ formatado: seta, valor e cor (para custo, subir = vermelho)
+function dlt(v0,v1,tipo,subirRuim){
+  if(v0==null||v1==null)return '<span class="neu">sem base de comparação</span>';
+  const d=v1-v0;
+  if(Math.abs(d)<1e-9)return '<span class="neu">= estável</span>';
+  const cls=subirRuim==null?'neu':((d>0)===subirRuim?'up-bad':'up-good');
+  const seta=d>0?'▲':'▼';
+  let txt;
+  if(tipo==='pp')txt=(d>0?'+':'−')+Math.abs(d).toFixed(2).replace('.',',')+' p.p.';
+  else{
+    const pc=v0!==0?d/Math.abs(v0)*100:null;
+    const abs=tipo==='R$'?(d>0?'+':'−')+fM(Math.abs(d)):tipo==='R$u'?(d>0?'+':'−')+fR(Math.abs(d)):(d>0?'+':'−')+fInt(Math.abs(d));
+    txt=(pc!=null?(d>0?'+':'−')+Math.abs(pc).toFixed(1).replace('.',',')+'%':'')+' <span class="ant">('+abs+')</span>';
+  }
+  return '<span class="'+cls+'">'+seta+' '+txt+'</span>';
+}
+function kpiY(l,v,delta,ant,co){return '<div class="kpi"><div class="kl">'+l+'</div><div class="kv" style="color:'+co+'">'+v+'</div><div class="dl">'+delta+'</div><div class="ks">'+ant+'</div></div>';}
+function sgn(v,f){return (v>0?'+':v<0?'−':'')+f(Math.abs(v));}
+
+function yoyMeses(){
+  const ms=[];for(let m=YOY.m0;m<=YOY.m1;m++)ms.push(m);
+  let fora=null;
+  if(!YOY.parc&&META.partialKey){
+    const [pa,pm]=META.partialKey.split('-').map(Number);
+    if((pa===YOY.a1||pa===YOY.a0)&&ms.includes(pm)){fora=pm;ms.splice(ms.indexOf(pm),1);}
+  }
+  return {ms,fora};
+}
+function perLbl(ms){
+  if(!ms.length)return '—';
+  const seq=ms[ms.length-1]-ms[0]+1===ms.length;
+  return seq?(ms.length===1?MES_LONGO[ms[0]]:MES_LONGO[ms[0]]+'–'+MES_LONGO[ms[ms.length-1]]):ms.map(m=>MES_LONGO[m]).join(', ');
+}
+// Outbound e Reversa: por cliente (matriz) — os mesmos clientes nas duas operações.
+// Inbound: por fornecedor (remetente). Com um cliente escolhido: por filial (CNPJ).
+function entKey(r){
+  if(YOY.cli)return r.fil;
+  return curOp==='inbound'?((r.rc||'').replace(/\D/g,'')||r.rn||'?'):r.cg;
+}
+function entNome(k,r){
+  if(YOY.cli){const loc=curOp==='reversa'?'':(r.mu?' · '+r.mu+'/'+r.uf:'');return (r.filAb||r.cliN||k)+loc;}
+  return curOp==='inbound'?(r?r.rn:k):nomeCli(k);
+}
+function entPlural(){return YOY.cli?'filiais':(curOp==='inbound'?'fornecedores':'clientes');}
+function yoyCli(nome){
+  nome=(nome||'').trim();
+  YOY.cli=nome?(YOY_CLI_MAP[nome]||null):null;
+  if(nome&&!YOY.cli){const k=Object.keys(YOY_CLI_MAP).find(n=>n.toLowerCase().includes(nome.toLowerCase()));YOY.cli=k?YOY_CLI_MAP[k]:null;}
+  document.getElementById('yoy-cli').value=YOY.cli?nomeCli(YOY.cli):'';
+  document.getElementById('yoy-cli-x').style.display=YOY.cli?'':'none';
+  rYoY();
+}
+function yoyPick(k){if(YOY.cli||curOp==='inbound')return;YOY.cli=k;document.getElementById('yoy-cli').value=nomeCli(k);document.getElementById('yoy-cli-x').style.display='';rYoY();window.scrollTo({top:0,behavior:'smooth'});}
+
+function rYoY(){
+  if(!YOY.ok)yoyInit();
+  if(curOp==='inbound'&&YOY.cli){YOY.cli=null;document.getElementById('yoy-cli').value='';document.getElementById('yoy-cli-x').style.display='none';}
+  const cliNome=YOY.cli?nomeCli(YOY.cli):'';
+  document.getElementById('yoy-cli-lbl').textContent=curOp==='inbound'?'Fornecedor':'Cliente';
+  document.getElementById('yoy-cli').disabled=curOp==='inbound';
+  document.getElementById('yoy-tb-tit').textContent=YOY.cli?'Comparativo por filial — '+cliNome:'Comparativo por '+(curOp==='inbound'?'fornecedor':'cliente')+(curOp==='reversa'?' (quem devolve)':'');
+  document.getElementById('yoy-top-tit').textContent=(YOY.cli?'10 maiores filiais de '+cliNome:'10 maiores '+entPlural())+' — frete ano contra ano';
+  const {ms,fora}=yoyMeses();
+  const a0=YOY.a0,a1=YOY.a1;
+  const baseOp=filt(curOp,{per:1});
+  // lista de clientes para a busca (todos os anos da operação atual, por frete)
+  if(curOp!=='inbound'){
+    const gc=grp(baseOp.filter(r=>r.ano===a0||r.ano===a1),r=>r.cg);
+    YOY_CLI_MAP={};
+    document.getElementById('yoy-cli-list').innerHTML=[...gc.values()].sort((a,b)=>b.f-a.f).map(a=>{const n=nomeCli(a.key);YOY_CLI_MAP[n]=a.key;return '<option value="'+esc(n)+'">';}).join('');
+    if(YOY.cli)YOY_CLI_MAP[cliNome]=YOY.cli;
+  }
+  const base=YOY.cli?baseOp.filter(r=>r.cg===YOY.cli):baseOp;
+  const r0=base.filter(r=>r.ano===a0&&ms.includes(r.mes));
+  const r1=base.filter(r=>r.ano===a1&&ms.includes(r.mes));
+  // avisos de equivalência
+  const av=[];
+  if(a0===a1)av.push('Escolha dois anos diferentes.');
+  if(fora)av.push(MNOM[fora]+'/'+String(META.partialKey).slice(2,4)+' está incompleto e foi retirado dos dois anos para manter a comparação equivalente.');
+  if(YOY.parc&&META.partialKey&&ms.includes(+META.partialKey.slice(5)))av.push('<b style="color:var(--amber)">Atenção:</b> o mês parcial está incluído; a comparação não é equivalente.');
+  const sem0=ms.filter(m=>!R.some(r=>r.ano===a0&&r.mes===m)),sem1=ms.filter(m=>!R.some(r=>r.ano===a1&&r.mes===m));
+  if(sem0.length)av.push('<b style="color:var(--red)">'+a0+' sem dados em:</b> '+sem0.map(m=>MNOM[m]).join(', ')+'.');
+  if(sem1.length)av.push('<b style="color:var(--red)">'+a1+' sem dados em:</b> '+sem1.map(m=>MNOM[m]).join(', ')+'.');
+  const fl=[];if(F.emp!=='all')fl.push(F.emp[0]+F.emp.slice(1).toLowerCase());if(F.tipo!=='all')fl.push(F.tipo);if(F.reg!=='all')fl.push(F.reg);
+  av.push('Filtros da barra aplicados: '+(fl.length?fl.join(' · '):'nenhum')+'. Ano, quarter e mês da barra não valem nesta aba.');
+  document.getElementById('yoy-aviso').innerHTML=av.join(' ');
+
+  const t0=agg(r0),t1=agg(r1);
+  // por entidade
+  const nm={};
+  const g0=grp(r0,r=>{const k=entKey(r);if(!nm[k])nm[k]=entNome(k,r);return k;});
+  const g1=grp(r1,r=>{const k=entKey(r);if(!nm[k])nm[k]=entNome(k,r);return k;});
+  const keys=new Set([...g0.keys(),...g1.keys()]);
+  const linhas=[...keys].map(k=>{
+    const x=g0.get(k)||fin(nA()),y=g1.get(k)||fin(nA());
+    let vol,cus;
+    if(x.m>0&&y.m>0){const p0=x.f/x.m,p1=y.f/y.m;vol=(y.m-x.m)*p0;cus=(p1-p0)*y.m;}
+    else if(x.m>0&&y.m<=0){vol=-x.f;cus=y.f;}
+    else{vol=y.f-x.f;cus=0;}
+    let sinal='';
+    if(x.f<=0&&y.f>0)sinal='novo';
+    else if(y.f<=0&&x.f>0)sinal='perd';
+    else if(x.pct!=null&&y.pct!=null&&x.n+y.n>=5){
+      const lim=Math.max(0.25,x.pct*0.10);
+      if(y.pct-x.pct>=lim)sinal='ruim';else if(x.pct-y.pct>=lim)sinal='bom';
+    }
+    return {k,nome:nm[k]||k,x,y,d:y.f-x.f,dp:x.f>0?(y.f-x.f)/x.f*100:null,dm:x.m>0?(y.m-x.m)/x.m*100:null,
+      pp:(x.pct!=null&&y.pct!=null)?y.pct-x.pct:null,vol,cus,sinal};
+  });
+  const VOL=linhas.reduce((s,l)=>s+l.vol,0),CUS=linhas.reduce((s,l)=>s+l.cus,0);
+  YOY_DATA={linhas,t0,t1,ms,a0,a1,VOL,CUS};
+
+  // ── Manchete
+  const co=OP_COR[curOp];
+  const dF=t1.f-t0.f;
+  const maiorUp=[...linhas].sort((a,b)=>b.d-a.d)[0],maiorDn=[...linhas].sort((a,b)=>a.d-b.d)[0];
+  const verbo=dF>0?'subiu':'caiu';
+  const per=perLbl(ms);
+  let h='<b>'+(YOY.cli?esc(cliNome)+' · ':'')+OP_LBL[curOp]+' · '+per+' '+a1+' contra '+per+' '+a0+':</b> o frete '+verbo+' <b class="'+(dF>0?'up-bad':'up-good')+'">'+(t0.f>0?p1(Math.abs(dF)/t0.f*100):'—')+'</b> ('+fM(t0.f)+' → '+fM(t1.f)+').';
+  if(t0.m>0&&t1.m>0){
+    const eff=Math.abs(VOL)>=Math.abs(CUS)?'volume transportado':'custo relativo (%CTS)';
+    h+=' O principal motor foi o <b>'+eff+'</b>: volume '+sgn(VOL,fM)+', custo '+sgn(CUS,fM)+'. %CTS '+pf(t0.pct)+' → '+pf(t1.pct)+'.';
+  }
+  let sub='';
+  if(maiorUp&&maiorUp.d>0)sub+='Maior aumento: <b>'+esc(maiorUp.nome)+'</b> ('+sgn(maiorUp.d,fM)+'). ';
+  if(maiorDn&&maiorDn.d<0)sub+='Maior redução: <b>'+esc(maiorDn.nome)+'</b> ('+sgn(maiorDn.d,fM)+'). ';
+  const nRuim=linhas.filter(l=>l.sinal==='ruim').length;
+  if(nRuim)sub+=nRuim+' '+entPlural()+' com %CTS piorando acima de 10%.';
+  // cliente escolhido: mostra também a outra ponta (entrega × devolução) = custo de servir de transporte
+  if(YOY.cli&&curOp!=='inbound'){
+    const outra=curOp==='outbound'?'reversa':'outbound';
+    const bo=filt(outra,{per:1}).filter(r=>r.cg===YOY.cli);
+    const o0=agg(bo.filter(r=>r.ano===a0&&ms.includes(r.mes))),o1=agg(bo.filter(r=>r.ano===a1&&ms.includes(r.mes)));
+    const ent0=curOp==='outbound'?t0.f:o0.f,ent1=curOp==='outbound'?t1.f:o1.f,dev0=curOp==='outbound'?o0.f:t0.f,dev1=curOp==='outbound'?o1.f:t1.f;
+    sub='<b>Devoluções (Reversa):</b> '+fM(dev0)+' → '+fM(dev1)+' &nbsp;·&nbsp; <b>Entregas (Outbound):</b> '+fM(ent0)+' → '+fM(ent1)
+      +' &nbsp;·&nbsp; <b>Frete total do cliente:</b> '+fM(ent0+dev0)+' → '+fM(ent1+dev1)+' '+dlt(ent0+dev0,ent1+dev1,'R$',true)+'<br>'+sub;
+  }
+  document.getElementById('yoy-head').innerHTML=h+(sub?'<div class="sub2">'+sub+'</div>':'');
+  document.getElementById('yoy-head').style.borderLeftColor=dF>0?'var(--red)':'var(--green)';
+
+  // ── KPIs (atual em destaque, anterior como referência)
+  document.getElementById('k-yoy').innerHTML=
+    kpiY('Frete '+a1,fM(t1.f),dlt(t0.f,t1.f,'R$',true),a0+': '+fM(t0.f),co)
+    +kpiY('Mercadoria '+a1,fM(t1.m),dlt(t0.m,t1.m,'R$',null),a0+': '+fM(t0.m),'#185FA5')
+    +kpiY('%CTS '+a1,pf(t1.pct),dlt(t0.pct,t1.pct,'pp',true),a0+': '+pf(t0.pct),'var(--amber)')
+    +kpiY('CT-es '+a1,fInt(t1.n),dlt(t0.n,t1.n,'n',null),a0+': '+fInt(t0.n),'var(--text)')
+    +kpiY('Frete por CT-e '+a1,fR(t1.fpc),dlt(t0.fpc,t1.fpc,'R$u',true),a0+': '+fR(t0.fpc),'var(--text)');
+
+  // ── 1 e 2: mês a mês
+  const gm0=grp(r0,r=>r.mes),gm1=grp(r1,r=>r.mes);
+  const lbl=ms.map(m=>MNOM[m]);
+  const leg=(id,arr)=>document.getElementById(id).innerHTML=arr.map(([n,c,l])=>'<span><i style="background:'+c+(l?';height:2px':'')+'"></i>'+n+'</span>').join('');
+  leg('leg-yoy1',[[String(a0),COR_ANT],[String(a1),co]]);
+  let el=ch('c-yoy-mes');
+  if(el)CH['c-yoy-mes']=new Chart(el,{type:'bar',data:{labels:lbl,datasets:[
+      {label:String(a0),data:ms.map(m=>(gm0.get(m)||{}).f||0),backgroundColor:COR_ANT+'99',borderRadius:3,barPercentage:.9,categoryPercentage:.7},
+      {label:String(a1),data:ms.map(m=>(gm1.get(m)||{}).f||0),backgroundColor:co,borderRadius:3,barPercentage:.9,categoryPercentage:.7}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{
+      label:c=>c.dataset.label+': '+fM(c.raw),
+      afterBody:items=>{const m=ms[items[0].dataIndex];const x=(gm0.get(m)||{}).f||0,y=(gm1.get(m)||{}).f||0;return x>0?['Variação: '+sgn(y-x,fM)+' ('+sgn((y-x)/x*100,v=>v.toFixed(1).replace('.',','))+'%)']:[];}}}},
+      scales:{x:{grid:{display:false},border:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)},beginAtZero:true}}}});
+  leg('leg-yoy2',[[String(a0),COR_ANT,1],[String(a1),co,1]]);
+  el=ch('c-yoy-pct');
+  const pv=(g,m)=>{const a=g.get(m);return a&&a.pct!=null?+a.pct.toFixed(2):null;};
+  if(el)CH['c-yoy-pct']=new Chart(el,{type:'line',data:{labels:lbl,datasets:[
+      {label:String(a0),data:ms.map(m=>pv(gm0,m)),borderColor:COR_ANT,borderDash:[4,3],borderWidth:2,pointRadius:3,pointBackgroundColor:COR_ANT,tension:.25,spanGaps:true},
+      {label:String(a1),data:ms.map(m=>pv(gm1,m)),borderColor:co,borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#fff',pointBorderColor:co,pointBorderWidth:2,tension:.25,spanGaps:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+pf(c.raw),
+      afterBody:items=>{const m=ms[items[0].dataIndex];const x=pv(gm0,m),y=pv(gm1,m);return x!=null&&y!=null?['Variação: '+sgn(y-x,v=>v.toFixed(2).replace('.',','))+' p.p.']:[];}}}},
+      scales:{x:{grid:{display:false},border:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>v+'%'},beginAtZero:true}}}});
+
+  // ── 3: 10 maiores do ano atual, barras lado a lado (ano anterior em cinza)
+  const top10=[...linhas].sort((a,b)=>b.y.f-a.y.f||b.x.f-a.x.f).slice(0,10);
+  leg('leg-yoy3',[[String(a0),COR_ANT],[String(a1),co]]);
+  document.getElementById('yoy-top-wrap').style.height=Math.max(260,top10.length*42+50)+'px';
+  el=ch('c-yoy-top');
+  const varTxt=l=>l.x.f>0?sgn(l.dp,v=>v.toFixed(0))+'%':'novo';
+  if(el)CH['c-yoy-top']=new Chart(el,{type:'bar',data:{labels:top10.map(l=>l.nome.length>30?l.nome.slice(0,29)+'…':l.nome),datasets:[
+      {label:String(a0),data:top10.map(l=>l.x.f),backgroundColor:COR_ANT+'99',borderRadius:3,barPercentage:.85,categoryPercentage:.75},
+      {label:String(a1),data:top10.map(l=>l.y.f),backgroundColor:co,borderRadius:3,barPercentage:.85,categoryPercentage:.75}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:70}},
+      onClick:(e,els)=>{if(els.length)yoyPick(top10[els[0].index].k);},
+      onHover:(e,els)=>{e.native.target.style.cursor=els.length&&!YOY.cli&&curOp!=='inbound'?'pointer':'default';},
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>top10[it[0].dataIndex].nome,label:c=>c.dataset.label+': '+fM(c.raw),
+        afterBody:it=>{const l=top10[it[0].dataIndex];return ['Variação: '+sgn(l.d,fM)+(l.x.f>0?' ('+varTxt(l)+')':''),'%CTS: '+pf(l.x.pct)+' → '+pf(l.y.pct)];}}}},
+      scales:{y:{grid:{display:false},border:{display:false},ticks:{font:{size:11}}},x:{grid:{color:'rgba(128,128,128,.06)'},border:{display:false},ticks:{font:{size:10},callback:v=>fK(v)},beginAtZero:true}}},
+    plugins:[{id:'varTop',afterDatasetsDraw(chart){
+      const {ctx}=chart;const m0=chart.getDatasetMeta(0),m1=chart.getDatasetMeta(1);ctx.save();ctx.font='600 11px system-ui,sans-serif';ctx.textBaseline='middle';ctx.textAlign='left';
+      top10.forEach((l,i)=>{const b0=m0.data[i],b1=m1.data[i];if(!b0||!b1)return;
+        ctx.fillStyle=l.x.f<=0?'#185FA5':(l.d>0?'#A32D2D':'#1D9E75');
+        ctx.fillText((l.d>0?'▲ ':l.d<0?'▼ ':'')+varTxt(l),Math.max(b0.x,b1.x)+6,(b0.y+b1.y)/2);});
+      ctx.restore();}}]});
+
+  rYoyTable();
+}
+
+// rótulo de valor na ponta das barras (melhor prática: dispensa leitura do eixo)
+function valorBarras(fmt,horizontal){
+  return {id:'vb',afterDatasetsDraw(chart){
+    const {ctx}=chart;const meta=chart.getDatasetMeta(0);
+    ctx.save();ctx.font='600 10px system-ui,sans-serif';ctx.fillStyle=getComputedStyle(document.body).color;
+    meta.data.forEach((b,i)=>{
+      const t=fmt(i);if(!t)return;
+      if(horizontal){ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(t,Math.max(b.x,b.base)+4,b.y);}
+      else{ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(t,b.x,Math.min(b.y,b.base)-3);}
+    });ctx.restore();
+  }};
+}
+// rótulo dos 6 maiores pontos do gráfico de dispersão
+const rotulosBolhas={id:'rb',afterDatasetsDraw(chart){
+  const ds=chart.data.datasets[1];if(!ds)return;const meta=chart.getDatasetMeta(1);
+  const idx=ds.data.map((d,i)=>[i,d.r]).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>x[0]);
+  const {ctx}=chart;ctx.save();ctx.font='600 10px system-ui,sans-serif';ctx.fillStyle=getComputedStyle(document.body).color;ctx.textBaseline='middle';
+  const usados=[];const ca=chart.chartArea;
+  const colide=b=>b.x<ca.left||b.x+b.w>ca.right||b.y<ca.top||b.y+b.h>ca.bottom||usados.some(u=>b.x<u.x+u.w&&b.x+b.w>u.x&&b.y<u.y+u.h&&b.y+b.h>u.y);
+  idx.forEach(i=>{const p=meta.data[i];if(!p)return;let n=ds.data[i].l.nome;n=n.length>18?n.slice(0,17)+'…':n;
+    const w=ctx.measureText(n).width+2,h=12,r=ds.data[i].r;
+    const cands=[{x:p.x+r+3,y:p.y-h/2},{x:p.x-r-3-w,y:p.y-h/2},{x:p.x-w/2,y:p.y-r-h-2},{x:p.x-w/2,y:p.y+r+2}];
+    const c=cands.find(b=>!colide({...b,w,h}));if(!c)return;usados.push({...c,w,h});
+    ctx.textAlign='left';ctx.fillText(n,c.x,c.y+h/2);});
+  ctx.restore();
+}};
+
+const TAGS={novo:'<span class="tag tag-novo">Novo</span>',perd:'<span class="tag tag-perd">Sem envios</span>',
+  ruim:'<span class="tag tag-ruim" title="%CTS subiu 10% ou mais (mín. 0,25 p.p.): frete cresceu acima do volume">Custo &gt; volume</span>',
+  bom:'<span class="tag tag-bom" title="%CTS caiu 10% ou mais (mín. 0,25 p.p.)">Eficiência ↑</span>'};
+function rYoyTable(){
+  if(!YOY_DATA)return;
+  const {linhas,t0,t1,a0,a1,VOL,CUS}=YOY_DATA;
+  document.getElementById('th-yoy').innerHTML='<tr><th>#</th><th>'+(YOY.cli?'Filial':(curOp==='inbound'?'Fornecedor':'Cliente / Matriz'))+'</th>'
+    +'<th class="r sep">CT-es '+a0+'</th><th class="r">CT-es '+a1+'</th>'
+    +'<th class="r sep">Frete '+a0+'</th><th class="r">Frete '+a1+'</th><th class="r">Δ R$</th><th class="r">Δ %</th>'
+    +'<th class="r sep">%CTS '+a0+'</th><th class="r">%CTS '+a1+'</th><th class="r">Δ p.p.</th>'
+    +'<th class="r sep" title="Parte da variação explicada pela mercadoria transportada">Efeito volume</th><th class="r" title="Parte da variação explicada pelo %CTS">Efeito custo</th><th>Sinal</th></tr>';
+  let rows=linhas;
+  if(yoyQ)rows=rows.filter(l=>l.nome.toLowerCase().includes(yoyQ));
+  const s=YOY.sort;
+  rows=[...rows].sort(s==='up'?(a,b)=>b.d-a.d:s==='down'?(a,b)=>a.d-b.d:s==='f1'?(a,b)=>b.y.f-a.y.f:s==='pp'?(a,b)=>((b.pp==null?-1e9:b.pp*(b.x.n+b.y.n>=5))-(a.pp==null?-1e9:a.pp*(a.x.n+a.y.n>=5))):(a,b)=>Math.abs(b.d)-Math.abs(a.d));
+  const maxD=Math.max(1,...linhas.map(l=>Math.abs(l.d)));
+  const LIM=150;
+  const dbar=d=>{const w=Math.min(50,Math.abs(d)/maxD*50);return '<span class="dbar"><i style="'+(d>=0?'left:50%':'right:50%')+';width:'+w+'%;background:'+(d>0?'var(--red)':'var(--green)')+'"></i></span>';};
+  const cor=(v,ruim)=>v==null||Math.abs(v)<1e-9?'':' style="color:'+((v>0)===ruim?'var(--red)':'var(--green)')+'"';
+  const fp=v=>v==null?'—':sgn(v,x=>x.toFixed(1).replace('.',','))+'%';
+  const fpp=v=>v==null?'—':sgn(v,x=>x.toFixed(2).replace('.',','));
+  const clic=!YOY.cli&&curOp!=='inbound';
+  let html=rows.slice(0,LIM).map((l,i)=>'<tr'+(clic?' style="cursor:pointer" onclick="yoyPick(\''+l.k.replace(/'/g,"\\'")+'\')" title="Clique para ver só este cliente"':'')+'><td style="color:var(--text2);font-size:10px">'+(i+1)+'</td>'
+    +'<td style="max-width:230px;overflow:hidden;text-overflow:ellipsis;font-weight:500" title="'+esc(l.nome)+'">'+esc(l.nome)+(clic?' <span class="muted" style="font-size:10px">›</span>':'')+'</td>'
+    +'<td class="r sep">'+(l.x.n?fInt(l.x.n):'—')+'</td><td class="r">'+(l.y.n?fInt(l.y.n):'—')+'</td>'
+    +'<td class="r sep" style="color:var(--text2)">'+(l.x.f?fK(l.x.f):'—')+'</td><td class="r" style="font-weight:600">'+(l.y.f?fK(l.y.f):'—')+'</td>'
+    +'<td class="r"'+cor(l.d,true)+'>'+dbar(l.d)+' '+sgn(l.d,fK)+'</td><td class="r"'+cor(l.dp,true)+'>'+fp(l.dp)+'</td>'
+    +'<td class="r sep" style="color:var(--text2)">'+pf(l.x.pct)+'</td><td class="r">'+pf(l.y.pct)+'</td><td class="r"'+cor(l.pp,true)+'>'+fpp(l.pp)+'</td>'
+    +'<td class="r sep"'+cor(l.vol,true)+'>'+sgn(l.vol,fK)+'</td><td class="r"'+cor(l.cus,true)+'>'+sgn(l.cus,fK)+'</td>'
+    +'<td>'+(TAGS[l.sinal]||'')+'</td></tr>').join('');
+  if(rows.length)html+='<tr class="tr-tot"><td></td><td>Total ('+fInt(linhas.length)+')</td><td class="r sep">'+fInt(t0.n)+'</td><td class="r">'+fInt(t1.n)+'</td>'
+    +'<td class="r sep">'+fK(t0.f)+'</td><td class="r">'+fK(t1.f)+'</td><td class="r">'+sgn(t1.f-t0.f,fK)+'</td><td class="r">'+(t0.f>0?fp((t1.f-t0.f)/t0.f*100):'—')+'</td>'
+    +'<td class="r sep">'+pf(t0.pct)+'</td><td class="r">'+pf(t1.pct)+'</td><td class="r">'+(t0.pct!=null&&t1.pct!=null?fpp(t1.pct-t0.pct):'—')+'</td>'
+    +'<td class="r sep">'+sgn(VOL,fK)+'</td><td class="r">'+sgn(CUS,fK)+'</td><td></td></tr>';
+  document.getElementById('tb-yoy').innerHTML=html||vazio(14);
+  document.getElementById('yoy-tb-note').innerHTML=(rows.length>LIM?'Exibindo '+LIM+' de '+fInt(rows.length)+' (a busca procura em todos; a exportação traz todos). ':'')
+    +'Efeito volume + efeito custo = Δ R$ em cada linha. "Custo &gt; volume": %CTS subiu 10% ou mais (mín. 0,25 p.p., pelo menos 5 CT-es). Um %CTS alto não indica cliente deficitário sem receita e margem.';
+}
+
+function yoyExport(){
+  if(!YOY_DATA)return;
+  const {linhas,t0,t1,a0,a1,ms,VOL,CUS}=YOY_DATA;
+  const cab=[YOY.cli?'Filial':(curOp==='inbound'?'Fornecedor':'Cliente / Matriz'),'CT-es '+a0,'CT-es '+a1,'Frete '+a0,'Frete '+a1,'Δ R$','Δ %','Mercadoria '+a0,'Mercadoria '+a1,'Δ % mercadoria','%CTS '+a0,'%CTS '+a1,'Δ p.p.','Efeito volume','Efeito custo','Sinal'];
+  const SN={novo:'Novo',perd:'Sem envios',ruim:'Custo > volume',bom:'Eficiência ↑'};
+  const L=[...linhas].sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).map(l=>[l.nome,l.x.n,l.y.n,r2(l.x.f),r2(l.y.f),r2(l.d),r2(l.dp),r2(l.x.m),r2(l.y.m),r2(l.dm),r2(l.x.pct),r2(l.y.pct),r2(l.pp),r2(l.vol),r2(l.cus),SN[l.sinal]||'']);
+  const tot=['TOTAL',t0.n,t1.n,r2(t0.f),r2(t1.f),r2(t1.f-t0.f),t0.f>0?r2((t1.f-t0.f)/t0.f*100):null,r2(t0.m),r2(t1.m),t0.m>0?r2((t1.m-t0.m)/t0.m*100):null,r2(t0.pct),r2(t1.pct),(t0.pct!=null&&t1.pct!=null)?r2(t1.pct-t0.pct):null,r2(VOL),r2(CUS),''];
+  const info=[['Comparativo anual — '+OP_LBL[curOp]+(YOY.cli?' — '+nomeCli(YOY.cli):'')],['Período: '+perLbl(ms)+' de '+a1+' contra '+perLbl(ms)+' de '+a0],
+    ['Filtros: empresa '+(F.emp==='all'?'todas':F.emp)+' · tipo '+(F.tipo==='all'?'todos':F.tipo)+' · região '+(F.reg==='all'?'todas':F.reg)],
+    ['Efeito volume = (merc. atual − merc. anterior) × %CTS anterior; efeito custo = (%CTS atual − %CTS anterior) × merc. atual'],[]];
+  const ws=XLSX.utils.aoa_to_sheet(info.concat([cab],L,[tot]));
+  ws['!cols']=[{wch:40}].concat(cab.slice(1).map(()=>({wch:13})));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Comparativo');
+  XLSX.writeFile(wb,'Comparativo_'+OP_LBL[curOp]+'_'+a1+'x'+a0+'_'+perLbl(ms).replace(/[^a-z0-9]+/gi,'-')+'.xlsx');
+}
 </script>
 </body>
 </html>

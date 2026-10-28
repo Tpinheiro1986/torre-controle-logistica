@@ -19,3 +19,7 @@ otd/Ferramentas/
 otd/index_admin_corrigido.html
 otd/index_publico_corrigido.html
 otd/otd-index.html
+
+# Backups com chave antiga (v8) - nunca versionar
+custo-servir/_backup_v8/
+custo-servir/ctes_raw_local.json

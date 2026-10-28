@@ -1,6 +1,31 @@
 """
-TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v7
+TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v9.1
 ================================================
+v9.1 (28/out/2026): chave do CT-e lida de infCte/@Id (corrige complementares
+  tratados como duplicados) e suporte a chave nova sb_secret_ (header apikey).
+v9 (28/out/2026):
+  - SEGURANCA: chave do Supabase sai do codigo. Lida de variavel de ambiente
+    (SUPABASE_SERVICE_KEY ou SUPABASE_KEY) ou do arquivo .env (pasta do
+    script ou pasta-mae). Nunca mais versionar chave no Git.
+  - ANOS_FILTRO passa a incluir 2024 (rode REPROCESSAR_TUDO.bat uma vez
+    para carregar o historico de 2024, se os XMLs existirem no Y:)
+  - CNPJ da Inovalab corrigido (60.698.771/0001-26; o antigo e mantido)
+  - Novos campos por CT-e: tp_cte (0 normal, 1 complementar, 2 anulacao,
+    3 substituto), tomador (REM/EXP/RECEB/DEST/OUTROS), tomador_cnpj e
+    tomador_gi (1 = Genomma/Inovalab paga o frete)
+  - COMPLEMENTAR passa a ser identificado tambem pelo tpCTe = 1
+  - Peso por transportadora agora sai por ano e por mes (antes so total)
+  - ctes_raw.json ganha: tpc, tom, tgi, mz (matriz), ab (abrev), rg (regiao)
+  - Conferencia de carga: processados / aceitos / rejeitados (por motivo e
+    ano) / duplicados / cancelados -> cte_conferencia.json e log
+  - --sem-publicar: roda tudo sem enviar ao Supabase (para testes)
+v8 (11/set/2026):
+  - Nova coluna "Veiculo" extraida do xObs completo (carreta, truck, toco,
+    3/4, vuc, van, fiorino, bitrem, rodotrem...)
+  - Nova coluna "Restricao Veiculo" para exigencias do cliente
+    (ex.: "VEICULO SOMENTE ACIMA DE 3/4") -- nao e o veiculo que rodou
+  - IMPORTANTE: rode uma vez com --tudo para preencher o historico 2025/2026
+    (o estado antigo guarda o xObs cortado em 100 caracteres)
 v7 (26/mai/2026):
   - Pools de custo (rk_frete / pc_frete) na aba Custo do dashboard
   - Identificacao da ATIVA e FL Brasil por CNPJ raiz (matriz + filiais)
@@ -29,7 +54,7 @@ USO:
   python processar_cte.py --pasta X      -> pasta alternativa
 """
 
-import os, sys, json, argparse, logging
+import os, sys, json, argparse, logging, re, unicodedata
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -40,18 +65,20 @@ import requests
 #  CONFIGURACAO -- edite apenas esta secao
 # ===============================================================
 PASTA_CTE      = r"Y:\ERP-12\TOTVSCOLAB20-PRD\RECEIVED"
-ANOS_FILTRO    = [2025, 2026]
+ANOS_FILTRO    = [2024, 2025, 2026]
 ESTADO_FILE    = "cte_estado.json"
 LOG_FILE       = "cte_processador.log"
 
 SUPABASE_URL   = "https://ennsbpibfnuwlvtodukg.supabase.co"
-SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NDgzNywiZXhwIjoyMDg5OTYwODM3fQ.gnCLe-XvoWJoiVEG4jRCPCdX8OsevXACk0TISgo9S04"   # <- chave Legacy service_role
+SUPABASE_KEY   = None  # v9: lida de .env / variavel de ambiente (ver _carregar_chave)
 BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 PATH_RAW       = "custo-servir/ctes_raw.json"
 
 CNPJ_GENOMMA   = "09080907000506"
-CNPJ_INOVALAB  = "05510999000167"
+CNPJ_INOVALAB  = "60698771000126"           # v9: CNPJ real visto nos CT-es
+CNPJS_INOVALAB = {"60698771000126", "05510999000167"}  # atual + antigo do script v8
+CNPJS_EMPRESA  = {CNPJ_GENOMMA, "09080907000182"} | CNPJS_INOVALAB
 
 PREFIXO_CTE          = "214"
 PREFIXO_CANCELAMENTO = "383"
@@ -114,6 +141,34 @@ CNPJS_TRANSP_EXCLUIR = {
     "10730615000127",  # FAMILY FIGUEIREDO E CUNHA LTDA
 }
 
+def _carregar_chave():
+    """Le a chave do Supabase SEM deixa-la no codigo.
+    Ordem: variavel SUPABASE_SERVICE_KEY, variavel SUPABASE_KEY,
+    arquivo .env na pasta do script e depois na pasta-mae."""
+    for var in ("SUPABASE_SERVICE_KEY", "SUPABASE_KEY"):
+        v = (os.environ.get(var) or "").strip().strip('"').strip("'")
+        if v:
+            return v
+    base = os.path.dirname(os.path.abspath(__file__))
+    for pasta in (base, os.path.dirname(base)):
+        fp = os.path.join(pasta, ".env")
+        if not os.path.exists(fp):
+            continue
+        try:
+            for linha in open(fp, encoding="utf-8-sig"):
+                linha = linha.strip()
+                if not linha or linha.startswith("#") or "=" not in linha:
+                    continue
+                k, v = linha.split("=", 1)
+                if k.strip() in ("SUPABASE_SERVICE_KEY", "SUPABASE_KEY"):
+                    v = v.strip().strip('"').strip("'")
+                    if v:
+                        return v
+        except OSError:
+            pass
+    return None
+
+
 def transp_excluida(transp_cnpj):
     """True se a transportadora deve ser excluida do relatorio."""
     tc = (transp_cnpj or "").strip().replace(".", "").replace("/", "").replace("-", "")
@@ -172,7 +227,7 @@ def classificar_op(rem_cnpj, rem_nome, dest_cnpj, dest_nome):
         return None
 
     # Regra 3: Genomma/Inovalab como remetente -> OUTBOUND
-    if rc in {CNPJ_GENOMMA, CNPJ_INOVALAB} or "GENOMMA" in ru or "INOVALAB" in ru:
+    if rc in CNPJS_EMPRESA or "GENOMMA" in ru or "INOVALAB" in ru:
         return "OUTBOUND"
 
     # Regra 4: CNPJ do remetente na lista INBOUND -> INBOUND
@@ -185,11 +240,116 @@ def classificar_op(rem_cnpj, rem_nome, dest_cnpj, dest_nome):
             return "INBOUND"
 
     # Regra 5: Genomma/Inovalab como destinatario -> REVERSA
-    if dc in {CNPJ_GENOMMA, CNPJ_INOVALAB} or "GENOMMA" in du or "INOVALAB" in du:
+    if dc in CNPJS_EMPRESA or "GENOMMA" in du or "INOVALAB" in du:
         return "REVERSA"
 
     # Regra 6: default
     return "OUTBOUND"
+
+
+# ───────────────────────────────────────────────────────────────
+#  VEICULO A PARTIR DO xObs
+# ───────────────────────────────────────────────────────────────
+# Le o xObs COMPLETO (antes do truncamento) e devolve:
+#   veiculo     -> tipo canonico do veiculo que rodou ("CARRETA", "TRUCK", ...)
+#   restr_veic  -> exigencia de veiculo feita pelo CLIENTE (nao e o veiculo usado)
+#
+# Regra de ouro: trechos do tipo "VEICULO SOMENTE ACIMA DE 3/4" ou
+# "CLIENTE SO RECEBE C/ VEIC ..." sao RESTRICAO de recebimento e nunca
+# alimentam a coluna Veiculo.
+
+def _norm(s):
+    """Maiusculas, sem acento, espacos colapsados."""
+    if not s:
+        return ""
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", s.upper()).strip()
+
+# --- trechos que sao RESTRICAO do cliente (removidos antes de procurar veiculo)
+_RE_RESTRICAO = [
+    re.compile(r"VEICULO[S]?\s+SOMENTE(?:(?!\s[-/]\s)[^|;.]){0,70}"),
+    re.compile(r"SOMENTE\s+VEICULO[S]?(?:(?!\s[-/]\s)[^|;.]){0,70}"),
+    re.compile(r"(?:SO|SOMENTE|APENAS)\s+RECEBE(?:(?!\s[-/]\s)[^|;.]){0,70}"),
+    re.compile(r"RECEBE\s+(?:SOMENTE|APENAS|SO)\b(?:(?!\s[-/]\s)[^|;.]){0,70}"),
+    re.compile(r"NAO\s+(?:RECEBE|ACEITA|ENTRA|DESCARREGA)\b(?:(?!\s[-/]\s)[^|;.]){0,70}"),
+    re.compile(r"(?:PROIBIDO|VEDADO|NAO\s+PERMITIDO)\b(?:(?!\s[-/]\s)[^|;.]){0,70}"),
+    re.compile(r"(?:ACIMA|ABAIXO)\s+DE\s+(?:3\s*/\s*4|TOCO|TRUCK|CARRETA|VUC|VAN)(?:(?!\s[-/]\s)[^|;.]){0,40}"),
+]
+
+# --- vocabulario de veiculos: (regex, rotulo canonico) em ordem de prioridade
+_VEICULOS = [
+    (re.compile(r"\bRODOTREN?S?\b|\bRODOTREM\b"),                 "RODOTREM"),
+    (re.compile(r"\bBI\s*-?\s*TREM\b|\bBITREN\b"),                "BITREM"),
+    (re.compile(r"\bCARRETA\w*\b|\bCARRETAS\b|\bCAVALO\b|\bSEMI\s*-?\s*REBOQUE\b"), "CARRETA"),
+    (re.compile(r"\bTRUCK\w*\b|\bTRUCADO\b"),                     "TRUCK"),
+    (re.compile(r"\bTOCO\b|\bTOCCO\b"),                           "TOCO"),
+    (re.compile(r"(?<!\d)3\s*/\s*4(?!\d)|\bTRES\s+QUARTOS\b"),    "3/4"),
+    (re.compile(r"\bVUC\b"),                                      "VUC"),
+    (re.compile(r"\bSPRINTER\b|\bMASTER\b|\bDUCATO\b|\bJUMPER\b"),"VAN"),
+    (re.compile(r"\bVAN\b|\bVANS\b"),                             "VAN"),
+    (re.compile(r"\bFIORINO\b|\bDOBLO\b|\bKANGOO\b|\bPARTNER\b"), "FIORINO"),
+    (re.compile(r"\bKOMBI\b"),                                    "KOMBI"),
+    (re.compile(r"\bUTILITARIO\w*\b"),                            "UTILITARIO"),
+    (re.compile(r"\bMOTO\b|\bMOTOCICLETA\b|\bMOTOBOY\b"),         "MOTO"),
+    (re.compile(r"\bCARRO\b|\bPASSEIO\b"),                        "CARRO"),
+]
+
+# --- contextos que anunciam explicitamente o veiculo (tem prioridade)
+_RE_CONTEXTO = [
+    re.compile(r"TIPO\s+DE\s+VEICULO\s*[:\-]?\s*([A-Z0-9/ ]{2,25})"),
+    re.compile(r"VEICULO\s*[:\-]\s*([A-Z0-9/ ]{2,25})"),
+    re.compile(r"SERVICO\s+DE\s+([A-Z0-9/ ]{2,25})"),
+    re.compile(r"MODAL\s*[:\-]?\s*([A-Z0-9/ ]{2,25})"),
+]
+
+
+def _match_veiculo(texto):
+    """Devolve (rotulo, posicao) do primeiro veiculo encontrado, ou (None, -1)."""
+    achados = []
+    for rx, rotulo in _VEICULOS:
+        m = rx.search(texto)
+        if m:
+            achados.append((m.start(), rotulo))
+    if not achados:
+        return None, -1
+    achados.sort()                      # o que aparece primeiro no texto vence
+    return achados[0][1], achados[0][0]
+
+
+def extrair_veiculo(x_obs):
+    """(veiculo, restricao_veiculo) a partir do xObs completo."""
+    t = _norm(x_obs)
+    if not t:
+        return "", ""
+
+    # 1) isola e remove os trechos de restricao
+    restr = []
+    for rx in _RE_RESTRICAO:
+        for m in rx.finditer(t):
+            restr.append(m.group(0).strip())
+    limpo = t
+    for r in restr:
+        limpo = limpo.replace(r, " ")
+
+    # mantem na restricao so o que realmente fala de veiculo
+    restr_txt = ""
+    for r in restr:
+        if _match_veiculo(r)[0] or "VEICULO" in r or "VEIC" in r:
+            restr_txt = r[:80]
+            break
+
+    # 2) contexto explicito ("Tipo de Veiculo - Truck")
+    for rx in _RE_CONTEXTO:
+        m = rx.search(limpo)
+        if m:
+            v, _ = _match_veiculo(m.group(1))
+            if v:
+                return v, restr_txt
+
+    # 3) varredura livre no texto limpo
+    v, _ = _match_veiculo(limpo)
+    return (v or ""), restr_txt
 
 
 # ───────────────────────────────────────────────────────────────
@@ -224,28 +384,49 @@ def _txt(root, tag):
     el = root.find(".//" + tag, NS)
     return el.text.strip() if el is not None and el.text else None
 
+def _rej(motivo, ano=None):
+    """v9: rejeicao com motivo (alimenta a conferencia de carga)."""
+    return {"_rej": motivo, "ano": ano}
+
+
 def parse_cte(filepath: str):
     try:
         tree = ET.parse(filepath)
         root = tree.getroot()
     except (ET.ParseError, FileNotFoundError, OSError):
-        return None
+        return _rej("xml_invalido")
 
-    if _txt(root, "cte:cStat") != "100":
-        return None
-
-    chave = _txt(root, "cte:chCTe")
-    if not chave:
-        return None
-
+    _ano = None
     dhemi = _txt(root, "cte:dhEmi") or ""
     try:
         dt = datetime.fromisoformat(dhemi[:19])
+        _ano = dt.year
     except ValueError:
-        return None
+        dt = None
+
+    if _txt(root, "cte:cStat") != "100":
+        return _rej("nao_autorizado", _ano)
+
+    # v9.1: a chave do PROPRIO CT-e vem do atributo Id de infCte ("CTe"+44 digitos)
+    # ou do protocolo. Antes usava o primeiro chCTe do XML, que num CT-e
+    # complementar/substituto e a chave do CT-e ORIGINAL -> o complementar
+    # era descartado como "duplicado" (ou tomava o lugar do original).
+    chave = None
+    _inf = root.find(".//cte:infCte", NS)
+    if _inf is not None:
+        _id = (_inf.get("Id") or "").strip()
+        if _id.upper().startswith("CTE") and len(_id) == 47:
+            chave = _id[3:]
+    if not chave:
+        chave = _txt(root, "cte:infProt/cte:chCTe") or _txt(root, "cte:protCTe/cte:infProt/cte:chCTe")
+    if not chave:
+        return _rej("sem_chave", _ano)
+
+    if dt is None:
+        return _rej("data_invalida")
 
     if dt.year not in ANOS_FILTRO:
-        return None
+        return _rej("fora_do_periodo", _ano)
 
     v_frete = float(_txt(root, "cte:vTPrest") or 0)
     v_merc  = float(_txt(root, "cte:vCarga")  or 0)
@@ -260,7 +441,7 @@ def parse_cte(filepath: str):
 
     # Descarta CTes de transportadoras excluidas (Genomma como tomadora indevida)
     if transp_excluida(transp_cnpj):
-        return None
+        return _rej("transp_excluida", _ano)
 
     # Remetente (expedidor — quem manda a mercadoria)
     rem = root.find(".//cte:rem", NS)
@@ -279,18 +460,18 @@ def parse_cte(filepath: str):
     # Classifica operacao (None = descartar)
     operacao = classificar_op(rem_cnpj, rem_nome, cli_cnpj, cli_nome)
     if operacao is None:
-        return None  # remetente vazio -> descarta
+        return _rej("descartado_classificacao", _ano)  # rem vazio / lista de descarte
 
     # Empresa = quem eh Genomma/Inovalab no CTe
     ru = rem_nome.upper()
     du = cli_nome.upper()
-    if rem_cnpj == CNPJ_GENOMMA or "GENOMMA" in ru:
+    if rem_cnpj.startswith(CNPJ_GENOMMA[:8]) or "GENOMMA" in ru:
         empresa = "GENOMMA"
-    elif rem_cnpj == CNPJ_INOVALAB or "INOVALAB" in ru:
+    elif rem_cnpj in CNPJS_INOVALAB or "INOVALAB" in ru:
         empresa = "INOVALAB"
-    elif cli_cnpj == CNPJ_GENOMMA or "GENOMMA" in du:
+    elif cli_cnpj.startswith(CNPJ_GENOMMA[:8]) or "GENOMMA" in du:
         empresa = "GENOMMA"
-    elif cli_cnpj == CNPJ_INOVALAB or "INOVALAB" in du:
+    elif cli_cnpj in CNPJS_INOVALAB or "INOVALAB" in du:
         empresa = "INOVALAB"
     else:
         empresa = "OUTROS"
@@ -325,10 +506,39 @@ def parse_cte(filepath: str):
     x_carac_ser = _txt(root, "cte:xCaracSer") or ""
     x_obs       = _txt(root, "cte:xObs")      or ""
 
+    # Tipo de veiculo -- lido do xObs COMPLETO (antes de cortar em 100 chars)
+    veiculo, restr_veic = extrair_veiculo(x_obs)
+
+    # v9: tipo do CT-e (0 normal, 1 complementar, 2 anulacao, 3 substituto)
+    tp_cte = (ide.findtext("cte:tpCTe", namespaces=NS) or "").strip() if ide is not None else ""
+
+    # v9: tomador do servico (quem paga o frete)
+    #   toma3/toma: 0=remetente 1=expedidor 2=recebedor 3=destinatario
+    #   toma4: 4=outros (com CNPJ proprio)
+    _TOMA = {"0": "REM", "1": "EXP", "2": "RECEB", "3": "DEST", "4": "OUTROS"}
+    tomador = tomador_cnpj = ""
+    if ide is not None:
+        t3 = ide.find("cte:toma3", NS)
+        if t3 is None:
+            t3 = ide.find("cte:toma", NS)  # leiaute 4.00 (CT-e OS / simplificado)
+        t4 = ide.find("cte:toma4", NS)
+        if t4 is not None:
+            tomador = _TOMA.get((t4.findtext("cte:toma", namespaces=NS) or "4").strip(), "OUTROS")
+            tomador_cnpj = (t4.findtext("cte:CNPJ", namespaces=NS) or "").strip()
+        elif t3 is not None:
+            tomador = _TOMA.get((t3.findtext("cte:toma", namespaces=NS) or "").strip(), "")
+    if not tomador_cnpj:
+        _papel = {"REM": "cte:rem", "EXP": "cte:exped", "RECEB": "cte:receb", "DEST": "cte:dest"}.get(tomador)
+        if _papel:
+            _el = root.find(".//" + _papel, NS)
+            if _el is not None:
+                tomador_cnpj = (_el.findtext("cte:CNPJ", namespaces=NS) or "").strip()
+    tomador_gi = 1 if (tomador_cnpj.startswith(CNPJ_GENOMMA[:8]) or tomador_cnpj in CNPJS_INOVALAB) else (0 if tomador_cnpj else None)
+
     # Sub-operacao: detecta REENTREGA ou COMPLEMENTAR em xCaracAd ou xCaracSer
     _carac_all = (x_carac_ad + " " + x_carac_ser).upper()
     if "REENTREGA"    in _carac_all: sub_operacao = "REENTREGA"
-    elif "COMPLEMENTAR" in _carac_all: sub_operacao = "COMPLEMENTAR"
+    elif "COMPLEMENTAR" in _carac_all or tp_cte == "1": sub_operacao = "COMPLEMENTAR"
     else: sub_operacao = ""
 
     # Protocolo e status descritivo
@@ -359,9 +569,15 @@ def parse_cte(filepath: str):
         "n_prot":       n_prot,
         "status_desc":  status_desc[:60],
         "sub_op":       sub_operacao,
+        "tp_cte":       tp_cte,
+        "tomador":      tomador,
+        "tomador_cnpj": tomador_cnpj,
+        "tomador_gi":   tomador_gi,
         "x_carac_ad":   x_carac_ad[:40],
         "x_carac_ser":  x_carac_ser[:40],
         "x_obs":        x_obs[:100],
+        "veiculo":      veiculo,
+        "restr_veic":   restr_veic,
         "nfs":          nfs_str,
         "ano":          dt.year,
         "mes":          dt.month,
@@ -546,8 +762,8 @@ def _agg_op(ctes):
                              "ree_f":0,"ree_n":0,"com_f":0,"com_n":0,
                              "regs":{},"anos":{},"meses":{}}
         _inc(by_transp[tr], f, m, e)
-        _inc(_get_or_create(by_transp[tr]["anos"], ano_k, _GI), f, m, e)
-        _inc(_get_or_create(by_transp[tr]["meses"], mes_k, _GI), f, m, e)
+        _inc(_get_or_create(by_transp[tr]["anos"], ano_k, _GI_KG), f, m, e, kg)   # v9: com peso
+        _inc(_get_or_create(by_transp[tr]["meses"], mes_k, _GI_KG), f, m, e, kg)
         # sub-operacao reentrega/complementar
         sop = c.get("sub_op","")
         if sop == "REENTREGA":    by_transp[tr]["ree_f"]+=f; by_transp[tr]["ree_n"]+=1
@@ -665,8 +881,6 @@ def _agg_op(ctes):
                        "custo_kg":_r(d["f"]/d["kg"]) if d["kg"]>0 else None}
                    for rg,d in v["regs"].items()},
         "anos":_agg_anos(v.get("anos",{})),
-        "meses":_agg_anos(v.get("meses",{})),
-        "meses":_agg_anos(v.get("meses",{})),
         "meses":_agg_anos(v.get("meses",{})),
     } for v in by_transp.values()], key=lambda x:x["frete"], reverse=True)
 
@@ -792,17 +1006,40 @@ def agregar(ctes: list) -> dict:
 # ───────────────────────────────────────────────────────────────
 #  SUPABASE
 # ───────────────────────────────────────────────────────────────
+SEM_PUBLICAR = False  # v9: ligado por --sem-publicar
+
+
+def _hdrs():
+    chave = _carregar_chave()
+    if not chave:
+        log.error("  ERRO: chave do Supabase nao encontrada. Coloque SUPABASE_SERVICE_KEY=... "
+                  "no arquivo .env (pasta torre-controle-logistica) ou defina a variavel de ambiente.")
+        return None
+    # Chave nova (sb_secret_...) vai SO no header apikey; chave legada (JWT eyJ...) vai nos dois.
+    h = {"apikey": chave, "Content-Type": "application/json",
+         "x-upsert": "true", "cache-control": "no-cache"}
+    if chave.startswith("eyJ"):
+        h["Authorization"] = f"Bearer {chave}"
+    return h
+
+
 def publicar(payload: dict) -> bool:
+    if SEM_PUBLICAR:
+        log.info("  (--sem-publicar) dados.json NAO enviado"); return True
+    hdrs = _hdrs()
+    if hdrs is None:
+        return False
     data = json.dumps(payload, ensure_ascii=False, separators=(",",":")).encode("utf-8")
     url  = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_JSON}"
-    hdrs = {"Authorization": f"Bearer {SUPABASE_KEY}",
-            "Content-Type": "application/json",
-            "x-upsert": "true", "cache-control": "no-cache"}
     try:
         r = requests.post(url, data=data, headers=hdrs, timeout=60)
         if r.status_code in (200,201,204):
             log.info("  OK Publicado no Supabase"); return True
-        log.error(f"  ERRO Supabase {r.status_code}: {r.text[:300]}"); return False
+        log.error(f"  ERRO Supabase {r.status_code}: {r.text[:300]}")
+        if "JWS" in r.text or "JWT" in r.text or "nauthorized" in r.text:
+            log.error("  -> A chave do Supabase foi recusada. Cole a chave secreta NOVA (sb_secret_...) "
+                      "em SUPABASE_SERVICE_KEY no arquivo .env e rode REPUBLICAR.bat.")
+        return False
     except Exception as e:
         log.error(f"  ERRO conexao: {e}"); return False
 
@@ -810,6 +1047,23 @@ def publicar(payload: dict) -> bool:
 # ───────────────────────────────────────────────────────────────
 #  BUSCA DE ARQUIVOS (rapida via scandir)
 # ───────────────────────────────────────────────────────────────
+def _mz_raw(c):
+    """v9: matriz/abreviacao do cliente no registro bruto (so quando ha de-para)."""
+    grp, mz, ab, _ = _grupo_cliente(c.get("cli_cnpj"), c.get("cliente"))
+    out = {}
+    if mz: out["mz"] = mz[:50]
+    if ab: out["ab"] = ab[:30]
+    # v9.1: matriz do CLIENTE da operacao. Na Reversa o cliente e o REMETENTE
+    # (quem devolve); no Outbound/Inbound e o destinatario.
+    if c.get("operacao") == "REVERSA":
+        _, mzc, abc, _ = _grupo_cliente(c.get("rem_cnpj"), c.get("rem_nome"))
+    else:
+        mzc, abc = mz, ab
+    if mzc: out["mzc"] = mzc[:50]
+    if abc: out["abc"] = abc[:30]
+    return out
+
+
 def publicar_raw(ctes: list) -> bool:
     """Publica dados brutos para exportacao Excel no dashboard."""
     EMP = {"GENOMMA":"G","INOVALAB":"I","OUTROS":"O"}
@@ -821,6 +1075,7 @@ def publicar_raw(ctes: list) -> bool:
              "sop":c.get("sub_op",""),
              "xca":c.get("x_carac_ad",""),"xcs":c.get("x_carac_ser",""),
              "xob":c.get("x_obs",""),
+             "vei":c.get("veiculo",""),"rve":c.get("restr_veic",""),
              "nfs":c.get("nfs",""),
              "d":c["dt_emissao"],
              "e":EMP.get(c["empresa"],"O"),"o":OP.get(c.get("operacao","OUTBOUND"),"OUT"),
@@ -832,11 +1087,21 @@ def publicar_raw(ctes: list) -> bool:
              "vf":round(c.get("v_frete",0),2),
              "vm":round(c.get("v_merc",0),2),
              "kg":round(c.get("peso",0),3),
-             "ano":c.get("ano",0),"mes":c.get("mes",0)} for c in ctes]
+             "ano":c.get("ano",0),"mes":c.get("mes",0),
+             # v9
+             "rg":c.get("regiao",""),
+             "tpc":c.get("tp_cte",""),"tom":c.get("tomador",""),"tgi":c.get("tomador_gi"),
+             **_mz_raw(c)} for c in ctes]
     data = json.dumps(raw, ensure_ascii=False, separators=(",",":")).encode("utf-8")
+    if SEM_PUBLICAR:
+        with open("ctes_raw_local.json", "wb") as _f:
+            _f.write(data)
+        log.info(f"  (--sem-publicar) ctes_raw.json NAO enviado; copia em ctes_raw_local.json ({len(data)//1024}KB)")
+        return True
+    hdrs = _hdrs()
+    if hdrs is None:
+        return False
     url  = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_RAW}"
-    hdrs = {"Authorization":f"Bearer {SUPABASE_KEY}","Content-Type":"application/json",
-            "x-upsert":"true","cache-control":"no-cache"}
     try:
         r = requests.post(url, data=data, headers=hdrs, timeout=90)
         if r.status_code in (200,201,204):
@@ -884,6 +1149,13 @@ def scan_xmls(pasta_raiz, ultima_ts=None):
 # ───────────────────────────────────────────────────────────────
 #  MAIN
 # ───────────────────────────────────────────────────────────────
+def _pausa():
+    try:
+        input("  Pressione Enter...")
+    except EOFError:
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tudo",          action="store_true",
@@ -891,21 +1163,25 @@ def main():
     parser.add_argument("--reclassificar", action="store_true",
                         help="Reclassifica historico sem reler XMLs (<1 min)")
     parser.add_argument("--pasta",         default=PASTA_CTE)
+    parser.add_argument("--sem-publicar",  action="store_true",
+                        help="v9: processa e grava local, sem enviar ao Supabase")
     args = parser.parse_args()
+    global SEM_PUBLICAR
+    SEM_PUBLICAR = args.sem_publicar
     pasta = args.pasta
     ts_inicio = datetime.now()
 
     # ── MODO RECLASSIFICAR (rapido) ─────────────────────────────
     if args.reclassificar:
         print("\n" + "="*58)
-        print("  TORRE DE CONTROLE -- RECLASSIFICACAO RAPIDA  v6")
+        print("  TORRE DE CONTROLE -- RECLASSIFICACAO RAPIDA  v9")
         print("  Reclassifica historico sem reler XMLs")
         print("="*58)
         estado = load_estado()
         ctes = estado.get("ctes", [])
         if not ctes:
             print("\n  Historico vazio. Rode REPROCESSAR_TUDO primeiro.")
-            input("  Pressione Enter..."); sys.exit(0)
+            _pausa(); sys.exit(0)
 
         log.info(f"Reclassificando {len(ctes):,} CTes...")
         alterados = descartados = excluidos_transp = 0
@@ -922,6 +1198,8 @@ def main():
             if op_nova is None:
                 descartados += 1
                 continue
+            if not c.get("veiculo"):
+                c["veiculo"], c["restr_veic"] = extrair_veiculo(c.get("x_obs",""))
             if c.get("operacao") != op_nova:
                 c["operacao"] = op_nova
                 alterados += 1
@@ -936,6 +1214,7 @@ def main():
         dados["anos_filtro"]          = ANOS_FILTRO
         dados["novos_nesta_execucao"] = 0
         dados["cancelamentos"]        = 0
+        dados["versao_pipeline"]      = "v9"
 
         with open("cte_dados.json","w",encoding="utf-8") as f:
             json.dump(dados,f,ensure_ascii=False,indent=2)
@@ -957,12 +1236,12 @@ def main():
         print(f"  Inbound  : {r['inbound_ctes']:,} CTes | R$ {r['inbound_frete']:,.2f}")
         print(f"  Reversa  : {r['reversa_ctes']:,} CTes | R$ {r['reversa_frete']:,.2f}")
         print("="*58)
-        print(f"  {'OK Dashboard atualizado!' if ok else 'ERRO Publicacao falhou'}")
-        input("  Pressione Enter..."); sys.exit(0)
+        print(f"  {'(teste --sem-publicar: nada foi enviado)' if SEM_PUBLICAR else ('OK Dashboard atualizado!' if ok else 'ERRO Publicacao falhou')}")
+        _pausa(); sys.exit(0)
     # ────────────────────────────────────────────────────────────
 
     print("\n" + "="*58)
-    print("  TORRE DE CONTROLE -- PROCESSADOR DE CTe  v6")
+    print("  TORRE DE CONTROLE -- PROCESSADOR DE CTe  v9")
     print(f"  Pasta  : {pasta}")
     print(f"  Filtro : {PREFIXO_CTE}* (CTe) e {PREFIXO_CANCELAMENTO}* (Cancelamento)")
     print(f"  Modo   : {'COMPLETO (--tudo)' if args.tudo else 'INCREMENTAL (so novos)'}")
@@ -970,7 +1249,7 @@ def main():
 
     if not os.path.exists(pasta):
         log.error(f"Pasta nao encontrada: {pasta}")
-        input("\n  Pressione Enter..."); sys.exit(1)
+        _pausa(); sys.exit(1)
 
     if args.tudo:
         estado = {"chaves":[],"cancelados":[],"ctes":[],"ultima_execucao":None}
@@ -1010,6 +1289,11 @@ def main():
 
     # CTes novos — paralelo
     novos_ctes = []
+    # v9: conferencia de carga
+    conf = {"execucao": ts_inicio.isoformat(), "modo": "tudo" if args.tudo else "incremental",
+            "xml_cte_encontrados": len(xmls_214), "xml_cte_lidos": len(cands_214),
+            "aceitos": 0, "duplicados": 0, "cancelados_ignorados": 0,
+            "rejeitados": {}, "rejeitados_por_ano": {}, "aceitos_por_ano": {}}
     n_workers = max(1, min(multiprocessing.cpu_count()-1, 8))
     log.info(f"  Processando com {n_workers} workers...")
     BATCH = 5000
@@ -1028,13 +1312,38 @@ def main():
                 except Exception:
                     continue
                 if res is None:
+                    conf["rejeitados"]["sem_retorno"] = conf["rejeitados"].get("sem_retorno", 0) + 1
                     continue
-                if res["chave"] in chaves_ok or res["chave"] in chaves_cancel:
+                if "_rej" in res:
+                    mot = res["_rej"]; a = str(res.get("ano") or "?")
+                    conf["rejeitados"][mot] = conf["rejeitados"].get(mot, 0) + 1
+                    rpa = conf["rejeitados_por_ano"].setdefault(a, {})
+                    rpa[mot] = rpa.get(mot, 0) + 1
+                    continue
+                if res["chave"] in chaves_cancel:
+                    conf["cancelados_ignorados"] += 1
+                    continue
+                if res["chave"] in chaves_ok:
+                    conf["duplicados"] += 1
                     continue
                 novos_ctes.append(res)
                 chaves_ok.add(res["chave"])
+                conf["aceitos"] += 1
+                a = str(res["ano"]); conf["aceitos_por_ano"][a] = conf["aceitos_por_ano"].get(a, 0) + 1
 
     log.info(f"  {len(novos_ctes):,} CTes novos em {(datetime.now()-ts_p).seconds}s")
+    _rej_tot = sum(conf["rejeitados"].values())
+    log.info(f"  CONFERENCIA: lidos {len(cands_214):,} = aceitos {conf['aceitos']:,} + duplicados "
+             f"{conf['duplicados']:,} + cancelados {conf['cancelados_ignorados']:,} + rejeitados {_rej_tot:,}")
+    for mot, q in sorted(conf["rejeitados"].items(), key=lambda x: -x[1]):
+        log.info(f"    rejeitado {mot:<26}: {q:,}")
+    if conf["rejeitados_por_ano"].get("2024") or conf["aceitos_por_ano"].get("2024"):
+        log.info(f"    2024 -> aceitos {conf['aceitos_por_ano'].get('2024',0):,} | rejeitados {conf['rejeitados_por_ano'].get('2024',{})}")
+    try:
+        with open("cte_conferencia.json", "w", encoding="utf-8") as _f:
+            json.dump(conf, _f, ensure_ascii=False, indent=2)
+    except OSError:
+        pass
 
     # aplica cancelamentos ao historico
     hist = estado.get("ctes", [])
@@ -1047,6 +1356,8 @@ def main():
 
     # migra CTes antigos sem campo operacao / reclassifica com nova logica
     for c in hist:
+        if not c.get("veiculo"):
+            c["veiculo"], c["restr_veic"] = extrair_veiculo(c.get("x_obs",""))
         op = classificar_op(c.get("rem_cnpj",""), c.get("rem_nome",""),
                             c.get("cli_cnpj",""), c.get("cliente",""))
         c["operacao"] = op or "OUTBOUND"
@@ -1062,7 +1373,7 @@ def main():
         estado["ultima_execucao"] = ts_inicio.isoformat()
         save_estado(estado)
         print("\n  Nenhum CTe novo. Dashboard ja atualizado!")
-        input("\n  Pressione Enter..."); sys.exit(0)
+        _pausa(); sys.exit(0)
 
     todos = hist_valido + novos_ctes
     log.info(f"Agregando {len(todos):,} CTes...")
@@ -1072,6 +1383,10 @@ def main():
     dados["anos_filtro"]          = ANOS_FILTRO
     dados["novos_nesta_execucao"] = len(novos_ctes)
     dados["cancelamentos"]        = novos_cancel
+    dados["conferencia"]          = {k: conf[k] for k in ("execucao","modo","xml_cte_lidos","aceitos",
+                                     "duplicados","cancelados_ignorados","rejeitados")}
+    dados["removidos_por_cancelamento"] = rem_hist
+    dados["versao_pipeline"]      = "v9"
 
     with open("cte_dados.json","w",encoding="utf-8") as f:
         json.dump(dados,f,ensure_ascii=False,indent=2)
@@ -1103,9 +1418,9 @@ def main():
     print(f"  Transportadoras : {len(dados['outbound']['transportadoras']):,}")
     print(f"  Clientes        : {len(dados['outbound']['clientes']):,}")
     print("="*58)
-    print(f"\n  {'OK Dashboard atualizado!' if ok else 'ERRO Publicacao falhou -- rode REPUBLICAR.bat'}")
+    print(f"\n  {'(teste --sem-publicar: nada foi enviado)' if SEM_PUBLICAR else ('OK Dashboard atualizado!' if ok else 'ERRO Publicacao falhou -- rode REPUBLICAR.bat')}")
     print("  https://tpinheiro1986.github.io/torre-controle-logistica/custo-servir/\n")
-    input("  Pressione Enter para fechar...")
+    _pausa()
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()

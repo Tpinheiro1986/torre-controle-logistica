@@ -1,20 +1,22 @@
+"""Republica cte_dados.json no Supabase (sem reprocessar).
+v9: a chave NAO fica mais neste arquivo. Ela e lida de SUPABASE_SERVICE_KEY /
+SUPABASE_KEY (variavel de ambiente) ou do .env da pasta torre-controle-logistica."""
 import json, requests
+from processar_cte import _carregar_chave, SUPABASE_URL, BUCKET, PATH_JSON
 
-# Cole a chave Legacy service_role aqui (começa com eyJ...)
-CHAVE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVubnNicGliZm51d2x2dG9kdWtnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NDgzNywiZXhwIjoyMDg5OTYwODM3fQ.gnCLe-XvoWJoiVEG4jRCPCdX8OsevXACk0TISgo9S04python publicar.py"
+CHAVE = _carregar_chave()
+if not CHAVE:
+    raise SystemExit("Chave nao encontrada: coloque SUPABASE_SERVICE_KEY=... no arquivo .env")
 
 dados = json.load(open('cte_dados.json', encoding='utf-8'))
 data  = json.dumps(dados, ensure_ascii=False, separators=(',',':')).encode('utf-8')
 
 print(f"Publicando {len(data)/1024:.0f} KB...")
 r = requests.post(
-    'https://ennsbpibfnuwlvtodukg.supabase.co/storage/v1/object/dashboards/custo-servir/dados.json',
+    f'{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_JSON}',
     data=data,
-    headers={
-        'Authorization': f'Bearer {CHAVE}',
-        'Content-Type': 'application/json',
-        'x-upsert': 'true'
-    },
+    headers=({'apikey': CHAVE, 'Content-Type': 'application/json', 'x-upsert': 'true'}
+             | ({'Authorization': f'Bearer {CHAVE}'} if CHAVE.startswith('eyJ') else {})),
     timeout=60
 )
 if r.status_code in (200, 201, 204):
