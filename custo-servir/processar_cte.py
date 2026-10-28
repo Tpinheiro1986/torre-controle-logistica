@@ -145,10 +145,17 @@ def _carregar_chave(com_origem=False):
     """Le a chave do Supabase SEM deixa-la no codigo.
     Ordem: variavel SUPABASE_SERVICE_KEY, variavel SUPABASE_KEY,
     arquivo .env na pasta do script e depois na pasta-mae."""
+    valida = lambda v: v.startswith(("sb_secret_", "eyJ"))   # ignora textos de exemplo ("sua_chave_aqui")
     for var in ("SUPABASE_SERVICE_KEY", "SUPABASE_KEY"):
         v = (os.environ.get(var) or "").strip().strip('"').strip("'")
-        if v:
+        if v and valida(v):
             return (v, "variavel de ambiente " + var) if com_origem else v
+        if v:
+            try:
+                log.warning(f"  Variavel de ambiente {var} ignorada: nao parece chave do Supabase "
+                            f"(comeca com '{v[:4]}'). Remova-a do Windows para evitar confusao.")
+            except Exception:
+                pass
     base = os.path.dirname(os.path.abspath(__file__))
     for pasta in (base, os.path.dirname(base)):
         fp = os.path.join(pasta, ".env")
@@ -162,7 +169,7 @@ def _carregar_chave(com_origem=False):
                 k, v = linha.split("=", 1)
                 if k.strip() in ("SUPABASE_SERVICE_KEY", "SUPABASE_KEY"):
                     v = v.strip().strip('"').strip("'")
-                    if v:
+                    if v and valida(v):
                         return (v, "arquivo " + fp) if com_origem else v
         except OSError:
             pass
