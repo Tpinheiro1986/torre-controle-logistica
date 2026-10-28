@@ -1015,12 +1015,11 @@ def _hdrs():
         log.error("  ERRO: chave do Supabase nao encontrada. Coloque SUPABASE_SERVICE_KEY=... "
                   "no arquivo .env (pasta torre-controle-logistica) ou defina a variavel de ambiente.")
         return None
-    # Chave nova (sb_secret_...) vai SO no header apikey; chave legada (JWT eyJ...) vai nos dois.
-    h = {"apikey": chave, "Content-Type": "application/json",
-         "x-upsert": "true", "cache-control": "no-cache"}
-    if chave.startswith("eyJ"):
-        h["Authorization"] = f"Bearer {chave}"
-    return h
+    # Storage exige o header Authorization. Mandamos a chave nos dois headers,
+    # igual a biblioteca oficial supabase-js faz (vale para sb_secret_ e para a legada eyJ...).
+    return {"apikey": chave, "Authorization": f"Bearer {chave}",
+            "Content-Type": "application/json",
+            "x-upsert": "true", "cache-control": "no-cache"}
 
 
 def publicar(payload: dict) -> bool:

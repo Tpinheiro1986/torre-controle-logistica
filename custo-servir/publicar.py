@@ -15,8 +15,8 @@ print(f"Publicando {len(data)/1024:.0f} KB...")
 r = requests.post(
     f'{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_JSON}',
     data=data,
-    headers=({'apikey': CHAVE, 'Content-Type': 'application/json', 'x-upsert': 'true'}
-             | ({'Authorization': f'Bearer {CHAVE}'} if CHAVE.startswith('eyJ') else {})),
+    headers={'apikey': CHAVE, 'Authorization': f'Bearer {CHAVE}',
+             'Content-Type': 'application/json', 'x-upsert': 'true'},
     timeout=60
 )
 if r.status_code in (200, 201, 204):
