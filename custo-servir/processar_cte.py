@@ -141,14 +141,14 @@ CNPJS_TRANSP_EXCLUIR = {
     "10730615000127",  # FAMILY FIGUEIREDO E CUNHA LTDA
 }
 
-def _carregar_chave():
+def _carregar_chave(com_origem=False):
     """Le a chave do Supabase SEM deixa-la no codigo.
     Ordem: variavel SUPABASE_SERVICE_KEY, variavel SUPABASE_KEY,
     arquivo .env na pasta do script e depois na pasta-mae."""
     for var in ("SUPABASE_SERVICE_KEY", "SUPABASE_KEY"):
         v = (os.environ.get(var) or "").strip().strip('"').strip("'")
         if v:
-            return v
+            return (v, "variavel de ambiente " + var) if com_origem else v
     base = os.path.dirname(os.path.abspath(__file__))
     for pasta in (base, os.path.dirname(base)):
         fp = os.path.join(pasta, ".env")
@@ -163,10 +163,28 @@ def _carregar_chave():
                 if k.strip() in ("SUPABASE_SERVICE_KEY", "SUPABASE_KEY"):
                     v = v.strip().strip('"').strip("'")
                     if v:
-                        return v
+                        return (v, "arquivo " + fp) if com_origem else v
         except OSError:
             pass
-    return None
+    return (None, "nenhuma") if com_origem else None
+
+
+def _descrever_chave(k):
+    """Descreve a chave sem revela-la (tipo, papel, tamanho)."""
+    if not k:
+        return "nenhuma chave"
+    if k.startswith("sb_secret_"):
+        return f"secret nova (sb_secret_..., {len(k)} caracteres)"
+    if k.startswith("sb_publishable_"):
+        return "PUBLISHABLE (sb_publishable_...) -> errada: nao grava no Storage"
+    if k.startswith("eyJ"):
+        try:
+            import base64
+            pl = json.loads(base64.urlsafe_b64decode(k.split(".")[1] + "=="))
+            return f"legada JWT role={pl.get('role')} emitida={pl.get('iat')} ({len(k)} caracteres)"
+        except Exception:
+            return f"JWT ilegivel ({len(k)} caracteres)"
+    return f"formato desconhecido (comeca com '{k[:4]}', {len(k)} caracteres)"
 
 
 def transp_excluida(transp_cnpj):
@@ -1010,7 +1028,8 @@ SEM_PUBLICAR = False  # v9: ligado por --sem-publicar
 
 
 def _hdrs():
-    chave = _carregar_chave()
+    chave, origem = _carregar_chave(com_origem=True)
+    log.info(f"  Chave Supabase: {_descrever_chave(chave)} | origem: {origem}")
     if not chave:
         log.error("  ERRO: chave do Supabase nao encontrada. Coloque SUPABASE_SERVICE_KEY=... "
                   "no arquivo .env (pasta torre-controle-logistica) ou defina a variavel de ambiente.")
