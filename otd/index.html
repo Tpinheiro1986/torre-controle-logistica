@@ -8154,4 +8154,115 @@ async function pintarLinhaDoTempo(box){
       if(est.mx && avisoVenc!==chv) cur.notas.push('<span style="color:#A32D2D">Previsão de entrega <b>'+esc(ddmm(est.mx))+'</b> vencida — atraso começa aqui</span>');
       avisoVenc = chv;
     }
-    cur.est=Object.ass
+    cur.est=Object.assign({},est);
+  });
+  // dias em cada etapa (até a próxima; a última aberta conta até hoje)
+  const tsHoje = ultimaFoto.getTime();
+  etapas.forEach((e,i)=>{
+    const prox = i<etapas.length-1 ? etapas[i+1].ts : (e.fim ? null : tsHoje);
+    e.dias = (e.ts!=null && prox!=null) ? Math.max(0, Math.floor((new Date(prox).setHours(0,0,0,0) - new Date(e.ts).setHours(0,0,0,0))/86400000)) : null;
+  });
+  const atual = etapas[etapas.length-1];
+  const encerrada = !!atual.fim;
+
+  // 2) nós
+  const no = (cor, icone, badge, lbl, sub, extra, opts) => {
+    opts = opts || {};
+    return '<div class="hnf-no'+(opts.atual?' hnf-atual':'')+(opts.fantasma?' hnf-fant':'')+'" style="--c:'+cor+'">'
+      +'<div class="hnf-ic">'+svgI(icone)+(badge?'<span class="hnf-bd">'+svgI(badge,11)+'</span>':'')+'</div>'
+      +'<div class="hnf-lb">'+lbl+'</div>'
+      +(opts.ocor?'<div class="hnf-oc">'+opts.ocor+'</div>':'')
+      +(opts.atraso?'<div class="hnf-tag">em atraso</div>':'')
+      +'<div class="hnf-sb">'+sub+'</div>'
+      +(extra?'<div class="hnf-nt">'+extra+'</div>':'')+'</div>';
+  };
+  let html='<div class="hnf-trilho">';
+  etapas.forEach((e,i)=>{
+    const ult = i===etapas.length-1;
+    const icone = (e.k==='emit' && ult && !encerrada) ? 'cd' : e.i;           // ainda no CD
+    const lbl = (e.k==='emit' && ult && !encerrada && !e.atraso) ? 'NF emitida · no CD' : e.l;
+    html += no(HNF_COR[e.t], icone, e.b, esc(lbl),
+      esc(e.dt||'—')+(e.dias!=null && !e.fim ? ' · <b>'+e.dias+(ult?'+':'')+' d</b>' : ''),
+      e.notas.slice(0,6).map(x=>'<div>'+x+'</div>').join('') + (e.notas.length>6?'<div style="color:var(--text3)">+'+(e.notas.length-6)+' mudança(s)</div>':''),
+      {atual:ult, atraso:e.atraso, ocor:e.ocx||''});
+  });
+  if(!encerrada){
+    const mx = atual.est && atual.est.mx;
+    const dmx = mx && dBR(mx);
+    const vencida = dmx && dmx < ultimaFoto;
+    const dv = vencida ? Math.round((ultimaFoto - dmx)/86400000) : null;
+    html += no(vencida?HNF_COR.err:HNF_COR.cin, 'flag', null, 'Previsão de entrega',
+      mx ? esc(mx.slice(0,10)) : 'sem previsão', vencida ? 'vencida há '+dv+' d' : (mx?'aguardando entrega':''), {fantasma:1});
+  }
+  html += '</div>';
+
+  // 3) resumo + legenda + detalhe dia a dia (tabela anterior, recolhida)
+  const d0 = dBR(emi);
+  const totDias = d0 ? Math.round(((encerrada && atual.ts ? new Date(new Date(atual.ts).setHours(0,0,0,0)) : ultimaFoto) - d0)/86400000) : null;
+  const resumo = '<div style="font-size:11.5px;margin:2px 0 10px">'
+    + '<b>'+etapas.length+'</b> etapa(s)'+(atual.est && atual.est.do ? ' · última ocorrência <b>'+esc(atual.est.do.slice(0,16))+'</b>' : '')
+    + (totDias!=null ? ' · <b>'+totDias+' dias</b> da emissão '+(encerrada?'até '+esc(atual.l.toLowerCase()):'até hoje (em aberto)') : '')
+    + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l+(atual.atraso?' · em atraso':''))+'</b></div>';
+  const LEG=[['nf','NF emitida','cin'],['cd','Ainda no CD','blu'],['exp','Expedição','blu'],['agwait','Ag. agendamento','blu'],['agok','Trânsito agenda','blu'],['truck','Em trânsito','blu'],
+    ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso (marca vermelha sobre a etapa)','err'],['box','Entregue','ok'],
+    ['dev','Devolvida','amb'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
+  const legenda = '<div class="hnf-leg">'+LEG.map(([i,l,t])=>'<span style="color:'+HNF_COR[t]+'">'+svgI(i,13)+'<span>'+l+'</span></span>').join('')+'</div>';
+
+  let linhas='';
+  const est2={};
+  evs.forEach((ev,i)=>{
+    const [data, cod, delta] = ev; const antes=Object.assign({},est2); Object.assign(est2,delta);
+    const mud = HNF_CAMPOS.filter(([c]) => c in delta).map(([c,lbl]) =>
+      '<div><span style="color:var(--text3)">'+lbl+':</span> '+(i>0&&antes[c]?'<s style="color:var(--text3)">'+esc(antes[c])+'</s> → ':'')
+      +(delta[c]?'<b>'+esc(delta[c])+'</b>':'<i style="color:var(--text3)">(apagado)</i>')+'</div>').join('')
+      || '<span style="color:var(--text3)">só a classificação mudou (ex.: o prazo venceu)</span>';
+    const e=etapaHNF(cod,est2);
+    linhas+='<tr><td style="white-space:nowrap;font-weight:600">'+isoBR(data)+'</td><td><span class="badge" style="background:'+HNF_COR[e.t]+'1F;color:'+HNF_COR[e.t]+'">'+esc(e.l+(e.atraso?' · em atraso':''))+'</span></td><td style="font-size:10.5px;line-height:1.5">'+mud+'</td></tr>';
+  });
+  box.innerHTML = tit + resumo + html + legenda
+    +'<details style="margin-top:8px;max-width:1100px"><summary style="cursor:pointer;font-size:11px;color:var(--text2)">Ver detalhe dia a dia ('+evs.length+' registro(s))</summary>'
+    +'<div class="tw" style="margin-top:6px"><table class="dt" style="font-size:11px;width:100%"><thead><tr><th style="width:90px">Dia</th><th style="width:230px">Situação no painel</th><th>O que mudou</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'
+    +'<div style="font-size:10px;color:var(--text3);margin-top:4px">Uma foto por atualização do painel (dias úteis), desde '+isoBR((h.datas||[])[0]||'')
+    +'. Só a última ocorrência de cada foto aparece. A situação de dias antigos é recalculada com as regras atuais.</div></details>';
+}
+
+/* ---------- export: todos os campos do mestre + diagnóstico ---------- */
+window.exportarConsultaExcel = function(ev){
+  if(ev) ev.stopPropagation();
+  const lista=st.resultado;
+  if(!lista.length) return;
+  const dados=lista.map(n=>{
+    const r=n.atual, o={};
+    st.head.forEach((h,ci)=>{ o[h]=String(r[ci]??'').trim(); });
+    const d=diagnosticar(r);
+    const c=cadNota(n);
+    o['[Matriz]']=c.mat;
+    o['[Cliente padrão]']=c.cli;
+    o['[Ocorrências na NF]']=n.rows.length;
+    o['[Situação no painel]']=d.sit;
+    o['[Aparece no painel]']=d.entra?'Sim':'Não';
+    o['[Onde aparece]']=d.onde;
+    o['[Regra]']=d.regra;
+    o['[Motivo]']=d.motivo;
+    return o;
+  });
+  const ws=XLSX.utils.json_to_sheet(dados);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Consulta NF');
+  XLSX.writeFile(wb, 'consulta-nf-'+stampHoje()+'.xlsx');
+};
+
+/* ---------- init ---------- */
+window.initConsulta = function(){
+  cliPintarAviso('consulta-cli-aviso');
+  if(st.carregado){ st.page=1; buscar(); }   // reaplica o filtro Matriz → Cliente
+  renderChips(); renderKpis(); renderTabela();
+  if(!st.carregado) carregar();
+  const inp=document.getElementById('consulta-input');
+  if(inp) setTimeout(()=>inp.focus(), 80);
+};
+
+})();
+</script>
+</body>
+</html>
