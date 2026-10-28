@@ -92,6 +92,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
   .g2,.g3,.g32{grid-template-columns:1fr!important}
   #cli-search{float:none!important;display:block;margin-top:8px;width:100%}
 }
+.g2>*,.g3>*,.g32>*{min-width:0}
 /* ── Comparativo anual ─────────────────────────────── */
 .yoy-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--text2)}
 .yoy-row label{display:flex;align-items:center;gap:6px}
@@ -268,7 +269,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div class="tw"><table class="dt"><thead><tr>
             <th>Transportadora</th><th class="r">CTes</th>
             <th class="r" style="color:var(--red)">Frete</th>
-            <th class="r">Frete/CT-e</th>
+            <th class="r">Frete/envio</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th>
             <th class="r">%CTS Genomma</th><th class="r">%CTS Inovalab</th>
@@ -289,7 +290,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div class="tw"><table class="dt"><thead><tr>
             <th>Região</th><th class="r">CTes</th>
             <th class="r" style="color:var(--red)">Frete</th>
-            <th class="r">Frete/CT-e</th>
+            <th class="r">Frete/envio</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th><th style="min-width:70px">Part.</th>
           </tr></thead><tbody id="tb-reg"></tbody></table></div></div>
@@ -307,7 +308,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div class="tw"><table class="dt"><thead><tr>
             <th>#</th><th>Cliente / Matriz</th><th>Região</th><th>UF</th><th>Cidade</th>
             <th class="r">CTes</th><th class="r" style="color:var(--red)">Frete</th>
-            <th class="r">Part. frete</th><th class="r">Frete/CT-e</th>
+            <th class="r">Part. frete</th><th class="r">Frete/envio</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th>
           </tr></thead><tbody id="tb-cli"></tbody></table></div>
@@ -321,7 +322,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div class="tw"><table class="dt"><thead><tr>
             <th>#</th><th>Remetente</th><th class="r">CTes</th>
             <th class="r" style="color:var(--red)">Frete</th>
-            <th class="r">Frete/CT-e</th>
+            <th class="r">Frete/envio</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th><th style="min-width:70px">Part.</th>
           </tr></thead><tbody id="tb-rem"></tbody></table></div></div>
@@ -337,7 +338,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div class="tw"><table class="dt"><thead><tr>
             <th>Quarter</th><th class="r">CTes</th>
             <th class="r" style="color:var(--red)">Frete</th>
-            <th class="r">Frete/CT-e</th>
+            <th class="r">Frete/envio</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th>
             <th class="r">Genomma</th><th class="r">Inovalab</th>
@@ -359,6 +360,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
               <th class="r" style="color:#185FA5">Outbound</th>
               <th class="r" style="color:#1D9E75">Inbound</th>
               <th class="r" style="color:#D85A30">Devolução</th>
+              <th class="r" style="color:#888780" title="Envios entre unidades Genomma/Inovalab">Transferência</th>
               <th class="r" style="color:#7F77DD" title="Já incluída na coluna Outbound">Reentrega<div class="sub">dentro do Outbound</div></th>
               <th class="r" style="color:#854F0B" title="Já incluído no Total">Complementar<div class="sub">dentro do total</div></th>
               <th class="r">Mercadoria</th>
@@ -369,7 +371,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
             </tr></thead>
             <tbody id="tb-fat-tr"></tbody>
           </table></div>
-          <div class="note">Outbound + Inbound + Devolução = Total. Reentrega e Complementar são subconjuntos já contidos nesses valores e não devem ser somados de novo. O filtro de região usa a UF de destino do CT-e (no Inbound, o destino é o CD).</div>
+          <div class="note">Outbound + Inbound + Devolução + Transferência = Total. Reentrega e Complementar são subconjuntos já contidos nesses valores e não devem ser somados de novo. O filtro de região usa a UF de destino do CT-e (no Inbound, o destino é o CD).</div>
         </div>
         <div class="card" style="margin-bottom:10px">
           <div class="slbl"><span class="sn">2</span>Custo por kg por região — só CT-es com peso informado</div>
@@ -383,6 +385,15 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
             <tbody id="tb-fat-rkg"></tbody>
           </table></div>
           <div class="note">Cobertura = parcela do frete da transportadora cujos CT-es trazem peso. Transportadoras sem nenhum CT-e com peso não aparecem nesta tabela.</div>
+        </div>
+        <div class="card" style="margin-bottom:10px;border-left:3px solid var(--red)">
+          <div class="slbl"><span class="sn">!</span>Auditoria — possíveis cobranças em duplicidade
+            <button class="sortb" onclick="exportarSuspeitas()" style="margin-left:auto">Exportar lista</button></div>
+          <div class="note" id="dup-resumo" style="margin:0 0 8px"></div>
+          <div class="tw" style="max-height:360px;overflow-y:auto"><table class="dt">
+            <thead><tr><th>Transportadora</th><th>Operação</th><th>CT-e suspeito</th><th>CT-e anterior igual</th><th>Dias entre</th><th>Notas fiscais</th><th class="r">Frete</th><th class="r">Mercadoria</th></tr></thead>
+            <tbody id="tb-fat-dup"></tbody></table></div>
+          <div class="note">Critério: CT-e normal da mesma transportadora (CNPJ raiz) com as mesmas notas fiscais, o mesmo valor de frete e o mesmo valor de mercadoria de um CT-e emitido antes. O valor continua nos totais porque o CT-e foi autorizado; confirme com a transportadora se houve cobrança em duplicidade.</div>
         </div>
         <div class="g3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
           <div class="card">
@@ -398,6 +409,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
                 <th class="r" style="color:#185FA5">Outbound</th>
                 <th class="r" style="color:#1D9E75">Inbound</th>
                 <th class="r" style="color:#D85A30">Devolução</th>
+                <th class="r" style="color:#888780">Transf.</th>
               </tr></thead>
               <tbody id="tb-fat-qtr"></tbody>
             </table></div>
@@ -418,7 +430,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
             <strong style="color:var(--text)">Metodologia (Outbound, dois pools de custo):</strong><br>
             <strong>R$/kg</strong> — calculado apenas para CT-es da <strong>ATIVA</strong> e <strong>FL BRASIL</strong> (CNPJ raiz 01125797 e 18233211) com peso informado (qCarga BASE no XML). Estas transportadoras têm cobertura de peso próxima de 100%.<br>
             <strong>% mercadoria</strong> — calculado para as <strong>demais transportadoras</strong> com valor de mercadoria informado; usa frete ÷ valor da mercadoria como proxy de custo logístico.<br>
-            Os dois pools somam o universo Outbound (exceto CT-es sem peso da ATIVA/FL e CT-es sem mercadoria das demais, que ficam fora das duas médias). Todos os filtros acima se aplicam a esta visão.
+            Os dois pools somam o universo Outbound, exceto CT-es da ATIVA/FL sem peso válido (≥ 1 kg) e CT-es normais das demais sem mercadoria. Complementares entram no frete do pool da sua transportadora (no R$/kg, só quando o CT-e original tem peso). Todos os filtros acima se aplicam a esta visão.
           </div>
         </div>
 
@@ -507,7 +519,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
 // ════════════════════════════════════════════════════════════════════
 const SURL='https://ennsbpibfnuwlvtodukg.supabase.co';
 const BASE=SURL+'/storage/v1/object/public/dashboards/custo-servir/';
-let D=null,R=[],curOp='outbound',curTab='dash';
+let D=null,R=[],RX=[],curOp='outbound',curTab='dash';
 
 // ── CONSTANTES ─────────────────────────────────────────────────────
 const OP_COR={outbound:'#185FA5',inbound:'#1D9E75',reversa:'#D85A30'};
@@ -592,9 +604,19 @@ async function fetchJSON(url,tentativas){
   }
   return null;
 }
+// v9.2: o painel lê a versão leve (ctes_base.json, colunar); o ctes_raw.json completo
+// só é baixado na exportação para Excel. Sem a versão leve, usa o completo.
+function decodeBase(b){
+  if(!b||!b.cols||!b.rows)return null;
+  const dic=b.dict||{};const cols=b.cols;
+  return b.rows.map(row=>{const o={};cols.forEach((c,i)=>{const v=row[i];o[c]=dic[c]&&typeof v==='number'?dic[c][v]:v;});return o;});
+}
+let RAW_FULL=null;
 async function loadData(){
-  const [d,raw]=await Promise.all([fetchJSON(BASE+'dados.json'),fetchJSON(BASE+'ctes_raw.json')]);
+  const [d,b]=await Promise.all([fetchJSON(BASE+'dados.json'),fetchJSON(BASE+'ctes_base.json',2)]);
   D=d;
+  let raw=decodeBase(b);
+  if(!raw){raw=await fetchJSON(BASE+'ctes_raw.json');RAW_FULL=raw;}
   if(!raw||!raw.length){
     document.getElementById('cs-empty').innerHTML='<p style="color:var(--red);padding:20px">Erro ao carregar a base de CT-es (ctes_raw.json). Recarregue a página; se persistir, rode ATUALIZAR.bat.</p>';
     return;
@@ -614,8 +636,14 @@ function prep(raw){
     });
   });
   const tnCount={},cnCount={};
-  R=raw.map(r=>{
+  const RAIZ_EMP=['09080907','60698771','05510999'];
+  RX=[];   // CT-es fora da base de custo (substituídos, anulados, pagos por terceiros)
+  const todos=raw.map(r=>{
     const x=r;
+    // regras v9.2 (o pipeline já manda 'fl'; para bases antigas, calcula o que dá aqui)
+    x.fl=x.fl||'';
+    if(x.tgi===0&&!x.fl.includes('T'))x.fl+='T';
+    if(x.o==='OUT'&&RAIZ_EMP.includes((x.cc||'').slice(0,8)))x.o='TRF';
     x.vf=+x.vf||0; x.vm=+x.vm||0; x.kg=+x.kg||0; x.ano=+x.ano; x.mes=+x.mes;
     x.rg=x.rg||UF_REG[x.uf]||'Outros';
     x.mk=x.ano+'-'+pad(x.mes);
@@ -635,8 +663,15 @@ function prep(raw){
     x.com=x.sop==='COMPLEMENTAR'||x.tpc==='1';
     (tnCount[x.tr]=tnCount[x.tr]||{})[x.tn]=((tnCount[x.tr]||{})[x.tn]||0)+1;
     if(!mz){(cnCount[x.cg]=cnCount[x.cg]||{})[x.cliN]=((cnCount[x.cg]||{})[x.cliN]||0)+1;}
+    x.norm=!x.com;                                  // CT-e normal = um envio (complementar não conta como envio)
+    x.kgOk=x.kg>=1;                                 // peso < 1 kg: provável erro de unidade (fica fora do R$/kg)
+    x.dup=x.fl.includes('D');
     return x;
   });
+  // complementar herda a validade de peso do CT-e original (entra no numerador do R$/kg dele)
+  const kgOrig={};todos.forEach(x=>{if(x.kgOk)kgOrig[x.k]=1;});
+  todos.forEach(x=>{x.cmpKg=x.com&&!!x.ref&&!!kgOrig[x.ref];});
+  R=[];todos.forEach(x=>{if(/[SAT]/.test(x.fl))RX.push(x);else R.push(x);});
   const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1])[0][0];
   Object.keys(tnCount).forEach(k=>META.tn[k]=top(tnCount[k]));
   Object.keys(cnCount).forEach(k=>META.cn[k]=top(cnCount[k]));
@@ -685,16 +720,19 @@ function filt(op,ign){
 }
 
 // ── AGREGAÇÃO (fonte única de todos os cálculos) ───────────────────
-function nA(){return{f:0,m:0,n:0,kg:0,fkg:0,nkg:0,nm0:0,gf:0,gm:0,gn:0,if_:0,im:0,in_:0,
-  ree_f:0,ree_n:0,com_f:0,com_n:0,of:0,on:0,inf:0,inn:0,rf:0,rn:0};}
+function nA(){return{f:0,m:0,n:0,nn:0,kg:0,fkg:0,nkg:0,nm0:0,kgx:0,gf:0,gm:0,gn:0,if_:0,im:0,in_:0,
+  ree_f:0,ree_n:0,com_f:0,com_n:0,of:0,on:0,inf:0,inn:0,rf:0,rn:0,tf:0,tn:0,dup_f:0,dup_n:0};}
 function add(a,r){
   a.f+=r.vf;a.m+=r.vm;a.n++;
-  if(r.vm<=0)a.nm0++;
-  if(r.kg>0){a.kg+=r.kg;a.fkg+=r.vf;a.nkg++;}
+  if(r.norm){a.nn++;if(r.vm<=0)a.nm0++;}
+  if(r.kgOk){a.kg+=r.kg;a.fkg+=r.vf;a.nkg++;}
+  else if(r.cmpKg){a.fkg+=r.vf;}
+  else if(r.kg>0){a.kgx++;}
+  if(r.dup){a.dup_f+=r.vf;a.dup_n++;}
   if(r.e==='G'){a.gf+=r.vf;a.gm+=r.vm;a.gn++;}else if(r.e==='I'){a.if_+=r.vf;a.im+=r.vm;a.in_++;}
-  if(r.ree){a.ree_f+=r.vf;a.ree_n++;}
+  if(r.ree&&r.o==='OUT'){a.ree_f+=r.vf;a.ree_n++;}
   if(r.com){a.com_f+=r.vf;a.com_n++;}
-  if(r.o==='OUT'){a.of+=r.vf;a.on++;}else if(r.o==='IN'){a.inf+=r.vf;a.inn++;}else{a.rf+=r.vf;a.rn++;}
+  if(r.o==='OUT'){a.of+=r.vf;a.on++;}else if(r.o==='IN'){a.inf+=r.vf;a.inn++;}else if(r.o==='REV'){a.rf+=r.vf;a.rn++;}else{a.tf+=r.vf;a.tn++;}
 }
 function agg(rows){const a=nA();rows.forEach(r=>add(a,r));return fin(a);}
 function grp(rows,kf){
@@ -707,7 +745,7 @@ function fin(a){
   a.gp=pctOf(a.gf,a.gm); a.ip=pctOf(a.if_,a.im);
   a.rkg=a.kg>0?a.fkg/a.kg:null;         // R$/kg = Σ frete dos CT-es com peso ÷ Σ peso
   a.cob=a.f>0?a.fkg/a.f:null;           // cobertura de peso (parcela do frete com peso)
-  a.fpc=a.n?a.f/a.n:null;               // frete médio por CT-e
+  a.fpc=a.nn?a.f/a.nn:null;             // frete por envio = frete total (com complementares) ÷ CT-es normais
   return a;
 }
 function sortQ(a,b){const [qa,ya]=a.split('/'),[qb,yb]=b.split('/');return ya===yb?qa.localeCompare(qb):ya.localeCompare(yb);}
@@ -734,6 +772,10 @@ function initDash(){
 function buildMeses(){
   const ks=[...new Set(R.map(r=>r.mk))].sort().filter(k=>F.ano==='all'||k.startsWith(F.ano+'-'));
   const fm=document.getElementById('f-meses');fm.innerHTML='';
+  // com vários anos, os botões de mês só aparecem depois de escolher o ano (evita 30+ botões)
+  if(F.ano==='all'&&new Set(R.map(r=>r.ano)).size>1){fm.innerHTML='<span class="flbl" style="text-transform:none;letter-spacing:0">escolha um ano</span>';
+    const fq=document.getElementById('f-qtrs');if(fq)[...fq.children].forEach(b=>b.style.display='');return;}
+  const fq=document.getElementById('f-qtrs');if(fq)[...fq.children].forEach(b=>b.style.display=F.ano==='all'||b.dataset.v.endsWith('/'+F.ano.slice(2))?'':'none');
   ks.forEach(k=>{const [a,m]=k.split('-');const b=mkb(mesLbl(k),'mes',a+'-'+(+m));if(F.mes===a+'-'+(+m))b.classList.add('on');fm.appendChild(b);});
 }
 function mkb(label,g,v){const b=document.createElement('button');b.className='fb';b.textContent=label;b.dataset.g=g;b.dataset.v=v;b.onclick=function(){fil(this);};return b;}
@@ -745,29 +787,36 @@ function ubar(){
     +'</strong> CT-es &nbsp;·&nbsp; Período: <strong>'+mesLbl(META.firstKey)+' a '+mesLbl(META.lastKey)+'</strong> &nbsp;·&nbsp; Novos: <strong>'+nov+'</strong>';
   const q=[];
   if(META.partialKey){const d=META.lastDate.split('-');q.push('<span class="qchip warn" title="O último mês ainda não fechou. Compare com cuidado.">* '+mesLbl(META.partialKey).replace('*','')+' parcial (até '+d[2]+'/'+d[1]+')</span>');}
+  const xt=RX.filter(r=>r.fl.includes('T')),xs=RX.filter(r=>/[SA]/.test(r.fl));
+  if(xt.length)q.push('<span class="qchip" title="Frete em que o tomador (quem paga) não é Genomma/Inovalab. Não é custo da empresa e fica fora de todos os números.">'+xt.length+' pagos por terceiros fora · '+fM(xt.reduce((s,r)=>s+r.vf,0))+'</span>');
+  if(xs.length)q.push('<span class="qchip" title="CT-es substituídos ou anulados por outro CT-e. Ficam fora para não contar duas vezes.">'+xs.length+' substituídos/anulados fora</span>');
+  const ntrf=R.filter(r=>r.o==='TRF').length;
+  if(ntrf)q.push('<span class="qchip" title="Envios entre unidades Genomma/Inovalab. Saem do Outbound (não são clientes) e aparecem só na Fat. Transportadora.">'+ntrf+' transferências</span>');
   if(!R.some(r=>r.ano===2024))q.push('<span class="qchip warn" title="Nenhum CT-e de 2024 carregado. Rode REPROCESSAR_TUDO.bat com o pipeline v9.">2024 não carregado</span>');
   document.getElementById('ubar-st').innerHTML=q.join('');
 }
 function qualidade(rows){
   // chips de qualidade de dados do escopo atual (aparecem só quando há lacuna)
   const a=agg(rows);const q=[];
-  if(a.nm0)q.push('<span class="qchip warn" title="CT-es sem valor de mercadoria entram no frete mas não no denominador do %CTS">'+a.nm0+' CT-es sem mercadoria</span>');
-  if(a.n)q.push('<span class="qchip'+(a.cob<0.5?' warn':'')+'" title="Parcela do frete com peso informado no CT-e">Peso: '+p1((a.cob||0)*100)+' do frete</span>');
+  if(a.nm0)q.push('<span class="qchip warn" title="CT-es normais sem valor de mercadoria: entram no frete mas não no denominador do %CTS">'+a.nm0+' sem mercadoria</span>');
+  if(a.n)q.push('<span class="qchip'+(a.cob<0.5?' warn':'')+'" title="Parcela do frete cujo CT-e tem peso válido (≥ 1 kg)">Peso: '+p1((a.cob||0)*100)+' do frete</span>');
+  if(a.kgx)q.push('<span class="qchip warn" title="Peso abaixo de 1 kg — provável erro de unidade na transportadora; esses CT-es ficam fora do R$/kg">'+a.kgx+' com peso &lt; 1 kg</span>');
+  if(a.dup_n)q.push('<span class="qchip err" title="Mesma transportadora, mesmas NFs, mesmo frete e mesma mercadoria de outro CT-e. Continuam no total; confira com a transportadora (aba Fat. Transportadora)">'+a.dup_n+' suspeitas de duplicidade · '+fM(a.dup_f)+'</span>');
   return q.join('');
 }
 
 function metodologia(){
   document.getElementById('met-txt').innerHTML=
-    '<b>Fonte:</b> base detalhada de CT-es autorizados (<code>ctes_raw.json</code>), sem cancelados e sem duplicidade (chave de acesso de 44 dígitos). Todos os totais são somas desses registros e podem ser conferidos no Excel exportado com os mesmos filtros.<br>'
-    +'<b>%CTS</b> = Σ frete ÷ Σ valor da mercadoria × 100, sempre sobre os valores agregados do escopo (nunca média de percentuais). CT-es sem mercadoria entram no frete e não no denominador; a quantidade aparece no aviso de qualidade.<br>'
-    +'<b>Frete/CT-e</b> = Σ frete ÷ nº de CT-es.<br>'
-    +'<b>R$/kg</b> = Σ frete dos CT-es com peso ÷ Σ peso desses CT-es. Usa só CT-es com peso (qCarga BASE); a cobertura informa quanto do frete tem peso.<br>'
-    +'<b>Transportadora</b> = CNPJ raiz (matriz + filiais), com o nome mais frequente. <b>Cliente</b> = matriz do de-para <code>cnpj_para_matriz.json</code>; sem de-para, CNPJ raiz.<br>'
-    +'<b>Empresa</b> = Genomma ou Inovalab conforme remetente/destinatário do CT-e. <b>Região</b> = UF de destino do CT-e.<br>'
-    +'<b>CIF/FOB</b> = marcação do campo obsAuxiliar do CT-e (o Outbound não tem CT-es FOB, porque o frete FOB é contratado pelo cliente).<br>'
-    +'<b>Reentrega</b> = CT-e com "REENTREGA" nas características; <b>Complementar</b> = "COMPLEMENTAR" nas características ou tpCTe = 1 (a partir do pipeline v9). São subconjuntos do frete total, não somas adicionais.<br>'
-    +'<b>Semáforo</b>: verde até '+Math.round(SEM_VERDE*100)+'% da referência do escopo, vermelho a partir de '+Math.round(SEM_VERM*100)+'%, âmbar entre os dois. Referência = %CTS total da visão com os filtros aplicados.<br>'
-    +'<b>Mês parcial</b> (*): último mês da base quando ainda não terminou. Não compare com meses fechados sem considerar isso.';
+    '<b>Fonte:</b> CT-es autorizados lidos dos XMLs (<code>ctes_base.json</code>), sem cancelados e sem chaves repetidas (chave de 44 dígitos tirada do próprio CT-e). Todo total pode ser conferido no Excel exportado com os mesmos filtros.<br>'
+    +'<b>Fora da base de custo:</b> (1) frete em que o tomador do serviço não é Genomma/Inovalab (o cliente ou outro paga); (2) CT-e substituído por outro (tpCTe 3) ou anulado (tpCTe 2). Aparecem no Excel, na coluna Situação.<br>'
+    +'<b>Transferência:</b> envio entre unidades Genomma/Inovalab. Não é cliente: sai do Outbound e aparece só na Fat. Transportadora.<br>'
+    +'<b>Reversa:</b> devolução vinda de cliente (CNPJ no de-para de clientes ou que já recebeu Outbound). Remessa de quem não é cliente (fornecedor, prestador) é tratada como Inbound.<br>'
+    +'<b>%CTS</b> = Σ frete ÷ Σ valor da mercadoria × 100, sempre sobre os valores agregados (nunca média de percentuais). CT-e complementar soma frete e não tem mercadoria, por definição do CT-e.<br>'
+    +'<b>Frete por envio</b> = Σ frete (inclui complementares) ÷ nº de CT-es normais. Complementar não é um novo envio, é custo adicional de um envio.<br>'
+    +'<b>R$/kg</b> = Σ frete dos CT-es com peso válido (≥ 1 kg) ÷ Σ peso. O frete de um complementar entra quando o CT-e original tem peso. Peso abaixo de 1 kg é tratado como erro de unidade e fica fora.<br>'
+    +'<b>Transportadora</b> = CNPJ raiz (matriz + filiais). <b>Cliente</b> = matriz do de-para <code>cnpj_para_matriz.json</code>; sem de-para, CNPJ raiz. Na Reversa, o cliente é quem devolve.<br>'
+    +'<b>Suspeita de duplicidade:</b> CT-e normal da mesma transportadora com as mesmas NFs, frete e mercadoria de um anterior. Continua no total e vai para a lista de auditoria.<br>'
+    +'<b>Semáforo</b>: verde até '+Math.round(SEM_VERDE*100)+'% da referência do escopo, vermelho a partir de '+Math.round(SEM_VERM*100)+'%, âmbar entre os dois. <b>Mês parcial</b> (*): último mês ainda em curso.';
 }
 
 function setOp(op,btn){
@@ -859,10 +908,10 @@ function vazio(cols,txt){return '<tr><td colspan="'+cols+'" style="text-align:ce
 function rDash(){
   const rows=filt(curOp);const t=agg(rows);const co=OP_COR[curOp];
   document.getElementById('k-dash').innerHTML=
-    kpi('Frete Total',fM(t.f),fInt(t.n)+' CT-es — '+OP_LBL[curOp],co)
+    kpi('Frete Total',fM(t.f),fInt(t.nn)+' envios'+(t.n>t.nn?' + '+fInt(t.n-t.nn)+' complementares':'')+' — '+OP_LBL[curOp],co)
     +kpi('Mercadoria',t.m>0?fM(t.m):'—',t.nm0?t.nm0+' CT-es sem valor informado':'valor transportado','#185FA5')
     +kpi('%CTS Total',pf(t.pct),'frete ÷ mercadoria','var(--amber)')
-    +kpi('Frete por CT-e',fR(t.fpc),'média do escopo','var(--text)')
+    +kpi('Frete por envio',fR(t.fpc),'frete total ÷ CT-es normais','var(--text)')
     +kpi('Peso informado',t.kg>0?fK(t.kg)+' kg':'—',t.n?p1((t.cob||0)*100)+' do frete tem peso':'—','var(--text)');
   const te=agg(filt(curOp,{emp:1}));
   document.getElementById('emp-cds').innerHTML=eCard('Genomma Lab','#185FA5',te.gf,te.gm,te.gn)+eCard('Inovalab','var(--green)',te.if_,te.im,te.in_)
@@ -1045,7 +1094,7 @@ function rFatTransp(){
       +'<td class="r">'+fInt(t.n)+'</td>'
       +'<td class="r" style="color:var(--red);font-weight:700">'+fM(t.f)+'</td>'
       +cell(t.gf,t.gn,'#185FA5',t.f)+cell(t.if_,t.in_,'#1D9E75',t.f)
-      +cell(t.of,t.on,'#185FA5',t.f)+cell(t.inf,t.inn,'#1D9E75',t.f)+cell(t.rf,t.rn,'#D85A30',t.f)
+      +cell(t.of,t.on,'#185FA5',t.f)+cell(t.inf,t.inn,'#1D9E75',t.f)+cell(t.rf,t.rn,'#D85A30',t.f)+cell(t.tf,t.tn,'#888780',t.f)
       +cell(t.ree_f,t.ree_n,'#7F77DD',t.f)+cell(t.com_f,t.com_n,'#854F0B',t.f)
       +'<td class="r">'+(t.m>0?fM(t.m):'—')+'</td>'
       +'<td class="r">'+(t.kg>0?fInt(t.kg)+'<div class="sub">'+p1(t.cob*100)+' do frete</div>':'<span class="muted">sem peso</span>')+'</td>'
@@ -1055,16 +1104,16 @@ function rFatTransp(){
       +'</tr>';
   }).join('')
   +'<tr class="tr-tot"><td><strong>TOTAL</strong></td><td class="r">'+fInt(tot.n)+'</td><td class="r" style="color:var(--red)">'+fM(tot.f)+'</td>'
-  +[[tot.gf,tot.gn,'#185FA5'],[tot.if_,tot.in_,'#1D9E75'],[tot.of,tot.on,'#185FA5'],[tot.inf,tot.inn,'#1D9E75'],[tot.rf,tot.rn,'#D85A30'],[tot.ree_f,tot.ree_n,'#7F77DD'],[tot.com_f,tot.com_n,'#854F0B']]
+  +[[tot.gf,tot.gn,'#185FA5'],[tot.if_,tot.in_,'#1D9E75'],[tot.of,tot.on,'#185FA5'],[tot.inf,tot.inn,'#1D9E75'],[tot.rf,tot.rn,'#D85A30'],[tot.tf,tot.tn,'#888780'],[tot.ree_f,tot.ree_n,'#7F77DD'],[tot.com_f,tot.com_n,'#854F0B']]
     .map(([v,n,c])=>'<td class="r" style="color:'+c+'">'+(v?'<strong>'+fM(v)+'</strong><div class="sub">'+fInt(n)+' CTes</div>':'—')+'</td>').join('')
   +'<td class="r">'+(tot.m>0?fM(tot.m):'—')+'</td>'
   +'<td class="r">'+(tot.kg>0?fInt(tot.kg)+'<div class="sub">'+p1(tot.cob*100)+' do frete</div>':'—')+'</td>'
   +'<td class="r" style="color:var(--amber)">'+fRkg(tot.rkg)+'</td>'
-  +'<td class="r">'+pf(tot.pct)+'</td><td class="r">100%</td></tr>':vazio(15);
+  +'<td class="r">'+pf(tot.pct)+'</td><td class="r">100%</td></tr>':vazio(16);
 
   // R$/kg por transportadora × região (só CT-es com peso)
   const rk=list.filter(t=>t.kg>0);
-  const byTR=grp(rows.filter(r=>r.kg>0),r=>r.tr+'|'+r.rg);
+  const byTR=grp(rows.filter(r=>r.kgOk||r.cmpKg),r=>r.tr+'|'+r.rg);
   document.getElementById('tb-fat-rkg').innerHTML=rk.length?rk.map(t=>'<tr><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+esc(nomeTr(t.key))+'</td>'
     +ORDEM_REG.map(rg=>{const a=byTR.get(t.key+'|'+rg);return '<td class="r">'+(a&&a.rkg!=null?'<div style="font-weight:600;color:'+cP(a.rkg,t.rkg)+'">'+fRkg(a.rkg)+'</div><div class="sub">'+fInt(a.kg)+' kg · '+a.n+'</div>':'<span class="muted">—</span>')+'</td>';}).join('')
     +'<td class="r" style="color:var(--amber);font-weight:700">'+fRkg(t.rkg)+'</td><td class="r">'+p1(t.cob*100)+'</td></tr>').join(''):vazio(8,'Nenhum CT-e com peso no escopo');
@@ -1076,17 +1125,46 @@ function rFatTransp(){
 
   // Por quarter
   const gq=grp(rows,r=>r.q);const qk=[...gq.keys()].sort(sortQ);
-  document.getElementById('tb-fat-qtr').innerHTML=qk.length?qk.map(k=>{const q=gq.get(k);return '<tr><td><strong>'+k+'</strong></td><td class="r">'+fInt(q.n)+'</td><td class="r" style="color:var(--red);font-weight:600">'+fM(q.f)+'</td><td class="r" style="color:#185FA5">'+fM(q.of)+'</td><td class="r" style="color:#1D9E75">'+fM(q.inf)+'</td><td class="r" style="color:#D85A30">'+fM(q.rf)+'</td></tr>';}).join('')
-    +'<tr class="tr-tot"><td>Total</td><td class="r">'+fInt(tot.n)+'</td><td class="r" style="color:var(--red)">'+fM(tot.f)+'</td><td class="r" style="color:#185FA5">'+fM(tot.of)+'</td><td class="r" style="color:#1D9E75">'+fM(tot.inf)+'</td><td class="r" style="color:#D85A30">'+fM(tot.rf)+'</td></tr>':vazio(6);
+  document.getElementById('tb-fat-qtr').innerHTML=qk.length?qk.map(k=>{const q=gq.get(k);return '<tr><td><strong>'+k+'</strong></td><td class="r">'+fInt(q.n)+'</td><td class="r" style="color:var(--red);font-weight:600">'+fM(q.f)+'</td><td class="r" style="color:#185FA5">'+fM(q.of)+'</td><td class="r" style="color:#1D9E75">'+fM(q.inf)+'</td><td class="r" style="color:#D85A30">'+fM(q.rf)+'</td><td class="r" style="color:#888780">'+fM(q.tf)+'</td></tr>';}).join('')
+    +'<tr class="tr-tot"><td>Total</td><td class="r">'+fInt(tot.n)+'</td><td class="r" style="color:var(--red)">'+fM(tot.f)+'</td><td class="r" style="color:#185FA5">'+fM(tot.of)+'</td><td class="r" style="color:#1D9E75">'+fM(tot.inf)+'</td><td class="r" style="color:#D85A30">'+fM(tot.rf)+'</td><td class="r" style="color:#888780">'+fM(tot.tf)+'</td></tr>':vazio(7);
+
+  rDup(rows);
 
   // Donut por operação — fatias mutuamente exclusivas (somam o total)
-  const data=[tot.of-tot.ree_f,tot.ree_f,tot.inf,tot.rf];
-  const labels=['Outbound (sem reentrega)','Reentrega','Inbound','Devolução'];
-  const colors=['#185FA5','#7F77DD','#1D9E75','#D85A30'];
+  const data=[tot.of-tot.ree_f,tot.ree_f,tot.inf,tot.rf,tot.tf];
+  const labels=['Outbound (sem reentrega)','Reentrega','Inbound','Devolução','Transferência'];
+  const colors=['#185FA5','#7F77DD','#1D9E75','#D85A30','#888780'];
   el=ch('c-fat-op');
   if(el)CH['c-fat-op']=new Chart(el,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:4}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12}},
       tooltip:{callbacks:{label:c=>c.label+': '+fM(c.raw)+' ('+p1(c.raw/totF*100)+')'}}}}});
+}
+
+// ── AUDITORIA: suspeitas de duplicidade ───────────────────────────
+const OPN={OUT:'Outbound',IN:'Inbound',REV:'Reversa',TRF:'Transferência'};
+let DUP_LIST=[];
+function chaveDup(r){return r.tr+'|'+(r.nfs||'')+'|'+r.vf.toFixed(2)+'|'+r.vm.toFixed(2);}
+function rDup(rows){
+  const sus=rows.filter(r=>r.dup);
+  const idx={};R.forEach(r=>{if(!r.dup&&r.norm&&r.nfs){(idx[chaveDup(r)]=idx[chaveDup(r)]||[]).push(r);}});
+  DUP_LIST=sus.map(r=>{const c=(idx[chaveDup(r)]||[]).filter(o=>o.d<=r.d).sort((a,b)=>b.d.localeCompare(a.d))[0]||(idx[chaveDup(r)]||[])[0];
+    const dias=c?Math.round((new Date(r.d)-new Date(c.d))/864e5):null;return {r,c,dias};}).sort((a,b)=>b.r.vf-a.r.vf);
+  const tot=sus.reduce((s,r)=>s+r.vf,0);
+  document.getElementById('dup-resumo').innerHTML=sus.length?'<b>'+sus.length+' CT-es</b> no escopo, somando <b>'+fM(tot)+'</b>. Ordenados pelo valor.':'Nenhuma suspeita no escopo selecionado.';
+  const dt=s=>s?s.split('-').reverse().join('/'):'—';
+  document.getElementById('tb-fat-dup').innerHTML=DUP_LIST.slice(0,200).map(({r,c,dias})=>'<tr>'
+    +'<td style="max-width:180px;overflow:hidden;text-overflow:ellipsis">'+esc(nomeTr(r.tr))+'</td><td>'+OPN[r.o]+'</td>'
+    +'<td>nº '+esc(r.nct||'—')+' · '+dt(r.d)+'</td><td>'+(c?'nº '+esc(c.nct||'—')+' · '+dt(c.d):'—')+'</td><td class="r">'+(dias==null?'—':dias)+'</td>'
+    +'<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="'+esc(r.nfs)+'">'+esc(r.nfs||'')+'</td>'
+    +'<td class="r" style="color:var(--red);font-weight:600">'+fR(r.vf)+'</td><td class="r">'+fM(r.vm)+'</td></tr>').join('')||vazio(8,'Nenhuma suspeita no escopo');
+}
+function exportarSuspeitas(){
+  if(!DUP_LIST.length){alert('Nenhuma suspeita no escopo atual.');return;}
+  const L=[['Transportadora','CNPJ transportadora','Operação','CT-e suspeito nº','Data','Chave','CT-e anterior nº','Data anterior','Chave anterior','Dias entre','Notas fiscais','Frete R$','Mercadoria R$','Cliente']]
+    .concat(DUP_LIST.map(({r,c,dias})=>[nomeTr(r.tr),r.tc,OPN[r.o],r.nct,r.d,r.k,c?c.nct:'',c?c.d:'',c?c.k:'',dias,r.nfs,r2(r.vf),r2(r.vm),r.cn]));
+  const ws=XLSX.utils.aoa_to_sheet(L);ws['!cols']=[{wch:35},{wch:16},{wch:12},{wch:12},{wch:11},{wch:46},{wch:12},{wch:11},{wch:46},{wch:8},{wch:40},{wch:12},{wch:14},{wch:35}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Suspeitas');
+  XLSX.writeFile(wb,'Suspeitas_duplicidade_CTe_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
 // ── CUSTO (Outbound: R$/kg ATIVA+FL e %merc demais) ────────────────
@@ -1101,8 +1179,8 @@ function rCusto(){
     return;
   }
   const isPool=r=>POOL_KG.has(r.tr);
-  const rkRows=rows.filter(r=>isPool(r)&&r.kg>0);
-  const pcRows=rows.filter(r=>!isPool(r)&&r.vm>0);
+  const rkRows=rows.filter(r=>isPool(r)&&(r.kgOk||r.cmpKg));          // complementar entra se o original tem peso
+  const pcRows=rows.filter(r=>!isPool(r)&&(r.vm>0||r.com));           // complementar entra no frete (não tem mercadoria)
   const fora=rows.length-rkRows.length-pcRows.length;
   const gRk=grp(rkRows,r=>r.rg+'|'+r.mk),gPc=grp(pcRows,r=>r.rg+'|'+r.mk);
   const rRk=grp(rkRows,r=>r.rg),rPc=grp(pcRows,r=>r.rg),rAll=grp(rows,r=>r.rg);
@@ -1172,7 +1250,7 @@ function rCusto(){
       +'<td class="r" style="color:var(--red);font-weight:600">'+fM(t.f)+'</td></tr>';});
   body+='<tr class="tr-tot"><td><strong>TOTAL</strong></td><td class="r" style="border-left:2px solid var(--amber)"><strong>'+fInt(gR.n)+'</strong></td><td class="r"><strong>'+(gR.kg>0?fInt(gR.kg):'—')+'</strong></td><td class="r" style="color:var(--amber);border-right:2px solid var(--amber)"><strong>'+fRkg(gR.rkg)+'</strong></td><td class="r"><strong>'+fInt(gP.n)+'</strong></td><td class="r"><strong>'+(gP.m>0?fM(gP.m):'—')+'</strong></td><td class="r" style="color:var(--blue,#185FA5);border-right:2px solid var(--blue,#185FA5)"><strong>'+pf(gP.pct)+'</strong></td><td class="r" style="color:var(--red)"><strong>'+fM(gT.f)+'</strong></td></tr>';
   document.getElementById('tb-custo-resumo').innerHTML=body;
-  document.getElementById('custo-fora-note').textContent='Frete Total inclui todos os CT-es Outbound do escopo. '+(fora>0?fInt(fora)+' CT-es ('+fM(gT.f-gR.f-gP.f)+') ficam fora das duas médias: ATIVA/FL sem peso ou demais transportadoras sem valor de mercadoria.':'Todos os CT-es entraram em um dos dois pools.');
+  document.getElementById('custo-fora-note').textContent='Frete Total inclui todos os CT-es Outbound do escopo. '+(fora>0?fInt(fora)+' CT-es ('+fM(gT.f-gR.f-gP.f)+') ficam fora das duas médias: ATIVA/FL sem peso válido (ou complementar sem vínculo ao original) e CT-es normais das demais sem mercadoria.':'Todos os CT-es entraram em um dos dois pools.');
 
   // Gráficos
   const linhas=(g,camp,id,legId,fmt,cb)=>{
@@ -1194,10 +1272,14 @@ async function exportarExcel(){
   btn.innerHTML='⏳ Gerando...';btn.disabled=true;
   try{
     const EMP={G:'Genomma',I:'Inovalab',O:'Outros'};
-    const OP={OUT:'Outbound',IN:'Inbound',REV:'Reversa'};
+    const OP={OUT:'Outbound',IN:'Inbound',REV:'Reversa',TRF:'Transferência'};
     const TPC={'0':'Normal','1':'Complementar','2':'Anulação','3':'Substituto'};
     const rows=filt(curOp);
     if(!rows.length){alert('Nenhum CTe encontrado com os filtros atuais.');btn.innerHTML=origText;btn.disabled=false;return;}
+    // campos de texto (protocolo, observação, veículo...) vêm do arquivo completo, baixado só agora
+    if(!RAW_FULL){btn.innerHTML='⏳ Baixando detalhes...';RAW_FULL=await fetchJSON(BASE+'ctes_raw.json')||[];}
+    const FULL={};RAW_FULL.forEach(x=>{FULL[x.k]=x;});
+    const SIT=r=>[r.fl.includes('T')?'Pago por terceiro (fora)':'',r.fl.includes('S')?'Substituído (fora)':'',r.fl.includes('A')?'Anulado (fora)':'',r.fl.includes('D')?'Suspeita de duplicidade':'',r.fl.includes('R')?'Reclassificado Reversa→Inbound':'',r.kg>0&&!r.kgOk?'Peso < 1 kg':''].filter(Boolean).join('; ');
     const wsData=[[
       'Número CTe','Série','CFOP','Chave CTe','Protocolo','Status CTe','Carac. Adicional','Carac. Serviço','Observação (xObs)','Veículo','Restrição Veículo','Notas Fiscais',
       'Data Emissão','Ano','Mês','Empresa','Operação','Sub-operação','Tipo CT-e','Tomador',
@@ -1205,21 +1287,24 @@ async function exportarExcel(){
       'Transportadora','CNPJ Transportadora',
       'Cliente / Destinatário','CNPJ Cliente','Matriz Cliente',
       'UF Destino','Município Destino','Região',
-      'Tipo Op. (CIF/FOB)','Frete R$','Mercadoria R$','% CTS','Peso Kg','R$/kg']];
-    rows.forEach(r=>{
+      'Tipo Op. (CIF/FOB)','Frete R$','Mercadoria R$','% CTS','Peso Kg','R$/kg','Situação / alertas']];
+    const opAtual=OPK[curOp];
+    const linhas=rows.concat(RX.filter(r=>r.o===opAtual&&inPeriod(r)&&(F.emp==='all'||r.e===EMPK[F.emp])&&(F.reg==='all'||r.rg===F.reg)&&(F.tipo==='all'||r.tp===F.tipo)));
+    linhas.forEach(r0=>{
+      const r=Object.assign({},FULL[r0.k]||{},r0);
       const pct=r.vm>0?Math.round(r.vf/r.vm*10000)/100:null;
       wsData.push([
         r.nct||'',r.ser||'',r.cf||'',r.k,r.np||'',r.st||'',r.xca||'',r.xcs||'',r.xob||'',r.vei||'',r.rve||'',r.nfs||'',
         r.d,r.ano,MNOM[r.mes]||r.mes,EMP[r.e]||r.e,OP[r.o]||r.o,r.sop||'',TPC[r.tpc]||'',r.tom||'',
         r.rn,r.rc,r.tn,r.tc,r.cn,r.cc,r.cgn||'',
-        r.uf,r.mu,r.rg,r.tp,r.vf,r.vm,pct,r.kg,r.kg>0?Math.round(r.vf/r.kg*100)/100:null]);
+        r.uf,r.mu,r.rg,r.tp,r.vf,r.vm,pct,r.kg,r.kgOk?Math.round(r.vf/r.kg*100)/100:null,SIT(r)]);
     });
     const wb=XLSX.utils.book_new();
     const ws=XLSX.utils.aoa_to_sheet(wsData);
     ws['!cols']=[{wch:10},{wch:6},{wch:7},{wch:46},{wch:16},{wch:35},{wch:16},{wch:14},{wch:50},{wch:12},{wch:34},{wch:30},
       {wch:12},{wch:6},{wch:6},{wch:10},{wch:10},{wch:13},{wch:12},{wch:9},
       {wch:45},{wch:16},{wch:45},{wch:16},{wch:45},{wch:16},{wch:30},
-      {wch:5},{wch:22},{wch:12},{wch:10},{wch:14},{wch:14},{wch:8},{wch:10},{wch:9}];
+      {wch:5},{wch:22},{wch:12},{wch:10},{wch:14},{wch:14},{wch:8},{wch:10},{wch:9},{wch:34}];
     XLSX.utils.book_append_sheet(wb,ws,'CTes');
 
     // Resumo — números idênticos aos do painel (mesma função de agregação)
@@ -1228,8 +1313,8 @@ async function exportarExcel(){
     const sumData=[['Resumo da Exportação'],[''],
       ['Operação:',OP_LBL[curOp]],['Empresa:',F.emp==='all'?'Todas':F.emp],['Ano:',F.ano==='all'?'Todos':F.ano],
       ['Quarter:',F.qtr==='all'?'Todos':F.qtr],['Mês:',mesTxt],['Tipo Op.:',F.tipo==='all'?'Todos':F.tipo],['Região:',F.reg==='all'?'Todas':F.reg],
-      [''],['Total CTes:',t.n],['Frete Total R$:',Math.round(t.f*100)/100],['Mercadoria Total R$:',Math.round(t.m*100)/100],
-      ['% CTS Geral:',t.pct==null?null:Math.round(t.pct*100)/100],['Frete por CT-e R$:',t.fpc==null?null:Math.round(t.fpc*100)/100],
+      [''],['Total CTes na base:',t.n],['CT-es normais (envios):',t.nn],['Fora da base (listados na aba CTes, coluna Situação):',linhas.length-rows.length],['Frete Total R$:',Math.round(t.f*100)/100],['Mercadoria Total R$:',Math.round(t.m*100)/100],
+      ['% CTS Geral:',t.pct==null?null:Math.round(t.pct*100)/100],['Frete por envio R$:',t.fpc==null?null:Math.round(t.fpc*100)/100],
       ['Peso informado (kg):',Math.round(t.kg)],['R$/kg (CT-es com peso):',t.rkg==null?null:Math.round(t.rkg*100)/100],
       ['Cobertura de peso (% do frete):',t.cob==null?null:Math.round(t.cob*10000)/100],['CT-es sem mercadoria:',t.nm0],
       ['Reentregas R$:',Math.round(t.ree_f*100)/100],
@@ -1240,7 +1325,7 @@ async function exportarExcel(){
 
     // Por transportadora
     const trs=[...grp(rows,r=>r.tr).values()].sort((a,b)=>b.f-a.f);
-    const wsT=XLSX.utils.aoa_to_sheet([['Transportadora','CNPJ raiz','CTes','Frete R$','Part. %','Frete/CT-e R$','Mercadoria R$','%CTS','Peso kg','R$/kg','Cobertura peso %','Reentrega R$']]
+    const wsT=XLSX.utils.aoa_to_sheet([['Transportadora','CNPJ raiz','CTes','Frete R$','Part. %','Frete/envio R$','Mercadoria R$','%CTS','Peso kg','R$/kg','Cobertura peso %','Reentrega R$']]
       .concat(trs.map(a=>[nomeTr(a.key),a.key.startsWith('N:')?'':a.key,a.n,r2(a.f),r2(a.f/t.f*100),r2(a.fpc),r2(a.m),r2(a.pct),r2(a.kg),r2(a.rkg),a.cob==null?null:r2(a.cob*100),r2(a.ree_f)])));
     wsT['!cols']=[{wch:45},{wch:10},{wch:7},{wch:13},{wch:8},{wch:12},{wch:14},{wch:7},{wch:11},{wch:8},{wch:10},{wch:12}];
     XLSX.utils.book_append_sheet(wb,wsT,'Por transportadora');
@@ -1249,7 +1334,7 @@ async function exportarExcel(){
     const keyF=curOp==='outbound'?(r=>r.cg):(r=>(r.rc||'').replace(/\D/g,'')||r.rn||'?');
     const nm={};rows.forEach(r=>{const k=keyF(r);if(!nm[k])nm[k]=curOp==='outbound'?nomeCli(k):r.rn;});
     const cls=[...grp(rows,keyF).values()].sort((a,b)=>b.f-a.f);
-    const wsC=XLSX.utils.aoa_to_sheet([[curOp==='outbound'?'Cliente / Matriz':'Remetente','CTes','Frete R$','Part. %','Frete/CT-e R$','Mercadoria R$','%CTS','Peso kg','R$/kg']]
+    const wsC=XLSX.utils.aoa_to_sheet([[curOp==='outbound'?'Cliente / Matriz':'Remetente','CTes','Frete R$','Part. %','Frete/envio R$','Mercadoria R$','%CTS','Peso kg','R$/kg']]
       .concat(cls.map(a=>[nm[a.key],a.n,r2(a.f),r2(a.f/t.f*100),r2(a.fpc),r2(a.m),r2(a.pct),r2(a.kg),r2(a.rkg)])));
     wsC['!cols']=[{wch:45},{wch:7},{wch:13},{wch:8},{wch:12},{wch:14},{wch:7},{wch:11},{wch:8}];
     XLSX.utils.book_append_sheet(wb,wsC,curOp==='outbound'?'Por cliente':'Por remetente');
@@ -1465,7 +1550,7 @@ function rYoY(){
     +kpiY('Mercadoria '+a1,fM(t1.m),dlt(t0.m,t1.m,'R$',null),a0+': '+fM(t0.m),'#185FA5')
     +kpiY('%CTS '+a1,pf(t1.pct),dlt(t0.pct,t1.pct,'pp',true),a0+': '+pf(t0.pct),'var(--amber)')
     +kpiY('CT-es '+a1,fInt(t1.n),dlt(t0.n,t1.n,'n',null),a0+': '+fInt(t0.n),'var(--text)')
-    +kpiY('Frete por CT-e '+a1,fR(t1.fpc),dlt(t0.fpc,t1.fpc,'R$u',true),a0+': '+fR(t0.fpc),'var(--text)');
+    +kpiY('Frete por envio '+a1,fR(t1.fpc),dlt(t0.fpc,t1.fpc,'R$u',true),a0+': '+fR(t0.fpc),'var(--text)');
 
   // ── 1 e 2: mês a mês
   const gm0=grp(r0,r=>r.mes),gm1=grp(r1,r=>r.mes);

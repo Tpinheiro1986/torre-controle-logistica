@@ -1,6 +1,14 @@
 """
-TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v9.1
+TORRE DE CONTROLE -- PROCESSADOR DE CTe XML  v9.2
 ================================================
+v9.2 (28/out/2026): regras de negocio aplicadas antes de agregar/publicar
+  (funcao consolidar): CT-e substituido ou anulado sai da base; frete pago
+  por terceiro (tomador nao e Genomma/Inovalab) sai do custo; envio entre
+  unidades Genomma/Inovalab vira TRANSFERENCIA; "reversa" vinda de quem nao
+  e cliente vira INBOUND; CT-es identicos (mesma transportadora, NFs e
+  valores) sao marcados como suspeita de duplicidade (continuam no total).
+  Novo campo ch_ref (CT-e original de complementar/substituto/anulacao).
+  Publica tambem ctes_base.json (versao leve usada pelo painel).
 v9.1 (28/out/2026): chave do CT-e lida de infCte/@Id (corrige complementares
   tratados como duplicados) e suporte a chave nova sb_secret_ (header apikey).
 v9 (28/out/2026):
@@ -74,6 +82,7 @@ SUPABASE_KEY   = None  # v9: lida de .env / variavel de ambiente (ver _carregar_
 BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 PATH_RAW       = "custo-servir/ctes_raw.json"
+PATH_BASE      = "custo-servir/ctes_base.json"   # v9.2: versao leve para o painel
 
 CNPJ_GENOMMA   = "09080907000506"
 CNPJ_INOVALAB  = "60698771000126"           # v9: CNPJ real visto nos CT-es
@@ -536,6 +545,14 @@ def parse_cte(filepath: str):
 
     # v9: tipo do CT-e (0 normal, 1 complementar, 2 anulacao, 3 substituto)
     tp_cte = (ide.findtext("cte:tpCTe", namespaces=NS) or "").strip() if ide is not None else ""
+    # v9.2: CT-e original referenciado (complementar / substituto / anulacao)
+    ch_ref = ""
+    for _cam in ("cte:infCteComp/cte:chCTe", "cte:infCteComp/cte:chCte",
+                 "cte:infCteSub/cte:chCte", "cte:infCteSub/cte:chCTe",
+                 "cte:infCteAnu/cte:chCte", "cte:infCteAnu/cte:chCTe"):
+        _v = _txt(root, _cam)
+        if _v and len(_v.strip()) == 44 and _v.strip() != chave:
+            ch_ref = _v.strip(); break
 
     # v9: tomador do servico (quem paga o frete)
     #   toma3/toma: 0=remetente 1=expedidor 2=recebedor 3=destinatario
@@ -595,6 +612,7 @@ def parse_cte(filepath: str):
         "status_desc":  status_desc[:60],
         "sub_op":       sub_operacao,
         "tp_cte":       tp_cte,
+        "ch_ref":       ch_ref,
         "tomador":      tomador,
         "tomador_cnpj": tomador_cnpj,
         "tomador_gi":   tomador_gi,
@@ -1007,19 +1025,81 @@ def _agg_op(ctes):
     }
 
 
+# ───────────────────────────────────────────────────────────────
+#  v9.2 — REGRAS DE NEGOCIO (aplicadas sobre uma COPIA; o estado fica intacto)
+# ───────────────────────────────────────────────────────────────
+#  flags por CT-e:
+#    S = substituido por outro CT-e (tpCTe 3)       -> fora dos totais
+#    A = anulado (tpCTe 2) ou o proprio CT-e de anulacao -> fora dos totais
+#    T = frete pago por terceiro (tomador nao e Genomma/Inovalab) -> fora do custo
+#    R = estava como REVERSA mas o remetente nao e cliente -> reclassificado INBOUND
+#    D = suspeita de duplicidade (mesma transportadora, mesmas NFs, mesmo frete
+#        e mercadoria de outro CT-e normal) -> CONTINUA no total, vai para auditoria
+FLAGS_FORA = {"S", "A", "T"}
+
+def consolidar(ctes: list) -> list:
+    global _MATRIZ_MAP
+    if _MATRIZ_MAP is None:
+        _MATRIZ_MAP = _load_matriz_map()
+    subst, anul = set(), set()
+    for c in ctes:
+        r = c.get("ch_ref") or ""
+        if c.get("tp_cte") == "3" and r:
+            subst.add(r)
+        if c.get("tp_cte") == "2":
+            anul.add(c["chave"])
+            if r: anul.add(r)
+    raiz_emp = {CNPJ_GENOMMA[:8]} | {x[:8] for x in CNPJS_INOVALAB}
+    raiz_cli = {k[:8] for k in (_MATRIZ_MAP or {})}
+    raiz_cli |= {(c.get("cli_cnpj") or "")[:8] for c in ctes
+                 if c.get("operacao") == "OUTBOUND" and len(c.get("cli_cnpj") or "") == 14}
+    raiz_cli -= raiz_emp
+    # suspeita de duplicidade
+    grupos = {}
+    for c in sorted(ctes, key=lambda c: (c.get("dt_emissao", ""), c.get("n_cte", ""))):
+        if c.get("tp_cte", "0") in ("0", "") and c.get("nfs"):
+            k = ((c.get("transp_cnpj") or "")[:8], c["nfs"], round(c.get("v_frete", 0), 2), round(c.get("v_merc", 0), 2))
+            grupos.setdefault(k, []).append(c["chave"])
+    dup = {ch for v in grupos.values() if len(v) > 1 for ch in v[1:]}
+    out, cont = [], {"S": 0, "A": 0, "T": 0, "R": 0, "D": 0, "TRANSFERENCIA": 0}
+    for c in ctes:
+        x = dict(c); fl = set()
+        if c["chave"] in subst: fl.add("S")
+        if c["chave"] in anul: fl.add("A")
+        if c.get("tomador_gi") == 0: fl.add("T")
+        if c["chave"] in dup: fl.add("D")
+        op = c.get("operacao")
+        if op == "OUTBOUND" and (c.get("cli_cnpj") or "")[:8] in raiz_emp:
+            op = "TRANSFERENCIA"; cont["TRANSFERENCIA"] += 1
+        elif op == "REVERSA" and (c.get("rem_cnpj") or "")[:8] not in raiz_cli:
+            op = "INBOUND"; fl.add("R")
+        x["operacao"] = op
+        x["flags"] = "".join(sorted(fl))
+        for f in fl: cont[f] += 1
+        out.append(x)
+    log.info(f"  Regras v9.2: substituidos {cont['S']} | anulados {cont['A']} | pagos por terceiro {cont['T']} | "
+             f"transferencias {cont['TRANSFERENCIA']} | reversa->inbound {cont['R']} | suspeita duplicidade {cont['D']}")
+    return out
+
+
 def agregar(ctes: list) -> dict:
+    # v9.2: totais sem substituidos, anulados e fretes pagos por terceiros
+    ctes = [c for c in ctes if not (set(c.get("flags", "")) & FLAGS_FORA)]
     out_c = [c for c in ctes if c.get("operacao")=="OUTBOUND"]
     in_c  = [c for c in ctes if c.get("operacao")=="INBOUND"]
     rev_c = [c for c in ctes if c.get("operacao")=="REVERSA"]
+    trf_c = [c for c in ctes if c.get("operacao")=="TRANSFERENCIA"]
     return {
         "outbound": _agg_op(out_c),
         "inbound":  _agg_op(in_c),
         "reversa":  _agg_op(rev_c),
+        "transferencia": {"ctes": len(trf_c), "frete": _r(sum(c["v_frete"] for c in trf_c))},
         "resumo": {
             "outbound_ctes":  len(out_c),
             "inbound_ctes":   len(in_c),
             "reversa_ctes":   len(rev_c),
             "total_ctes":     len(ctes),
+            "transferencia_ctes": len(trf_c),
             "outbound_frete": _r(sum(c["v_frete"] for c in out_c)),
             "inbound_frete":  _r(sum(c["v_frete"] for c in in_c)),
             "reversa_frete":  _r(sum(c["v_frete"] for c in rev_c)),
@@ -1092,7 +1172,7 @@ def _mz_raw(c):
 def publicar_raw(ctes: list) -> bool:
     """Publica dados brutos para exportacao Excel no dashboard."""
     EMP = {"GENOMMA":"G","INOVALAB":"I","OUTROS":"O"}
-    OP  = {"OUTBOUND":"OUT","INBOUND":"IN","REVERSA":"REV"}
+    OP  = {"OUTBOUND":"OUT","INBOUND":"IN","REVERSA":"REV","TRANSFERENCIA":"TRF"}
     raw = [{"k":c["chave"],
              "nct":c.get("n_cte",""),"ser":c.get("serie",""),
              "cf":c.get("cfop",""),"np":c.get("n_prot",""),
@@ -1116,16 +1196,42 @@ def publicar_raw(ctes: list) -> bool:
              # v9
              "rg":c.get("regiao",""),
              "tpc":c.get("tp_cte",""),"tom":c.get("tomador",""),"tgi":c.get("tomador_gi"),
+             # v9.2
+             "ref":c.get("ch_ref",""),"fl":c.get("flags",""),
              **_mz_raw(c)} for c in ctes]
+    # v9.2: versao leve (colunar) para o painel; o ctes_raw.json completo fica para o Excel
+    COLS = ["k","d","ano","mes","e","o","tn","tc","cn","cc","rn","rc","uf","mu","rg","tp",
+            "vf","vm","kg","sop","tpc","tgi","mz","ab","mzc","abc","ref","fl","nct","nfs"]
+    DIC = ["tn","tc","cn","cc","rn","rc","mu","mz","ab","mzc","abc","uf","rg","sop","tpc","fl","e","o","tp"]
+    dic = {k: {} for k in DIC}
+    def _cod(k, v):
+        if k not in dic: return v
+        d = dic[k]
+        if v not in d: d[v] = len(d)
+        return d[v]
+    rows = [[_cod(k, r.get(k, "") if r.get(k) is not None else "") if k in dic else r.get(k) for k in COLS] for r in raw]
+    base = json.dumps({"v": 2, "cols": COLS, "dict": {k: list(d.keys()) for k, d in dic.items()}, "rows": rows},
+                      ensure_ascii=False, separators=(",",":")).encode("utf-8")
     data = json.dumps(raw, ensure_ascii=False, separators=(",",":")).encode("utf-8")
     if SEM_PUBLICAR:
         with open("ctes_raw_local.json", "wb") as _f:
             _f.write(data)
-        log.info(f"  (--sem-publicar) ctes_raw.json NAO enviado; copia em ctes_raw_local.json ({len(data)//1024}KB)")
+        with open("ctes_base_local.json", "wb") as _f:
+            _f.write(base)
+        log.info(f"  (--sem-publicar) nada enviado; copias locais ctes_raw_local.json ({len(data)//1024}KB) "
+                 f"e ctes_base_local.json ({len(base)//1024}KB)")
         return True
     hdrs = _hdrs()
     if hdrs is None:
         return False
+    try:
+        rb = requests.post(f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_BASE}", data=base, headers=hdrs, timeout=90)
+        if rb.status_code in (200,201,204):
+            log.info(f"  OK ctes_base.json ({len(base)//1024}KB)")
+        else:
+            log.error(f"  ERRO base {rb.status_code}: {rb.text[:200]}")
+    except Exception as e:
+        log.error(f"  ERRO base: {e}")
     url  = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_RAW}"
     try:
         r = requests.post(url, data=data, headers=hdrs, timeout=90)
@@ -1199,7 +1305,7 @@ def main():
     # ── MODO RECLASSIFICAR (rapido) ─────────────────────────────
     if args.reclassificar:
         print("\n" + "="*58)
-        print("  TORRE DE CONTROLE -- RECLASSIFICACAO RAPIDA  v9")
+        print("  TORRE DE CONTROLE -- RECLASSIFICACAO RAPIDA  v9.2")
         print("  Reclassifica historico sem reler XMLs")
         print("="*58)
         estado = load_estado()
@@ -1233,7 +1339,8 @@ def main():
         log.info(f"  {alterados:,} reclassificados | {descartados:,} descartados (rem vazio) | {excluidos_transp:,} descartados (transp excluida)")
 
         log.info("Agregando...")
-        dados = agregar(ctes_validos)
+        ctes_pub = consolidar(ctes_validos)
+        dados = agregar(ctes_pub)
         dados["atualizado"]           = ts_inicio.strftime("%d/%m/%Y %H:%M")
         dados["pasta_origem"]         = pasta
         dados["anos_filtro"]          = ANOS_FILTRO
@@ -1251,7 +1358,7 @@ def main():
         save_estado(estado)
 
         ok = publicar(dados)
-        publicar_raw(ctes_validos)
+        publicar_raw(ctes_pub)
         r  = dados["resumo"]
         print("\n" + "="*58 + "\n  RESUMO\n" + "="*58)
         print(f"  CTes ativos          : {len(ctes_validos):,}")
@@ -1266,7 +1373,7 @@ def main():
     # ────────────────────────────────────────────────────────────
 
     print("\n" + "="*58)
-    print("  TORRE DE CONTROLE -- PROCESSADOR DE CTe  v9")
+    print("  TORRE DE CONTROLE -- PROCESSADOR DE CTe  v9.2")
     print(f"  Pasta  : {pasta}")
     print(f"  Filtro : {PREFIXO_CTE}* (CTe) e {PREFIXO_CANCELAMENTO}* (Cancelamento)")
     print(f"  Modo   : {'COMPLETO (--tudo)' if args.tudo else 'INCREMENTAL (so novos)'}")
@@ -1402,7 +1509,8 @@ def main():
 
     todos = hist_valido + novos_ctes
     log.info(f"Agregando {len(todos):,} CTes...")
-    dados = agregar(todos)
+    todos_pub = consolidar(todos)
+    dados = agregar(todos_pub)
     dados["atualizado"]           = ts_inicio.strftime("%d/%m/%Y %H:%M")
     dados["pasta_origem"]         = pasta
     dados["anos_filtro"]          = ANOS_FILTRO
@@ -1424,7 +1532,7 @@ def main():
     save_estado(estado)
 
     ok = publicar(dados)
-    publicar_raw(todos)
+    publicar_raw(todos_pub)
 
     r = dados["resumo"]
     tt = (datetime.now()-ts_inicio).seconds

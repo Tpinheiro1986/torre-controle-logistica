@@ -100,3 +100,26 @@ ABA NOVA: COMPARATIVO ANUAL (v9.1)
   Eficiencia). Botao "Exportar comparativo" gera o Excel da tabela.
 - Vale para Outbound (por cliente) e Inbound/Reversa (por remetente).
 - Respeita os filtros Empresa, Tipo e Regiao da barra.
+
+VERSAO 9.2 - REVISAO COMPLETA COM 2024 (28/10/2026)
+---------------------------------------------------
+Regras de negocio novas (pipeline e painel):
+- Frete pago por terceiro (tomador do CT-e nao e Genomma/Inovalab) sai
+  do custo: 286 CT-es, R$ 550 mil (Outbound 146, Reversa 92, Inbound 48).
+- Envio entre unidades Genomma/Inovalab vira TRANSFERENCIA: 108 CT-es,
+  R$ 60 mil. Sai do Outbound e da lista de clientes.
+- "Reversa" vinda de quem nao e cliente (fornecedor, prestador) vira
+  Inbound: 26 CT-es.
+- CT-e substituido (tpCTe 3) ou anulado (tpCTe 2) sai da base. Precisa do
+  REPROCESSAR_TUDO.bat uma vez para gravar a referencia ao CT-e original.
+- Suspeita de duplicidade: mesma transportadora, mesmas NFs, mesmo frete
+  e mesma mercadoria de um CT-e anterior. 64 CT-es, R$ 221 mil. Continuam
+  no total e aparecem na lista "Auditoria" da aba Fat. Transportadora,
+  com exportacao para Excel.
+- "Frete por envio" = frete total / CT-es normais (complementar nao e
+  envio). Peso < 1 kg fica fora do R$/kg (provavel erro de unidade).
+- O painel carrega ctes_base.json (2,9 MB, antes 13 MB). O ctes_raw.json
+  completo so e baixado na exportacao do Excel.
+Passos: rode REPUBLICAR.bat (aplica as regras e publica o arquivo leve).
+Depois, uma vez, REPROCESSAR_TUDO.bat (grava a referencia dos
+complementares/substitutos).
