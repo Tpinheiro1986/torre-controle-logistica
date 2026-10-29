@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.13-serie3-historico', date: '27/10/2026' };
+window.__BUILD__ = { version: 'v10.14-devolucao-catalogo', date: '29/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1672,6 +1672,48 @@ function ehNfHomologacao(cliente){
   return t.indexOf('AMBIENTE DE HOMOLOGACAO')>=0 || (t.indexOf('HOMOLOGACAO')>=0 && t.indexOf('SEM VALOR FISCAL')>=0);
 }
 window.ehNfHomologacao = ehNfHomologacao;
+
+// v10.14 (29/10/2026) — CATÁLOGO COMPLETO DO TMS (155 códigos) e regras de
+// ocorrência aprovadas pela operação. Espelho de CATALOGO_OCORRENCIAS e das
+// listas OCOR_* do processar_otd.py — mexer num exige mexer no outro.
+//   código -> [descrição, nível (T Transportadora · E Embarcador · F Finalizadora), status (L Liberado · B Bloqueado)]
+const OCOR_CATALOGO = {"0":["Processo de Transporte Já iniciado","T","L"],"1":["Entrega Realizada Normalmente","F","L"],"2":["Entrega Fora da Data Programada","F","L"],"3":["Recusa por Falta de Pedido de Compra","E","L"],"4":["Recusa por Pedido de Compra Cancelado","E","L"],"5":["Falta de Espaço Físico no Depósito do Cliente Dest","T","L"],"6":["Endereço do Cliente Destino não Localizado","E","L"],"7":["Devolução não Autorizada pelo Cliente","T","L"],"8":["Preço Mercadoria em Desacordo com o Pedido Compra","E","L"],"9":["Mercadoria em Desacordo com o Pedido Compra","E","L"],"10":["Cliente Destino somente Recebe Mercadoria com Fret","E","L"],"11":["Recusa por Deficiência Embalagem Mercadoria","T","L"],"12":["Redespacho não Indicado","T","L"],"13":["Transportadora não Atende a Cidade do Cliente Dest","T","L"],"14":["Mercadoria Sinistrada","T","L"],"15":["Embalagem Sinistrada","T","L"],"16":["Pedido de Compras em Duplicidade","E","L"],"17":["Mercadoria fora da Embalagem de Atacadista","E","L"],"18":["Mercadorias Trocadas","T","L"],"19":["Reentrega Solicitada pelo Cliente","T","L"],"20":["Entrega Prejudicada por Horário/Falta de Tempo Háb","T","L"],"21":["Estabelecimento Fechado","T","L"],"22":["Reentrega sem Cobrança do Cliente","T","L"],"23":["Extravio de Mercadoria em Trânsito","T","L"],"24":["Mercadoria Reentregue ao Cliente Destino","F","L"],"25":["Mercadoria Devolvida ao cliente Origem","F","L"],"26":["Nota Fiscal Retida pela Fiscalização","T","L"],"27":["Roubo de Carga","F","L"],"28":["Mercadoria Retida até Segunda Ordem","T","L"],"29":["Cliente Retira Mercadoria na Transportadora","F","L"],"30":["Problema com a Documentação (Nota Fiscal / CTRC)","T","L"],"31":["Entrega com Indenização Efetuada","F","L"],"32":["Falta com Solicitação de Reposição","E","L"],"33":["Falta com Busca/Reconferência","T","L"],"34":["Cliente Fechado para Balanço","T","L"],"35":["Quantidade de Produto em Desacordo Nota Fiscal","T","L"],"36":["Extravio de documentos pela Cia Aérea","T","L"],"37":["Extravio de carga pela Cia Aérea","T","L"],"38":["Avaria de carga pela Cia Aérea","T","L"],"39":["Corte de carga na pista","T","L"],"40":["Aeroporto fechado na origem","T","L"],"41":["Pedido de Compra Incompleto","E","L"],"42":["Nota Fiscal com Produtos de Setores Diferentes","E","L"],"43":["Feriado Local/Nacional","T","L"],"44":["Excesso de Veículos","T","L"],"45":["Cliente Destino Encerrou Atividades","E","L"],"46":["Responsável de Recebimento Ausente","T","L"],"47":["Cliente Destino em Greve","E","L"],"48":["Aeroporto fechado no destino","T","L"],"49":["Vôo cancelado","T","L"],"50":["Greve nacional (greve geral)","T","L"],"51":["Greve nacional (greve geral)","E","L"],"52":["Mercadoria Redespachada (Entregue para redespacho)","T","L"],"53":["Mercadoria não foi Embacarda, permanecendo na Orig","T","L"],"54":["Mercadoria Embarcada sem Conhecimento/ Conheciment","T","L"],"55":["Endereço de Transportadora de Redespacho não Local","T","L"],"56":["Cliente não Aceita Mercadoria com Pagamento de Ree","E","L"],"57":["Transportadora não Atende a Cidade da Transportado","T","L"],"58":["Quebra de Veiculo de Entrega","T","L"],"59":["Cliente sem Verba para Pagar o Frete","E","L"],"60":["Endereço de Entrega Errado","E","L"],"61":["Cliente sem Verba para Reembolso","E","L"],"62":["Recusa  da Carga por Valor de Frete Errado","E","L"],"63":["Identificação do Cliente não Informada/Enviada/Ins","E","L"],"64":["Cliente não Identificado/Cadastrado","E","L"],"65":["Entrar em Contato com o Comprador","E","L"],"66":["Troca não Disponível","E","L"],"67":["Fins Estatísticos","T","L"],"68":["Data de Entrega Diferente do Pedido","E","L"],"69":["Substituição Tributária","E","L"],"70":["Sistema Fora do Ar","T","L"],"71":["Cliente Destino não Recebe Pedido Parcial","E","L"],"72":["Cliente Destino só Recebe Pedido Parcial","E","L"],"73":["Redespacho somente com Frete Pago","E","L"],"74":["Funcionário não autorizado a Receber Mercadorias","E","L"],"75":["Mercadoria Embarcada para Rota Indevida","T","L"],"76":["Estrada/Entrada de Acesso Interditada","T","L"],"77":["Cliente Destino Mudou de Endereço","E","L"],"78":["Avaria Total","F","L"],"79":["Avaria Parcial","T","L"],"80":["Extravio Total","F","L"],"81":["Extravio Parcial","T","L"],"82":["Sobra de Mercadoria sem Nota Fiscal","T","L"],"83":["Mercadoria em poder da SUFRAMA para Internação","T","L"],"84":["Mercadoria Retida para Conferência","T","L"],"85":["Apreensão Fiscal da Mercadoria","T","L"],"86":["Excesso de Carga/Peso","T","L"],"87":["Férias Coletivas","E","L"],"88":["Recusado, aguardando negociação","E","L"],"89":["Aguardando refaturamento das mercadorias","E","L"],"90":["Recusado pelo Redespachante","E","L"],"91":["Entrega Programada","T","L"],"92":["Problemas Fiscais","T","L"],"93":["Aguardando Carta de Correção","E","L"],"94":["Recusa por Divergência nas Condições de pagamento","E","L"],"95":["Carga aguardando vôo conexão","T","L"],"96":["Carga sem embalagem própria para trans. Aéreo","T","L"],"97":["Carga com dimensão superior ao porão aeronave","T","L"],"98":["Chegada na cidade ou filial de destino","T","L"],"99":["Outros tipos de ocorrências não especificados acim","T","L"],"100":["Devolução Por Não Cumprimento Do Agendamento","E","B"],"101":["Devolução/Não Entrega A Pedido Do Embarcador","E","B"],"102":["Devolução/Não Entrega A Pedido Do Destinatário","E","B"],"103":["Devolução/Não Entrega A Pedido Tpd De Redespacho","E","B"],"104":["Entrega Efetuada Na Transportadora De Redespacho","E","B"],"105":["Entrega Efetuada No Cliente Pela Trp De Redespacho","E","B"],"171":["Armazenagem","E","B"],"201":["Data Da Retirada Em Manaus","E","B"],"202":["Placa Da Carreta Responsável Pelo Transporte","E","B"],"203":["Nome Da Balsa","E","B"],"204":["Nome Do Empurrador","E","B"],"205":["Número Da Frota","E","B"],"206":["Data De Chegada Em Belém","E","B"],"207":["Data De Saída De Belém","E","B"],"208":["Data De Chegada Na Transportadora","E","B"],"209":["Data De Saída Da Transportadora","E","B"],"210":["Data De Chegada No Porto","E","B"],"211":["Data De Saída Do Porto","E","B"],"212":["Data De Chegada Na Segunda Transportadora","E","B"],"213":["Data De Saída Da Segunda Transportadora Redesp","E","B"],"214":["Refaturamento","E","B"],"215":["Perda De Agendamento Pelo Transportador","E","B"],"216":["Reagendamento Por Solicitacao Do Cliente","E","B"],"217":["Reagendamento Por Motivo Comercial","E","B"],"218":["Recusa De Entrega Por Motivo Do Cliente","E","B"],"301":["Pedido Cancelado","E","B"],"302":["Pedido Em Duplicidade","E","B"],"303":["Pedido Já Atendido","E","B"],"304":["Problema Fiscal - Imposto","E","B"],"305":["Cliente Não Retorna Solicitação De Agendamento","E","B"],"306":["Estoque Alto","E","B"],"307":["Aguardando Pagamento Da Guia Por Parte Do Cliente","E","B"],"308":["Retenção Fiscal","E","B"],"309":["Pedido Sem Saldo","E","B"],"310":["Pedido Divergente (Qtd, Custo, Modelo)","E","B"],"311":["Sem Pedido","E","B"],"312":["Faturamento Para Local Errado","E","B"],"313":["Outros Problemas Comerciais","E","B"],"410":["NF Validada Fiscal","E","L"],"420":["NF Retorno Autorizado","E","L"],"421":["DEVOLUÇÃO AGENDAMENTO CONFIRMADO","E","L"],"500":["Pedido Emitido","E","L"],"510":["Pedido Implantado","E","L"],"520":["Embarque Criado","E","L"],"530":["Embarque Liberado","E","L"],"540":["Embarque Roteirizado","E","L"],"550":["Embarque Integrado","E","L"],"560":["Embarque Separado","E","L"],"570":["Embarque Conferido","E","L"],"600":["NF Ag. Agendamento","T","L"],"601":["Agendamento Solicitado","E","L"],"602":["Agendamento Confirmado","E","L"],"807":["NF em Rota de Entrega","E","L"],"998":["Desconsiderar NF","F","L"],"999":["Devolução Total","F","L"]};
+const OCOR_REGRAS = {
+  entregue:   [1, 24, 29],                          // 24 Reentregue · 29 Cliente retira — entram no OTD
+  offTime:    [2],
+  desconsid:  [998],
+  devGatilho: [25, 999, 420, 421, 100, 101, 102, 103], // devolução PERSISTENTE (fora do OTD)
+  devEncerra: [1, 2, 24, 25, 27, 29, 31, 78, 80, 999], // finalizadora depois do gatilho encerra a devolução
+  sinistro:   [27, 78, 80, 31],                     // roubo, avaria total, extravio total, indenização — fora do OTD
+  informativa:[67, 410, 500, 510, 520, 530, 540, 550, 560, 570, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213],
+  tratFiscal: [26, 30, 85, 92, 93, 304, 308],
+  tratEmbForcada: [7, 88, 218]                      // tratativa até a 420 chegar
+};
+// Sub-status de trânsito pela ocorrência (null = não é de trânsito ou fora do catálogo)
+function subStatusOcor(oc){
+  const R=OCOR_REGRAS;
+  if(oc==null || R.informativa.indexOf(oc)>=0 || oc===0 || oc===98) return 'Em Transito';
+  if(oc===600) return 'Aguardando Agendamento';
+  if(oc===601) return 'Agendamento Solicitado';
+  if(oc===602) return 'Agendamento Confirmado';
+  if([28,84,91,807].indexOf(oc)>=0) return 'Em Rota de Entrega';
+  if(R.tratFiscal.indexOf(oc)>=0) return 'Tratativa Fiscal';
+  if(R.tratEmbForcada.indexOf(oc)>=0) return 'Tratativa Embarcador';
+  const c=OCOR_CATALOGO[oc];
+  if(!c || c[1]==='F' || R.devGatilho.indexOf(oc)>=0 || R.sinistro.indexOf(oc)>=0 || R.entregue.indexOf(oc)>=0 || R.offTime.indexOf(oc)>=0 || R.desconsid.indexOf(oc)>=0) return null;
+  if(c[2]==='B') return 'Bloqueio Comercial';
+  return c[1]==='E' ? 'Tratativa Embarcador' : 'Tratativa Transportadora';
+}
+// Fase da devolução: concluída · retorno agendado · em retorno ao CD · autorizada
+function faseDevolucao(ocAtual, fimOc){
+  if(fimOc!=null && fimOc!=='' ) return 'Devolução concluída';
+  if([421,601,602].indexOf(ocAtual)>=0) return 'Retorno agendado';
+  if([0,98,28,84,807,91].indexOf(ocAtual)>=0) return 'Em retorno ao CD';
+  return 'Devolução autorizada';
+}
+function descOcor(oc){ const c=OCOR_CATALOGO[oc]; return c ? c[0] : ''; }
+window.OCOR_CATALOGO=OCOR_CATALOGO; window.OCOR_REGRAS=OCOR_REGRAS;
+window.subStatusOcor=subStatusOcor; window.faseDevolucao=faseDevolucao; window.descOcor=descOcor;
 
 // v10.13 — SÉRIES DESCONSIDERADAS. NF de série 3 fica fora de TODAS as
 // visões por padrão (decisão da operação, 27/10/2026), nas duas empresas.
@@ -4720,7 +4762,7 @@ function exportarAbertasExcel(ev){
 var OTDRegras = (function () {
   'use strict';
 
-  var VERSAO_REGRAS = 'v10.13-2026-10-27';   // espelho do classificar() do processar_otd.py
+  var VERSAO_REGRAS = 'v10.14-2026-10-29';   // espelho do classificar() do processar_otd.py
 
   // -- 1. Macros do painel ---------------------------------------------------
   var MACRO = {
@@ -4734,15 +4776,17 @@ var OTDRegras = (function () {
     'Tratativa Embarcador': 'Transito',
     'Tratativa Transportadora': 'Transito',
     'Tratativa Fiscal': 'Transito',
+    'Bloqueio Comercial': 'Transito',
     'CD': 'CD',
     'Em Atraso': 'Em Atraso',
     'Cancelada': 'Cancelada',
     'Devolvida': 'Devolvida',
+    'Sinistro': 'Sinistro',
     'Desconsiderada': 'Desconsiderada',
     'Sem Regra': 'Sem Regra'
   };
 
-  var EM_TRATATIVA = ['Tratativa Embarcador', 'Tratativa Transportadora', 'Tratativa Fiscal'];
+  var EM_TRATATIVA = ['Tratativa Embarcador', 'Tratativa Transportadora', 'Tratativa Fiscal', 'Bloqueio Comercial'];
   var ENTRA_OTD = ['On Time', 'Off Time'];
 
   function macroDe(s) { return MACRO[s] || 'Sem Regra'; }
@@ -4752,11 +4796,11 @@ var OTDRegras = (function () {
   // Encerram o ciclo e tem precedencia sobre o Status da Entrega do ERP,
   // porque o catalogo TMS marca 25/998/999 como "Entregue Destino = Sim" e o
   // ERP devolve esses casos como "Entregue no Prazo" - o que inflava o OTD.
-  var OCOR_ENTREGUE = [1];
+  var OCOR_ENTREGUE = OCOR_REGRAS.entregue;   // v10.14: 1, 24, 29
   var OCOR_OFF_TIME = [2];
   // v10.11: 420 e 421 também são devolução no pipeline (OCOR_DEVOLVIDA do
   // processar_otd.py). Antes o Excel "Todas as Notas" dizia Tratativa.
-  var OCOR_DEVOLVIDA = [25, 999, 420, 421];
+  var OCOR_DEVOLVIDA = OCOR_REGRAS.devGatilho; // v10.14: gatilho de devolução persistente
   var OCOR_DESCONSIDERADA = [998];
 
   // Como decidir On Time x Off Time numa NF entregue.
@@ -4767,36 +4811,9 @@ var OTDRegras = (function () {
   // Na base de 17/08/2026 a diferenca e de 4 NFs (OTD 99,74% x 99,79%).
   var OFF_TIME_SE_ERP_DIZ_ATRASO = true;
 
-  var OCOR_TRANSITO = {
-    0: 'Em Transito',
-    98: 'Em Transito',
-    600: 'Aguardando Agendamento',
-    601: 'Agendamento Solicitado',
-    602: 'Agendamento Confirmado',
-    28: 'Em Rota de Entrega',
-    84: 'Em Rota de Entrega',
-    91: 'Em Rota de Entrega',
-    807: 'Em Rota de Entrega',
-    26: 'Tratativa Fiscal',
-    3: 'Tratativa Embarcador',
-    5: 'Tratativa Embarcador',
-    8: 'Tratativa Embarcador',
-    9: 'Tratativa Embarcador',
-    23: 'Tratativa Embarcador',
-    80: 'Tratativa Embarcador',
-    92: 'Tratativa Embarcador',
-    420: 'Tratativa Embarcador',
-    19: 'Tratativa Transportadora',
-    20: 'Tratativa Transportadora',
-    21: 'Tratativa Transportadora',
-    29: 'Tratativa Transportadora',
-    31: 'Tratativa Transportadora',
-    33: 'Tratativa Transportadora',
-    35: 'Tratativa Transportadora',
-    44: 'Tratativa Transportadora',
-    50: 'Tratativa Transportadora',
-    99: 'Tratativa Transportadora'
-  };
+  var OCOR_TRANSITO = (function(){        // v10.14: gerado do catálogo completo
+    var m={}; Object.keys(OCOR_CATALOGO).forEach(function(k){ var v=subStatusOcor(+k); if(v) m[k]=v; }); return m;
+  })();
 
   // -- 3. Normalizacao -------------------------------------------------------
   // O ERP entrega HTML dentro do valor do campo. Ja foi observado o status
@@ -4879,6 +4896,9 @@ var OTDRegras = (function () {
     var iniTransp = campo(linha, 'Data Ini. Transp.', 'Data Ini Transp', 'Data Inicio Transporte');
     var dtPrevisao = data(campo(linha, 'Data Max Entrega', 'Previsão de Entrega', 'Previsao de Entrega'));
     var dtEntrega = data(campo(linha, 'Data Entrega Operacao', 'Data Entrega', 'Data Entregue'));
+    // v10.14: devolução persistente gravada pelo pipeline no mestre
+    var devIni = inteiro(campo(linha, 'Devolucao Ocorrencia'));
+    var devFim = inteiro(campo(linha, 'Devolucao Fim Ocorrencia'));
 
     function resultado(status, regra, prazo) {
       return {
@@ -4916,8 +4936,14 @@ var OTDRegras = (function () {
     if (erp.indexOf('desconsiderada') >= 0) return resultado('Desconsiderada', 'R1-status');
     if (OCOR_DESCONSIDERADA.indexOf(ocor) >= 0) return resultado('Desconsiderada', 'R1-ocor998');
 
-    // R2
-    if (OCOR_DEVOLVIDA.indexOf(ocor) >= 0) return resultado('Devolvida', 'R2-ocor' + ocor);
+    // R2 - devolucao PERSISTENTE (v10.14): gatilho em qualquer momento da NF
+    if (devIni !== null || OCOR_DEVOLVIDA.indexOf(ocor) >= 0) {
+      var r2 = resultado('Devolvida', 'R2-dev' + (devIni !== null ? devIni : ocor) + (devFim !== null ? '-fim' + devFim : ''));
+      r2.fase_devolucao = faseDevolucao(ocor, devFim);
+      return r2;
+    }
+    // R2b - sinistro / indenizacao (27, 78, 80, 31) - fora do OTD
+    if (OCOR_REGRAS.sinistro.indexOf(ocor) >= 0) return resultado('Sinistro', 'R2b-ocor' + ocor);
 
     // R3
     if (OCOR_OFF_TIME.indexOf(ocor) >= 0) return resultado('Off Time', 'R3-ocor2');
@@ -4963,9 +4989,8 @@ var OTDRegras = (function () {
 
     // R7 - tem CTE ou romaneio: saiu do CD. A ocorrencia define o sub-status
     if (ocor === null) return resultado('Em Transito', 'R7-transito-sem-ocor', prazo);
-    if (Object.prototype.hasOwnProperty.call(OCOR_TRANSITO, ocor)) {
-      return resultado(OCOR_TRANSITO[ocor], 'R7-ocor' + ocor, prazo);
-    }
+    var subV14 = subStatusOcor(ocor);       // v10.14: catálogo completo
+    if (subV14) return resultado(subV14, 'R7-ocor' + ocor, prazo);
 
     // R8 - ocorrencia nunca aprovada. Fica visivel e fora do OTD, para aparecer
     // no dia seguinte em vez de sumir dentro de um default.
@@ -7481,19 +7506,12 @@ function agrupar(rows){
   return notas;
 }
 
-/* ---------- de-para de ocorrências (motor v10.0) ---------- */
-const OCOR_TRANSITO = {
-  '0':'Em Trânsito','98':'Em Trânsito','':'Em Trânsito',
-  '600':'Aguardando Agendamento','601':'Agendamento Solicitado','602':'Agendamento Confirmado',
-  '28':'Em Rota de Entrega','84':'Em Rota de Entrega','91':'Em Rota de Entrega','807':'Em Rota de Entrega',
-  '26':'Tratativa Fiscal',
-  '3':'Tratativa Embarcador','5':'Tratativa Embarcador','8':'Tratativa Embarcador','9':'Tratativa Embarcador',
-  '23':'Tratativa Embarcador','80':'Tratativa Embarcador','92':'Tratativa Embarcador','420':'Tratativa Embarcador',
-  '19':'Tratativa Transportadora','20':'Tratativa Transportadora','21':'Tratativa Transportadora',
-  '29':'Tratativa Transportadora','31':'Tratativa Transportadora','33':'Tratativa Transportadora',
-  '35':'Tratativa Transportadora','44':'Tratativa Transportadora','50':'Tratativa Transportadora',
-  '99':'Tratativa Transportadora'
-};
+/* ---------- de-para de ocorrências (v10.14: gerado do catálogo completo) ---------- */
+const OCOR_TRANSITO = (function(){
+  const m={'':'Em Trânsito'};
+  Object.keys(OCOR_CATALOGO).forEach(k=>{ const v=subStatusOcor(+k); if(v) m[k]=v.replace('Em Transito','Em Trânsito'); });
+  return m;
+})();
 
 function pedidoInvalido(p){
   const s=String(p||'').trim().toLowerCase();
@@ -7582,15 +7600,27 @@ function diagnosticarSemCache(r){
     return { entra:false, sit:'Desconsiderada', tom:'err', regra:'R1', onde:'Nenhum painel', motivo };
   }
 
-  if(ocor==='25' || ocor==='999' || ocor==='420' || ocor==='421'){
-    return { entra:true, sit:'Devolvida', tom:'amb', regra:'R2', onde:'Painel (macro Devolvida) · fora do cálculo de OTD e fora de Notas em Aberto',
-      motivo:'Ocorrência '+ocor+' — devolução. Conta como Devolvida e sai do cálculo de OTD por regra, mas continua visível no painel.' };
+  // v10.14: devolução PERSISTENTE — gatilho gravado no mestre ou na ocorrência atual
+  const devIni = g(r,'Devolucao Ocorrencia'), devFim = g(r,'Devolucao Fim Ocorrencia');
+  const ocN = ocor==='' ? null : parseInt(ocor,10);
+  if(devIni || OCOR_REGRAS.devGatilho.indexOf(ocN)>=0){
+    const ini = devIni || ocor, fase = faseDevolucao(ocN, devFim);
+    return { entra:true, sit:'Devolvida · '+fase, tom:'amb', regra:'R2 · devolução '+ini+(devFim?' → '+devFim:''),
+      onde:'Painel (macro Devolvida) · fora do cálculo de OTD e fora de Notas em Aberto',
+      motivo:'Entrou a ocorrência '+ini+' ('+descOcor(+ini)+')'+(g(r,'Devolucao Data')?' em '+g(r,'Devolucao Data'):'')
+            +'. Uma vez em devolução a NF não volta para trânsito: as ocorrências seguintes contam a volta da mercadoria'
+            +(devFim ? '. Encerrada pela finalizadora '+devFim+' ('+descOcor(+devFim)+')'+(g(r,'Devolucao Fim Data')?' em '+g(r,'Devolucao Fim Data'):'')+'.'
+                     : ' — só encerra com uma ocorrência finalizadora. Ocorrência atual: '+(ocor||'vazia')+(ocN!=null&&descOcor(ocN)?' ('+descOcor(ocN)+')':'')+'.') };
+  }
+  if(OCOR_REGRAS.sinistro.indexOf(ocN)>=0){
+    return { entra:false, sit:'Sinistro', tom:'err', regra:'R2b · ocor '+ocor, onde:'Nenhum painel · fora do OTD e do faturamento',
+      motivo:'Ocorrência '+ocor+' ('+descOcor(ocN)+') — sinistro / indenização. Fica fora do OTD por decisão da operação.' };
   }
 
-  if(ocor==='1' || ocor==='2'){
+  if(OCOR_REGRAS.entregue.indexOf(ocN)>=0 || ocor==='2'){
     const p = ocor==='2' ? 'Off Time' : prazoEntregue();
     return { entra:true, sit:'Entregue · '+p, tom:(p==='On Time'?'ok':'amb'), regra:'R3 · ocor '+ocor,
-      onde:'OTD', motivo:'Ocorrência '+ocor+(ocor==='2'?' — sempre Off Time.':' — entrega realizada, prazo avaliado pelas datas.') };
+      onde:'OTD', motivo:'Ocorrência '+ocor+' ('+descOcor(ocN)+')'+(ocor==='2'?' — sempre Off Time.':' — entrega realizada, prazo avaliado pelas datas.') };
   }
 
   if(/^entregue/i.test(status)){
@@ -7611,15 +7641,15 @@ function diagnosticarSemCache(r){
       onde:'OTD + Notas em Aberto', motivo:'Sem CT-e, sem romaneio e sem início de transporte — ainda não saiu do CD.' };
   }
 
-  const sub = OCOR_TRANSITO[ocor];
+  const sub = OCOR_TRANSITO[ocor];   // v10.14: gerado do catálogo completo
   if(sub !== undefined){
     const c=cortePrazo();
     return { entra:true, sit:sub+' · '+c, tom:'blu', regra:'R7 · ocor '+(ocor||'vazia'),
-      onde:'OTD + Notas em Aberto', motivo:'Tem CT-e ou romaneio; a ocorrência '+(ocor||'(vazia)')+' define o sub-status de trânsito.' };
+      onde:'OTD + Notas em Aberto', motivo:'Tem CT-e ou romaneio; a ocorrência '+(ocor||'(vazia)')+(ocN!=null&&descOcor(ocN)?' ('+descOcor(ocN)+')':'')+' define o sub-status de trânsito.' };
   }
 
   return { entra:false, sit:'Sem Regra', tom:'err', regra:'R8', onde:'Nenhum painel',
-    motivo:'Ocorrência '+ocor+' não está no de-para aprovado. A nota cai em alarme e fica fora do OTD.' };
+    motivo:'Ocorrência '+ocor+' não existe no catálogo do TMS (29/10/2026). A nota cai em alarme e fica fora do OTD — inclua o código no catálogo.' };
 }
 
 /* ---------- carga ---------- */
@@ -7974,6 +8004,7 @@ const isoBR = s => { const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return
 const HNF_ICO = {
   nf:   '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
   cd:   '<path d="M3 21V9l9-6 9 6v12"/><path d="M7 21v-8h10v8"/><line x1="7" y1="17" x2="17" y2="17"/>',
+  ret:  '<g transform="translate(24 0) scale(-1 1)"><line x1="1" y1="9" x2="4" y2="9"/><line x1="0.5" y1="12.5" x2="3.5" y2="12.5"/><rect x="5.5" y="6" width="10" height="10" rx="1"/><path d="M15.5 9h3.5l3 3v4h-6.5"/><circle cx="9" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/></g>',
   exp:  '<line x1="1" y1="9" x2="4" y2="9"/><line x1="0.5" y1="12.5" x2="3.5" y2="12.5"/><rect x="5.5" y="6" width="10" height="10" rx="1"/><path d="M15.5 9h3.5l3 3v4h-6.5"/><circle cx="9" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/>',
   truck:'<rect x="1" y="6" width="13" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/>',
   rota: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>',
@@ -7990,7 +8021,7 @@ const HNF_ICO = {
   check:'<polyline points="5 12.5 10 17 19 7.5"/>'
 };
 const svgI = (k, sz) => '<svg viewBox="0 0 24 24" width="'+(sz||22)+'" height="'+(sz||22)+'" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+HNF_ICO[k]+'</svg>';
-const HNF_COR = { ok:'#3B6D11', amb:'#B26A00', err:'#A32D2D', blu:'#0072BC', cin:'#7A7F87' };
+const HNF_COR = { ok:'#3B6D11', amb:'#B26A00', err:'#A32D2D', blu:'#0072BC', cin:'#7A7F87', dev:'#6B3FA0' };
 
 // etapa de cada evento. v10.13c: a ETAPA vem da ocorrência (CD, agenda,
 // trânsito, rota, tratativa) e o ATRASO é uma marca sobre ela — antes o
@@ -8017,7 +8048,8 @@ function etapaHNF(cod, est){
   switch(cod){
     case 'on_time':         return {k:'ent',  l:'Entregue · On Time',        i:'box',   t:'ok',  b:'check', fim:1};
     case 'off_time':        return {k:'entx', l:'Entregue · Off Time',       i:'box',   t:'amb', b:'clock', fim:1};
-    case 'devolvida':       return {k:'dev',  l:'Devolvida',                 i:'dev',   t:'amb', fim:1};
+    case 'devolvida':       return {k:'dev',  l:'Devolvida',                 i:'dev',   t:'dev', fim:1};
+    case 'sinistro':        return {k:'sin',  l:String(est.oc||'').replace(/\.0$/,'')==='31'?'Entregue c/ indenização':'Sinistro', i:'trat', t:'err', fim:1};
     case 'cancelada':       return {k:'canc', l:'Cancelada',                 i:'canc',  t:'err', fim:1};
     case 'serie3':          return {k:'s3',   l:'Desconsiderada · série 3',  i:'ban',   t:'cin', fim:1};
     case 'sem_pedido':      return {k:'sp',   l:'Descartada · sem pedido',   i:'ban',   t:'cin'};
@@ -8089,6 +8121,9 @@ async function pintarLinhaDoTempo(box){
   const nfNo = { k:'emit', l:'NF emitida', i:'nf', t:'cin', ts:tsDe(emi), dt:emi.slice(0,10), notas:[], est:{} };
   etapas.push(nfNo);
   let expNo=null, avisoVenc=null;
+  let emDev=false, devFim=false;          // v10.14: devolução persistente
+  const R=OCOR_REGRAS;
+  const obsNota = o => '<span title="'+esc(o)+'">Obs. <i>'+esc(o.length>90?o.slice(0,88)+'…':o)+'</i></span>';
   const notaCD = (delta, antes, primeiro) => notasHNF(delta, antes, primeiro).filter(x=>!/^ERP |^Transp\. /.test(x));
   evs.forEach((ev,i)=>{
     const [data, cod, delta] = ev;
@@ -8096,6 +8131,46 @@ async function pintarLinhaDoTempo(box){
     const e = etapaHNF(cod, est);
     const saiu = !!(est.rm && !/^0+$/.test(est.rm)) || !!est.ct || !!est.it || !!est.em;
     let cur = etapas[etapas.length-1];
+
+    // 0) DEVOLUÇÃO (v10.14) — começa na 1ª ocorrência de devolução e não volta
+    //    mais para trânsito; cada ocorrência seguinte conta a volta da
+    //    mercadoria; só encerra com uma finalizadora.
+    const ocN = (est.oc===undefined || est.oc==='') ? null : parseInt(est.oc,10);
+    const novaOc = ('oc' in delta);
+    if(!emDev && ((novaOc && R.devGatilho.indexOf(ocN)>=0) || cod==='devolvida')){
+      emDev = true;
+      if(saiu && !expNo){        // saiu e já voltou: registra a expedição antes
+        const tsExp = tsDe(est.em) || tsDe(est.it) || tsFoto(data);
+        expNo = { k:'exp', l:'Expedição', i:'exp', t:'blu', ts:tsExp, dt:(est.em||est.it||isoBR(data)).slice(0,16), notas:[], est:Object.assign({},est) };
+        if(est.rm) expNo.notas.push('Romaneio <b>'+esc(String(est.rm).replace(/^0+/,''))+'</b>');
+        if(est.em) expNo.notas.push('Embarque <b>'+esc(est.em.slice(0,16))+'</b>');
+        etapas.push(expNo);
+      }
+      const conc = (ocN===25 || ocN===999);
+      cur = { k:'dev', oc_k:est.oc||'', l: conc ? 'Devolução concluída' : 'Devolução autorizada', i:'dev', t:'dev',
+              b: conc ? 'check' : null, fim: conc ? 1 : 0, ts: tsDe(est.do) || tsFoto(data),
+              dt: (est.do || isoBR(data)).slice(0,16), notas:[], ocx: ocLbl(est.oc, est.ds), est:Object.assign({},est) };
+      if(est.ob) cur.notas.push(obsNota(est.ob));
+      etapas.push(cur); devFim = conc;
+      return;
+    }
+    if(emDev){
+      if(devFim){ cur.est=Object.assign({},est); return; }
+      if(novaOc && (est.oc||'')!==cur.oc_k){
+        const encerra = R.devEncerra.indexOf(ocN)>=0 && (ocN===25 || ocN===999 || R.devGatilho.indexOf(ocN)<0);
+        const fase = encerra ? 'Devolução concluída' : faseDevolucao(ocN, null);
+        const icone = encerra ? 'dev' : fase==='Em retorno ao CD' ? 'ret' : fase==='Retorno agendado' ? 'agok' : 'dev';
+        cur = { k:'dev', oc_k:est.oc||'', l:fase, i:icone, t:'dev', b: encerra ? 'check' : null, fim: encerra ? 1 : 0,
+                ts: tsDe(est.do) || tsFoto(data), dt:(est.do || isoBR(data)).slice(0,16), notas:[], ocx: ocLbl(est.oc, est.ds) };
+        if(est.ob) cur.notas.push(obsNota(est.ob));
+        if(/EXTREMA/i.test(est.ob||'') && fase==='Em retorno ao CD') cur.notas.push('<b>CT-e de retorno para Extrema</b>');
+        etapas.push(cur); devFim = encerra;
+      } else {
+        notaCD(delta, antes, false).filter(x=>!/^Romaneio|^Embarque|^Início/.test(x)).forEach(x=>cur.notas.push(x));
+      }
+      cur.est=Object.assign({},est);
+      return;
+    }
 
     // a) ainda no CD: tudo fica no nó "NF emitida"
     if(!saiu && !e.fim){
@@ -8186,7 +8261,9 @@ async function pintarLinhaDoTempo(box){
       e.notas.slice(0,6).map(x=>'<div>'+x+'</div>').join('') + (e.notas.length>6?'<div style="color:var(--text3)">+'+(e.notas.length-6)+' mudança(s)</div>':''),
       {atual:ult, atraso:e.atraso, ocor:e.ocx||''});
   });
-  if(!encerrada){
+  if(!encerrada && emDev){
+    html += no(HNF_COR.dev, 'cd', null, 'Retorno ao CD', 'aguardando finalizadora', 'a devolução só encerra com uma ocorrência finalizadora (ex.: 25, 999, 1)', {fantasma:1});
+  } else if(!encerrada){
     const mx = atual.est && atual.est.mx;
     const dmx = mx && dBR(mx);
     const vencida = dmx && dmx < ultimaFoto;
@@ -8205,7 +8282,7 @@ async function pintarLinhaDoTempo(box){
     + ' · situação atual: <b style="color:'+HNF_COR[atual.t]+'">'+esc(atual.l+(atual.atraso?' · em atraso':''))+'</b></div>';
   const LEG=[['nf','NF emitida','cin'],['cd','Ainda no CD','blu'],['exp','Expedição','blu'],['agwait','Ag. agendamento','blu'],['agok','Trânsito agenda','blu'],['truck','Em trânsito','blu'],
     ['rota','Em rota','blu'],['trat','Tratativa','amb'],['clock','Em atraso (marca vermelha sobre a etapa)','err'],['box','Entregue','ok'],
-    ['dev','Devolvida','amb'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
+    ['dev','Devolução','dev'],['ret','Em retorno ao CD','dev'],['trat','Sinistro (vermelho)','err'],['canc','Cancelada','err'],['ban','Desconsiderada','cin']];
   const legenda = '<div class="hnf-leg">'+LEG.map(([i,l,t])=>'<span style="color:'+HNF_COR[t]+'">'+svgI(i,13)+'<span>'+l+'</span></span>').join('')+'</div>';
 
   let linhas='';
