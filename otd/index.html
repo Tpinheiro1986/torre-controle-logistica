@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.14-devolucao-catalogo', date: '29/10/2026' };
+window.__BUILD__ = { version: 'v10.15-abertas-situacao', date: '29/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -1313,7 +1313,7 @@ table.dt th{color:#33536F}
             </button>
           </div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
-            Ordenado por dias em aberto (mais antiga primeiro) e, no empate, por dias de atraso (maior primeiro). NFs entregues, devolvidas e desconsideradas não aparecem aqui.
+            Ordenado por dias em aberto (mais antiga primeiro) e, no empate, por dias de atraso (maior primeiro). Devoluções em andamento aparecem até a ocorrência finalizadora; NFs entregues, devoluções concluídas e desconsideradas não aparecem aqui.
             <span id="abertas-count" style="font-weight:600;color:#0072BC;margin-left:6px"></span>
           </p>
           <div style="margin-bottom:10px">
@@ -4480,6 +4480,32 @@ function fmtKgTotal(v){
   return v.toLocaleString('pt-BR', {maximumFractionDigits:1}) + ' kg';
 }
 
+// v10.15 — situação detalhada da carteira em aberto. A ocorrência define a
+// situação (tratativa, agenda, rota, devolução em andamento...) e o atraso é
+// uma marca à parte — antes "Em Trânsito em Atraso" escondia tudo isso.
+const ABERTAS_SIT = [
+  {k:'cd',        lbl:'CD — Ag. Expedição',     cor:'#854F0B', bg:'#FAEEDA'},
+  {k:'transito',  lbl:'Em Trânsito',            cor:'#0072BC', bg:'#E6F1FB'},
+  {k:'rota',      lbl:'Em Rota de Entrega',     cor:'#0B6E99', bg:'#E3F3F9'},
+  {k:'ag_agend',  lbl:'Ag. Agendamento',        cor:'#3787C7', bg:'#E6F0FB'},
+  {k:'agenda',    lbl:'Trânsito Agenda',        cor:'#C76137', bg:'#FBEEE3'},
+  {k:'tratativa', lbl:'Tratativa',              cor:'#B26A00', bg:'#FDF1DC'},
+  {k:'devolucao', lbl:'Devolução',              cor:'#6B3FA0', bg:'#EFE6FB'}
+];
+const ABERTAS_SIT_MAP = Object.fromEntries(ABERTAS_SIT.map(s=>[s.k,s]));
+// payload novo traz n.sit / n.sit_lbl / n.atraso; o antigo só n.tipo
+function sitAberta(n){
+  let k=n.sit, lbl=n.sit_lbl;
+  if(!k){
+    k = {hub:'cd', transito:'transito', transito_atr:'transito', tratativa:'tratativa',
+         ag_cte:'ag_agend', transito_agenda:'agenda', devolvida:'devolucao'}[n.tipo] || 'transito';
+    lbl = (ABERTAS_SIT_MAP[k]||{}).lbl;
+  }
+  const base = ABERTAS_SIT_MAP[k] || ABERTAS_SIT_MAP.transito;
+  const atraso = k==='devolucao' ? false : (n.atraso!=null ? !!n.atraso : (n.tipo==='transito_atr' || (n.dias_atraso!=null && n.dias_atraso>0)));
+  return {k, lbl: lbl || base.lbl, cor: base.cor, bg: base.bg, atraso};
+}
+
 function renderAbertas(){
   const empty = document.getElementById('abertas-empty');
   const hint  = document.getElementById('abertas-empty-hint');
@@ -4504,10 +4530,14 @@ function renderAbertas(){
 
   // Pills de Situação — só as que existem na base, na ordem do quadro
   const sitBtns = document.getElementById('abertas-sit-btns'); sitBtns.innerHTML='';
-  const sitsPresentes = TRANSP_STATUS.filter(s => lista.some(n => n.tipo === s.k));
+  const sitsPresentes = ABERTAS_SIT.filter(s => lista.some(n => sitAberta(n).k === s.k));
+  if(lista.some(n => sitAberta(n).atraso)) sitsPresentes.push({k:'_atraso', lbl:'Em atraso', cor:'#A32D2D'});
   sitsPresentes.forEach(s=>{
     const b=document.createElement('button');
-    b.className='fbtn'; b.textContent=s.lbl; b.dataset.k=s.k;
+    b.className='fbtn'; b.dataset.k=s.k;
+    const qt = s.k==='_atraso' ? lista.filter(n=>sitAberta(n).atraso).length : lista.filter(n=>sitAberta(n).k===s.k).length;
+    b.innerHTML = esc(s.lbl)+' <span style="opacity:.6">'+qt+'</span>';
+    if(s.k==='_atraso') b.style.color='#A32D2D';
     b.onclick=function(){abertasFilter('sit',s.k,this);};
     sitBtns.appendChild(b);
   });
@@ -4573,7 +4603,8 @@ function getAbertasFiltrado(){
   const search=normTxt(document.getElementById('abertas-search')?.value||'');
   return (otdData?.notasAbertas||[]).filter(n=>{
     if(!passaCli(n.matriz, n.cliente)) return false;              // v10.11: Matriz → Cliente
-    if(abertasFilter_state.sit!=='todas' && n.tipo!==abertasFilter_state.sit) return false;
+    if(abertasFilter_state.sit==='_atraso'){ if(!sitAberta(n).atraso) return false; }
+    else if(abertasFilter_state.sit!=='todas' && sitAberta(n).k!==abertasFilter_state.sit) return false;
     if(abertasFilter_state.reg!=='todas' && n.regiao!==abertasFilter_state.reg) return false;
     if(abertasFilter_state.transp!=='todas' && n.transp!==abertasFilter_state.transp) return false;
     if(search && ![n.nf, n.pedido, n.cliente, matDe(n.matriz,n.cliente), n.cidade, n.uf, n.transp]
@@ -4625,7 +4656,7 @@ function renderAbertasTabela(){
     rows='<tr><td colspan="16" style="color:var(--text3);text-align:center;padding:20px">Nenhuma NF encontrada para os filtros atuais</td></tr>';
   } else {
     slice.forEach((n,i)=>{
-      const s=mapS[n.tipo]||{lbl:n.tipo||'—',cor:'#888'};
+      const s=sitAberta(n);
       const corReg=REG_CORES[n.regiao]||'#888';
       const abertoC=(n.dias_aberto||0)>30?'#A32D2D':(n.dias_aberto||0)>15?'#854F0B':'var(--text2)';
       const idA='abertas-det-'+(start+i);
@@ -4639,7 +4670,8 @@ function renderAbertasTabela(){
         +'<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
         +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
         +'<td style="font-size:11px;color:var(--text2);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.transp||'')+'">'+esc(n.transp||'—')+'</td>'
-        +'<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span></td>'
+        +'<td style="white-space:nowrap"><span title="'+esc(n.ocor!=null?('Ocorrência '+n.ocor+(n.ocor_desc?' · '+n.ocor_desc:'')):'Sem ocorrência')+'" style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span>'
+          +(s.atraso?' <span style="font-size:9px;font-weight:700;text-transform:uppercase;color:#fff;background:#A32D2D;border-radius:8px;padding:1px 6px">atraso</span>':'')+'</td>'
         +'<td style="color:var(--text2);white-space:nowrap">'+esc(n.dt_fat||'—')+'</td>'
         +'<td style="color:'+(n.dias_atraso!=null?'#A32D2D':'var(--text2)')+';white-space:nowrap">'+esc(n.dt_prev||'—')+'</td>'
         +'<td class="r" style="color:'+abertoC+';font-weight:600">'+(n.dias_aberto!=null?n.dias_aberto+'d':'—')+'</td>'
@@ -4699,7 +4731,7 @@ function exportarAbertasExcel(ev){
       'UF': n.uf||'',
       'Regiao': n.regiao||'',
       'Transportadora': n.transp||'',
-      'Situacao': (mapS[n.tipo]||{}).lbl || n.tipo || '',
+      'Situacao': sitAberta(n).lbl, 'Em Atraso': sitAberta(n).atraso?'Sim':'Não', 'Ocorrencia': n.ocor!=null?n.ocor:'', 'Descricao Ocorrencia': n.ocor_desc||'',
       'Data Faturamento': n.dt_fat||'',
       'Prev. Entrega': n.dt_prev||'',
       'Dias em Aberto': n.dias_aberto!=null?n.dias_aberto:'',
