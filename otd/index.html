@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.15-abertas-situacao', date: '29/10/2026' };
+window.__BUILD__ = { version: 'v10.16-situacao-unica', date: '30/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -263,7 +263,7 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 #tv-mode .gtv-hcard .gtv-p{font-weight:800;font-size:24px;color:#0072BC;line-height:1.1;margin-top:3px;white-space:nowrap}
 #tv-mode .gtv-hcard .gtv-nf{font-size:13px;color:#7C95AC;font-weight:600}
 /* tiles */
-#tv-mode .gtv-tiles{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:14px;flex:1;min-height:0}
+#tv-mode .gtv-tiles{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:1fr 1fr;gap:14px;flex:1;min-height:0}
 #tv-mode .gtv-tile{background:#EEF5FB;border:1px solid #EAF1F8;border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
 #tv-mode .gtv-tile .gtv-accent{position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:4px;background:#0072BC}
 #tv-mode .gtv-tile.gtv-alt .gtv-accent{background:#00A7E7}
@@ -402,6 +402,72 @@ table.dt th{color:#33536F}
   .tab.on{color:#4FC3F7}
 }
 
+/* v10.16 — Painel de desempenho OTD */
+.ox{background:var(--bg);border:0.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.ox-lbl{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
+.ox-escopo{font-size:10px;font-weight:600;color:#004A87;background:#E6F1FB;border-radius:10px;padding:1px 8px}
+.ox-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;padding:20px 24px 18px;background:linear-gradient(180deg,rgba(0,167,231,.06),transparent 70%)}
+.ox-otd-row{display:flex;align-items:center;gap:22px;margin-top:4px;flex-wrap:wrap}
+.ox-otd-val{font-family:'Montserrat',sans-serif;font-weight:800;font-size:52px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#2E7D32}
+.ox-otd-meta{flex:1;min-width:220px;max-width:520px}
+.ox-meter{position:relative;height:10px;border-radius:6px;background:var(--bg3);overflow:visible}
+.ox-meter i{position:absolute;inset:0 auto 0 0;width:0;border-radius:6px;background:linear-gradient(90deg,#00A7E7,#004A87);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.ox-meter-alvo{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text);border-radius:1px;opacity:.55}
+.ox-meter-esc{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--text2);margin-top:6px;font-variant-numeric:tabular-nums}
+.ox-emp{display:flex;gap:26px;flex-wrap:wrap;margin-top:14px}
+.ox-emp-i{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--text2)}
+.ox-emp-i b{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.ox-emp-i span:first-child{font-weight:600;color:var(--text)}
+.ox-fat{text-align:right;border-left:0.5px solid var(--border);padding-left:28px;display:flex;flex-direction:column;justify-content:center}
+.ox-fat .ox-lbl{justify-content:flex-end}
+.ox-fat-val{font-family:'Montserrat',sans-serif;font-weight:700;font-size:28px;color:#004A87;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
+.ox-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.ox-ciclo{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.ox-grp{display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
+.ox-grp+.ox-grp{border-left:0.5px solid var(--border)}
+.ox-grp-t{font-size:11px;font-weight:600;color:var(--text3);min-width:84px}
+.ox-kv{display:flex;align-items:baseline;gap:6px;font-size:12px;color:var(--text2)}
+.ox-kv b{font-family:'Montserrat',sans-serif;font-size:17px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.ox-kv em{font-style:normal;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.ox-dot{width:8px;height:8px;border-radius:50%;align-self:center;flex-shrink:0}
+.ox-cart{padding:16px 24px 18px}
+.ox-cart-h{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.ox-cart-tot{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.ox-cart-tot b{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.ox-cart-tot span{font-size:12px;color:var(--text2)}
+.ox-cart-tot strong{font-size:14px;font-weight:600;color:#004A87;margin-left:8px;font-variant-numeric:tabular-nums}
+.ox-atr{display:flex;align-items:baseline;gap:6px;border:0.5px solid #F2C4C1;background:#FCEBEB;color:#A32D2D;border-radius:10px;padding:7px 12px;cursor:pointer;font:inherit}
+.ox-atr b{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.ox-atr span{font-size:12px;font-weight:600}
+.ox-atr em{font-style:normal;font-size:11px;opacity:.8}
+.ox-atr:hover{background:#F9DCDB}
+.ox-flow{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--bg3);gap:2px}
+.ox-seg{position:relative;min-width:6px;cursor:pointer;transition:filter .15s;border:0;padding:0}
+.ox-seg:hover,.ox-seg:focus-visible{filter:brightness(1.12);outline:none}
+.ox-seg i{position:absolute;right:0;top:0;bottom:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.0) 0 4px,rgba(255,255,255,.55) 4px 7px);border-left:1.5px solid rgba(163,45,45,.9)}
+.ox-seg span{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.ox-leg{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:6px;margin-top:10px}
+.ox-it{display:flex;flex-direction:column;gap:1px;text-align:left;padding:8px 10px 8px 12px;border-radius:8px;border:0.5px solid var(--border);background:var(--bg);cursor:pointer;position:relative;font:inherit;color:inherit}
+.ox-it::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--c)}
+.ox-it:hover{background:var(--bg2)}
+.ox-it:focus-visible,.ox-atr:focus-visible{outline:2px solid #00A7E7;outline-offset:2px}
+.ox-it[data-zero="1"]{opacity:.45}
+.ox-it-l{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ox-it-n{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--c);font-variant-numeric:tabular-nums;line-height:1.2}
+.ox-it-v{font-size:10px;color:var(--text3);font-variant-numeric:tabular-nums}
+.ox-it-a{font-size:10px;color:#A32D2D;font-weight:600}
+.ox-nota{font-size:11px;color:var(--text3);margin-top:10px}
+@media(max-width:760px){
+  .ox-hero{grid-template-columns:1fr;padding:16px}
+  .ox-fat{text-align:left;border-left:0;padding-left:0;border-top:0.5px solid var(--border);padding-top:12px}
+  .ox-fat .ox-lbl{justify-content:flex-start}
+  .ox-otd-val{font-size:42px}
+  .ox-ciclo{grid-template-columns:1fr}
+  .ox-grp{padding:10px 16px}.ox-grp+.ox-grp{border-left:0;border-top:0.5px solid var(--border)}
+  .ox-cart{padding:14px 16px}
+}
+@media(prefers-reduced-motion:reduce){.ox-meter i{transition:none}}
+
 </style>
 </head>
 <body>
@@ -508,75 +574,58 @@ table.dt th{color:#33536F}
           <button class="fbtn on" id="otd-m-all" onclick="otdFilter('all',this,'m')">Todos</button>
           <span id="otd-m-btns"></span>
         </div>
-        <!-- Resumo OTD (v9.10 — layout Opção C: compacto, dois níveis) -->
-        <div style="background:var(--bg2); border-radius:8px; padding:12px 16px; margin-bottom:10px">
-          <div style="display:flex; align-items:baseline; gap:30px; flex-wrap:wrap">
-            <div>
-              <div style="font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:.06em">Faturamento Bruto</div>
-              <div style="font-size:22px; font-weight:500; color:#0072BC; margin-top:2px" id="o-fat">—</div>
-              <div style="font-size:10px; color:var(--text2)" id="o-fat-s">—</div>
+        <!-- v10.16 — Painel de desempenho OTD (redesenho). Os números da carteira vêm
+             da mesma régua da Notas em Aberto (sitResumo) — batem com todas as abas. -->
+        <section class="ox" id="ox-painel" aria-label="Desempenho de entregas">
+          <div class="ox-hero">
+            <div class="ox-otd">
+              <div class="ox-lbl">On-time delivery <span class="ox-escopo" id="ox-escopo">acumulado</span></div>
+              <div class="ox-otd-row">
+                <div class="ox-otd-val" id="o-otd">—</div>
+                <div class="ox-otd-meta">
+                  <div class="ox-meter" id="ox-meter" role="img" aria-label="OTD contra a meta de 99%" title="Escala de 90% a 100% · o traço marca a meta de 99%">
+                    <i id="ox-meter-fill"></i><span class="ox-meter-alvo" title="Meta 99%"></span>
+                  </div>
+                  <div class="ox-meter-esc"><span id="o-otd-s">—</span><span>meta 99%</span></div>
+                </div>
+              </div>
+              <div class="ox-emp" id="otd-empresas-grid"></div>
             </div>
-            <div style="border-left:0.5px solid var(--border); padding-left:30px">
-              <div style="font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:.06em">OTD</div>
-              <div style="font-size:22px; font-weight:500; color:#3B6D11; margin-top:2px" id="o-otd">—</div>
-              <div style="font-size:10px; color:var(--text2)" id="o-otd-s">—</div>
+            <div class="ox-fat">
+              <div class="ox-lbl">Faturamento bruto</div>
+              <div class="ox-fat-val" id="o-fat">—</div>
+              <div class="ox-sub" id="o-fat-s">—</div>
             </div>
           </div>
-        </div>
 
-        <div style="background:var(--bg2); border-radius:8px; padding:12px 16px; margin-bottom:12px; overflow-x:auto">
-          <table style="width:100%; border-collapse:collapse; min-width:680px">
-            <thead>
-              <tr style="border-bottom:0.5px solid var(--border)">
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#3B6D11; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">On Time</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Off Time</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#854F0B; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">CD</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#0072BC; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Trânsito</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#A32D2D; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Em Atraso</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#7A4FBF; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Tratativa</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#3787C7; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Ag. Agendamento</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#C76137; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Agend. Confirmado</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#8A5A00; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0">Devolvida</th>
-                <th style="text-align:left; font-size:10px; font-weight:500; color:#6B7280; text-transform:uppercase; letter-spacing:.04em; padding:2px 12px 6px 0" title="NF-e com cancelamento homologado — fora do OTD e fora do faturamento">Cancelada</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3B6D11" id="o-on">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#A32D2D" id="o-off">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#854F0B" id="o-hub">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#0072BC" id="o-trs">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#A32D2D" id="o-trs-atr">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#7A4FBF" id="o-trat">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#3787C7" id="o-agcte">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#C76137" id="o-tag">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#8A5A00" id="o-dev">—</span></td>
-                <td style="padding:6px 12px 2px 0"><span style="font-size:20px; font-weight:500; color:#6B7280" id="o-canc">—</span></td>
-              </tr>
-              <tr>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-on-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-off-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-hub-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trs-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trs-atr-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-trat-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-agcte-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-tag-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-dev-s">—</td>
-                <td style="padding:0 12px 6px 0; font-size:10px; color:var(--text2)" id="o-canc-s">—</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card" style="padding:14px 18px" id="otd-empresas-card">
-          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-            <span style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">OTD por Empresa</span>
-            <div style="flex:1;display:grid;grid-template-columns:1fr 0.5px 1fr;gap:24px;align-items:center" id="otd-empresas-grid">
-              <!-- preenchido por JS: GENOMMA + divider + INOVALAB -->
-              <div style="font-size:12px;color:var(--text2)">Carregando…</div>
+          <div class="ox-ciclo">
+            <div class="ox-grp">
+              <div class="ox-grp-t">Entregues</div>
+              <div class="ox-kv"><span class="ox-dot" style="background:#2E7D32"></span><b id="o-on">—</b><span>no prazo</span><em id="o-on-s">—</em></div>
+              <div class="ox-kv"><span class="ox-dot" style="background:#B3261E"></span><b id="o-off">—</b><span>fora do prazo</span><em id="o-off-s">—</em></div>
+            </div>
+            <div class="ox-grp">
+              <div class="ox-grp-t" title="Ciclo encerrado sem entrega — não entram no OTD">Encerradas fora do OTD</div>
+              <div class="ox-kv"><span class="ox-dot" style="background:#6B4E16"></span><b id="o-dev">—</b><span>devolvidas</span><em id="o-dev-s">—</em></div>
+              <div class="ox-kv" title="NF-e com cancelamento homologado — fora do OTD e do faturamento"><span class="ox-dot" style="background:#6B7280"></span><b id="o-canc">—</b><span>canceladas</span><em id="o-canc-s">—</em></div>
             </div>
           </div>
-        </div>
+
+          <div class="ox-cart">
+            <div class="ox-cart-h">
+              <div>
+                <div class="ox-lbl">Carteira em aberto</div>
+                <div class="ox-cart-tot"><b id="ox-cart-n">—</b><span>NFs</span><strong id="ox-cart-v">—</strong></div>
+              </div>
+              <button type="button" class="ox-atr" id="ox-atr" onclick="otdAbrirSituacao('_atraso')" title="Abrir na Notas em Aberto">
+                <b id="ox-atr-n">—</b><span>em atraso</span><em id="ox-atr-v">—</em>
+              </button>
+            </div>
+            <div class="ox-flow" id="ox-flow" role="img" aria-label="Carteira em aberto por situação"></div>
+            <div class="ox-leg" id="ox-leg"></div>
+            <div class="ox-nota" id="ox-nota">Mesma régua da aba Notas em Aberto. A faixa listrada marca as NFs em atraso dentro de cada situação. Clique numa situação para ver as notas.</div>
+          </div>
+        </section>
         <!-- BLOCO 1 FATURAMENTO -->
         <div class="card">
           <div class="slabel"><span class="slabel-num">1</span>Entregas — Faturamento bruto</div>
@@ -602,23 +651,18 @@ table.dt th{color:#33536F}
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — CD, Trânsito, Em Atraso, Tratativa, Ag. Agendamento, Agend. Confirmado, Devolvida e Previsão por Quarter</div>
+          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — carteira em aberto por situação (mesma régua da Notas em Aberto), encerradas fora do OTD e previsão por quarter</div>
           <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-            <div class="status-hl" style="background:#FAEEDA"><div style="font-size:9px;color:#854F0B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">CD — Ag. Expedição</div><div style="font-size:24px;font-weight:700;color:#854F0B" id="o3-hub">—</div><div style="font-size:11px;color:#854F0B;margin-top:2px" id="o3-hub-val">—</div></div>
-            <div class="status-hl" style="background:#E6F1FB"><div style="font-size:9px;color:#0072BC;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito</div><div style="font-size:24px;font-weight:700;color:#0072BC" id="o3-trs">—</div><div style="font-size:11px;color:#0072BC;margin-top:2px" id="o3-trs-val">—</div></div>
-            <div class="status-hl" style="background:#FCEBEB"><div style="font-size:9px;color:#A32D2D;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Em Trânsito em Atraso</div><div style="font-size:24px;font-weight:700;color:#A32D2D" id="o3-trs-atr">—</div><div style="font-size:11px;color:#A32D2D;margin-top:2px" id="o3-trs-atr-val">—</div></div>
-            <div class="status-hl" style="background:#EFE6FB"><div style="font-size:9px;color:#7A4FBF;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Tratativa</div><div style="font-size:24px;font-weight:700;color:#7A4FBF" id="o3-trat">—</div><div style="font-size:11px;color:#7A4FBF;margin-top:2px" id="o3-trat-val">—</div></div>
-            <div class="status-hl" style="background:#E6F0FB"><div style="font-size:9px;color:#3787C7;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Ag. Agendamento</div><div style="font-size:24px;font-weight:700;color:#3787C7" id="o3-agcte">—</div><div style="font-size:11px;color:#3787C7;margin-top:2px" id="o3-agcte-val">—</div></div>
-            <div class="status-hl" style="background:#FBEEE3"><div style="font-size:9px;color:#C76137;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Agend. Confirmado</div><div style="font-size:24px;font-weight:700;color:#C76137" id="o3-tag">—</div><div style="font-size:11px;color:#C76137;margin-top:2px" id="o3-tag-val">—</div></div>
+            <div id="o3-sit-cards" style="display:contents"></div>
             <div class="status-hl" style="background:#F5EDDF"><div style="font-size:9px;color:#8A5A00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Devolvida</div><div style="font-size:24px;font-weight:700;color:#8A5A00" id="o3-dev">—</div><div style="font-size:11px;color:#8A5A00;margin-top:2px" id="o3-dev-val">—</div></div>
             <div class="status-hl" id="o3-canc-card" style="background:#EEEFF1;cursor:pointer" onclick="canceladasToggle()" title="NF-e com cancelamento homologado. Fora do OTD e fora do faturamento. Clique para ver a lista."><div style="font-size:9px;color:#4B5563;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px"><span class="canc-chev" style="display:inline-block;width:9px;transition:transform .15s">▸</span> Cancelada</div><div style="font-size:24px;font-weight:700;color:#4B5563" id="o3-canc">—</div><div style="font-size:11px;color:#4B5563;margin-top:2px" id="o3-canc-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total em aberto</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">A entregar (sem devolvidas)</div></div>
+            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">Valor em aberto</div></div>
           </div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
-          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr><th>Mês</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#854F0B">Valor CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#0072BC">Valor Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#A32D2D">Valor Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total</th><th class="r">Valor Total</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
+          <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr id="o3-thead"><th>Mês</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
           <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
-          <div class="tw"><table class="dt"><thead><tr><th>Quarter Previsto</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#0072BC">Em Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Total NFs</th><th class="r">Valor</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr id="o3-prev-thead"><th>Quarter previsto</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
         </div>
         <!-- ============ CANCELADAS (v10.9) ============ -->
         <div class="card" id="canceladas-card" style="display:none">
@@ -657,7 +701,7 @@ table.dt th{color:#33536F}
         <div class="card">
           <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px">(acumulado — não segue o filtro de mês)</span></div>
           <p style="font-size:11px;color:var(--text2);margin-bottom:8px">OTD = On Time / (On Time + Off Time). Pendentes não entram no OTD, mas indicam risco.</p>
-          <div class="tw"><table class="dt"><thead><tr><th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th><th class="r" style="color:#854F0B">CD</th><th class="r" style="color:#0072BC">Trânsito</th><th class="r" style="color:#A32D2D">Pend. Atraso</th><th class="r" style="color:#7A4FBF">Tratativa</th><th class="r" style="color:#3787C7">Ag. CTE</th><th class="r" style="color:#C76137">Trânsito Agenda</th><th class="r">Valor Pendente</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
+          <div class="tw"><table class="dt"><thead><tr id="o4-thead"><th>Transportadora</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
           <div class="slabel"><span class="slabel-num">5</span>Trânsito por região <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px">(carteira atual — não segue o filtro de mês)</span></div>
@@ -802,13 +846,7 @@ table.dt th{color:#33536F}
               <th class="r">OTD%</th>
               <th class="r">Prazo Médio</th>
               <th class="r" style="color:#0072BC">Receita Finalizada</th>
-              <th class="r" style="color:#854F0B">CD</th>
-              <th class="r" style="color:#0072BC">Trânsito</th>
-              <th class="r" style="color:#A32D2D">Pend. Atraso</th>
-              <th class="r" style="color:#7A4FBF">Tratativa</th>
-              <th class="r" style="color:#3787C7">Ag. CTE</th>
-              <th class="r" style="color:#C76137">Trânsito Agenda</th>
-              <th class="r" style="color:#A32D2D">Valor Pendente</th>
+              <th class="sit-slot"></th>
               <th style="min-width:80px">OTD Perf.</th>
             </tr></thead>
             <tbody id="transp-tbody"></tbody>
@@ -923,13 +961,7 @@ table.dt th{color:#33536F}
                 <th class="r">OTD%</th>
                 <th class="r">Prazo Médio</th>
                 <th class="r" style="color:#0072BC">Receita Finalizada</th>
-                <th class="r" style="color:#854F0B">CD</th>
-                <th class="r" style="color:#0072BC">Trânsito</th>
-                <th class="r" style="color:#A32D2D">Pend. Atraso</th>
-                <th class="r" style="color:#7A4FBF">Tratativa</th>
-                <th class="r" style="color:#3787C7">Ag. CTE</th>
-                <th class="r" style="color:#C76137">Trânsito Agenda</th>
-                <th class="r" style="color:#A32D2D">Valor Pendente</th>
+                <th class="sit-slot"></th>
                 <th style="min-width:80px">OTD Perf.</th>
               </tr></thead>
               <tbody id="clientes-tbody"></tbody>
@@ -1754,6 +1786,144 @@ document.addEventListener('DOMContentLoaded', ()=>pintarBotaoSerie3());
 // TIPOS_ABERTOS do processar_otd.py: mexer num exige mexer no outro.
 const TIPOS_ABERTOS = ['hub','transito','transito_atr','tratativa','ag_cte','transito_agenda'];
 function ehAberto(tipo){ return TIPOS_ABERTOS.indexOf(tipo) >= 0; }
+
+// ============================================================
+// v10.16 — SITUAÇÃO ÚNICA DO PAINEL
+// ------------------------------------------------------------
+// Uma régua só para todas as abas: a da Notas em Aberto (v10.15).
+// A ocorrência define a SITUAÇÃO e o atraso é uma MARCA à parte —
+// não é um balde. Antes OTD/Transportadoras/Clientes/TV usavam o
+// "tipo" antigo (transito_atr engolia tratativa, agenda e rota),
+// e os números não batiam com a Notas em Aberto.
+// Fonte única dos números da carteira: otdData.notasAbertas.
+// Carteira em aberto = todas as NFs ainda não entregues, incluindo
+// a devolução em andamento (sai quando chega a finalizadora).
+// ============================================================
+const ABERTAS_SIT = [
+  {k:'cd',        lbl:'CD — Ag. Expedição',     curto:'CD',               cor:'#854F0B', bg:'#FAEEDA'},
+  {k:'transito',  lbl:'Em Trânsito',            curto:'Em Trânsito',      cor:'#0072BC', bg:'#E6F1FB'},
+  {k:'rota',      lbl:'Em Rota de Entrega',     curto:'Em Rota',          cor:'#0B6E99', bg:'#E3F3F9'},
+  {k:'ag_agend',  lbl:'Ag. Agendamento',        curto:'Ag. Agendamento',  cor:'#3787C7', bg:'#E6F0FB'},
+  {k:'agenda',    lbl:'Trânsito Agenda',        curto:'Trânsito Agenda',  cor:'#C76137', bg:'#FBEEE3'},
+  {k:'tratativa', lbl:'Tratativa',              curto:'Tratativa',        cor:'#B26A00', bg:'#FDF1DC'},
+  {k:'devolucao', lbl:'Devolução em andamento', curto:'Devolução',        cor:'#6B3FA0', bg:'#EFE6FB'}
+];
+const ABERTAS_SIT_MAP = Object.fromEntries(ABERTAS_SIT.map(s=>[s.k,s]));
+const SIT_ATRASO = {k:'_atraso', lbl:'Em atraso', curto:'Em atraso', cor:'#A32D2D', bg:'#FCEBEB'};
+
+// Normaliza o número da NF (0064956, 64956, 64956.0 → 64956)
+function nfChave(v){ return String(v==null?'':v).replace(/\.0+$/,'').replace(/\D/g,'').replace(/^0+(?=\d)/,''); }
+
+// Cache por base carregada: índice NF → nota em aberto
+let _sitCacheBase = null, _sitIdx = null;
+function sitIndice(){
+  const lista = notasAbertasBase();
+  if(_sitCacheBase !== lista){
+    _sitCacheBase = lista; _sitIdx = new Map();
+    lista.forEach(n => { const k = nfChave(n.nf); if(k) _sitIdx.set(k, n); });
+  }
+  return _sitIdx;
+}
+let _sitFallBase = null, _sitFall = [];
+function notasAbertasBase(){
+  const d = (typeof otdData!=='undefined' && otdData) || null;
+  if(!d) return [];
+  if(Array.isArray(d.notasAbertas)) return d.notasAbertas;
+  // base antiga (sem notasAbertas): monta a carteira a partir de clientes[].nfs pelo tipo
+  if(_sitFallBase !== d){
+    _sitFallBase = d; _sitFall = [];
+    (d.clientes||[]).forEach(c => (c.nfs||[]).forEach(n => {
+      if(ehAberto(n.tipo)) _sitFall.push(Object.assign({cliente:c.n, matriz:c.mat}, n));
+    }));
+  }
+  return _sitFall;
+}
+function notaAbertaDaNF(nf){ return sitIndice().get(nfChave(nf)) || null; }
+
+// Resumo de uma lista de notas em aberto: quantidade e valor por situação,
+// mais a marca de atraso e o total. Toda tela usa esta mesma função.
+function sitResumo(lista){
+  const r = {total:0, total_val:0, atraso:0, atraso_val:0};
+  ABERTAS_SIT.forEach(s => { r[s.k]=0; r[s.k+'_val']=0; });
+  (lista||[]).forEach(n => {
+    const s = sitAberta(n), v = Number(n.valor)||0;
+    r[s.k]++; r[s.k+'_val'] += v; r.total++; r.total_val += v;
+    if(s.atraso){ r.atraso++; r.atraso_val += v; }
+  });
+  r.fora_cd = r.total - r.cd; r.fora_cd_val = r.total_val - r.cd_val;
+  return r;
+}
+// Soma dois resumos (visão por Matriz)
+function sitSoma(a, b){
+  if(!a) return b ? Object.assign({}, b) : sitResumo([]);
+  if(!b) return a;
+  const r = Object.assign({}, a);
+  Object.keys(b).forEach(k => { r[k] = (r[k]||0) + (b[k]||0); });
+  return r;
+}
+// Agrupa a carteira por um campo (transp, cliente, matriz, mes_nome...) já resumida
+function sitPor(campo, lista){
+  const g = {};
+  (lista || notasAbertasBase()).forEach(n => { const k = n[campo]||''; (g[k] = g[k] || []).push(n); });
+  const out = {}; Object.keys(g).forEach(k => out[k] = sitResumo(g[k]));
+  return out;
+}
+
+// Rótulo de situação de QUALQUER NF (aberta ou finalizada) — usado nos drill-downs
+const SIT_FINAL = {
+  on_time:   {lbl:'Entregue no Prazo',  cor:'#3B6D11', bg:'#EAF3DE'},
+  off_time:  {lbl:'Entregue em Atraso', cor:'#854F0B', bg:'#FAEEDA'},
+  devolvida: {lbl:'Devolvida',          cor:'#6B4E16', bg:'#F3ECDD'},
+  cancelada: {lbl:'Cancelada',          cor:'#4B5563', bg:'#ECEDEF'}
+};
+function sitDaNF(n){
+  const a = notaAbertaDaNF(n && n.nf);
+  if(a){ const s = sitAberta(a); return {k:s.k, grupo:s.k, lbl:ABERTAS_SIT_MAP[s.k].lbl, det:s.lbl, cor:s.cor, bg:s.bg, atraso:s.atraso, aberta:true}; }
+  const f = SIT_FINAL[n && n.tipo];
+  if(f) return {k:n.tipo, grupo:n.tipo, lbl:f.lbl, det:f.lbl, cor:f.cor, bg:f.bg, atraso:false, aberta:false};
+  // base antiga sem notasAbertas: cai na tradução do tipo
+  if(n && ehAberto(n.tipo)){ const s = sitAberta(n); return {k:s.k, grupo:s.k, lbl:ABERTAS_SIT_MAP[s.k].lbl, det:s.lbl, cor:s.cor, bg:s.bg, atraso:s.atraso, aberta:true}; }
+  return {k:(n&&n.tipo)||'—', grupo:'outros', lbl:(n&&n.tipo)||'—', det:(n&&n.tipo)||'—', cor:'#888', bg:'var(--bg2)', atraso:false, aberta:false};
+}
+// Badge de situação (+ marca de atraso) para tabelas
+function sitBadgeHTML(s, usarDet){
+  const t = usarDet ? (s.det||s.lbl) : s.lbl;
+  return '<span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(t)+'</span>'
+       + (s.atraso ? ' <span style="font-size:9px;padding:1px 6px;border-radius:10px;background:#FCEBEB;color:#A32D2D;font-weight:700;white-space:nowrap">em atraso</span>' : '');
+}
+// Cabeçalho e células padronizados da carteira em aberto (7 situações + atraso + total + valor)
+function sitTH(){
+  return ABERTAS_SIT.map(s=>'<th class="r" style="color:'+s.cor+'" title="'+esc(s.lbl)+'">'+esc(s.curto)+'</th>').join('')
+    + '<th class="r" style="color:#A32D2D" title="Marca: NFs da carteira com previsão vencida (já contadas nas situações)">Em atraso*</th>'
+    + '<th class="r">Total aberto</th><th class="r" style="color:#A32D2D">Valor aberto</th>';
+}
+function sitTD(r, opt){
+  opt = opt || {};
+  const z = v => v>0 ? v.toLocaleString('pt-BR') : '—';
+  r = r || sitResumo([]);
+  return ABERTAS_SIT.map(s=>'<td class="r" style="color:'+s.cor+'">'+z(r[s.k])+'</td>').join('')
+    + '<td class="r" style="color:#A32D2D;font-weight:600">'+z(r.atraso)+'</td>'
+    + '<td class="r" style="font-weight:600'+(opt.total?';color:#A32D2D':'')+'">'+z(r.total)+'</td>'
+    + '<td class="r" style="color:#A32D2D;font-weight:500">'+(r.total_val>0?fmtM(r.total_val):'—')+'</td>';
+}
+const SIT_N_COLS = ABERTAS_SIT.length + 3;
+// Cabeçalhos estáticos das tabelas: troca o marcador .sit-slot pelas colunas da régua única
+document.addEventListener('DOMContentLoaded', ()=>{ document.querySelectorAll('th.sit-slot').forEach(th=>{ th.insertAdjacentHTML('afterend', sitTH()); th.remove(); }); });
+
+// Atalho: abre a aba Notas em Aberto já filtrada na situação clicada
+function otdAbrirSituacao(k){
+  try{
+    if(typeof abertasFilter_state!=='undefined'){
+      abertasFilter_state.sit = k || 'todas';
+      abertasFilter_state.reg = 'todas'; abertasFilter_state.transp = 'todas';
+      const sb = document.getElementById('abertas-search'); if(sb) sb.value = '';
+      if(typeof filtrosSalvar==='function') filtrosSalvar();
+    }
+    const btn = document.querySelector('.tab[onclick*="\'abertas\'"]');
+    if(btn) switchTab('abertas', btn);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){ console.error('[v10.16] otdAbrirSituacao', e); }
+}
 
 // ============================================================
 // FILTRO GLOBAL MATRIZ → CLIENTE (v10.11)
@@ -2786,6 +2956,10 @@ function renderTransp(){
   // desse(s) cliente(s); sem filtro vale o quadro oficial do pipeline.
   const list = transpLista();
   window.__transpLista = list;
+  // v10.16: carteira em aberto por transportadora pela régua única, respeitando Matriz/Cliente
+  const cartT = notasAbertasBase().filter(n => passaCli(n.matriz, n.cliente));
+  const sitT = sitPor('transp', cartT);
+  const nfsT = {}; cartT.forEach(n => (nfsT[n.transp] = nfsT[n.transp] || []).push(n));
   cliPintarAviso('transp-cli-aviso', 'entregas, OTD, prazo médio e carteira recalculados só com as NFs deste recorte.');
 
   // Recalculate prazo_medio if missing (e.g. loaded from storage without it)
@@ -2826,7 +3000,7 @@ function renderTransp(){
   if(vazio){
     // com filtro de cliente sem entrega finalizada: limpa os quadros em vez de sumir com a aba
     document.getElementById('transp-kpis').innerHTML = '';
-    document.getElementById('transp-tbody').innerHTML = '<tr><td colspan="15" style="color:var(--text3);text-align:center;padding:20px">Nenhuma entrega finalizada para '+esc(cliFiltroTexto()||'os filtros atuais')+'</td></tr>';
+    document.getElementById('transp-tbody').innerHTML = '<tr><td colspan="18" style="color:var(--text3);text-align:center;padding:20px">Nenhuma entrega finalizada para '+esc(cliFiltroTexto()||'os filtros atuais')+'</td></tr>';
     document.getElementById('transp-ranking-otd').innerHTML = '';
     document.getElementById('transp-ranking-prazo').innerHTML = '';
     return;
@@ -2835,9 +3009,8 @@ function renderTransp(){
   // Nota do quadro 1
   const notaQ1 = document.getElementById('transp-q1-nota');
   if(notaQ1){
-    const temDrill = fin.some(t => Array.isArray(t.nfs_pend) && t.nfs_pend.length > 0);
-    const pendGeral = fin.reduce((s,t)=>s+(t.hub||0)+(t.trs||0)+(t.trs_atr||0)
-                       +(t.tratativa||0)+(t.ag_cte||0)+(t.transito_agenda||0), 0);
+    const temDrill = fin.some(t => (nfsT[t.n]||[]).length > 0);
+    const pendGeral = cartT.length;
     const base = 'Apenas entregas finalizadas (On Time + Off Time). Prazo médio = dias entre emissão e entrega efetiva.';
     if(temDrill){
       notaQ1.innerHTML = base + ' <span style="color:#0072BC;font-weight:600">Clique na transportadora para abrir as NFs em aberto.</span>';
@@ -2884,17 +3057,12 @@ function renderTransp(){
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
 
   // Barra "N de M NFs": M = NFs do escopo (finalizadas + em aberto), sem devolvida (v10.10)
-  const totalNFsGeral = (list.reduce((s,x)=>s+x.fin+x.hub+x.trs+(x.trs_atr||0)+(x.tratativa||0)+(x.ag_cte||0)+(x.transito_agenda||0),0)||1);
+  const totalNFsGeral = ((list.reduce((s,x)=>s+(x.fin||0),0) + cartT.length)||1);
   window.__transpNFs = {};
   window.__transpFin = fin;
   document.getElementById('transp-tbody').innerHTML = fin.map((t, ti) => {
-    // Valor Pendente = carteira em aberto (TIPOS_ABERTOS). Recalculado no JS
-    // para funcionar com JSON de qualquer versão.
-    const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
-                       + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
-    // v10.10: drill-down só com a carteira em aberto — normaliza também um
-    // dados.json antigo que ainda traga devolvidas dentro de nfs_pend.
-    const nfsP = (Array.isArray(t.nfs_pend) ? t.nfs_pend : []).filter(n => ehAberto(n.tipo));
+    // v10.16: drill-down = carteira em aberto da régua única (inclui devolução em andamento)
+    const nfsP = (nfsT[t.n]||[]).slice().sort(ordemAbertas);
     window.__transpNFs[ti] = nfsP;
     const temNF = nfsP.length > 0;
     // v10.11: o onclick leva só o índice — o nome da transportadora não vai
@@ -2908,13 +3076,7 @@ function renderTransp(){
       <td class="r" style="${otdC(t.otd)}">${t.otd!=null?t.otd.toFixed(1)+'%':'—'}</td>
       <td class="r" style="${prazoC(t.prazo_medio)}">${t.prazo_medio!=null?t.prazo_medio.toFixed(1)+' dias':'—'}</td>
       <td class="r" style="color:#0072BC;font-weight:500">${t.fin_val>0?fmtM(t.fin_val):'—'}</td>
-      <td class="r" style="color:#854F0B">${t.hub}</td>
-      <td class="r" style="color:#0072BC">${t.trs}</td>
-      <td class="r" style="color:#A32D2D;font-weight:600">${t.trs_atr||0}</td>
-      <td class="r" style="color:#7A4FBF">${t.tratativa||0}</td>
-      <td class="r" style="color:#3787C7">${t.ag_cte||0}</td>
-      <td class="r" style="color:#C76137">${t.transito_agenda||0}</td>
-      <td class="r" style="color:#A32D2D;font-weight:500">${valPendTotal>0?fmtM(valPendTotal):'—'}</td>
+      ${sitTD(sitT[t.n])}
       <td style="min-width:80px;padding-right:10px">
         <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
           <div style="height:100%;width:${t.otd||0}%;background:${(t.otd||0)>=99?'#004A87':(t.otd||0)>=80?'#378ADD':'#E24B4A'};border-radius:3px"></div>
@@ -2922,7 +3084,7 @@ function renderTransp(){
         <div style="font-size:9px;color:var(--text2);margin-top:2px">${t.fin} de ${totalNFsGeral} NFs</div>
       </td>
     </tr>
-    ${temNF?`<tr id="trp-d-${ti}" style="display:none"><td colspan="15" style="padding:0;background:var(--bg2)"></td></tr>`:''}`;
+    ${temNF?`<tr id="trp-d-${ti}" style="display:none"><td colspan="18" style="padding:0;background:var(--bg2)"></td></tr>`:''}`;
   }).join('');
 
   // Rankings
@@ -3005,12 +3167,14 @@ function transpLista(){
 
 // Drill-down do quadro 1 (Transportadoras) — carteira pendente por NF,
 // separada e colorida por status. Renderizado sob demanda (lazy) ao expandir.
+// v10.16: o drill-down usa a régua única (ABERTAS_SIT); TRANSP_STATUS fica
+// só como legenda do tipo antigo para bases sem notasAbertas.
 const TRANSP_STATUS = [
   {k:'hub',             lbl:'CD — Ag. Expedição',   cor:'#854F0B', bg:'#FAEEDA'},
   {k:'transito',        lbl:'Em Trânsito',          cor:'#0072BC', bg:'#E6F1FB'},
   {k:'transito_atr',    lbl:'Em Trânsito em Atraso',cor:'#A32D2D', bg:'#FCEBEB'},
   {k:'tratativa',       lbl:'Tratativa',            cor:'#7A4FBF', bg:'#EFE6FB'},
-  {k:'ag_cte',          lbl:'Ag. CTE',              cor:'#3787C7', bg:'#E6F0FB'},
+  {k:'ag_cte',          lbl:'Ag. Agendamento',      cor:'#3787C7', bg:'#E6F0FB'},
   {k:'transito_agenda', lbl:'Trânsito Agenda',      cor:'#C76137', bg:'#FBEEE3'}
 ];
 
@@ -3029,7 +3193,6 @@ function transpToggleNF(ti, rowEl){
   if(cell.dataset.done === '1') return;   // já renderizado
 
   const nfs = (window.__transpNFs && window.__transpNFs[ti]) || [];
-  const mapS = {}; TRANSP_STATUS.forEach(s => mapS[s.k] = s);
   let html = '<div style="padding:10px 14px 14px 26px">';
   if(!nfs.length){
     html += '<div style="padding:12px;color:var(--text3);font-size:12px">Nenhuma NF em aberto para esta transportadora.</div></div>';
@@ -3041,8 +3204,9 @@ function transpToggleNF(ti, rowEl){
              + '<span style="margin:0 8px;color:var(--border2)">|</span>'
              + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>'
              + (totalPeso>0?'<span style="margin:0 8px;color:var(--border2)">|</span><span style="font-weight:600;color:var(--text2)">'+fmtKgTotal(totalPeso)+'</span>':'');
-  TRANSP_STATUS.forEach(s => {
-    const q = nfs.filter(n => n.tipo === s.k).length;
+  const RT = sitResumo(nfs);
+  ABERTAS_SIT.concat([SIT_ATRASO]).forEach(s => {
+    const q = s.k==='_atraso' ? RT.atraso : RT[s.k];
     if(!q) return;
     resumo += '<span style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:600">'+s.lbl+': '+q+'</span>';
   });
@@ -3051,7 +3215,7 @@ function transpToggleNF(ti, rowEl){
     + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Matriz</th><th>Cliente</th><th>Região</th><th>UF</th>'
     + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th class="r">Valor NF</th><th class="r">Peso</th></tr></thead><tbody>'
     + nfs.map((n,i)=>{
-        const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888', bg:'var(--bg2)'};
+        const s = sitDaNF(n);
         const corReg = REG_CORES[n.regiao] || '#888';
         return '<tr>'
           + '<td style="color:var(--text3)">'+(i+1)+'</td>'
@@ -3061,7 +3225,7 @@ function transpToggleNF(ti, rowEl){
           + '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cliente||'')+'">'+esc(n.cliente||'—')+'</td>'
           + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
           + '<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
-          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span></td>'
+          + '<td title="'+esc(s.det||'')+'">'+sitBadgeHTML(s)+'</td>'
           + '<td style="color:var(--text2)">'+esc(n.dt_fat||'—')+'</td>'
           + '<td style="color:var(--text2)">'+esc(n.dt_prev||'—')+'</td>'
           + '<td class="r" style="color:'+s.cor+';font-weight:500">'+fmtM(n.valor)+'</td>'
@@ -3082,7 +3246,7 @@ function transpToggleNF(ti, rowEl){
 let clientesFilter_state = {nfs:'todas', reg:'todas', vis:'mat'};   // v10.11: abre agrupado por Matriz
 let clientesPage = 1;
 const CLIENTES_PER_PAGE = 50;
-const CLIENTES_COLS = 17;
+const CLIENTES_COLS = 9 + SIT_N_COLS + 1;   // v10.16: colunas da régua única
 
 // Situações: as 6 em aberto (mesma paleta do painel) + as finalizadas.
 // v10.10: Devolvida e Cancelada ganharam rótulo (antes caíam no fallback cinza).
@@ -3166,11 +3330,12 @@ function getClientesFiltrados(){
   const busca = normTxt(document.getElementById('clientes-search')?.value || '');
   const soAberto = clientesFilter_state.nfs === 'aberto';
   const out = [];
+  const sitCli = sitPor('cliente');   // v10.16: carteira por cliente pela régua única
   ((otdData && otdData.clientes) || []).forEach(c => {
     if(!passaCli(c.mat, c.n)) return;
     if(clientesFilter_state.reg !== 'todas' && c.regiao !== clientesFilter_state.reg) return;
     let nfs = Array.isArray(c.nfs) ? c.nfs : [];
-    if(soAberto) nfs = nfs.filter(n => ehAberto(n.tipo));
+    if(soAberto) nfs = nfs.filter(n => sitDaNF(n).aberta);
     if(busca){
       const achouCli = [c.n, c.mat, c.razao, c.cnpj, c.uf, c.cidade].some(v => normTxt(v).includes(busca));
       if(!achouCli){
@@ -3181,7 +3346,7 @@ function getClientesFiltrados(){
       }
     }
     if(soAberto && !nfs.length) return;   // sem nada em aberto → some da lista
-    out.push({...c, _nfs: nfs});
+    out.push({...c, _nfs: nfs, _sit: sitCli[c.n] || sitResumo([])});
   });
   return out;
 }
@@ -3197,6 +3362,7 @@ function agruparPorMatriz(lista){
     const x = mapa[m];
     campos.forEach(k => x[k] += (c[k]||0));
     x._clientes.push(c);
+    x._sit = sitSoma(x._sit, c._sit);
     x._nfs = x._nfs.concat((c._nfs||[]).map(n=>Object.assign({_cli:c.n}, n)));
     if(c.uf) x._ufs[c.uf] = (x._ufs[c.uf]||0) + 1;
   });
@@ -3209,8 +3375,7 @@ function agruparPorMatriz(lista){
     x.otd = x.fin>0 ? Math.round(x.on/x.fin*1000)/10 : null;
     x.prazo_medio = x.dias_n>0 ? Math.round(x.dias_sum/x.dias_n*10)/10 : null;
     return x;
-  }).sort((a,b)=>(b.fin+b.hub+b.trs+b.trs_atr+b.tratativa+b.ag_cte+b.transito_agenda)
-               -(a.fin+a.hub+a.trs+a.trs_atr+a.tratativa+a.ag_cte+a.transito_agenda));
+  }).sort((a,b)=>(b.fin+((b._sit||{}).total||0))-(a.fin+((a._sit||{}).total||0)));
 }
 
 function renderClientesTabela(){
@@ -3231,10 +3396,9 @@ function renderClientesTabela(){
   // KPIs (respeitam os filtros) — sempre sobre os clientes, nas duas visões
   const tFin  = clientes.reduce((s,c)=>s+(c.fin||0),0);
   const tOn   = clientes.reduce((s,c)=>s+(c.on||0),0);
-  const tPend = clientes.reduce((s,c)=>s+(c.hub||0)+(c.trs||0)+(c.trs_atr||0)+(c.tratativa||0)+(c.ag_cte||0)+(c.transito_agenda||0),0);
-  const tAtr  = clientes.reduce((s,c)=>s+(c.trs_atr||0),0);
-  const tPendVal = clientes.reduce((s,c)=>s+(c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)
-                     +(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0),0);
+  // v10.16: carteira pela régua única (mesmos números da Notas em Aberto)
+  const tSit  = clientes.reduce((acc,c)=>sitSoma(acc, c._sit), null) || sitResumo([]);
+  const tPend = tSit.total, tAtr = tSit.atraso, tPendVal = tSit.total_val;
   const nMat = new Set(clientes.map(c=>matDe(c.mat,c.n))).size;
   const otdGeral = tFin>0 ? (tOn/tFin*100) : null;
   const corOTD = v => v==null?'var(--text2)':v>=99?'#004A87':v>=80?'#378ADD':'#E24B4A';
@@ -3242,15 +3406,14 @@ function renderClientesTabela(){
      kpiBox('Clientes', clientes.length.toLocaleString('pt-BR'), nMat.toLocaleString('pt-BR')+' matriz(es) na seleção', 'var(--text)')
     +kpiBox('OTD Geral', otdGeral!=null?otdGeral.toFixed(1)+'%':'—', tOn.toLocaleString('pt-BR')+' de '+tFin.toLocaleString('pt-BR')+' finalizadas', corOTD(otdGeral))
     +kpiBox('NFs em Aberto', tPend.toLocaleString('pt-BR'), 'ainda não entregues', '#854F0B')
-    +kpiBox('Em Trânsito em Atraso', tAtr.toLocaleString('pt-BR'), 'atenção imediata', '#A32D2D')
-    +kpiBox('Valor Pendente', fmtM(tPendVal), 'a entregar', '#A32D2D');
+    +kpiBox('Em atraso', tAtr.toLocaleString('pt-BR'), 'NFs em aberto com previsão vencida', '#A32D2D')
+    +kpiBox('Valor em aberto', fmtM(tPendVal), 'carteira a entregar', '#A32D2D');
 
   const otdC   = v => v==null?'color:var(--text2)':v>=99?'color:#004A87;font-weight:600':v>=80?'color:#378ADD;font-weight:600':'color:#E24B4A;font-weight:600';
   const prazoC = v => v==null?'color:var(--text2)':v<=3?'color:#3B6D11;font-weight:600':v<=5?'color:#854F0B;font-weight:600':'color:#A32D2D;font-weight:600';
 
   // Colunas numéricas — iguais para a linha da matriz e a do cliente
   const metricas = c => {
-    const valPend = (c.hub_val||0)+(c.trs_val||0)+(c.trs_atr_val||0)+(c.tratativa_val||0)+(c.ag_cte_val||0)+(c.transito_agenda_val||0);
     const corReg = REG_CORES[c.regiao] || '#888';
     return '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:600;white-space:nowrap" title="'+esc(c._ufsTxt||c.regiao||'')+'">'
         +esc(c.uf||'—')+((c.uf_extra||0)>0?' +'+c.uf_extra:'')+'</span></td>'
@@ -3260,13 +3423,7 @@ function renderClientesTabela(){
       +'<td class="r" style="'+otdC(c.otd)+'">'+(c.otd!=null?c.otd.toFixed(1)+'%':'—')+'</td>'
       +'<td class="r" style="'+prazoC(c.prazo_medio)+'">'+(c.prazo_medio!=null?c.prazo_medio.toFixed(1)+' dias':'—')+'</td>'
       +'<td class="r" style="color:#0072BC;font-weight:500">'+((c.fin_val||0)>0?fmtM(c.fin_val):'—')+'</td>'
-      +'<td class="r" style="color:#854F0B">'+((c.hub||0)>0?c.hub:'—')+'</td>'
-      +'<td class="r" style="color:#0072BC">'+((c.trs||0)>0?c.trs:'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D;font-weight:600">'+((c.trs_atr||0)>0?c.trs_atr:'—')+'</td>'
-      +'<td class="r" style="color:#7A4FBF">'+((c.tratativa||0)>0?c.tratativa:'—')+'</td>'
-      +'<td class="r" style="color:#3787C7">'+((c.ag_cte||0)>0?c.ag_cte:'—')+'</td>'
-      +'<td class="r" style="color:#C76137">'+((c.transito_agenda||0)>0?c.transito_agenda:'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D;font-weight:500">'+(valPend>0?fmtM(valPend):'—')+'</td>'
+      +sitTD(c._sit)
       +'<td style="min-width:80px;padding-right:10px">'
         +'<div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">'
         +'<div style="height:100%;width:'+(c.otd||0)+'%;background:'+((c.otd||0)>=99?'#004A87':(c.otd||0)>=80?'#378ADD':'#E24B4A')+';border-radius:3px"></div></div>'
@@ -3373,7 +3530,6 @@ function clientesToggleNF(ci, rowEl){
   if(cell.dataset.done === '1') return;
 
   const nfs = (window.__clientesNFs && window.__clientesNFs[ci]) || [];
-  const mapS = {}; CLI_STATUS.forEach(s => mapS[s.k] = s);
   let html = '<div style="padding:10px 14px 14px 26px">';
   if(!nfs.length){
     html += '<div style="padding:12px;color:var(--text3);font-size:12px">Nenhuma NF para os filtros atuais.</div></div>';
@@ -3385,17 +3541,20 @@ function clientesToggleNF(ci, rowEl){
              + '<span style="margin:0 8px;color:var(--border2)">|</span>'
              + '<span style="font-weight:600">'+fmtM(totalVal)+'</span>'
              + (totalPesoCli>0?'<span style="margin:0 8px;color:var(--border2)">|</span><span style="font-weight:600;color:var(--text2)">'+fmtKgTotal(totalPesoCli)+'</span>':'');
-  CLI_STATUS.forEach(s=>{
-    const q = nfs.filter(n=>n.tipo===s.k).length;
-    if(!q) return;
-    resumo += '<span style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:600">'+s.lbl+': '+q+'</span>';
+  // v10.16: em aberto pela régua única + finalizadas
+  const contS = {}; let nAtr = 0;
+  nfs.forEach(n => { const st = sitDaNF(n); const c = contS[st.lbl] || (contS[st.lbl] = {q:0, cor:st.cor}); c.q++; if(st.atraso) nAtr++; });
+  ABERTAS_SIT.map(x=>x.lbl).concat(['Entregue no Prazo','Entregue em Atraso','Devolvida','Cancelada']).concat(Object.keys(contS)).filter((v,i,a)=>a.indexOf(v)===i).forEach(lbl=>{
+    const c = contS[lbl]; if(!c) return;
+    resumo += '<span style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:12px;background:'+c.cor+'18;color:'+c.cor+';font-weight:600">'+esc(lbl)+': '+c.q+'</span>';
   });
+  if(nAtr) resumo += '<span style="margin-left:6px;font-size:10px;padding:2px 8px;border-radius:12px;background:#FCEBEB;color:#A32D2D;font-weight:700">Em atraso: '+nAtr+'</span>';
   html += '<div style="font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap;gap:2px">'+resumo+'</div>';
   html += '<table class="dt" style="background:var(--bg);border-radius:6px;overflow:hidden">'
     + '<thead><tr><th>#</th><th>Nº NF</th><th>Pedido</th><th>Transportadora</th><th>Região</th><th>UF</th><th>Cidade</th>'
     + '<th>Situação</th><th>Data Faturamento</th><th>Prev. Entrega</th><th>Data Entrega</th><th class="r">Valor NF</th><th class="r">Peso</th></tr></thead><tbody>'
     + nfs.map((n,i)=>{
-        const s = mapS[n.tipo] || {lbl:n.tipo||'—', cor:'#888'};
+        const s = sitDaNF(n);
         const corReg = REG_CORES[n.regiao] || '#888';
         return '<tr>'
           + '<td style="color:var(--text3)">'+(i+1)+'</td>'
@@ -3405,7 +3564,7 @@ function clientesToggleNF(ci, rowEl){
           + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+corReg+'18;color:'+corReg+';font-weight:500">'+esc(n.regiao||'—')+'</span></td>'
           + '<td style="font-weight:600">'+esc(n.uf||'—')+'</td>'
           + '<td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(n.cidade||'')+'">'+esc(n.cidade||'—')+'</td>'
-          + '<td><span style="font-size:10px;padding:2px 7px;border-radius:12px;background:'+s.cor+'18;color:'+s.cor+';font-weight:500;white-space:nowrap">'+esc(s.lbl)+'</span></td>'
+          + '<td title="'+esc(s.det||'')+'">'+sitBadgeHTML(s)+'</td>'
           + '<td style="color:var(--text2)">'+esc(n.dt_fat||'—')+'</td>'
           + '<td style="color:var(--text2)">'+esc(n.dt_prev||'—')+'</td>'
           + '<td style="color:'+(n.dt_ent?'var(--text)':'var(--text3)')+';font-weight:'+(n.dt_ent?'500':'400')+'">'+esc(n.dt_ent||'—')+'</td>'
@@ -3441,7 +3600,8 @@ function exportarClientesExcel(ev){
         'Regiao': n.regiao||'',
         'UF': n.uf||'',
         'Cidade': n.cidade||'',
-        'Situacao': (mapS[n.tipo]||{}).lbl || n.tipo || '',
+        'Situacao': sitDaNF(n).lbl,
+        'Em Atraso': sitDaNF(n).atraso ? 'Sim' : '',
         'Data Faturamento': n.dt_fat||'',
         'Prev. Entrega': n.dt_prev||'',
         'Data Entrega': n.dt_ent||'',
@@ -4483,16 +4643,7 @@ function fmtKgTotal(v){
 // v10.15 — situação detalhada da carteira em aberto. A ocorrência define a
 // situação (tratativa, agenda, rota, devolução em andamento...) e o atraso é
 // uma marca à parte — antes "Em Trânsito em Atraso" escondia tudo isso.
-const ABERTAS_SIT = [
-  {k:'cd',        lbl:'CD — Ag. Expedição',     cor:'#854F0B', bg:'#FAEEDA'},
-  {k:'transito',  lbl:'Em Trânsito',            cor:'#0072BC', bg:'#E6F1FB'},
-  {k:'rota',      lbl:'Em Rota de Entrega',     cor:'#0B6E99', bg:'#E3F3F9'},
-  {k:'ag_agend',  lbl:'Ag. Agendamento',        cor:'#3787C7', bg:'#E6F0FB'},
-  {k:'agenda',    lbl:'Trânsito Agenda',        cor:'#C76137', bg:'#FBEEE3'},
-  {k:'tratativa', lbl:'Tratativa',              cor:'#B26A00', bg:'#FDF1DC'},
-  {k:'devolucao', lbl:'Devolução',              cor:'#6B3FA0', bg:'#EFE6FB'}
-];
-const ABERTAS_SIT_MAP = Object.fromEntries(ABERTAS_SIT.map(s=>[s.k,s]));
+// ABERTAS_SIT / ABERTAS_SIT_MAP: definidos no bloco "SITUAÇÃO ÚNICA DO PAINEL" (v10.16).
 // payload novo traz n.sit / n.sit_lbl / n.atraso; o antigo só n.tipo
 function sitAberta(n){
   let k=n.sit, lbl=n.sit_lbl;
@@ -4627,7 +4778,8 @@ function renderAbertasTabela(){
   // ---- KPIs: somatória do que está filtrado ----
   const totalVal  = filt.reduce((a,n)=>a+(n.valor||0),0);
   const totalPeso = filt.reduce((a,n)=>a+(n.peso||0),0);
-  const emAtraso  = filt.filter(n=>n.dias_atraso!=null && n.dias_atraso>0);
+  // v10.16: mesma marca do filtro "Em atraso" (devolução em andamento não conta como atraso)
+  const emAtraso  = filt.filter(n=>sitAberta(n).atraso);
   const valAtraso = emAtraso.reduce((a,n)=>a+(n.valor||0),0);
   const maisAntiga = filt.reduce((mx,n)=>Math.max(mx, n.dias_aberto||0), 0);
   const nfAntiga   = filt.find(n=>(n.dias_aberto||0)===maisAntiga);
@@ -4731,7 +4883,7 @@ function exportarAbertasExcel(ev){
       'UF': n.uf||'',
       'Regiao': n.regiao||'',
       'Transportadora': n.transp||'',
-      'Situacao': sitAberta(n).lbl, 'Em Atraso': sitAberta(n).atraso?'Sim':'Não', 'Ocorrencia': n.ocor!=null?n.ocor:'', 'Descricao Ocorrencia': n.ocor_desc||'',
+      'Situacao Painel': (ABERTAS_SIT_MAP[sitAberta(n).k]||{}).lbl||'', 'Situacao': sitAberta(n).lbl, 'Em Atraso': sitAberta(n).atraso?'Sim':'Não', 'Ocorrencia': n.ocor!=null?n.ocor:'', 'Descricao Ocorrencia': n.ocor_desc||'',
       'Data Faturamento': n.dt_fat||'',
       'Prev. Entrega': n.dt_prev||'',
       'Dias em Aberto': n.dias_aberto!=null?n.dias_aberto:'',
@@ -6033,67 +6185,76 @@ function renderOTDChart(d){
   const otdAll=finAll?((onAll/finAll)*100).toFixed(1):'—';
   const finValAll=onValAll+offValAll;
 
-  // Totais não-finalizados — quando há QUALQUER filtro ativo (mês ou quarter),
-  // recalcula pelos meses filtrados. No "Acumulado", usa os totais pré-calculados do payload.
+  // v10.16 — carteira em aberto pela régua única (notasAbertas + sitAberta).
+  // Acumulado = carteira inteira; com filtro de mês/quarter, só as NFs emitidas
+  // nos meses filtrados (mesmo critério de mês do quadro 3 do pipeline).
   const filtroAtivo = otdFilter_state.type !== 'all';
-  const hubAll       = filtroAtivo ? (hub+bHub)             : (d.totalHubAll!=null       ? d.totalHubAll       : (hub+bHub));
-  const trsAll       = filtroAtivo ? (trs+bTrs)             : (d.totalTrsAll!=null       ? d.totalTrsAll       : (trs+bTrs));
-  const trsAtrAll    = filtroAtivo ? (trs_atr+bTrsAtr)      : (d.totalTrsAtrAll!=null    ? d.totalTrsAtrAll    : (trs_atr+bTrsAtr));
-  const hubValAll    = filtroAtivo ? (hub_val+bHubVal)      : (d.totalHubValAll!=null    ? d.totalHubValAll    : (hub_val+bHubVal));
-  const trsValAll    = filtroAtivo ? (trs_val+bTrsVal)      : (d.totalTrsValAll!=null    ? d.totalTrsValAll    : (trs_val+bTrsVal));
-  const trsAtrValAll = filtroAtivo ? (trs_atr_val+bTrsAtrVal): (d.totalTrsAtrValAll!=null ? d.totalTrsAtrValAll : (trs_atr_val+bTrsAtrVal));
-  // v9.7: subcategorias (Tratativa, Ag.CTE, Trânsito Agenda)
-  const tratAll      = filtroAtivo ? trat                    : (d.totalTratativaAll!=null       ? d.totalTratativaAll       : trat);
-  const agcteAll     = filtroAtivo ? agcte                   : (d.totalAgCteAll!=null           ? d.totalAgCteAll           : agcte);
-  const tagAll       = filtroAtivo ? tag                     : (d.totalTransitoAgendaAll!=null  ? d.totalTransitoAgendaAll  : tag);
-  const tratValAll   = filtroAtivo ? trat_val                : (d.totalTratativaValAll!=null      ? d.totalTratativaValAll      : trat_val);
-  const agcteValAll  = filtroAtivo ? agcte_val               : (d.totalAgCteValAll!=null          ? d.totalAgCteValAll          : agcte_val);
-  const tagValAll    = filtroAtivo ? tag_val                 : (d.totalTransitoAgendaValAll!=null ? d.totalTransitoAgendaValAll : tag_val);
-  // v10.0: Devolvida (ocorrencias 25 e 999) - fora do OTD, card proprio
+  const nomesMs = new Set(ms.map(m => ((d.meses[m]||d.meses[String(m)])||{}).nome).filter(Boolean));
+  const cartLista = filtroAtivo ? notasAbertasBase().filter(n => nomesMs.has(n.mes_nome)) : notasAbertasBase();
+  const SR = sitResumo(cartLista);
+  window.__otdCarteira = {filtroAtivo, nomes:[...nomesMs]};
+  // Encerradas fora do OTD: devolvida (inclui devolução em andamento) e cancelada
   const devAll       = filtroAtivo ? dev                     : (d.totalDevolvidaAll!=null    ? d.totalDevolvidaAll    : dev);
   const devValAll    = filtroAtivo ? dev_val                 : (d.totalDevolvidaValAll!=null ? d.totalDevolvidaValAll : dev_val);
-  // v10.9: Cancelada — NÃO entra no total não finalizado; é balde próprio.
   const cancAll      = filtroAtivo ? canc                    : (d.totalCanceladaAll!=null    ? d.totalCanceladaAll    : canc);
   const cancValAll   = filtroAtivo ? canc_val                : (d.totalCanceladaValAll!=null ? d.totalCanceladaValAll : canc_val);
-  // v10.10: Total em aberto = carteira em aberto (TIPOS_ABERTOS). Devolvida
-  // tem card próprio e NÃO entra — antes entrava, e o rodapé do quadro 3
-  // (7 tipos) não fechava com as linhas mensais (6 tipos).
-  const nfinAll = hubAll + trsAll + trsAtrAll + tratAll + agcteAll + tagAll;
-  const nfinValAll = hubValAll + trsValAll + trsAtrValAll + tratValAll + agcteValAll + tagValAll;
+  const nfinAll = SR.total, nfinValAll = SR.total_val;
 
   document.getElementById('o-fat').textContent=fmtM(fatTotal);
-  document.getElementById('o-fat-s').textContent=qtdTotal.toLocaleString('pt-BR')+' NFs (vendas + bonif)';
-  // OTD% no cabeçalho (v9.10): On Time / (On Time + Off Time)
+  document.getElementById('o-fat-s').textContent=qtdTotal.toLocaleString('pt-BR')+' NFs · vendas + bonificações';
   const otdPct = (onAll + offAll) > 0 ? (onAll / (onAll + offAll)) * 100 : null;
+  const corOTDf = v => v == null ? 'var(--text2)' : v >= 99 ? '#2E7D32' : v >= 80 ? '#B26A00' : '#B3261E';
   const otdEl = document.getElementById('o-otd');
-  const otdSubEl = document.getElementById('o-otd-s');
   if(otdEl){
-    otdEl.textContent = otdPct != null ? otdPct.toFixed(1) + '%' : '—';
-    // Cor por faixa
-    otdEl.style.color = otdPct == null ? 'var(--text2)' : otdPct >= 99 ? '#3B6D11' : otdPct >= 80 ? '#854F0B' : '#A32D2D';
+    otdEl.textContent = otdPct != null ? otdPct.toFixed(1).replace('.',',') + '%' : '—';
+    otdEl.style.color = corOTDf(otdPct);
   }
-  if(otdSubEl){
-    otdSubEl.textContent = onAll.toLocaleString('pt-BR') + ' de ' + (onAll + offAll).toLocaleString('pt-BR') + ' finalizadas';
-  }
+  // Régua do medidor: 90% → 100% (o painel vive acima de 98%; escala cheia esconderia a distância até a meta)
+  const ESC_MIN = 90;
+  const posEsc = v => Math.max(0, Math.min(100, (v - ESC_MIN) / (100 - ESC_MIN) * 100));
+  const fillEl = document.getElementById('ox-meter-fill');
+  if(fillEl){ fillEl.style.width = otdPct!=null ? posEsc(otdPct).toFixed(1)+'%' : '0%';
+              fillEl.style.background = otdPct!=null && otdPct<99 ? 'linear-gradient(90deg,#F0A04B,#B3261E)' : ''; }
+  const alvo = document.querySelector('#ox-meter .ox-meter-alvo'); if(alvo) alvo.style.left = posEsc(99)+'%';
   document.getElementById('o-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o-on-s').textContent=fmtM(onValAll);
-  document.getElementById('o-off').textContent=offAll;document.getElementById('o-off-s').textContent=fmtM(offValAll);
-  document.getElementById('o-hub').textContent=hubAll;document.getElementById('o-hub-s').textContent=fmtM(hubValAll);
-  document.getElementById('o-trs').textContent=trsAll;document.getElementById('o-trs-s').textContent=fmtM(trsValAll);
-  document.getElementById('o-trs-atr').textContent=trsAtrAll;document.getElementById('o-trs-atr-s').textContent=fmtM(trsAtrValAll);
-  document.getElementById('o-trat').textContent=tratAll;document.getElementById('o-trat-s').textContent=fmtM(tratValAll);
-  document.getElementById('o-agcte').textContent=agcteAll;document.getElementById('o-agcte-s').textContent=fmtM(agcteValAll);
-  document.getElementById('o-tag').textContent=tagAll;document.getElementById('o-tag-s').textContent=fmtM(tagValAll);
-  document.getElementById('o-dev').textContent=devAll;document.getElementById('o-dev-s').textContent=fmtM(devValAll);
-  document.getElementById('o-canc').textContent=cancAll;document.getElementById('o-canc-s').textContent=fmtM(cancValAll);
-  document.getElementById('o-otd').textContent=otdAll==='—'?'—':otdAll+'%';   // v10.11: sem "—%"
-  // Subtexto do OTD: mostra o filtro ativo claramente
-  let otdLabel = onAll.toLocaleString('pt-BR')+' On Time de '+finAll.toLocaleString('pt-BR')+' finalizadas';
-  if(otdFilter_state.type==='q')      otdLabel = '['+otdFilter_state.val+'] '+otdLabel;
-  else if(otdFilter_state.type==='m') otdLabel = '['+(NOME_MES[parseInt(otdFilter_state.val)]||otdFilter_state.val)+'] '+otdLabel;
-  else                                otdLabel = '[Acumulado] '+otdLabel;
-  // Atualiza o subtexto do OTD do cabeçalho (v9.10) — usar query no documento (1º o-otd-s)
+  document.getElementById('o-off').textContent=offAll.toLocaleString('pt-BR');document.getElementById('o-off-s').textContent=fmtM(offValAll);
+  document.getElementById('o-dev').textContent=devAll.toLocaleString('pt-BR');document.getElementById('o-dev-s').textContent=fmtM(devValAll);
+  document.getElementById('o-canc').textContent=cancAll.toLocaleString('pt-BR');document.getElementById('o-canc-s').textContent=fmtM(cancValAll);
+  const NOME_FILTRO = otdFilter_state.type==='q' ? otdFilter_state.val
+                    : otdFilter_state.type==='m' ? (NOME_MES[parseInt(otdFilter_state.val)]||otdFilter_state.val) : 'acumulado';
+  const escEl = document.getElementById('ox-escopo'); if(escEl) escEl.textContent = NOME_FILTRO;
   const otdSubEl2 = document.getElementById('o-otd-s');
-  if(otdSubEl2) otdSubEl2.textContent = otdLabel;
+  if(otdSubEl2) otdSubEl2.textContent = onAll.toLocaleString('pt-BR')+' no prazo de '+finAll.toLocaleString('pt-BR')+' entregues';
+
+  // Carteira em aberto: faixa por situação + legenda clicável
+  try {
+    document.getElementById('ox-cart-n').textContent = SR.total.toLocaleString('pt-BR');
+    document.getElementById('ox-cart-v').textContent = fmtM(SR.total_val);
+    document.getElementById('ox-atr-n').textContent = SR.atraso.toLocaleString('pt-BR');
+    document.getElementById('ox-atr-v').textContent = SR.atraso ? fmtM(SR.atraso_val) : '';
+    const atrBtn = document.getElementById('ox-atr'); if(atrBtn) atrBtn.style.display = SR.atraso ? '' : 'none';
+    // atraso por situação (para a faixa listrada)
+    const atrPorSit = {}; cartLista.forEach(n=>{ const st=sitAberta(n); if(st.atraso) atrPorSit[st.k]=(atrPorSit[st.k]||0)+1; });
+    const flow = document.getElementById('ox-flow');
+    flow.innerHTML = SR.total ? ABERTAS_SIT.filter(st=>SR[st.k]>0).map(st=>{
+      const pctSeg = SR[st.k]/SR.total*100, pa = (atrPorSit[st.k]||0)/SR[st.k]*100;
+      return '<button type="button" class="ox-seg" style="flex:'+SR[st.k]+' 1 0;background:'+st.cor+'" onclick="otdAbrirSituacao(\''+st.k+'\')" '
+        +'title="'+esc(st.lbl)+': '+SR[st.k]+' NF(s) · '+fmtM(SR[st.k+'_val'])+((atrPorSit[st.k]||0)?' · '+atrPorSit[st.k]+' em atraso':'')+'">'
+        +(pa>0?'<i style="width:'+pa.toFixed(1)+'%"></i>':'')
+        +(pctSeg>=7?'<span>'+SR[st.k]+'</span>':'')+'</button>';
+    }).join('') : '';
+    document.getElementById('ox-leg').innerHTML = ABERTAS_SIT.map(st=>{
+      const q=SR[st.k], qa=atrPorSit[st.k]||0;
+      return '<button type="button" class="ox-it" style="--c:'+st.cor+'" data-zero="'+(q?0:1)+'" onclick="otdAbrirSituacao(\''+st.k+'\')" title="Abrir na Notas em Aberto">'
+        +'<span class="ox-it-l">'+esc(st.lbl)+'</span>'
+        +'<span class="ox-it-n">'+q.toLocaleString('pt-BR')+'</span>'
+        +'<span class="ox-it-v">'+(q?fmtM(SR[st.k+'_val']):'—')+'</span>'
+        +(qa?'<span class="ox-it-a">'+qa+' em atraso</span>':'')+'</button>';
+    }).join('');
+    const nota = document.getElementById('ox-nota');
+    if(nota) nota.textContent = (filtroAtivo ? 'NFs emitidas em '+[...nomesMs].join(', ')+'. ' : '')
+      + 'Mesma régua da aba Notas em Aberto. A faixa listrada marca as NFs em atraso dentro de cada situação. Clique numa situação para ver as notas.';
+  } catch(e) { console.error('Erro no painel da carteira:', e); }
 
   // OTD por empresa (v9.11) — v10.11: com filtro de mês/quarter usa os meses
   // filtrados (on_genomma/off_genomma...); no Acumulado, empresa_total.
@@ -6105,28 +6266,16 @@ function renderOTDChart(d){
         g.on+=md.on_genomma||0; g.off+=md.off_genomma||0; i.on+=md.on_inovalab||0; i.off+=md.off_inovalab||0; });
       et = {GENOMMA:g, INOVALAB:i};
     }
-    const corOTD = v => v == null ? 'var(--text2)' : v >= 99 ? '#3B6D11' : v >= 80 ? '#854F0B' : '#A32D2D';
     const empBlock = (empKey, label) => {
       const e = et[empKey] || {on:0, off:0};
       const fin = (e.on||0) + (e.off||0);
       const pct = fin > 0 ? (e.on / fin * 100) : null;
-      return '<div>'
-        + '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">'
-          + '<span style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;font-weight:500">'+label+'</span>'
-          + '<span style="font-size:28px;font-weight:600;color:'+corOTD(pct)+'">'+(pct!=null ? pct.toFixed(1)+'%' : '—')+'</span>'
-        + '</div>'
-        + '<div style="font-size:11px;color:var(--text2);margin-top:2px">'
-          + (e.on||0).toLocaleString('pt-BR')+' On Time / '+fin.toLocaleString('pt-BR')+' finalizadas'
-        + '</div>'
-        + '</div>';
+      return '<div class="ox-emp-i"><span>'+label+'</span>'
+        + '<b style="color:'+corOTDf(pct)+'">'+(pct!=null ? pct.toFixed(1).replace('.',',')+'%' : '—')+'</b>'
+        + '<span>'+(e.on||0).toLocaleString('pt-BR')+' de '+fin.toLocaleString('pt-BR')+'</span></div>';
     };
     const grid = document.getElementById('otd-empresas-grid');
-    if(grid){
-      grid.innerHTML =
-        empBlock('GENOMMA', 'Genomma')
-        + '<div style="background:var(--border);width:0.5px;height:46px;align-self:center"></div>'
-        + empBlock('INOVALAB', 'Inovalab');
-    }
+    if(grid) grid.innerHTML = empBlock('GENOMMA', 'Genomma') + empBlock('INOVALAB', 'Inovalab');
   } catch(e) { console.error('Erro no card OTD por empresa:', e); }
 
   document.getElementById('o2-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=offAll;
@@ -6137,12 +6286,15 @@ function renderOTDChart(d){
     document.getElementById('o2-bar').style.width = totEscopo>0 ? ((finAll/totEscopo*100).toFixed(1)+'%') : '0%';
     document.getElementById('o2-pct').textContent = (finAll||0).toLocaleString('pt-BR') + ' de ' + totEscopo.toLocaleString('pt-BR');
   } catch(e) { console.error('Erro no o2-bar:', e); }
-  document.getElementById('o3-hub').textContent=hubAll;document.getElementById('o3-hub-val').textContent=fmtM(hubValAll);
-  document.getElementById('o3-trs').textContent=trsAll;document.getElementById('o3-trs-val').textContent=fmtM(trsValAll);
-  document.getElementById('o3-trs-atr').textContent=trsAtrAll;document.getElementById('o3-trs-atr-val').textContent=fmtM(trsAtrValAll);
-  document.getElementById('o3-trat').textContent=tratAll;document.getElementById('o3-trat-val').textContent=fmtM(tratValAll);
-  document.getElementById('o3-agcte').textContent=agcteAll;document.getElementById('o3-agcte-val').textContent=fmtM(agcteValAll);
-  document.getElementById('o3-tag').textContent=tagAll;document.getElementById('o3-tag-val').textContent=fmtM(tagValAll);
+  // Quadro 3 — cards das 7 situações + marca de atraso (régua única)
+  const o3c = document.getElementById('o3-sit-cards');
+  if(o3c) o3c.innerHTML = ABERTAS_SIT.concat([SIT_ATRASO]).map(st=>{
+    const q = st.k==='_atraso' ? SR.atraso : SR[st.k], v = st.k==='_atraso' ? SR.atraso_val : SR[st.k+'_val'];
+    return '<div class="status-hl" style="background:'+st.bg+';cursor:pointer" onclick="otdAbrirSituacao(\''+st.k+'\')" title="Abrir na Notas em Aberto'+(st.k==='_atraso'?' — marca: já contada nas situações':'')+'">'
+      +'<div style="font-size:9px;color:'+st.cor+';text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">'+esc(st.lbl)+(st.k==='_atraso'?' *':'')+'</div>'
+      +'<div style="font-size:24px;font-weight:700;color:'+st.cor+'">'+q.toLocaleString('pt-BR')+'</div>'
+      +'<div style="font-size:11px;color:'+st.cor+';margin-top:2px">'+(q?fmtM(v):'—')+'</div></div>';
+  }).join('');
   document.getElementById('o3-dev').textContent=devAll;document.getElementById('o3-dev-val').textContent=fmtM(devValAll);
   document.getElementById('o3-canc').textContent=cancAll;document.getElementById('o3-canc-val').textContent=fmtM(cancValAll);
   renderCanceladas();
@@ -6247,7 +6399,7 @@ function renderOTDChart(d){
   if(fatChart) fatChart.destroy();
   fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',
     data:{labels:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.nome||m),datasets:[
-      {label:'CD + Trânsito',data:ms.map(m=>((d.meses[m]||d.meses[String(m)])?.hub_val||0)+((d.meses[m]||d.meses[String(m)])?.trs_val||0)+((d.meses[m]||d.meses[String(m)])?.trs_atr_val||0)),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
+      {label:'Em aberto',data:ms.map(m=>{const R=sitPor('mes_nome',cartLista)[((d.meses[m]||d.meses[String(m)])||{}).nome];return R?R.total_val:0;}),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
       {label:'Bonificações',data:ms.map(m=>(bm[m]?.fat||bm[String(m)]?.fat||0)),backgroundColor:'#7F77DD',borderRadius:0,borderWidth:0,stack:'s'},
       {label:'Inovalab',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
       {label:'Genomma',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
@@ -6294,86 +6446,41 @@ function renderOTDChart(d){
   document.getElementById('o2-tbody').innerHTML=r2;
 
   try {
-  // ---- BLOCO 3: CD + Trânsito + Em Trânsito em Atraso + 3 subcategorias por mês ----
+  // ---- BLOCO 3 (v10.16): carteira em aberto por mês de emissão — régua única ----
+  const thO3 = document.getElementById('o3-thead');
+  if(thO3) thO3.innerHTML = '<th>Mês</th>' + sitTH();
+  const porMes = sitPor('mes_nome', cartLista);
   let r3='';
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)];if(!md)return;
-    const bmm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
-    const mHub=md.hub+(bmm.hub||0);
-    const mTrs=md.trs+(bmm.trs||0);
-    const mTrsAtr=(md.trs_atr||0)+(bmm.trs_atr||0);
-    const mTrat=(md.tratativa||0)+(bmm.tratativa||0);
-    const mAgcte=(md.ag_cte||0)+(bmm.ag_cte||0);
-    const mTag=(md.transito_agenda||0)+(bmm.transito_agenda||0);
-    const mHubVal=md.hub_val+(bmm.hub_val||0);
-    const mTrsVal=md.trs_val+(bmm.trs_val||0);
-    const mTrsAtrVal=(md.trs_atr_val||0)+(bmm.trs_atr_val||0);
-    const mTratVal=(md.tratativa_val||0)+(bmm.tratativa_val||0);
-    const mAgcteVal=(md.ag_cte_val||0)+(bmm.ag_cte_val||0);
-    const mTagVal=(md.transito_agenda_val||0)+(bmm.transito_agenda_val||0);
-    if(mHub+mTrs+mTrsAtr+mTrat+mAgcte+mTag===0&&ms.length>1)return;
-    const tot=mHub+mTrs+mTrsAtr+mTrat+mAgcte+mTag;
-    const totVal=mHubVal+mTrsVal+mTrsAtrVal+mTratVal+mAgcteVal+mTagVal;
-    r3+='<tr><td>'+md.nome+'</td>'
-      +'<td class="r" style="color:#854F0B">'+(mHub||'—')+'</td>'
-      +'<td class="r" style="color:#854F0B">'+(mHubVal>0?fmtM(mHubVal):'—')+'</td>'
-      +'<td class="r" style="color:#0072BC">'+(mTrs||'—')+'</td>'
-      +'<td class="r" style="color:#0072BC">'+(mTrsVal>0?fmtM(mTrsVal):'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D;font-weight:600">'+(mTrsAtr||'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+(mTrsAtrVal>0?fmtM(mTrsAtrVal):'—')+'</td>'
-      +'<td class="r" style="color:#7A4FBF">'+(mTrat||'—')+'</td>'
-      +'<td class="r" style="color:#3787C7">'+(mAgcte||'—')+'</td>'
-      +'<td class="r" style="color:#C76137">'+(mTag||'—')+'</td>'
-      +'<td class="r">'+(tot||'—')+'</td>'
-      +'<td class="r">'+(totVal>0?fmtM(totVal):'—')+'</td></tr>';
+    const R = porMes[md.nome];
+    if((!R || !R.total) && ms.length>1) return;
+    r3+='<tr><td>'+md.nome+'</td>'+sitTD(R)+'</tr>';
   });
-  r3+='<tr class="tr-total"><td>Total em aberto</td>'
-    +'<td class="r" style="color:#854F0B">'+hubAll+'</td>'
-    +'<td class="r" style="color:#854F0B">'+fmtM(hubValAll)+'</td>'
-    +'<td class="r" style="color:#0072BC">'+trsAll+'</td>'
-    +'<td class="r" style="color:#0072BC">'+fmtM(trsValAll)+'</td>'
-    +'<td class="r" style="color:#A32D2D;font-weight:600">'+trsAtrAll+'</td>'
-    +'<td class="r" style="color:#A32D2D">'+fmtM(trsAtrValAll)+'</td>'
-    +'<td class="r" style="color:#7A4FBF">'+tratAll+'</td>'
-    +'<td class="r" style="color:#3787C7">'+agcteAll+'</td>'
-    +'<td class="r" style="color:#C76137">'+tagAll+'</td>'
-    +'<td class="r" style="font-weight:700;color:#A32D2D">'+nfinAll+'</td>'
-    +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(nfinValAll)+'</td></tr>';
+  // NFs da carteira com mês de emissão fora da lista de meses (ex.: ano anterior)
+  const nomesLinha = new Set(ms.map(m=>((d.meses[m]||d.meses[String(m)])||{}).nome));
+  Object.keys(porMes).filter(k=>!nomesLinha.has(k)).forEach(k=>{ r3+='<tr><td>'+esc(k||'—')+'</td>'+sitTD(porMes[k])+'</tr>'; });
+  r3+='<tr class="tr-total"><td>Total em aberto</td>'+sitTD(SR,{total:true})+'</tr>';
   document.getElementById('o3-tbody').innerHTML=r3;
 
-  // ---- BLOCO 3b: Previsão por quarter ----
-  const prevQ=d.prevQ||[];
+  // ---- BLOCO 3b (v10.16): previsão por quarter, da própria carteira ----
+  // Quarter da Prev. Entrega; ano diferente do corrente vira "Q1/27"; sem data = "Sem previsão".
+  const anoRef = new Date().getFullYear();
+  const qDe = n => { const iso=n.dt_prev_iso||''; const mm=iso.match(/^(\d{4})-(\d{2})/);
+    if(!mm) return 'Sem previsão'; const q='Q'+(Math.floor((parseInt(mm[2])-1)/3)+1);
+    return parseInt(mm[1])===anoRef ? q : q+'/'+mm[1].slice(2); };
+  const ordQ = k => { if(k==='Sem previsão') return 99999; const mm=k.match(/^Q(\d)(?:\/(\d{2}))?$/); return mm ? ((mm[2]?2000+parseInt(mm[2]):anoRef)*10+parseInt(mm[1])) : 99998; };
+  const porQ = {}; cartLista.forEach(n=>{ const k=qDe(n); (porQ[k]=porQ[k]||[]).push(n); });
+  const thPrev = document.getElementById('o3-prev-thead');
+  if(thPrev) thPrev.innerHTML = '<th>Quarter previsto</th>' + sitTH();
   const qColors={'Q1':'#0072BC','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
   let rPrev='';
-  prevQ.forEach(p=>{
-    // v10.11: quarter de outro ano vem como "Q1/27" — cor pela base do rótulo
-    const cor=qColors[p.q]||qColors[String(p.q).split('/')[0]]||'#888';
-    rPrev+='<tr>'
-      +'<td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+esc(p.q)+'</strong></span></td>'
-      +'<td class="r" style="color:#854F0B">'+(p.hub>0?p.hub:'—')+'</td>'
-      +'<td class="r" style="color:#0072BC">'+(p.transito>0?p.transito:'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D;font-weight:600">'+((p.transito_atr||0)>0?p.transito_atr:'—')+'</td>'
-      +'<td class="r" style="color:#7A4FBF">'+((p.tratativa||0)>0?p.tratativa:'—')+'</td>'
-      +'<td class="r" style="color:#3787C7">'+((p.ag_cte||0)>0?p.ag_cte:'—')+'</td>'
-      +'<td class="r" style="color:#C76137">'+((p.transito_agenda||0)>0?p.transito_agenda:'—')+'</td>'
-      +'<td class="r" style="font-weight:600">'+p.qtd+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+fmtM(p.valor)+'</td>'
-      +'</tr>';
+  Object.keys(porQ).sort((x,y)=>ordQ(x)-ordQ(y)).forEach(k=>{
+    const cor=qColors[k]||qColors[String(k).split('/')[0]]||'#888';
+    rPrev+='<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+esc(k)+'</strong></span></td>'
+      +sitTD(sitResumo(porQ[k]))+'</tr>';
   });
-  const totPrev=prevQ.reduce((a,p)=>({
-    qtd:a.qtd+(p.qtd||0),valor:a.valor+(p.valor||0),
-    hub:a.hub+(p.hub||0),trs:a.trs+(p.transito||0),trs_atr:a.trs_atr+(p.transito_atr||0),
-    trat:a.trat+(p.tratativa||0),agcte:a.agcte+(p.ag_cte||0),tag:a.tag+(p.transito_agenda||0)
-  }),{qtd:0,valor:0,hub:0,trs:0,trs_atr:0,trat:0,agcte:0,tag:0});
-  rPrev+='<tr class="tr-total"><td>Total em aberto</td>'
-    +'<td class="r" style="color:#854F0B">'+(totPrev.hub||0)+'</td>'
-    +'<td class="r" style="color:#0072BC">'+(totPrev.trs||0)+'</td>'
-    +'<td class="r" style="color:#A32D2D;font-weight:600">'+(totPrev.trs_atr||0)+'</td>'
-    +'<td class="r" style="color:#7A4FBF">'+(totPrev.trat||0)+'</td>'
-    +'<td class="r" style="color:#3787C7">'+(totPrev.agcte||0)+'</td>'
-    +'<td class="r" style="color:#C76137">'+(totPrev.tag||0)+'</td>'
-    +'<td class="r" style="font-weight:700;color:#A32D2D">'+(totPrev.qtd||0)+'</td>'
-    +'<td class="r" style="font-weight:700;color:#A32D2D">'+fmtM(totPrev.valor||0)+'</td></tr>';
+  rPrev+='<tr class="tr-total"><td>Total em aberto</td>'+sitTD(SR,{total:true})+'</tr>';
   document.getElementById('o3-prev-tbody').innerHTML=rPrev;
   } catch(e) { console.error('Erro bloco 3:', e); }
 
@@ -6393,26 +6500,19 @@ function renderOTDChart(d){
     }
   }
   const bc=v=>v===null?'#B5D4F4':v>=99?'#004A87':v>=80?'#378ADD':'#E24B4A';
+  // v10.16: carteira por transportadora pela régua única (notasAbertas)
+  const sitTransp = sitPor('transp');
+  const thO4 = document.getElementById('o4-thead');
+  if(thO4) thO4.innerHTML = '<th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th>' + sitTH();
   document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
     const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#004A87;font-weight:600':'color:#A32D2D;font-weight:600';
-    // v9.13: Valor Pendente = TUDO que não foi entregue (exceto on_time e off_time).
-    // Recalculado no JS para funcionar com JSON de qualquer versão (mesmo antes do
-    // Python ser rodado com a v9.7).
-    const valPendTotal = (t.hub_val||0) + (t.trs_val||0) + (t.trs_atr_val||0)
-                       + (t.tratativa_val||0) + (t.ag_cte_val||0) + (t.transito_agenda_val||0);
     return'<tr><td>'+esc(t.n)+'</td>'
       +'<td class="r">'+(t.fin||'—')+'</td>'
       +'<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'
       +'<td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td>'
       +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
       +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
-      +'<td class="r" style="color:#854F0B">'+(t.hub>0?t.hub:'—')+'</td>'
-      +'<td class="r" style="color:#0072BC">'+(t.trs>0?t.trs:'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D;font-weight:600">'+((t.trs_atr||0)>0?t.trs_atr:'—')+'</td>'
-      +'<td class="r" style="color:#7A4FBF">'+((t.tratativa||0)>0?t.tratativa:'—')+'</td>'
-      +'<td class="r" style="color:#3787C7">'+((t.ag_cte||0)>0?t.ag_cte:'—')+'</td>'
-      +'<td class="r" style="color:#C76137">'+((t.transito_agenda||0)>0?t.transito_agenda:'—')+'</td>'
-      +'<td class="r" style="color:#A32D2D">'+(valPendTotal>0?fmtM(valPendTotal):'—')+'</td>'
+      +sitTD(sitTransp[t.n])
       +'</tr>';
   }).join('');
   } catch(e) { console.error('Erro bloco 4:', e); }
@@ -7064,11 +7164,10 @@ function exportarLeadTimeClientesExcel(){
       devolvida:           d.totalDevolvidaAll           || 0,
       devolvida_val:       d.totalDevolvidaValAll        || 0
     };
-    // total da carteira ainda aberta = tudo que não foi finalizado nem devolvido
-    status.aberto = status.hub + status.trs + status.trs_atr + status.tratativa
-                  + status.ag_cte + status.transito_agenda;
-    status.aberto_val = status.hub_val + status.trs_val + status.trs_atr_val
-                  + status.tratativa_val + status.ag_cte_val + status.transito_agenda_val;
+    // v10.16: carteira pela régua única (mesmos números da Notas em Aberto e do quadro OTD)
+    status.sit = sitResumo(d.notasAbertas || []);
+    status.aberto = status.sit.total;
+    status.aberto_val = status.sit.total_val;
 
     const finalizadas = status.on + status.off;
     const otdPct = finalizadas > 0 ? (status.on / finalizadas * 100) : null;
@@ -7367,14 +7466,10 @@ const MAP_LABELS={
     +'<div class="gtv-card">'
       +'<div class="gtv-card-h"><div class="gtv-eyebrow">Status das Entregas · Em Trânsito</div></div>'
       +'<div class="gtv-tiles">'
-        +gtvTile('CD · Ag. Expedição', st.hub, 'gtv-base', false, gtvShare(st.hub, st.aberto))
-        +gtvTile('Em Trânsito', st.trs, 'gtv-alt', false, gtvShare(st.trs, st.aberto))
-        +gtvTile('Em Atraso', st.trs_atr, 'gtv-warn', true, gtvShare(st.trs_atr, st.aberto))
-        +gtvTile('Tratativa', st.tratativa, 'gtv-base', false, gtvShare(st.tratativa, st.aberto))
-        +gtvTile('Ag. CTE', st.ag_cte, 'gtv-alt', false, gtvShare(st.ag_cte, st.aberto))
-        +gtvTile('Trânsito Agenda', st.transito_agenda, 'gtv-base', false, gtvShare(st.transito_agenda, st.aberto))
+        +ABERTAS_SIT.map(x=>gtvTile(x.curto, st.sit[x.k], x.k==='tratativa'?'gtv-warn':(x.k==='devolucao'?'gtv-dev':'gtv-base'), x.k==='tratativa'&&st.sit[x.k]>0, gtvShare(st.sit[x.k], st.aberto))).join('')
+        +gtvTile('Em Atraso', st.sit.atraso, 'gtv-warn', true, 'marca · '+gtvShare(st.sit.atraso, st.aberto))
         +gtvTile('Devolvidas', st.devolvida, 'gtv-dev', false, 'fora do OTD')
-        +gtvTile('Carteira Aberta', st.aberto, 'gtv-tot', false, 'soma dos 6 status')
+        +gtvTile('Carteira Aberta', st.aberto, 'gtv-tot', false, 'soma das 7 situações')
       +'</div>'
     +'</div>'
 
