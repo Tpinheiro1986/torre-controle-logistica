@@ -405,7 +405,7 @@ table.dt th{color:#33536F}
 /* v10.16 — Painel de desempenho OTD */
 .ox{background:var(--bg);border:0.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
 .ox-lbl{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
-.ox-escopo{font-size:10px;font-weight:600;color:#004A87;background:#E6F1FB;border-radius:10px;padding:1px 8px}
+.ox-escopo{font-size:10px;font-weight:600;color:var(--oc-chip-t);background:var(--oc-chip);border-radius:10px;padding:1px 8px}
 .ox-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;padding:20px 24px 18px;background:linear-gradient(180deg,rgba(0,167,231,.06),transparent 70%)}
 .ox-otd-row{display:flex;align-items:center;gap:22px;margin-top:4px;flex-wrap:wrap}
 .ox-otd-val{font-family:'Montserrat',sans-serif;font-weight:800;font-size:52px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#2E7D32}
@@ -420,7 +420,7 @@ table.dt th{color:#33536F}
 .ox-emp-i span:first-child{font-weight:600;color:var(--text)}
 .ox-fat{text-align:right;border-left:0.5px solid var(--border);padding-left:28px;display:flex;flex-direction:column;justify-content:center}
 .ox-fat .ox-lbl{justify-content:flex-end}
-.ox-fat-val{font-family:'Montserrat',sans-serif;font-weight:700;font-size:28px;color:#004A87;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
+.ox-fat-val{font-family:'Montserrat',sans-serif;font-weight:700;font-size:28px;color:var(--oc-ink);font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
 .ox-sub{font-size:11px;color:var(--text2);margin-top:2px}
 .ox-ciclo{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
 .ox-grp{display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
@@ -435,12 +435,12 @@ table.dt th{color:#33536F}
 .ox-cart-tot{display:flex;align-items:baseline;gap:8px;margin-top:2px}
 .ox-cart-tot b{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
 .ox-cart-tot span{font-size:12px;color:var(--text2)}
-.ox-cart-tot strong{font-size:14px;font-weight:600;color:#004A87;margin-left:8px;font-variant-numeric:tabular-nums}
-.ox-atr{display:flex;align-items:baseline;gap:6px;border:0.5px solid #F2C4C1;background:#FCEBEB;color:#A32D2D;border-radius:10px;padding:7px 12px;cursor:pointer;font:inherit}
+.ox-cart-tot strong{font-size:14px;font-weight:600;color:var(--oc-ink);margin-left:8px;font-variant-numeric:tabular-nums}
+.ox-atr{display:flex;align-items:baseline;gap:6px;border:0.5px solid rgba(181,82,59,.35);background:rgba(181,82,59,.10);color:#C0533E;border-radius:10px;padding:7px 12px;cursor:pointer;font:inherit}
 .ox-atr b{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
 .ox-atr span{font-size:12px;font-weight:600}
 .ox-atr em{font-style:normal;font-size:11px;opacity:.8}
-.ox-atr:hover{background:#F9DCDB}
+.ox-atr:hover{background:rgba(181,82,59,.18)}
 .ox-flow{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--bg3);gap:2px}
 .ox-seg{position:relative;min-width:6px;cursor:pointer;transition:filter .15s;border:0;padding:0}
 .ox-seg:hover,.ox-seg:focus-visible{filter:brightness(1.12);outline:none}
@@ -468,12 +468,15 @@ table.dt th{color:#33536F}
 }
 @media(prefers-reduced-motion:reduce){.ox-meter i{transition:none}}
 
+/* v10.17 — tokens claros/escuros da aba OTD */
+:root{--oc-ink:#1F3A5F;--oc-track:#EEF2F6;--oc-tot:#F3F6F9;--oc-soft:#F6F8FA;--oc-chip:#E6F1FB;--oc-chip-t:#004A87;--oc-q:#F0EEF8;--oc-q-t:#6A5FA8}
+@media(prefers-color-scheme:dark){:root{--oc-ink:#A9C3E0;--oc-track:rgba(255,255,255,.09);--oc-tot:rgba(255,255,255,.05);--oc-soft:rgba(255,255,255,.04);--oc-chip:rgba(143,179,212,.18);--oc-chip-t:#BBD2EA;--oc-q:rgba(156,147,196,.18);--oc-q-t:#C9C2EA}}
 /* v10.17 — Aba OTD executiva: blocos 1–5 na linha do painel de desempenho.
    Paleta clássica suave: marinho #1F3A5F · aço #4A7AA8 · sálvia #6E9B7B ·
    lavanda #9C93C4 · areia #D9B77E · tijolo #B5523B · verde #3F7D52 */
 #sec-otd .card{border-radius:14px;padding:20px 24px;box-shadow:0 1px 0 rgba(31,58,95,.04),0 8px 24px -18px rgba(31,58,95,.35);border:0.5px solid var(--border)}
 .oc-h{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
-.oc-h .slabel-num{margin-top:2px;background:#1F3A5F;color:#fff;width:22px;height:22px;font-size:10px}
+.oc-h .slabel-num{margin-top:2px;background:#2F5D8A;color:#fff;width:22px;height:22px;font-size:10px}
 .oc-h h3{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.25;margin:0}
 .oc-h p{font-size:12px;color:var(--text2);margin:2px 0 0;max-width:80ch}
 .oc-sub{font-size:12px;font-weight:600;color:var(--text);margin:4px 0 8px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -494,7 +497,7 @@ table.dt th{color:#33536F}
 .oc-emp-i:last-child .oc-emp-n{justify-content:flex-end}
 .oc-emp-v{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
 .oc-emp-s{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
-.oc-share{display:flex;height:12px;border-radius:7px;overflow:hidden;background:#E9EEF3;gap:2px}
+.oc-share{display:flex;height:12px;border-radius:7px;overflow:hidden;background:var(--oc-track);gap:2px}
 .oc-share i{display:block;height:100%}
 .oc-sw{width:9px;height:9px;border-radius:3px;display:inline-block}
 /* Bloco 1 — linhas de mês */
@@ -502,14 +505,14 @@ table.dt th{color:#33536F}
 .oc-mrow b{font-weight:600;color:var(--text);text-align:right}
 .oc-mrow em{font-style:normal;color:var(--text3);text-align:right}
 .oc-mlbl{color:var(--text2);font-weight:600}
-.oc-mtrack{height:14px;border-radius:7px;background:#EEF2F6;display:flex;overflow:hidden}
+.oc-mtrack{height:14px;border-radius:7px;background:var(--oc-track);display:flex;overflow:hidden}
 .oc-mtrack i{display:block;height:100%}
-.oc-qchip{justify-self:end;font-size:10px;font-weight:600;color:#6A5FA8;background:#F0EEF8;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.oc-qchip{justify-self:end;font-size:10px;font-weight:600;color:var(--oc-q-t);background:var(--oc-q);border-radius:10px;padding:1px 8px;white-space:nowrap}
 .oc-qs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:12px}
 .oc-q{border:0.5px solid var(--border);border-radius:10px;padding:8px 12px}
-.oc-q b{display:block;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:#1F3A5F;font-variant-numeric:tabular-nums}
+.oc-q b{display:block;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--oc-ink);font-variant-numeric:tabular-nums}
 .oc-q span{font-size:11px;color:var(--text3)}
-.oc-q .oc-ql{font-size:11px;font-weight:700;color:#6A5FA8}
+.oc-q .oc-ql{font-size:11px;font-weight:700;color:var(--oc-q-t)}
 #sec-otd #bonif-row{border-top:0.5px solid var(--border)!important;color:var(--text3)!important}
 /* Bloco 2 — KPIs */
 .oc-kpis{display:flex;flex-wrap:wrap;gap:0;margin-bottom:16px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
@@ -519,7 +522,7 @@ table.dt th{color:#33536F}
 .oc-k-bar{flex:1;min-width:200px;border-right:0;justify-content:center}
 .oc-k-bar span{display:flex;justify-content:space-between}
 .oc-k-bar em{font-style:normal;color:var(--text3);font-variant-numeric:tabular-nums}
-.oc-track{height:8px;border-radius:5px;background:#EEF2F6;overflow:hidden;margin-top:6px}
+.oc-track{height:8px;border-radius:5px;background:var(--oc-track);overflow:hidden;margin-top:6px}
 .oc-track i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#4A7AA8,#1F3A5F);transition:width .6s ease}
 .oc-otd{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-variant-numeric:tabular-nums}
 .oc-otd::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
@@ -527,7 +530,7 @@ table.dt th{color:#33536F}
 #sec-otd table.dt th{font-family:'Inter',sans-serif;text-transform:none;letter-spacing:0;font-size:11px;font-weight:600;color:var(--text2);background:transparent;border-bottom:1px solid var(--border2);white-space:normal;line-height:1.25;vertical-align:bottom}
 #sec-otd table.dt td{font-variant-numeric:tabular-nums;border-bottom:0.5px solid var(--border)}
 #sec-otd table.dt tbody tr:hover td{background:rgba(74,122,168,.05)}
-#sec-otd .tr-total td{background:#F3F6F9!important;border-top:1px solid var(--border2)}
+#sec-otd .tr-total td{background:var(--oc-tot)!important;border-top:1px solid var(--border2)}
 /* Bloco 3 — situações */
 .oc-sit{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-bottom:18px;align-items:stretch}
 #sec-otd .oc-sit .status-hl{margin:0;background:var(--bg)!important;border:0.5px solid var(--border);border-radius:10px;padding:10px 12px 10px 14px;position:relative}
@@ -536,12 +539,12 @@ table.dt th{color:#33536F}
 #sec-otd .oc-sit .status-hl > div:nth-child(2){font-family:'Montserrat',sans-serif;font-size:22px!important}
 #sec-otd .oc-sit .status-hl > div:nth-child(3){font-size:10px!important;color:var(--text3)!important}
 #sec-otd .oc-sit .status-hl:hover{background:var(--bg2)!important}
-#sec-otd .oc-sit .stat-cell{border:0;padding:10px 12px;background:#F3F6F9;border-radius:10px}
-#sec-otd .oc-sit .stat-cell .stat-val{font-family:'Montserrat',sans-serif;font-size:22px;color:#1F3A5F!important}
+#sec-otd .oc-sit .stat-cell{border:0;padding:10px 12px;background:var(--oc-tot);border-radius:10px}
+#sec-otd .oc-sit .stat-cell .stat-val{font-family:'Montserrat',sans-serif;font-size:22px;color:var(--oc-ink)!important}
 /* Bloco 4 — bullet de OTD */
-.oc-bullet{position:relative;height:8px;width:120px;border-radius:5px;background:#EEF2F6}
+.oc-bullet{position:relative;height:8px;width:120px;border-radius:5px;background:var(--oc-track)}
 .oc-bullet i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
-.oc-bullet u{position:absolute;top:-3px;bottom:-3px;width:2px;background:#1F3A5F;opacity:.55;border-radius:1px}
+.oc-bullet u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--oc-ink);opacity:.55;border-radius:1px}
 /* Bloco 5 — mapa em relevo + ranking */
 .oc-reg{display:grid;grid-template-columns:minmax(260px,380px) minmax(0,1fr);gap:24px;align-items:center;margin-bottom:16px}
 .oc-map svg{width:100%;height:auto;display:block;overflow:visible}
@@ -550,7 +553,7 @@ table.dt th{color:#33536F}
 .oc-rank{display:flex;flex-direction:column;gap:10px}
 .oc-rk{display:grid;grid-template-columns:110px minmax(0,1fr) 60px 80px;gap:12px;align-items:center;font-size:12px;font-variant-numeric:tabular-nums}
 .oc-rk-n{font-weight:600;display:flex;align-items:center;gap:8px}
-.oc-rk-bar{height:10px;border-radius:6px;background:#EEF2F6;overflow:hidden}
+.oc-rk-bar{height:10px;border-radius:6px;background:var(--oc-track);overflow:hidden}
 .oc-rk-bar i{display:block;height:100%;border-radius:6px}
 .oc-rk b{font-family:'Montserrat',sans-serif;font-size:16px;text-align:right}
 .oc-rk em{font-style:normal;color:var(--text3);text-align:right}
@@ -558,7 +561,7 @@ table.dt th{color:#33536F}
 #sec-otd .reg-card{border-radius:12px;border:0.5px solid var(--border);background:var(--bg)}
 #sec-otd .reg-head{background:transparent!important;border-bottom:0.5px solid var(--border)!important;padding:10px 12px 8px}
 #sec-otd .reg-name{display:flex;align-items:center;gap:7px}
-#sec-otd .reg-uf{background:#F6F8FA}
+#sec-otd .reg-uf{background:var(--oc-soft)}
 #sec-otd .reg-uf-title{text-transform:none;letter-spacing:0;font-family:'Inter',sans-serif;font-weight:600;font-size:10px}
 @media(max-width:900px){
   .oc-split,.oc-split-r,.oc-reg{grid-template-columns:1fr}
@@ -577,7 +580,7 @@ table.dt th{color:#33536F}
 </style>
 </head>
 <body data-previa="1">
-<div style="position:sticky;top:0;z-index:9999;background:#1F3A5F;color:#fff;font:600 12px Inter,sans-serif;text-align:center;padding:6px 12px">Prévia v10.17 — layout executivo da aba OTD, com a base real. O painel oficial continua em otd/index.html.</div>
+<div style="position:sticky;top:0;z-index:9999;background:#2F5D8A;color:#fff;font:600 12px Inter,sans-serif;text-align:center;padding:6px 12px">Prévia v10.17 — layout executivo da aba OTD, com a base real. O painel oficial continua em otd/index.html.</div>
 
 
 <!-- ============== CONTAINER MODO TV (v9.14) ============== -->
@@ -750,7 +753,7 @@ table.dt th{color:#33536F}
           <div class="oc-kpis">
             <div class="oc-k"><span>No prazo</span><b id="o2-on" style="color:#3F7D52">—</b></div>
             <div class="oc-k"><span>Fora do prazo</span><b id="o2-off" style="color:#B5523B">—</b></div>
-            <div class="oc-k"><span>Receita entregue</span><b id="o2-val" style="color:#1F3A5F">—</b></div>
+            <div class="oc-k"><span>Receita entregue</span><b id="o2-val" style="color:var(--oc-ink)">—</b></div>
             <div class="oc-k"><span>OTD</span><b id="o2-otd" style="color:#3F7D52">—</b></div>
             <div class="oc-k oc-k-bar"><span>Entregues no escopo <em id="o2-pct">—</em></span><div class="oc-track"><i id="o2-bar"></i></div></div>
           </div>
@@ -6151,7 +6154,11 @@ function fmtM(v){
 const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
 const MES_PALETTE=['#378ADD','#0072BC','#004A87','#042C53','#85B7EB'];
 // v10.17 — paleta executiva da aba OTD (clássica e suave)
-const PAL={navy:'#1F3A5F',steel:'#4A7AA8',sky:'#8FB3D4',sage:'#6E9B7B',lav:'#9C93C4',sand:'#D9B77E',brick:'#B5523B',ok:'#3F7D52',warn:'#B7862F',mist:'#EEF2F6'};
+const PAL={ink:'var(--oc-ink)',navy:'#1F3A5F',steel:'#4A7AA8',sky:'#8FB3D4',sage:'#6E9B7B',lav:'#9C93C4',sand:'#D9B77E',brick:'#B5523B',ok:'#3F7D52',warn:'#B7862F',mist:'#EEF2F6'};
+// no tema escuro o marinho vira um azul-aço claro, para manter contraste nas barras e gráficos
+const OC_DARK=()=>{ try{ return matchMedia('(prefers-color-scheme: dark)').matches; }catch(_){ return false; } };
+Object.defineProperty(PAL,'navy',{get(){ return OC_DARK()?'#7FA3CC':'#1F3A5F'; }});
+Object.defineProperty(PAL,'ok',{get(){ return OC_DARK()?'#6DB283':'#3F7D52'; }});
 const REG_CORES={'Sudeste':'#2F5D8A','Nordeste':'#C49A55','Centro-Oeste':'#5E8C6A','Norte':'#6FA3A0','Sul':'#8A7DB8'};   // v10.17: tons clássicos suaves
 const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
@@ -6452,7 +6459,7 @@ function renderOTDChart(d){
     document.getElementById('emp-kpis').innerHTML=
       '<div class="oc-emp-top">'
       +'<div class="oc-emp-i"><span class="oc-emp-n"><i class="oc-sw" style="background:'+PAL.navy+'"></i>Genomma Lab · '+gP.toFixed(0)+'%</span>'
-        +'<span class="oc-emp-v" style="color:'+PAL.navy+'">'+fmtM(gFat)+'</span>'
+        +'<span class="oc-emp-v" style="color:'+PAL.ink+'">'+fmtM(gFat)+'</span>'
         +'<span class="oc-emp-s">'+gQtd.toLocaleString('pt-BR')+' NFs · OTD <b style="color:'+corO(gOtd)+'">'+(gOtd==='—'?'—':gOtd.replace('.',',')+'%')+'</b></span></div>'
       +'<div class="oc-emp-i"><span class="oc-emp-n"><i class="oc-sw" style="background:'+PAL.sage+'"></i>Inovalab · '+iP.toFixed(0)+'%</span>'
         +'<span class="oc-emp-v" style="color:'+PAL.sage+'">'+fmtM(iFat)+'</span>'
@@ -6700,7 +6707,7 @@ function renderOTDChart(d){
       +'<div class="oc-rk-bar"><i style="width:'+(r.n/mxR*100).toFixed(1)+'%;background:'+cor+'"></i></div>'
       +'<b style="color:'+cor+'">'+r.n+'</b><em>'+fmtM(r.val)+'</em></div>';
   }).join('')
-    +'<div class="oc-rk oc-rk-tot"><span class="oc-rk-n">Total</span><span>'+(tA)+' NFs fora do CD · '+((tA/Math.max(SR.total,1))*100).toFixed(0)+'% da carteira</span><b style="color:'+PAL.navy+'">'+tA+'</b><em>'+fmtM(regs5.reduce((a,r)=>a+r.val,0))+'</em></div>';
+    +'<div class="oc-rk oc-rk-tot"><span class="oc-rk-n">Total</span><span>'+(tA)+' NFs fora do CD · '+((tA/Math.max(SR.total,1))*100).toFixed(0)+'% da carteira</span><b style="color:'+PAL.ink+'">'+tA+'</b><em>'+fmtM(regs5.reduce((a,r)=>a+r.val,0))+'</em></div>';
   document.getElementById('o5-kpis').innerHTML='<div class="oc-map">'+mapa+'</div><div class="oc-rank">'+rank+'</div>';
   document.getElementById('o5-cards').innerHTML=regs5.map(r=>{
     const cor=REG_CORES[r.r]||'#888'; const pr=regPipe[r.r]||{};
@@ -6710,7 +6717,7 @@ function renderOTDChart(d){
     return'<div class="reg-card">'
       +'<div class="reg-head"><span class="reg-name"><i class="oc-sw" style="background:'+cor+'"></i>'+r.r+'</span><span class="reg-badge" style="background:'+cor+'1A;color:'+cor+'">'+r.n+' em trânsito</span></div>'
       +'<div class="reg-body">'
-      +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:'+PAL.navy+'">'+fmtM(r.val)+'</span></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:'+PAL.ink+'">'+fmtM(r.val)+'</span></div>'
       +'<div class="reg-row"><span class="reg-lbl">Dias decorridos (médio)</span><span style="font-weight:500">'+(pr.dias_atr!=null?pr.dias_atr.toFixed(1)+' d':'—')+'</span></div>'
       +'<div class="reg-row"><span class="reg-lbl">Prazo médio de entrega</span><span style="font-weight:600;color:'+cor+'">'+(pr.media_ent!=null?pr.media_ent.toFixed(1)+' d':'—')+'</span></div></div>'
       +'<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'
