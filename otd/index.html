@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.16-situacao-unica', date: '30/10/2026' };
+window.__BUILD__ = { version: 'v10.17-otd-executivo', date: '30/10/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -405,7 +405,7 @@ table.dt th{color:#33536F}
 /* v10.16 — Painel de desempenho OTD */
 .ox{background:var(--bg);border:0.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
 .ox-lbl{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
-.ox-escopo{font-size:10px;font-weight:600;color:#004A87;background:#E6F1FB;border-radius:10px;padding:1px 8px}
+.ox-escopo{font-size:10px;font-weight:600;color:var(--oc-chip-t);background:var(--oc-chip);border-radius:10px;padding:1px 8px}
 .ox-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;padding:20px 24px 18px;background:linear-gradient(180deg,rgba(0,167,231,.06),transparent 70%)}
 .ox-otd-row{display:flex;align-items:center;gap:22px;margin-top:4px;flex-wrap:wrap}
 .ox-otd-val{font-family:'Montserrat',sans-serif;font-weight:800;font-size:52px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#2E7D32}
@@ -420,7 +420,7 @@ table.dt th{color:#33536F}
 .ox-emp-i span:first-child{font-weight:600;color:var(--text)}
 .ox-fat{text-align:right;border-left:0.5px solid var(--border);padding-left:28px;display:flex;flex-direction:column;justify-content:center}
 .ox-fat .ox-lbl{justify-content:flex-end}
-.ox-fat-val{font-family:'Montserrat',sans-serif;font-weight:700;font-size:28px;color:#004A87;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
+.ox-fat-val{font-family:'Montserrat',sans-serif;font-weight:700;font-size:28px;color:var(--oc-ink);font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
 .ox-sub{font-size:11px;color:var(--text2);margin-top:2px}
 .ox-ciclo{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
 .ox-grp{display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
@@ -435,12 +435,12 @@ table.dt th{color:#33536F}
 .ox-cart-tot{display:flex;align-items:baseline;gap:8px;margin-top:2px}
 .ox-cart-tot b{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
 .ox-cart-tot span{font-size:12px;color:var(--text2)}
-.ox-cart-tot strong{font-size:14px;font-weight:600;color:#004A87;margin-left:8px;font-variant-numeric:tabular-nums}
-.ox-atr{display:flex;align-items:baseline;gap:6px;border:0.5px solid #F2C4C1;background:#FCEBEB;color:#A32D2D;border-radius:10px;padding:7px 12px;cursor:pointer;font:inherit}
+.ox-cart-tot strong{font-size:14px;font-weight:600;color:var(--oc-ink);margin-left:8px;font-variant-numeric:tabular-nums}
+.ox-atr{display:flex;align-items:baseline;gap:6px;border:0.5px solid rgba(181,82,59,.35);background:rgba(181,82,59,.10);color:#C0533E;border-radius:10px;padding:7px 12px;cursor:pointer;font:inherit}
 .ox-atr b{font-family:'Montserrat',sans-serif;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
 .ox-atr span{font-size:12px;font-weight:600}
 .ox-atr em{font-style:normal;font-size:11px;opacity:.8}
-.ox-atr:hover{background:#F9DCDB}
+.ox-atr:hover{background:rgba(181,82,59,.18)}
 .ox-flow{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--bg3);gap:2px}
 .ox-seg{position:relative;min-width:6px;cursor:pointer;transition:filter .15s;border:0;padding:0}
 .ox-seg:hover,.ox-seg:focus-visible{filter:brightness(1.12);outline:none}
@@ -467,6 +467,115 @@ table.dt th{color:#33536F}
   .ox-cart{padding:14px 16px}
 }
 @media(prefers-reduced-motion:reduce){.ox-meter i{transition:none}}
+
+/* v10.17 — tokens claros/escuros da aba OTD */
+:root{--oc-ink:#1F3A5F;--oc-track:#EEF2F6;--oc-tot:#F3F6F9;--oc-soft:#F6F8FA;--oc-chip:#E6F1FB;--oc-chip-t:#004A87;--oc-q:#F0EEF8;--oc-q-t:#6A5FA8}
+@media(prefers-color-scheme:dark){:root{--oc-ink:#A9C3E0;--oc-track:rgba(255,255,255,.09);--oc-tot:rgba(255,255,255,.05);--oc-soft:rgba(255,255,255,.04);--oc-chip:rgba(143,179,212,.18);--oc-chip-t:#BBD2EA;--oc-q:rgba(156,147,196,.18);--oc-q-t:#C9C2EA}}
+/* v10.17 — Aba OTD executiva: blocos 1–5 na linha do painel de desempenho.
+   Paleta clássica suave: marinho #1F3A5F · aço #4A7AA8 · sálvia #6E9B7B ·
+   lavanda #9C93C4 · areia #D9B77E · tijolo #B5523B · verde #3F7D52 */
+#sec-otd .card{border-radius:14px;padding:20px 24px;box-shadow:0 1px 0 rgba(31,58,95,.04),0 8px 24px -18px rgba(31,58,95,.35);border:0.5px solid var(--border)}
+.oc-h{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.oc-h .slabel-num{margin-top:2px;background:#2F5D8A;color:#fff;width:22px;height:22px;font-size:10px}
+.oc-h h3{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.25;margin:0}
+.oc-h p{font-size:12px;color:var(--text2);margin:2px 0 0;max-width:80ch}
+.oc-sub{font-size:12px;font-weight:600;color:var(--text);margin:4px 0 8px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.oc-sub span{font-weight:400;color:var(--text3);font-size:11px}
+.oc-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.oc-split-r{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.oc-chart{position:relative;height:230px}
+.oc-panel{background:var(--bg2);border-radius:12px;padding:14px 16px;margin-top:4px}
+.oc-leg{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;font-size:11px;color:var(--text2)}
+.oc-leg span{display:inline-flex;align-items:center;gap:6px}
+.oc-leg i{width:14px;height:3px;border-radius:2px;display:inline-block}
+/* Bloco 1 — participação por empresa */
+.oc-emp{margin-bottom:18px}
+.oc-emp-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.oc-emp-i{display:flex;flex-direction:column}
+.oc-emp-i:last-child{text-align:right}
+.oc-emp-n{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+.oc-emp-i:last-child .oc-emp-n{justify-content:flex-end}
+.oc-emp-v{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.oc-emp-s{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.oc-share{display:flex;height:12px;border-radius:7px;overflow:hidden;background:var(--oc-track);gap:2px}
+.oc-share i{display:block;height:100%}
+.oc-sw{width:9px;height:9px;border-radius:3px;display:inline-block}
+/* Bloco 1 — linhas de mês */
+.oc-mrow{display:grid;grid-template-columns:34px minmax(0,1fr) 74px 66px 70px;align-items:center;gap:10px;padding:4px 0;font-size:11px;font-variant-numeric:tabular-nums}
+.oc-mrow b{font-weight:600;color:var(--text);text-align:right}
+.oc-mrow em{font-style:normal;color:var(--text3);text-align:right}
+.oc-mlbl{color:var(--text2);font-weight:600}
+.oc-mtrack{height:14px;border-radius:7px;background:var(--oc-track);display:flex;overflow:hidden}
+.oc-mtrack i{display:block;height:100%}
+.oc-qchip{justify-self:end;font-size:10px;font-weight:600;color:var(--oc-q-t);background:var(--oc-q);border-radius:10px;padding:1px 8px;white-space:nowrap}
+.oc-qs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:12px}
+.oc-q{border:0.5px solid var(--border);border-radius:10px;padding:8px 12px}
+.oc-q b{display:block;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;color:var(--oc-ink);font-variant-numeric:tabular-nums}
+.oc-q span{font-size:11px;color:var(--text3)}
+.oc-q .oc-ql{font-size:11px;font-weight:700;color:var(--oc-q-t)}
+#sec-otd #bonif-row{border-top:0.5px solid var(--border)!important;color:var(--text3)!important}
+/* Bloco 2 — KPIs */
+.oc-kpis{display:flex;flex-wrap:wrap;gap:0;margin-bottom:16px;border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.oc-k{padding:12px 18px;border-right:0.5px solid var(--border);display:flex;flex-direction:column;gap:2px}
+.oc-k span{font-size:11px;color:var(--text2)}
+.oc-k b{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.oc-k-bar{flex:1;min-width:200px;border-right:0;justify-content:center}
+.oc-k-bar span{display:flex;justify-content:space-between}
+.oc-k-bar em{font-style:normal;color:var(--text3);font-variant-numeric:tabular-nums}
+.oc-track{height:8px;border-radius:5px;background:var(--oc-track);overflow:hidden;margin-top:6px}
+.oc-track i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#4A7AA8,#1F3A5F);transition:width .6s ease}
+.oc-otd{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-variant-numeric:tabular-nums}
+.oc-otd::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+/* Tabelas da aba OTD */
+#sec-otd table.dt th{font-family:'Inter',sans-serif;text-transform:none;letter-spacing:0;font-size:11px;font-weight:600;color:var(--text2);background:transparent;border-bottom:1px solid var(--border2);white-space:normal;line-height:1.25;vertical-align:bottom}
+#sec-otd table.dt td{font-variant-numeric:tabular-nums;border-bottom:0.5px solid var(--border)}
+#sec-otd table.dt tbody tr:hover td{background:rgba(74,122,168,.05)}
+#sec-otd .tr-total td{background:var(--oc-tot)!important;border-top:1px solid var(--border2)}
+/* Bloco 3 — situações */
+.oc-sit{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;margin-bottom:18px;align-items:stretch}
+#sec-otd .oc-sit .status-hl{margin:0;background:var(--bg)!important;border:0.5px solid var(--border);border-radius:10px;padding:10px 12px 10px 14px;position:relative}
+#sec-otd .oc-sit .status-hl::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--c,#9AA6B2)}
+#sec-otd .oc-sit .status-hl > div:first-child{text-transform:none!important;letter-spacing:0!important;font-size:11px!important;color:var(--text2)!important}
+#sec-otd .oc-sit .status-hl > div:nth-child(2){font-family:'Montserrat',sans-serif;font-size:22px!important}
+#sec-otd .oc-sit .status-hl > div:nth-child(3){font-size:10px!important;color:var(--text3)!important}
+#sec-otd .oc-sit .status-hl:hover{background:var(--bg2)!important}
+#sec-otd .oc-sit .stat-cell{border:0;padding:10px 12px;background:var(--oc-tot);border-radius:10px}
+#sec-otd .oc-sit .stat-cell .stat-val{font-family:'Montserrat',sans-serif;font-size:22px;color:var(--oc-ink)!important}
+/* Bloco 4 — bullet de OTD */
+.oc-bullet{position:relative;height:8px;width:120px;border-radius:5px;background:var(--oc-track)}
+.oc-bullet i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.oc-bullet u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--oc-ink);opacity:.55;border-radius:1px}
+/* Bloco 5 — mapa em relevo + ranking */
+.oc-reg{display:grid;grid-template-columns:minmax(260px,380px) minmax(0,1fr);gap:24px;align-items:center;margin-bottom:16px}
+.oc-map svg{width:100%;height:auto;display:block;overflow:visible}
+.oc-map .oc-face{transition:transform .25s ease,filter .25s ease;cursor:default}
+.oc-map .oc-face:hover{transform:translateY(-3px);filter:brightness(1.05)}
+.oc-rank{display:flex;flex-direction:column;gap:10px}
+.oc-rk{display:grid;grid-template-columns:110px minmax(0,1fr) 60px 80px;gap:12px;align-items:center;font-size:12px;font-variant-numeric:tabular-nums}
+.oc-rk-n{font-weight:600;display:flex;align-items:center;gap:8px}
+.oc-rk-bar{height:10px;border-radius:6px;background:var(--oc-track);overflow:hidden}
+.oc-rk-bar i{display:block;height:100%;border-radius:6px}
+.oc-rk b{font-family:'Montserrat',sans-serif;font-size:16px;text-align:right}
+.oc-rk em{font-style:normal;color:var(--text3);text-align:right}
+.oc-rk-tot{border-top:0.5px solid var(--border);padding-top:10px;color:var(--text2)}
+#sec-otd .reg-card{border-radius:12px;border:0.5px solid var(--border);background:var(--bg)}
+#sec-otd .reg-head{background:transparent!important;border-bottom:0.5px solid var(--border)!important;padding:10px 12px 8px}
+#sec-otd .reg-name{display:flex;align-items:center;gap:7px}
+#sec-otd .reg-uf{background:var(--oc-soft)}
+#sec-otd .reg-uf-title{text-transform:none;letter-spacing:0;font-family:'Inter',sans-serif;font-weight:600;font-size:10px}
+@media(max-width:900px){
+  .oc-split,.oc-split-r,.oc-reg{grid-template-columns:1fr}
+  .oc-rk{grid-template-columns:96px minmax(0,1fr) 44px 70px;gap:8px}
+  #sec-otd .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  #sec-otd .card{padding:16px}
+  .oc-mrow{grid-template-columns:30px minmax(0,1fr) 66px;}
+  .oc-mrow em,.oc-mrow .oc-qchip{display:none}
+  #sec-otd .reg-grid{grid-template-columns:1fr}
+  .oc-k{flex:1 1 45%}
+}
+@media(prefers-reduced-motion:reduce){.oc-map .oc-face,.oc-track i{transition:none}}
 
 </style>
 </head>
@@ -628,40 +737,42 @@ table.dt th{color:#33536F}
         </section>
         <!-- BLOCO 1 FATURAMENTO -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">1</span>Entregas — Faturamento bruto</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="emp-kpis"></div>
-          <div id="otd-mes-bars" style="margin-bottom:10px"></div>
-          <div style="height:140px;position:relative"><canvas id="otd-fat-chart"></canvas></div>
+          <div class="oc-h"><span class="slabel-num">1</span><div><h3>Faturamento bruto</h3><p>Vendas e bonificações por empresa e mês de emissão</p></div></div>
+          <div id="emp-kpis" class="oc-emp"></div>
+          <div class="oc-split">
+            <div><div class="oc-sub">Por mês</div><div id="otd-mes-bars"></div></div>
+            <div><div class="oc-sub">Evolução mensal <span>faturamento empilhado e carteira em aberto</span></div><div class="oc-chart"><canvas id="otd-fat-chart"></canvas></div></div>
+          </div>
           <div id="bonif-row" style="margin-top:12px;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text2)"></div>
         </div>
         <!-- BLOCO 2 -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">2</span>Entregas finalizadas — On Time &amp; Off Time</div>
-          <div class="stat-row">
-            <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-on">—</div><div class="stat-lbl">On Time</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o2-off">—</div><div class="stat-lbl">Off Time</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#0072BC" id="o2-val">—</div><div class="stat-lbl">Receita</div></div>
-            <div class="stat-cell"><div class="stat-val" style="color:#3B6D11" id="o2-otd">—</div><div class="stat-lbl">OTD</div></div>
-            <div class="stat-bar-cell">
-              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:3px"><span>Entregas no periodo</span><span id="o2-pct">—</span></div>
-              <div style="height:8px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="o2-bar" style="height:100%;background:#0072BC;border-radius:3px;transition:width .5s"></div></div>
-            </div>
+          <div class="oc-h"><span class="slabel-num">2</span><div><h3>Entregas finalizadas</h3><p>No prazo e fora do prazo por mês da entrega — OTD contra a meta de 99%</p></div></div>
+          <div class="oc-kpis">
+            <div class="oc-k"><span>No prazo</span><b id="o2-on" style="color:#3F7D52">—</b></div>
+            <div class="oc-k"><span>Fora do prazo</span><b id="o2-off" style="color:#B5523B">—</b></div>
+            <div class="oc-k"><span>Receita entregue</span><b id="o2-val" style="color:var(--oc-ink)">—</b></div>
+            <div class="oc-k"><span>OTD</span><b id="o2-otd" style="color:#3F7D52">—</b></div>
+            <div class="oc-k oc-k-bar"><span>Entregues no escopo <em id="o2-pct">—</em></span><div class="oc-track"><i id="o2-bar"></i></div></div>
           </div>
-          <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">On Time</th><th class="r">Off Time</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
+          <div class="oc-split oc-split-r">
+            <div class="oc-chart"><canvas id="o2-chart"></canvas></div>
+            <div class="tw"><table class="dt"><thead><tr><th>Mês</th><th class="r">No prazo</th><th class="r">Fora</th><th class="r">Total</th><th class="r">Receita</th><th class="r">OTD</th></tr></thead><tbody id="o2-tbody"></tbody></table></div>
+          </div>
         </div>
         <!-- BLOCO 3 HUB + TRANSITO + PREVISOES -->
         <div class="card">
-          <div class="slabel"><span class="slabel-num">3</span>Não finalizadas — carteira em aberto por situação (mesma régua da Notas em Aberto), encerradas fora do OTD e previsão por quarter</div>
-          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+          <div class="oc-h"><span class="slabel-num">3</span><div><h3>Não finalizadas</h3><p>Carteira em aberto por situação (mesma régua da Notas em Aberto), encerradas fora do OTD e previsão por quarter</p></div></div>
+          <div class="oc-sit">
             <div id="o3-sit-cards" style="display:contents"></div>
             <div class="status-hl" style="background:#F5EDDF"><div style="font-size:9px;color:#8A5A00;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Devolvida</div><div style="font-size:24px;font-weight:700;color:#8A5A00" id="o3-dev">—</div><div style="font-size:11px;color:#8A5A00;margin-top:2px" id="o3-dev-val">—</div></div>
             <div class="status-hl" id="o3-canc-card" style="background:#EEEFF1;cursor:pointer" onclick="canceladasToggle()" title="NF-e com cancelamento homologado. Fora do OTD e fora do faturamento. Clique para ver a lista."><div style="font-size:9px;color:#4B5563;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px"><span class="canc-chev" style="display:inline-block;width:9px;transition:transform .15s">▸</span> Cancelada</div><div style="font-size:24px;font-weight:700;color:#4B5563" id="o3-canc">—</div><div style="font-size:11px;color:#4B5563;margin-top:2px" id="o3-canc-val">—</div></div>
             <div class="stat-cell" style="border-left:0.5px solid var(--border)"><div class="stat-val" style="color:#A32D2D" id="o3-total">—</div><div class="stat-lbl">Total em aberto</div></div>
             <div class="stat-cell"><div class="stat-val" style="color:#A32D2D" id="o3-total-val">—</div><div class="stat-lbl">Valor em aberto</div></div>
           </div>
-          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Por mês de emissão</div>
+          <div class="oc-sub">Por mês de emissão <span>a cor mais forte marca a maior concentração da coluna</span></div>
           <div class="tw" style="margin-bottom:16px"><table class="dt"><thead><tr id="o3-thead"><th>Mês</th></tr></thead><tbody id="o3-tbody"></tbody></table></div>
-          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Previsão de entrega por quarter</div>
+          <div class="oc-sub">Previsão de entrega por quarter</div>
           <div class="tw"><table class="dt"><thead><tr id="o3-prev-thead"><th>Quarter previsto</th></tr></thead><tbody id="o3-prev-tbody"></tbody></table></div>
         </div>
         <!-- ============ CANCELADAS (v10.9) ============ -->
@@ -699,18 +810,17 @@ table.dt th{color:#33536F}
           </table></div>
         </div>
         <div class="card">
-          <div class="slabel"><span class="slabel-num">4</span>OTD por transportadora <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px">(acumulado — não segue o filtro de mês)</span></div>
-          <p style="font-size:11px;color:var(--text2);margin-bottom:8px">OTD = On Time / (On Time + Off Time). Pendentes não entram no OTD, mas indicam risco.</p>
+          <div class="oc-h"><span class="slabel-num">4</span><div><h3>OTD por transportadora</h3><p>Acumulado, não segue o filtro de mês. A barra mostra o OTD na escala 90–100% com o traço da meta; a carteira em aberto indica risco</p></div></div>
           <div class="tw"><table class="dt"><thead><tr id="o4-thead"><th>Transportadora</th></tr></thead><tbody id="o4-tbody"></tbody></table></div>
         </div>
         <div class="card">
-          <div class="slabel"><span class="slabel-num">5</span>Trânsito por região <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:6px">(carteira atual — não segue o filtro de mês)</span></div>
-          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px" id="o5-kpis"></div>
+          <div class="oc-h"><span class="slabel-num">5</span><div><h3>Trânsito por região</h3><p>Carteira atual fora do CD, sem devoluções — não segue o filtro de mês</p></div></div>
+          <div class="oc-reg" id="o5-kpis"></div>
           <div class="reg-grid" id="o5-cards"></div>
-          <div style="background:var(--bg2);border-radius:var(--radius);padding:12px 14px">
-            <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Prazo médio de entrega por região e mês (NFs entregues)</div>
-            <div style="height:150px;position:relative"><canvas id="o5-chart"></canvas></div>
-            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap" id="o5-legend"></div>
+          <div class="oc-panel">
+            <div class="oc-sub">Prazo médio de entrega por região e mês <span>NFs entregues</span></div>
+            <div style="height:170px;position:relative"><canvas id="o5-chart"></canvas></div>
+            <div class="oc-leg" id="o5-legend"></div>
           </div>
         </div>
       </div>
@@ -1901,12 +2011,17 @@ function sitTD(r, opt){
   opt = opt || {};
   const z = v => v>0 ? v.toLocaleString('pt-BR') : '—';
   r = r || sitResumo([]);
-  return ABERTAS_SIT.map(s=>'<td class="r" style="color:'+s.cor+'">'+z(r[s.k])+'</td>').join('')
-    + '<td class="r" style="color:#A32D2D;font-weight:600">'+z(r.atraso)+'</td>'
+  // opt.max = {chave: maior valor da coluna} → fundo com intensidade proporcional (heatmap leve)
+  const heat = (k, cor) => { if(!opt.max || !opt.max[k] || !(r[k]>0)) return '';
+    const a = Math.round(8 + 30 * (r[k] / opt.max[k])); return ';background:'+cor+a.toString(16).padStart(2,'0'); };
+  return ABERTAS_SIT.map(s=>'<td class="r" style="color:'+s.cor+heat(s.k,s.cor)+'">'+z(r[s.k])+'</td>').join('')
+    + '<td class="r" style="color:#A32D2D;font-weight:600'+heat('atraso','#B5523B')+'">'+z(r.atraso)+'</td>'
     + '<td class="r" style="font-weight:600'+(opt.total?';color:#A32D2D':'')+'">'+z(r.total)+'</td>'
     + '<td class="r" style="color:#A32D2D;font-weight:500">'+(r.total_val>0?fmtM(r.total_val):'—')+'</td>';
 }
 const SIT_N_COLS = ABERTAS_SIT.length + 3;
+// Maior valor de cada coluna (para o heatmap de sitTD)
+function sitMax(lista){ const m={}; (lista||[]).forEach(r=>{ if(!r) return; ABERTAS_SIT.map(x=>x.k).concat(['atraso']).forEach(k=>{ m[k]=Math.max(m[k]||0, r[k]||0); }); }); return m; }
 // Cabeçalhos estáticos das tabelas: troca o marcador .sit-slot pelas colunas da régua única
 document.addEventListener('DOMContentLoaded', ()=>{ document.querySelectorAll('th.sit-slot').forEach(th=>{ th.insertAdjacentHTML('afterend', sitTH()); th.remove(); }); });
 
@@ -6016,7 +6131,7 @@ function updateHistorico(indicador, arquivo){
 // ============================================================
 let otdData=null;
 let otdFilter_state={type:'all',val:'all'};
-let fatChart=null,diasChart=null;
+let fatChart=null,diasChart=null,o2Chart=null;
 
 // Formata valor monetário com escala dinâmica:
 //   R$ 165.000.000 → "R$ 165,0 mi"     (milhões: 1 casa decimal)
@@ -6036,7 +6151,13 @@ function fmtM(v){
 }
 const fmtP=(a,b)=>b?((a/b)*100).toFixed(1)+'%':'—';
 const MES_PALETTE=['#378ADD','#0072BC','#004A87','#042C53','#85B7EB'];
-const REG_CORES={'Sudeste':'#0072BC','Nordeste':'#EF9F27','Centro-Oeste':'#1D9E75','Norte':'#5DCAA5','Sul':'#7F77DD'};
+// v10.17 — paleta executiva da aba OTD (clássica e suave)
+const PAL={ink:'var(--oc-ink)',navy:'#1F3A5F',steel:'#4A7AA8',sky:'#8FB3D4',sage:'#6E9B7B',lav:'#9C93C4',sand:'#D9B77E',brick:'#B5523B',ok:'#3F7D52',warn:'#B7862F',mist:'#EEF2F6'};
+// no tema escuro o marinho vira um azul-aço claro, para manter contraste nas barras e gráficos
+const OC_DARK=()=>{ try{ return matchMedia('(prefers-color-scheme: dark)').matches; }catch(_){ return false; } };
+Object.defineProperty(PAL,'navy',{get(){ return OC_DARK()?'#7FA3CC':'#1F3A5F'; }});
+Object.defineProperty(PAL,'ok',{get(){ return OC_DARK()?'#6DB283':'#3F7D52'; }});
+const REG_CORES={'Sudeste':'#2F5D8A','Nordeste':'#C49A55','Centro-Oeste':'#5E8C6A','Norte':'#6FA3A0','Sul':'#8A7DB8'};   // v10.17: tons clássicos suaves
 const NOME_MES=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 function renderOTD(payload){
@@ -6279,7 +6400,7 @@ function renderOTDChart(d){
   } catch(e) { console.error('Erro no card OTD por empresa:', e); }
 
   document.getElementById('o2-on').textContent=onAll.toLocaleString('pt-BR');document.getElementById('o2-off').textContent=offAll;
-  document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll==='—'?'—':otdAll+'%';
+  document.getElementById('o2-val').textContent=fmtM(finValAll);document.getElementById('o2-otd').textContent=otdAll==='—'?'—':otdAll.replace('.',',')+'%';
   // Barra de progresso no topo: % entregue no escopo (entregas / total escopo)
   try {
     const totEscopo = (finAll||0) + (nfinAll||0);
@@ -6290,12 +6411,13 @@ function renderOTDChart(d){
   const o3c = document.getElementById('o3-sit-cards');
   if(o3c) o3c.innerHTML = ABERTAS_SIT.concat([SIT_ATRASO]).map(st=>{
     const q = st.k==='_atraso' ? SR.atraso : SR[st.k], v = st.k==='_atraso' ? SR.atraso_val : SR[st.k+'_val'];
-    return '<div class="status-hl" style="background:'+st.bg+';cursor:pointer" onclick="otdAbrirSituacao(\''+st.k+'\')" title="Abrir na Notas em Aberto'+(st.k==='_atraso'?' — marca: já contada nas situações':'')+'">'
+    return '<div class="status-hl" style="--c:'+st.cor+';background:'+st.bg+';cursor:pointer" onclick="otdAbrirSituacao(\''+st.k+'\')" title="Abrir na Notas em Aberto'+(st.k==='_atraso'?' — marca: já contada nas situações':'')+'">'
       +'<div style="font-size:9px;color:'+st.cor+';text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">'+esc(st.lbl)+(st.k==='_atraso'?' *':'')+'</div>'
       +'<div style="font-size:24px;font-weight:700;color:'+st.cor+'">'+q.toLocaleString('pt-BR')+'</div>'
       +'<div style="font-size:11px;color:'+st.cor+';margin-top:2px">'+(q?fmtM(v):'—')+'</div></div>';
   }).join('');
   document.getElementById('o3-dev').textContent=devAll;document.getElementById('o3-dev-val').textContent=fmtM(devValAll);
+  try{ document.getElementById('o3-dev').parentNode.style.setProperty('--c','#8A6A3B'); document.getElementById('o3-canc-card').style.setProperty('--c','#7A8592'); }catch(_){}
   document.getElementById('o3-canc').textContent=cancAll;document.getElementById('o3-canc-val').textContent=fmtM(cancValAll);
   renderCanceladas();
   document.getElementById('o3-total').textContent=nfinAll;document.getElementById('o3-total-val').textContent=fmtM(nfinValAll);
@@ -6329,15 +6451,20 @@ function renderOTDChart(d){
   const gOtd=gFin>0?((gOn/gFin)*100).toFixed(1):(gFat>0?'—':'—');
   const iOtd=iFin>0?((iOn/iFin)*100).toFixed(1):(iFat>0?'—':'—');
 
-  document.getElementById('emp-kpis').innerHTML=
-    '<div style="background:#E6F1FB20;border:0.5px solid #0072BC44;border-radius:var(--radius);padding:12px 16px">'
-    +'<div style="font-size:10px;font-weight:600;color:#004A87;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Genomma Lab</div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:24px;font-weight:700;color:#0072BC">'+fmtM(gFat)+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+gQtd.toLocaleString('pt-BR')+' NFs</div></div>'
-    +'</div>'
-    +'<div style="background:#EAF3DE20;border:0.5px solid #3B6D1144;border-radius:var(--radius);padding:12px 16px">'
-    +'<div style="font-size:10px;font-weight:600;color:#3B6D11;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Inovalab</div>'
-    +'<div><div style="font-size:10px;color:var(--text2)">Faturamento</div><div style="font-size:24px;font-weight:700;color:#1D9E75">'+fmtM(iFat)+'</div><div style="font-size:11px;color:var(--text2);margin-top:2px">'+iQtd.toLocaleString('pt-BR')+' NFs</div></div>'
-    +'</div>';
+  // v10.17: participação por empresa numa barra única
+  { const tF=(gFat+iFat)||1, gP=gFat/tF*100, iP=iFat/tF*100;
+    const corO=v=>v==='—'?'var(--text3)':(parseFloat(v)>=99?PAL.ok:parseFloat(v)>=80?PAL.warn:PAL.brick);
+    document.getElementById('emp-kpis').innerHTML=
+      '<div class="oc-emp-top">'
+      +'<div class="oc-emp-i"><span class="oc-emp-n"><i class="oc-sw" style="background:'+PAL.navy+'"></i>Genomma Lab · '+gP.toFixed(0)+'%</span>'
+        +'<span class="oc-emp-v" style="color:'+PAL.ink+'">'+fmtM(gFat)+'</span>'
+        +'<span class="oc-emp-s">'+gQtd.toLocaleString('pt-BR')+' NFs · OTD <b style="color:'+corO(gOtd)+'">'+(gOtd==='—'?'—':gOtd.replace('.',',')+'%')+'</b></span></div>'
+      +'<div class="oc-emp-i"><span class="oc-emp-n"><i class="oc-sw" style="background:'+PAL.sage+'"></i>Inovalab · '+iP.toFixed(0)+'%</span>'
+        +'<span class="oc-emp-v" style="color:'+PAL.sage+'">'+fmtM(iFat)+'</span>'
+        +'<span class="oc-emp-s">'+iQtd.toLocaleString('pt-BR')+' NFs · OTD <b style="color:'+corO(iOtd)+'">'+(iOtd==='—'?'—':iOtd.replace('.',',')+'%')+'</b></span></div>'
+      +'</div>'
+      +'<div class="oc-share" role="img" aria-label="Participação no faturamento"><i style="width:'+gP.toFixed(2)+'%;background:'+PAL.navy+'"></i><i style="flex:1;background:'+PAL.sage+'"></i></div>';
+  }
 
   // ---- Helpers para somar Vendas + Bonificações por mês ----
   const bm = d.bonif_mes || {};
@@ -6352,78 +6479,71 @@ function renderOTDChart(d){
     return tot_q>0 ? (totalMes(m)/tot_q*100) : 0;
   }
 
-  // Month bars — total da barra = Vendas + Bonificações; segmentos: Genomma | Inovalab | Bonif
+  // v10.17: linhas de mês — Genomma (marinho) · Inovalab (sálvia) · Bonificações (lavanda)
   const maxF=Math.max(...ms.map(m=>totalMes(m)),1);
   document.getElementById('otd-mes-bars').innerHTML=ms.map(m=>{
     const md=d.meses[m]||d.meses[String(m)]; if(!md)return'';
     const tot=totalMes(m);
     const bnfM=(bm[m]?.fat||bm[String(m)]?.fat||0);
-    const gPct=Math.round((md.fat_genomma||0)/maxF*100);
-    const iPct=Math.round((md.fat_inovalab||0)/maxF*100);
-    const bPct=Math.round(bnfM/maxF*100);
+    const w=v=>(v/maxF*100).toFixed(2)+'%';
     const q='Q'+Math.ceil(parseInt(m)/3);
-    const pq=pctQuarter(m).toFixed(1);
-    return'<div style="display:flex;align-items:center;gap:10px;padding:3px 0;font-size:11px">'
-      +'<span style="width:28px;color:var(--text2);font-weight:600">'+md.nome+'</span>'
-      +'<div style="flex:1;height:16px;background:var(--bg2);border-radius:3px;overflow:hidden;position:relative">'
-      +'<div style="position:absolute;left:0;height:100%;width:'+Math.round(tot/maxF*100)+'%;background:'+MC[m]+'22;border-radius:3px"></div>'
-      +'<div style="position:absolute;left:0;height:100%;width:'+gPct+'%;background:'+MC[m]+'" title="Genomma"></div>'
-      +'<div style="position:absolute;left:'+gPct+'%;height:100%;width:'+iPct+'%;background:#1D9E75" title="Inovalab"></div>'
-      +'<div style="position:absolute;left:'+(gPct+iPct)+'%;height:100%;width:'+bPct+'%;background:#7F77DD;border-radius:0 3px 3px 0" title="Bonificações"></div>'
-      +'</div>'
-      +'<span style="width:62px;text-align:right;font-weight:600">'+fmtM(tot)+'</span>'
-      +'<span style="width:48px;text-align:right;color:var(--text2);font-size:10px">'+qtdMes(m)+' NFs</span>'
-      +'<span style="width:78px;text-align:right;font-size:10px;font-weight:600;color:#7F77DD" title="% deste mês dentro de '+q+' (3 meses)">'+pq+'% '+q+'</span>'
+    const pq=pctQuarter(m).toFixed(0);
+    return '<div class="oc-mrow" title="Genomma '+fmtM(md.fat_genomma||0)+' · Inovalab '+fmtM(md.fat_inovalab||0)+(bnfM?' · Bonificações '+fmtM(bnfM):'')+'">'
+      +'<span class="oc-mlbl">'+md.nome+'</span>'
+      +'<div class="oc-mtrack"><i style="width:'+w(md.fat_genomma||0)+';background:'+PAL.navy+'"></i><i style="width:'+w(md.fat_inovalab||0)+';background:'+PAL.sage+'"></i><i style="width:'+w(bnfM)+';background:'+PAL.lav+'"></i></div>'
+      +'<b>'+fmtM(tot)+'</b><em>'+qtdMes(m).toLocaleString('pt-BR')+' NFs</em>'
+      +'<span class="oc-qchip" title="Participação do mês no '+q+'">'+pq+'% do '+q+'</span>'
       +'</div>';
   }).join('');
 
-  // Resumo dos quarters logo abaixo das barras
+  // Quarters em blocos compactos
   const qSet=[...new Set(ms.map(m=>Math.ceil(parseInt(m)/3)))].sort();
   const qResumo=qSet.map(q=>{
     const meses_q=[q*3-2, q*3-1, q*3];
     const tot=meses_q.reduce((s,mm)=>s+totalMes(mm),0);
     const qNFs=meses_q.reduce((s,mm)=>s+qtdMes(mm),0);
-    return '<span style="background:var(--bg2);padding:3px 10px;border-radius:4px;font-size:11px;margin-right:6px"><strong style="color:#7F77DD">Q'+q+'</strong> · '+fmtM(tot)+' · '+qNFs+' NFs</span>';
+    return '<div class="oc-q"><span class="oc-ql">Q'+q+'</span><b>'+fmtM(tot)+'</b><span>'+qNFs.toLocaleString('pt-BR')+' NFs</span></div>';
   }).join('');
-  // Container do resumo de quarter (cria dinamicamente se ainda não existir)
   let qBox=document.getElementById('otd-quarter-resumo');
   if(!qBox){
     qBox=document.createElement('div');
     qBox.id='otd-quarter-resumo';
-    qBox.style.cssText='margin-top:6px;padding-top:6px;border-top:0.5px dashed var(--border)';
-    document.getElementById('otd-mes-bars').parentNode.insertBefore(qBox, document.getElementById('otd-mes-bars').nextSibling);
+    document.getElementById('otd-mes-bars').parentNode.appendChild(qBox);
   }
-  qBox.innerHTML='<span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-right:8px">Faseamento por Quarter</span>'+qResumo;
+  qBox.className='oc-qs';
+  qBox.innerHTML=qResumo;
 
-  // Fat chart — 4 camadas: CD+Trânsito (referência) | Genomma | Inovalab | Bonificações
+  // v10.17: faturamento empilhado (colunas) + carteira em aberto (linha)
   if(fatChart) fatChart.destroy();
+  const porMesAb = sitPor('mes_nome', cartLista);
   fatChart=new Chart(document.getElementById('otd-fat-chart'),{type:'bar',
     data:{labels:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.nome||m),datasets:[
-      {label:'Em aberto',data:ms.map(m=>{const R=sitPor('mes_nome',cartLista)[((d.meses[m]||d.meses[String(m)])||{}).nome];return R?R.total_val:0;}),backgroundColor:'rgba(239,159,39,0.2)',borderColor:'#EF9F27',borderWidth:1.5,borderRadius:2,stack:'s'},
-      {label:'Bonificações',data:ms.map(m=>(bm[m]?.fat||bm[String(m)]?.fat||0)),backgroundColor:'#7F77DD',borderRadius:0,borderWidth:0,stack:'s'},
-      {label:'Inovalab',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_inovalab||0),backgroundColor:'#1D9E75',borderRadius:0,borderWidth:0,stack:'s'},
-      {label:'Genomma',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_genomma||0),backgroundColor:ms.map(m=>MC[m]),borderRadius:4,borderWidth:0,stack:'s'}
+      {type:'line',label:'Em aberto',data:ms.map(m=>{const R=porMesAb[((d.meses[m]||d.meses[String(m)])||{}).nome];return R?R.total_val:0;}),
+       borderColor:PAL.sand,backgroundColor:PAL.sand,borderWidth:2,pointRadius:3,pointBackgroundColor:'#fff',pointBorderWidth:2,tension:.3,order:0},
+      {label:'Genomma',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_genomma||0),backgroundColor:PAL.navy,borderRadius:0,borderWidth:0,stack:'s',order:1},
+      {label:'Inovalab',data:ms.map(m=>(d.meses[m]||d.meses[String(m)])?.fat_inovalab||0),backgroundColor:PAL.sage,borderRadius:0,borderWidth:0,stack:'s',order:1},
+      {label:'Bonificações',data:ms.map(m=>(bm[m]?.fat||bm[String(m)]?.fat||0)),backgroundColor:PAL.lav,borderRadius:{topLeft:4,topRight:4},borderSkipped:false,borderWidth:0,stack:'s',order:1}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{
-        legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12,padding:14,color:'var(--text2,#6b6b67)'}},
-        tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmtM(ctx.raw)}}
+        legend:{display:true,position:'bottom',labels:{font:{size:11,family:'Inter'},boxWidth:10,boxHeight:10,usePointStyle:true,pointStyle:'rectRounded',padding:14,color:'#6b6b67'}},
+        tooltip:{backgroundColor:'#1F3A5F',padding:10,callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fmtM(ctx.raw)}}
       },
       scales:{
-        x:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
-        y:{grid:{color:'rgba(128,128,128,.06)'},stacked:true,border:{display:false},ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+'M':v}}
+        x:{stacked:true,grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
+        y:{stacked:true,grid:{color:'rgba(31,58,95,.07)'},border:{display:false},ticks:{font:{size:11},callback:v=>v>=1e6?(v/1e6).toFixed(0)+' mi':v}}
       }}});
 
   // Bonificações row (legenda/detalhamento — mantida como referência informativa)
   const totalBonif=Object.values(bm).reduce((a,b)=>a+(b.fat||0),0);
   const totalBonifQtd=Object.values(bm).reduce((a,b)=>a+(b.qtd||0),0);
-  let bonifHtml='<span style="font-weight:600;color:#7F77DD">Bonificações (já incluídas nas barras): </span>';
+  let bonifHtml='<span style="font-weight:600;color:#6A5FA8">Bonificações (já incluídas nas barras): </span>';
   bonifHtml+=fmtM(totalBonif)+' · '+totalBonifQtd+' NFs &nbsp;';
   ms.forEach(m=>{const mn=parseInt(m);if(bm[mn]&&bm[mn].fat>0)bonifHtml+='<span style="margin-left:8px;background:var(--bg2);padding:2px 8px;border-radius:4px">'+(d.meses[m]||d.meses[String(m)])?.nome+': '+fmtM(bm[mn].fat)+'</span>';});
   document.getElementById('bonif-row').innerHTML=bonifHtml;
 
   // ---- BLOCO 2: Entregas finalizadas (Vendas + Bonificações por mês) ----
-  let r2='';
+  let r2=''; const o2Serie=[];
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)];if(!md)return;
     const bmm=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
@@ -6435,31 +6555,53 @@ function renderOTDChart(d){
     const mO=mFin?((mOn/mFin)*100).toFixed(1)+'%':'—';
     // v10.11: sem "/ano" — o payload agrupa por mês e o ano corrente aplicado
     // a meses do ano anterior (em janeiro) mostrava "Dez/2027".
+    const mOn_=mFin?mOn/mFin*100:null;
+    o2Serie.push({nome:md.nome, fin:mFin, otd:mOn_});
     r2+='<tr><td>'+md.nome+'</td>'
-      +'<td class="r" style="color:#3B6D11">'+mOn.toLocaleString('pt-BR')+'</td>'
-      +'<td class="r" style="color:'+(mOff>0?'#A32D2D':'var(--text2)')+'">'+mOff+'</td>'
+      +'<td class="r" style="color:'+PAL.ok+'">'+mOn.toLocaleString('pt-BR')+'</td>'
+      +'<td class="r" style="color:'+(mOff>0?PAL.brick:'var(--text3)')+'">'+mOff+'</td>'
       +'<td class="r">'+mFin.toLocaleString('pt-BR')+'</td>'
       +'<td class="r">'+fmtM(mFinVal)+'</td>'
-      +'<td class="r" style="color:#3B6D11;font-weight:600">'+mO+'</td></tr>';
+      +'<td class="r"><span class="oc-otd" style="color:'+(mOn_==null?'var(--text3)':mOn_>=99?PAL.ok:mOn_>=80?PAL.warn:PAL.brick)+'">'+(mOn_==null?'—':mOn_.toFixed(1).replace('.',',')+'%')+'</span></td></tr>';
   });
-  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:#3B6D11">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r" style="color:#3B6D11">'+(otdAll==='—'?'—':otdAll+'%')+'</td></tr>';
+  if(ms.length>1) r2+='<tr class="tr-total"><td>Total</td><td class="r" style="color:'+PAL.ok+'">'+onAll.toLocaleString('pt-BR')+'</td><td class="r" style="color:'+(offAll>0?'#A32D2D':'var(--text2)')+'">'+offAll+'</td><td class="r">'+finAll.toLocaleString('pt-BR')+'</td><td class="r">'+fmtM(finValAll)+'</td><td class="r"><span class="oc-otd" style="color:'+(otdAll==='—'?'var(--text3)':parseFloat(otdAll)>=99?PAL.ok:PAL.brick)+'">'+(otdAll==='—'?'—':otdAll.replace('.',',')+'%')+'</span></td></tr>';
   document.getElementById('o2-tbody').innerHTML=r2;
+  // v10.17: entregas por mês (colunas) + OTD (linha) contra a meta de 99%
+  try {
+    if(o2Chart) o2Chart.destroy();
+    const otdVals=o2Serie.map(x=>x.otd).filter(v=>v!=null);
+    const yMin=Math.max(80, Math.floor(Math.min(98, ...otdVals)) - 1);
+    o2Chart=new Chart(document.getElementById('o2-chart'),{type:'bar',
+      data:{labels:o2Serie.map(x=>x.nome),datasets:[
+        {type:'line',label:'OTD',data:o2Serie.map(x=>x.otd),yAxisID:'y1',borderColor:PAL.navy,backgroundColor:PAL.navy,borderWidth:2.5,tension:.3,
+         pointRadius:4,pointBackgroundColor:o2Serie.map(x=>x.otd!=null&&x.otd<99?PAL.brick:'#fff'),pointBorderColor:o2Serie.map(x=>x.otd!=null&&x.otd<99?PAL.brick:PAL.navy),pointBorderWidth:2,order:0},
+        {type:'line',label:'Meta 99%',data:o2Serie.map(()=>99),yAxisID:'y1',borderColor:PAL.brick,borderWidth:1.5,borderDash:[5,4],pointRadius:0,order:1},
+        {label:'Entregues',data:o2Serie.map(x=>x.fin),yAxisID:'y',backgroundColor:'rgba(143,179,212,.45)',borderRadius:4,order:2}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+        plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10,boxHeight:10,usePointStyle:true,padding:14,color:'#6b6b67'}},
+          tooltip:{backgroundColor:'#1F3A5F',padding:10,callbacks:{label:ctx=>ctx.dataset.yAxisID==='y1'?' '+ctx.dataset.label+': '+(ctx.raw==null?'—':Number(ctx.raw).toFixed(1).replace('.',',')+'%'):' Entregues: '+Number(ctx.raw).toLocaleString('pt-BR')}}},
+        scales:{x:{grid:{display:false},border:{display:false},ticks:{font:{size:11}}},
+          y:{position:'right',grid:{display:false},border:{display:false},ticks:{font:{size:10},color:'#9b9b97',callback:v=>Number(v).toLocaleString('pt-BR')}},
+          y1:{position:'left',min:yMin,max:100,grid:{color:'rgba(31,58,95,.07)'},border:{display:false},ticks:{font:{size:11},callback:v=>v+'%'}}}}});
+  } catch(e){ console.error('Erro gráfico bloco 2:', e); }
 
   try {
   // ---- BLOCO 3 (v10.16): carteira em aberto por mês de emissão — régua única ----
   const thO3 = document.getElementById('o3-thead');
   if(thO3) thO3.innerHTML = '<th>Mês</th>' + sitTH();
   const porMes = sitPor('mes_nome', cartLista);
+  const mxMes = sitMax(Object.values(porMes));
   let r3='';
   ms.forEach(m=>{
     const md=d.meses[m]||d.meses[String(m)];if(!md)return;
     const R = porMes[md.nome];
     if((!R || !R.total) && ms.length>1) return;
-    r3+='<tr><td>'+md.nome+'</td>'+sitTD(R)+'</tr>';
+    r3+='<tr><td>'+md.nome+'</td>'+sitTD(R,{max:mxMes})+'</tr>';
   });
   // NFs da carteira com mês de emissão fora da lista de meses (ex.: ano anterior)
   const nomesLinha = new Set(ms.map(m=>((d.meses[m]||d.meses[String(m)])||{}).nome));
-  Object.keys(porMes).filter(k=>!nomesLinha.has(k)).forEach(k=>{ r3+='<tr><td>'+esc(k||'—')+'</td>'+sitTD(porMes[k])+'</tr>'; });
+  Object.keys(porMes).filter(k=>!nomesLinha.has(k)).forEach(k=>{ r3+='<tr><td>'+esc(k||'—')+'</td>'+sitTD(porMes[k],{max:mxMes})+'</tr>'; });
   r3+='<tr class="tr-total"><td>Total em aberto</td>'+sitTD(SR,{total:true})+'</tr>';
   document.getElementById('o3-tbody').innerHTML=r3;
 
@@ -6473,12 +6615,13 @@ function renderOTDChart(d){
   const porQ = {}; cartLista.forEach(n=>{ const k=qDe(n); (porQ[k]=porQ[k]||[]).push(n); });
   const thPrev = document.getElementById('o3-prev-thead');
   if(thPrev) thPrev.innerHTML = '<th>Quarter previsto</th>' + sitTH();
-  const qColors={'Q1':'#0072BC','Q2':'#1D9E75','Q3':'#EF9F27','Q4':'#7F77DD','Sem previsão':'#9b9b97'};
+  const qColors={'Q1':PAL.steel,'Q2':PAL.sage,'Q3':PAL.sand,'Q4':PAL.lav,'Sem previsão':'#9b9b97'};
   let rPrev='';
+  const mxQ = sitMax(Object.values(porQ).map(sitResumo));
   Object.keys(porQ).sort((x,y)=>ordQ(x)-ordQ(y)).forEach(k=>{
     const cor=qColors[k]||qColors[String(k).split('/')[0]]||'#888';
     rPrev+='<tr><td><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:'+cor+';display:inline-block"></span><strong style="color:'+cor+'">'+esc(k)+'</strong></span></td>'
-      +sitTD(sitResumo(porQ[k]))+'</tr>';
+      +sitTD(sitResumo(porQ[k]),{max:mxQ})+'</tr>';
   });
   rPrev+='<tr class="tr-total"><td>Total em aberto</td>'+sitTD(SR,{total:true})+'</tr>';
   document.getElementById('o3-prev-tbody').innerHTML=rPrev;
@@ -6499,40 +6642,85 @@ function renderOTDChart(d){
       console.log('[v9.13 DIAG] '+ex.n+': tratativa='+ex.tratativa+'/'+ex.tratativa_val+', ag_cte='+ex.ag_cte+'/'+ex.ag_cte_val+', tag='+ex.transito_agenda+'/'+ex.transito_agenda_val+', nao_val(do JSON)='+ex.nao_val);
     }
   }
-  const bc=v=>v===null?'#B5D4F4':v>=99?'#004A87':v>=80?'#378ADD':'#E24B4A';
+  // v10.17: bullet do OTD (escala 90–100%, traço = meta 99%) + heatmap da carteira
+  const bPos=v=>Math.max(0,Math.min(100,(v-90)/10*100));
+  const bCor=v=>v==null?'#C9D3DD':v>=99?PAL.ok:v>=95?PAL.warn:PAL.brick;
+  const bullet=v=>'<div class="oc-bullet" title="OTD '+(v==null?'—':v.toFixed(1)+'%')+' · meta 99%"><i style="width:'+(v==null?0:bPos(v))+'%;background:'+bCor(v)+'"></i><u style="left:'+bPos(99)+'%"></u></div>';
   // v10.16: carteira por transportadora pela régua única (notasAbertas)
   const sitTransp = sitPor('transp');
+  const mxT = sitMax((d.otd||[]).map(t=>sitTransp[t.n]));
   const thO4 = document.getElementById('o4-thead');
-  if(thO4) thO4.innerHTML = '<th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th style="min-width:80px">Perf.</th>' + sitTH();
+  if(thO4) thO4.innerHTML = '<th>Transportadora</th><th class="r">Fin.</th><th class="r" style="color:#3B6D11">On Time</th><th class="r" style="color:#A32D2D">Off Time</th><th class="r">OTD</th><th>OTD × meta</th>' + sitTH();
   document.getElementById('o4-tbody').innerHTML=(d.otd||[]).map(t=>{
-    const c=t.otd===null?'color:var(--text2)':t.otd>=99?'color:#004A87;font-weight:600':'color:#A32D2D;font-weight:600';
+    const c='color:'+(t.otd==null?'var(--text3)':bCor(t.otd))+';font-weight:700';
     return'<tr><td>'+esc(t.n)+'</td>'
       +'<td class="r">'+(t.fin||'—')+'</td>'
-      +'<td class="r" style="color:#3B6D11">'+(t.on||'—')+'</td>'
-      +'<td class="r" style="color:'+(t.off>0?'#A32D2D':'var(--text2)')+'">'+t.off+'</td>'
-      +'<td class="r" style="'+c+'">'+(t.otd===null?'—':t.otd.toFixed(1)+'%')+'</td>'
-      +'<td style="min-width:80px;padding-right:10px"><div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(t.otd||0)+'%;background:'+bc(t.otd)+';border-radius:3px"></div></div></td>'
-      +sitTD(sitTransp[t.n])
+      +'<td class="r" style="color:'+PAL.ok+'">'+(t.on||'—')+'</td>'
+      +'<td class="r" style="color:'+(t.off>0?PAL.brick:'var(--text3)')+'">'+t.off+'</td>'
+      +'<td class="r" style="'+c+'">'+(t.otd==null?'—':t.otd.toFixed(1).replace('.',',')+'%')+'</td>'
+      +'<td style="min-width:130px;padding-right:10px">'+bullet(t.otd)+'</td>'
+      +sitTD(sitTransp[t.n],{max:mxT})
       +'</tr>';
   }).join('');
   } catch(e) { console.error('Erro bloco 4:', e); }
 
   try {
-  // ---- BLOCO 5: Regiões ----
-  const tA=(d.regioes||[]).reduce((a,r)=>a+r.atr_qtd,0)||1;
-  document.getElementById('o5-kpis').innerHTML=(d.regioes||[]).map(r=>'<div class="kpi" style="border-left:3px solid '+(REG_CORES[r.r]||'#888')+'"><div class="kpi-lbl">'+r.r+'</div><div class="kpi-val" style="font-size:20px;color:'+(REG_CORES[r.r]||'#888')+'">'+r.atr_qtd+'</div><div class="kpi-sub">'+((r.atr_qtd/tA)*100).toFixed(0)+'% do trânsito</div></div>').join('');
-  document.getElementById('o5-cards').innerHTML=(d.regioes||[]).map(r=>{
-    const cor=REG_CORES[r.r]||'#888';
-    const mx=Math.max(...(r.ufs||[]).map(u=>u.n),1);
+  // ---- BLOCO 5 (v10.17): trânsito por região — mapa em relevo + ranking ----
+  // Contagem pela régua única: carteira fora do CD e sem devolução (= card antigo).
+  const REG_ORD=['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'];
+  const regPipe={}; (d.regioes||[]).forEach(r=>regPipe[r.r]=r);
+  const trs5=notasAbertasBase().filter(n=>{const k=sitAberta(n).k; return k!=='cd' && k!=='devolucao';});
+  const reg5={}; REG_ORD.forEach(r=>reg5[r]={r, n:0, val:0, ufs:{}});
+  trs5.forEach(n=>{ const r=n.regiao||REGIOES_MAP[n.uf]||'Outros'; const x=reg5[r]||(reg5[r]={r,n:0,val:0,ufs:{}});
+    x.n++; x.val+=Number(n.valor)||0; const u=x.ufs[n.uf]||(x.ufs[n.uf]={u:n.uf,n:0,val:0}); u.n++; u.val+=Number(n.valor)||0; });
+  const regs5=Object.values(reg5).filter(r=>r.n>0 || regPipe[r.r]).sort((a,b)=>b.n-a.n);
+  const tA=regs5.reduce((a,r)=>a+r.n,0)||1, mxR=Math.max(...regs5.map(r=>r.n),1);
+  // Escala sequencial suave (névoa → marinho)
+  const mix=(c1,c2,t)=>{const h=x=>parseInt(x,16);const a1=[h(c1.slice(1,3)),h(c1.slice(3,5)),h(c1.slice(5,7))],a2=[h(c2.slice(1,3)),h(c2.slice(3,5)),h(c2.slice(5,7))];
+    return '#'+a1.map((v,i)=>Math.round(v+(a2[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+  const tom=n=>mix('#DCE6F0','#1F3A5F', Math.pow(n/mxR, .8));
+  const escuro=n=>Math.pow(n/mxR,.8)>.45;
+  // MAP_PATHS vive no script do Modo TV (carregado depois): monta agora se já existir,
+  // senão completa assim que a página termina de carregar.
+  const montarMapa5 = () => {
+    let base='', topo='', rot='';
+    REG_ORD.forEach(r=>{ if(!MAP_PATHS[r]) return; const n=(reg5[r]||{}).n||0; const c=tom(n);
+      base+='<path d="'+MAP_PATHS[r]+'" fill="'+mix(c,'#0E1E33',.45)+'" transform="translate(0,12)"/>';
+      topo+='<path class="oc-face" d="'+MAP_PATHS[r]+'" fill="'+c+'" stroke="#fff" stroke-width="2" stroke-linejoin="round"><title>'+r+': '+n+' NFs em trânsito · '+fmtM((reg5[r]||{}).val||0)+'</title></path>';
+      const pL=MAP_LABELS[r]; if(pL){ const cl=escuro(n)?'#fff':'#1F3A5F';
+        rot+='<text x="'+pL[0]+'" y="'+(pL[1]-4)+'" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="800" font-size="34" fill="'+cl+'" pointer-events="none">'+n+'</text>'
+            +'<text x="'+pL[0]+'" y="'+(pL[1]+20)+'" text-anchor="middle" font-family="Inter,sans-serif" font-weight="600" font-size="17" fill="'+cl+'" opacity=".9" pointer-events="none">'+r+'</text>'; }
+    });
+    return '<svg viewBox="-10 -10 580 640" role="img" aria-label="Mapa do Brasil com NFs em trânsito por região">'
+      +'<defs><filter id="ocSombra" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#1F3A5F" flood-opacity=".22"/></filter></defs>'
+      +'<g filter="url(#ocSombra)">'+base+'</g><g>'+topo+'</g>'+rot+'</svg>';
+  };
+  let mapa='';
+  const temMapa = () => typeof MAP_PATHS!=='undefined' && typeof MAP_LABELS!=='undefined';
+  try{ if(temMapa()) mapa=montarMapa5(); else window.addEventListener('load', ()=>{ try{ const el=document.querySelector('#o5-kpis .oc-map'); if(el && temMapa()) el.innerHTML=montarMapa5(); }catch(e){ console.error('Mapa bloco 5:', e); } }, {once:true}); }
+  catch(e){ console.error('Mapa bloco 5:', e); }
+  const rank=regs5.map(r=>{ const cor=REG_CORES[r.r]||PAL.steel; const pr=regPipe[r.r]||{};
+    return '<div class="oc-rk" title="Dias decorridos (médio): '+(pr.dias_atr!=null?pr.dias_atr.toFixed(1)+' d':'—')+'">'
+      +'<span class="oc-rk-n"><i class="oc-sw" style="background:'+cor+'"></i>'+esc(r.r)+'</span>'
+      +'<div class="oc-rk-bar"><i style="width:'+(r.n/mxR*100).toFixed(1)+'%;background:'+cor+'"></i></div>'
+      +'<b style="color:'+cor+'">'+r.n+'</b><em>'+fmtM(r.val)+'</em></div>';
+  }).join('')
+    +'<div class="oc-rk oc-rk-tot"><span class="oc-rk-n">Total</span><span>'+(tA)+' NFs fora do CD · '+((tA/Math.max(SR.total,1))*100).toFixed(0)+'% da carteira</span><b style="color:'+PAL.ink+'">'+tA+'</b><em>'+fmtM(regs5.reduce((a,r)=>a+r.val,0))+'</em></div>';
+  document.getElementById('o5-kpis').innerHTML='<div class="oc-map">'+mapa+'</div><div class="oc-rank">'+rank+'</div>';
+  document.getElementById('o5-cards').innerHTML=regs5.map(r=>{
+    const cor=REG_CORES[r.r]||'#888'; const pr=regPipe[r.r]||{};
+    const ufs=Object.values(r.ufs).sort((a,b)=>b.n-a.n);
+    const ufD={}; (pr.ufs||[]).forEach(u=>ufD[u.u]=u.d);
+    const mx=Math.max(...ufs.map(u=>u.n),1);
     return'<div class="reg-card">'
-      +'<div class="reg-head" style="background:'+cor+'18;border-bottom:0.5px solid '+cor+'44"><span class="reg-name">'+r.r+'</span><span class="reg-badge" style="background:'+cor+'22;color:'+cor+'">'+r.atr_qtd+' em trânsito</span></div>'
+      +'<div class="reg-head"><span class="reg-name"><i class="oc-sw" style="background:'+cor+'"></i>'+r.r+'</span><span class="reg-badge" style="background:'+cor+'1A;color:'+cor+'">'+r.n+' em trânsito</span></div>'
       +'<div class="reg-body">'
-      +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:#A32D2D">'+fmtM(r.atr_val)+'</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Dias decorridos (médio)</span><span style="font-weight:500">'+r.dias_atr.toFixed(1)+' d</span></div>'
-      +'<div class="reg-row"><span class="reg-lbl">Prazo médio de entrega</span><span style="font-weight:600;color:'+cor+'">'+r.media_ent.toFixed(1)+' d</span></div></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Valor em trânsito</span><span style="font-weight:600;color:'+PAL.ink+'">'+fmtM(r.val)+'</span></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Dias decorridos (médio)</span><span style="font-weight:500">'+(pr.dias_atr!=null?pr.dias_atr.toFixed(1)+' d':'—')+'</span></div>'
+      +'<div class="reg-row"><span class="reg-lbl">Prazo médio de entrega</span><span style="font-weight:600;color:'+cor+'">'+(pr.media_ent!=null?pr.media_ent.toFixed(1)+' d':'—')+'</span></div></div>'
       +'<div class="reg-uf"><div class="reg-uf-title">Praças em trânsito</div>'
       +'<table class="reg-uf-table"><tbody>'
-      +(r.ufs||[]).map(u=>'<tr><td style="width:20px">'+u.u+'</td><td style="width:50px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'88"></div></div></td><td style="text-align:center;width:16px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+u.d.toFixed(1)+'d</td></tr>').join('')
+      +ufs.map(u=>'<tr><td style="width:22px">'+esc(u.u||'—')+'</td><td style="width:54px"><div class="uf-bw"><div class="uf-bf" style="width:'+Math.round(u.n/mx*100)+'%;background:'+cor+'"></div></div></td><td style="text-align:center;width:18px">'+u.n+'</td><td>'+fmtM(u.val)+'</td><td>'+(ufD[u.u]!=null?ufD[u.u].toFixed(1)+'d':'—')+'</td></tr>').join('')
       +'</tbody></table></div></div>';
   }).join('');
 
@@ -6546,9 +6734,9 @@ function renderOTDChart(d){
       data:ms.map(m=>(d.dias_mes[r]&&d.dias_mes[r][m])||null),
       borderColor:rC[i],
       backgroundColor:rC[i]+'18',
-      borderWidth:2.5,
-      pointRadius:5,
-      pointHoverRadius:7,
+      borderWidth:2,
+      pointRadius:3,
+      pointHoverRadius:6,
       pointBackgroundColor:'#fff',
       pointBorderColor:rC[i],
       pointBorderWidth:2,
@@ -6558,7 +6746,7 @@ function renderOTDChart(d){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+(ctx.raw?.toFixed(1)||'—')+'d'}}
+        tooltip:{backgroundColor:'#1F3A5F',padding:10,callbacks:{label:ctx=>' '+ctx.dataset.label+': '+(ctx.raw?.toFixed(1)||'—')+'d'}}
       },
       scales:{
         x:{grid:{display:false},ticks:{font:{size:11}},border:{display:false}},
@@ -6567,7 +6755,7 @@ function renderOTDChart(d){
            title:{display:true,text:'dias até entrega',font:{size:10},color:'#9b9b97'},
            min:0}
       }}})
-  document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:14px;height:3px;border-radius:2px;background:'+rC[i]+';display:inline-block"></span>'+r+'</span>').join('');
+  document.getElementById('o5-legend').innerHTML=rNames.map((r,i)=>'<span><i style="background:'+rC[i]+'"></i>'+esc(r)+'</span>').join('');
   } catch(e) { console.error('Erro bloco 5:', e); }
 }
 
@@ -7326,6 +7514,8 @@ const MAP_LABELS={
   "Sudeste":[379.3,374.9],
   "Sul":[293.8,486.5]
 };
+// v10.17: o mapa também é usado no bloco 5 da aba OTD
+window.MAP_PATHS = MAP_PATHS; window.MAP_LABELS = MAP_LABELS;
 
   function gtvFmtPct(v){ return (v!=null && !isNaN(v)) ? Number(v).toFixed(1).replace('.',',')+'%' : '—'; }
   function gtvLerp(a,b,t){return a+(b-a)*t;}
