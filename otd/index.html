@@ -10,7 +10,7 @@
 <title>Torre de Controle — Logística</title>
 <script>
 // ===== VERSÃO DO BUILD (substituída pelo script publicar.ps1) =====
-window.__BUILD__ = { version: 'v10.17-otd-executivo', date: '30/10/2026' };
+window.__BUILD__ = { version: 'v10.18-tv-executivo', date: '03/11/2026' };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -212,6 +212,58 @@ body.tv-on #tv-mode{display:flex;align-items:center;justify-content:center}
 @keyframes gtv-pulse{0%{box-shadow:0 0 0 0 rgba(242,166,12,.5)}70%{box-shadow:0 0 0 9px rgba(242,166,12,0)}100%{box-shadow:0 0 0 0 rgba(242,166,12,0)}}
 .gtv-loading{display:flex;align-items:center;justify-content:center;height:100vh;color:#0072BC;font-size:24px;letter-spacing:4px;font-family:'Montserrat',sans-serif}
 #tv-mode .gtv-tnum{font-variant-numeric:tabular-nums}
+/* ============ v10.18 — Modo TV "Executivo claro" (linha visual da aba OTD) ============ */
+body.tv-on #tv-mode:has(#gtv-stage.t2){background:#EEF3F8}
+#tv-mode #gtv-stage.t2{background:linear-gradient(180deg,#F5F8FC,#E9F0F7);padding:34px 56px 30px;gap:22px;color:#13294B;font-family:'Inter',system-ui,sans-serif}
+#tv-mode .t2 .t2-num{font-family:'Montserrat','Inter',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+#tv-mode .t2-top{display:flex;align-items:center;justify-content:space-between;flex:none;height:76px}
+#tv-mode .t2-brand{display:flex;align-items:center;gap:18px}
+#tv-mode .t2-brand .t2-bar{width:6px;height:56px;border-radius:3px;background:linear-gradient(#00A7E7,#004A87)}
+#tv-mode .t2-brand h1{font:800 38px/1 'Montserrat','Inter',sans-serif;color:#0A2E57}
+#tv-mode .t2-brand span{display:block;font-weight:500;font-size:17px;color:#6B7A90;margin-top:6px}
+#tv-mode .t2-pill{font-weight:600;font-size:18px;color:#004A87;background:#fff;padding:12px 26px;border-radius:999px;box-shadow:0 2px 10px rgba(10,46,87,.08)}
+#tv-mode .t2-right{display:flex;align-items:center;gap:26px}
+#tv-mode .t2-clock{text-align:right}
+#tv-mode .t2-clock .t2-t{font:700 44px/1.05 'Montserrat','Inter',sans-serif;color:#0A2E57;font-variant-numeric:tabular-nums}
+#tv-mode .t2-clock .t2-d{font-weight:500;font-size:16px;color:#6B7A90}
+#tv-mode .t2-back{background:#fff;border:1px solid #E3E9F1;border-radius:999px;padding:12px 22px;font:600 16px 'Inter',sans-serif;color:#33536F;cursor:pointer}
+#tv-mode .t2-back:hover{border-color:#004A87;color:#004A87}
+#tv-mode .t2-kpis{flex:none;height:150px;background:#fff;border:1px solid #E3E9F1;border-radius:20px;display:grid;grid-template-columns:1.1fr 1fr .9fr 1.3fr 1.6fr}
+#tv-mode .t2-kpis>div{padding:26px 30px;border-right:1px solid #E3E9F1;min-width:0}
+#tv-mode .t2-kpis>div:last-child{border:0}
+#tv-mode .t2-kpis .t2-l{font-weight:500;font-size:17px;color:#6B7A90;display:flex;justify-content:space-between;gap:10px}
+#tv-mode .t2-kpis b{display:block;font:700 50px 'Montserrat','Inter',sans-serif;margin-top:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#tv-mode .t2-prog{height:14px;border-radius:7px;background:#EDF1F6;margin-top:26px;overflow:hidden}
+#tv-mode .t2-prog i{display:block;height:100%;background:linear-gradient(90deg,#3E6A9A,#0A2E57);border-radius:7px}
+#tv-mode .t2-grid{flex:1;min-height:0;display:grid;grid-template-columns:560px minmax(0,1fr) 540px;gap:24px}
+#tv-mode .t2-col{display:grid;gap:24px;min-height:0}
+#tv-mode .t2-card{background:#fff;border:1px solid #E3E9F1;border-radius:20px;padding:24px 28px;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+#tv-mode .t2-card h3{font:700 21px 'Montserrat','Inter',sans-serif;color:#0A2E57}
+#tv-mode .t2-card .t2-s{font-weight:500;font-size:15px;color:#6B7A90;margin-top:4px}
+#tv-mode .t2-map{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:4px 0}
+#tv-mode .t2-map svg{height:100%;max-height:430px;width:auto;display:block;overflow:visible}
+#tv-mode .t2-rl{display:grid;grid-template-columns:14px minmax(0,1fr) 76px 110px;gap:12px;align-items:center;font-weight:500;font-size:17px;padding:7px 0;border-bottom:1px solid #E3E9F1}
+#tv-mode .t2-rl:last-child{border:0}
+#tv-mode .t2-rl i{width:12px;height:12px;border-radius:3px}
+#tv-mode .t2-rl b{font:700 19px 'Montserrat','Inter',sans-serif;text-align:right;font-variant-numeric:tabular-nums}
+#tv-mode .t2-rl em{font-style:normal;color:#6B7A90;text-align:right;font-variant-numeric:tabular-nums}
+#tv-mode .t2-rl.t2-tot{border-top:1px solid #E3E9F1;color:#6B7A90}
+#tv-mode .t2-chart{flex:1;min-height:0;margin-top:10px}
+#tv-mode .t2-chart svg{width:100%;height:100%;display:block}
+#tv-mode .t2-st{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+#tv-mode .t2-st div{border-radius:12px;padding:10px 14px;background:#F4F7FB;border-left:4px solid #0B6FB8;min-width:0}
+#tv-mode .t2-st b{display:block;font:700 32px/1.1 'Montserrat','Inter',sans-serif;font-variant-numeric:tabular-nums;color:#13294B}
+#tv-mode .t2-st span{font-weight:500;font-size:14px;color:#6B7A90;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+#tv-mode .t2-st .t2-w{background:#FBF5E8;border-color:#C9922E}#tv-mode .t2-st .t2-w b{color:#A8761E}
+#tv-mode .t2-st .t2-r{background:#FBEDEA;border-color:#B5523F}#tv-mode .t2-st .t2-r b{color:#B5523F}
+#tv-mode .t2-rk{display:grid;grid-template-columns:minmax(0,1fr) 78px 120px 60px;gap:10px;align-items:center;font-size:16px;padding:9px 0}
+#tv-mode .t2-rk .t2-n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+#tv-mode .t2-rk .t2-o{font:700 17px 'Montserrat','Inter',sans-serif;text-align:right;font-variant-numeric:tabular-nums}
+#tv-mode .t2-rk .t2-b{height:8px;background:#EDF1F6;border-radius:4px;overflow:hidden}
+#tv-mode .t2-rk .t2-b i{display:block;height:100%;background:linear-gradient(90deg,#00A7E7,#0B6FB8)}
+#tv-mode .t2-rk .t2-q{text-align:right;color:#6B7A90;font-variant-numeric:tabular-nums}
+#tv-mode .t2-foot{flex:none;display:flex;justify-content:space-between;font-weight:500;font-size:15px;color:#6B7A90;margin-top:-6px}
+#tv-mode .t2-foot .t2-live{display:inline-block;width:9px;height:9px;border-radius:50%;background:#2E8B6A;margin-right:8px}
 #tv-mode .gtv-eyebrow{font-family:'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#0072BC;font-size:17px}
 #tv-mode .gtv-muted{color:#7C95AC}
 /* header */
@@ -7592,102 +7644,136 @@ window.MAP_PATHS = MAP_PATHS; window.MAP_LABELS = MAP_LABELS;
     }).join('');
   }
 
+  // v10.18 — Modo TV "Executivo claro": mesma linha visual da aba OTD (blocos 2 e 5),
+  // números do acumulado do ano. Só apresentação: regras e dados vêm das funções do painel.
+  function t2Dados(d){
+    var ms=Object.keys(d.meses||{}).map(Number).filter(function(m){return !isNaN(m);}).sort(function(a,b){return a-b;});
+    var on=0,off=0,val=0,serie=[];
+    ms.forEach(function(m){
+      var md=d.meses[m]||d.meses[String(m)]; if(!md) return;
+      var b=(d.bonif_mes||{})[m]||(d.bonif_mes||{})[String(m)]||{};
+      var mOn=(md.on||0)+(b.on||0), mOff=(md.off||0)+(b.off||0), mFin=mOn+mOff;
+      on+=mOn; off+=mOff; val+=(md.on_val||0)+(md.off_val||0)+(b.on_val||0)+(b.off_val||0);
+      serie.push({nome:md.nome||nomeMes(m), fin:mFin, otd:mFin?mOn/mFin*100:null});
+    });
+    // Trânsito por região — mesma régua do bloco 5 (fora do CD, sem devolução)
+    var REG=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'], reg={};
+    REG.forEach(function(r){reg[r]={r:r,n:0,val:0};});
+    notasAbertasBase().forEach(function(n){
+      var k=sitAberta(n).k; if(k==='cd'||k==='devolucao') return;
+      var r=n.regiao||REGIOES_MAP[n.uf]||'Outros'; var x=reg[r]||(reg[r]={r:r,n:0,val:0});
+      x.n++; x.val+=Number(n.valor)||0;
+    });
+    return {on:on, off:off, fin:on+off, val:val, otd:(on+off)?on/(on+off)*100:null, serie:serie,
+      reg:Object.values(reg).filter(function(r){return r.r!=='Outros';}).sort(function(a,b){return b.n-a.n;})};
+  }
+
+  function t2Mapa(regs){
+    var mx=Math.max.apply(null, regs.map(function(r){return r.n;}).concat([1]));
+    var by={}; regs.forEach(function(r){by[r.r]=r;});
+    function mix(c1,c2,t){var h=function(x){return parseInt(x,16);};var a=[h(c1.slice(1,3)),h(c1.slice(3,5)),h(c1.slice(5,7))],b=[h(c2.slice(1,3)),h(c2.slice(3,5)),h(c2.slice(5,7))];
+      return '#'+a.map(function(v,i){return Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0');}).join('');}
+    var ord=['Norte','Nordeste','Centro-Oeste','Sudeste','Sul'], base='', topo='', rot='';
+    ord.forEach(function(r){
+      if(!MAP_PATHS[r]) return; var n=(by[r]||{}).n||0, t=Math.pow(n/mx,.8), c=mix('#A7B4C7','#22355C',t);
+      base+='<path d="'+MAP_PATHS[r]+'" fill="'+mix(c,'#0E1E33',.4)+'" transform="translate(3,13)"/>';
+      topo+='<path d="'+MAP_PATHS[r]+'" fill="'+c+'" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>';
+      var p=MAP_LABELS[r]; if(p){ var cl=t>.45?'#fff':'#22355C';
+        rot+='<text x="'+p[0]+'" y="'+(p[1]-2)+'" text-anchor="middle" font-family="Montserrat,Inter,sans-serif" font-weight="800" font-size="46" fill="'+cl+'">'+n+'</text>'
+          +'<text x="'+p[0]+'" y="'+(p[1]+26)+'" text-anchor="middle" font-family="Inter,sans-serif" font-weight="600" font-size="20" fill="'+cl+'" opacity=".92">'+r+'</text>'; }
+    });
+    return '<svg viewBox="-10 -10 580 650" role="img" aria-label="NFs em trânsito por região">'
+      +'<ellipse cx="280" cy="610" rx="200" ry="20" fill="rgba(10,46,87,.12)"/>'
+      +'<g>'+base+'</g><g>'+topo+'</g>'+rot+'</svg>';
+  }
+
+  function t2Grafico(serie){
+    var W=660,H=300,pl=54,pr=10,pt=26,pb=30,ph=H-pt-pb,n=Math.max(serie.length,1),bw=(W-pl-pr)/n;
+    var vals=serie.map(function(x){return x.otd;}).filter(function(v){return v!=null;});
+    var yMin=Math.max(80, Math.floor(Math.min.apply(null, vals.concat([98])))-1);
+    var y=function(v){return pt+ph-(v-yMin)/(100-yMin)*ph;};
+    var mxF=Math.max.apply(null, serie.map(function(x){return x.fin;}).concat([1]));
+    var s='', passo=Math.max(1,Math.round((100-yMin)/3));
+    for(var v=100; v>=yMin; v-=passo){ s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#EDF1F6"/><text x="'+(pl-10)+'" y="'+(y(v)+5)+'" text-anchor="end" font-size="14" fill="#6B7A90" font-family="Inter,sans-serif">'+v+'%</text>'; }
+    serie.forEach(function(m,i){ var x=pl+i*bw+bw/2, h=m.fin/mxF*ph*.92;
+      s+='<rect x="'+(x-bw*.34)+'" y="'+(pt+ph-h)+'" width="'+(bw*.68)+'" height="'+h+'" rx="5" fill="#D3E0EE"/>'
+        +'<text x="'+x+'" y="'+(H-8)+'" text-anchor="middle" font-size="14" fill="#6B7A90" font-family="Inter,sans-serif">'+esc(m.nome)+'</text>'; });
+    s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(99)+'" y2="'+y(99)+'" stroke="#C47A6A" stroke-dasharray="7 6" stroke-width="2"/>';
+    var pts=[]; serie.forEach(function(m,i){ if(m.otd!=null) pts.push([pl+i*bw+bw/2, y(Math.max(yMin,m.otd)), m.otd, i]); });
+    if(pts.length) s+='<path d="M'+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join('L')+'" fill="none" stroke="#22355C" stroke-width="3" stroke-linejoin="round"/>';
+    pts.forEach(function(p,k){ var abaixo=p[2]<99;
+      s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="6" fill="'+(abaixo?'#B5523F':'#fff')+'" stroke="'+(abaixo?'#B5523F':'#22355C')+'" stroke-width="2.5"/>';
+      if(k%2===0||k===pts.length-1||abaixo) s+='<text x="'+p[0]+'" y="'+(p[1]-13)+'" text-anchor="middle" font-size="13" font-weight="700" fill="'+(abaixo?'#B5523F':'#22355C')+'" font-family="Montserrat,Inter,sans-serif">'+gtvFmtPct(p[2])+'</text>'; });
+    return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Entregas e OTD por mês">'+s+'</svg>';
+  }
+
   function renderTV(){
     var container=document.getElementById('tv-mode');
     if(!container) return;
     if(!otdData){ container.innerHTML='<div class="gtv-loading">CARREGANDO TORRE…</div>'; return; }
     var agg=agregarTV(otdData);
     if(!agg) return;
-
-    var mc=agg.otdMesCorrente||{nome:'',on:0,off:0,fin:0,otd:null};
-    var anoAtual=new Date().getFullYear();
-    var C=2*Math.PI*86;
-    var pct=(mc.otd!=null && !isNaN(mc.otd))?Math.min(100,mc.otd):0;
-    var off=(mc.otd!=null && !isNaN(mc.otd))?(C*(1-pct/100)):C;
-    var lt=agg.leadTime||{mesNome:'',lt_total:0,lt_exp:0,lt_trans:0};
-    var st=agg.status||{};
+    var D=t2Dados(otdData), st=agg.status||{}, sit=st.sit||{}, lt=agg.leadTime||{};
     var ver=(window.__BUILD__||{}).version||'';
+    var br=function(n){return (n||0).toLocaleString('pt-BR');};
+    var dias=function(v){return (v&&v>0)?v.toFixed(1).replace('.',',')+' d':'—';};
+    var escopo=D.fin+(st.aberto||0);
+    var COR={'Sudeste':'#3A5F8F','Nordeste':'#BF9550','Centro-Oeste':'#5E8C6A','Sul':'#8A7FB8','Norte':'#6E9E9A'};
+    var totT=D.reg.reduce(function(a,r){return a+r.n;},0), totV=D.reg.reduce(function(a,r){return a+r.val;},0);
+    var corOtd=function(v){return v==null?'#6B7A90':v>=99?'#2E8B6A':'#B5523F';};
+
+    var regioesLT=['Sudeste','Nordeste','Centro-Oeste','Sul','Norte'].map(function(nm){
+      var r=(agg.regioes||[]).find(function(x){return x.r===nm;})||{};
+      return '<div class="t2-rl"><i style="background:'+COR[nm]+'"></i><span>'+nm+'</span><b style="color:'+corOtd(r.otdPct)+'">'+gtvFmtPct(r.otdPct)+'</b><em>'+dias(r.ltTotal)+'</em></div>';
+    }).join('');
+    var mxFin=Math.max.apply(null,(agg.transps||[]).map(function(t){return t.fin||0;}).concat([1]));
+    var ranking=(agg.transps||[]).slice(0,6).map(function(t){
+      return '<div class="t2-rk"><span class="t2-n">'+esc(t.n||'')+'</span><span class="t2-o" style="color:'+corOtd(t.otd)+'">'+gtvFmtPct(t.otd)+'</span>'
+        +'<span class="t2-b"><i style="width:'+((t.fin||0)/mxFin*100).toFixed(1)+'%"></i></span><span class="t2-q">'+br(t.fin)+'</span></div>';
+    }).join('');
+    var tile=function(n,lbl,cls){return '<div class="'+(cls||'')+'"><b>'+br(n)+'</b><span>'+lbl+'</span></div>';};
 
     container.innerHTML =
-'<div id="gtv-stage">'
-  +'<div class="gtv-top">'
-    +'<div class="gtv-brand">'
-      +'<img class="gtv-logo" src="logo-genomma.svg" alt="Genomma Lab" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';">'
-      +'<span class="gtv-bar" style="display:none"></span>'
-      +'<div><h1>TORRE DE CONTROLE</h1><div class="gtv-sub">Genomma Lab · Logística Nacional</div></div>'
+'<div id="gtv-stage" class="t2">'
+  +'<div class="t2-top">'
+    +'<div class="t2-brand"><div class="t2-bar"></div><div><h1>Torre de Controle</h1><span>Genomma Lab Brasil — logística nacional</span></div></div>'
+    +'<div class="t2-pill">Acumulado '+new Date().getFullYear()+'</div>'
+    +'<div class="t2-right"><div class="t2-clock"><div class="t2-t" id="tv-clock">'+tvRelogio()+'</div><div class="t2-d">'+tvData()+'</div></div>'
+      +'<button class="t2-back" onclick="var b=document.getElementById(\'tv-back-btn\'); if(b) b.click();">← Voltar ao painel</button></div>'
+  +'</div>'
+
+  +'<div class="t2-kpis">'
+    +'<div><div class="t2-l">OTD acumulado</div><b style="color:'+corOtd(D.otd)+'">'+gtvFmtPct(D.otd)+'</b></div>'
+    +'<div><div class="t2-l">No prazo</div><b style="color:#2E8B6A">'+br(D.on)+'</b></div>'
+    +'<div><div class="t2-l">Fora do prazo</div><b style="color:#B5523F">'+br(D.off)+'</b></div>'
+    +'<div><div class="t2-l">Receita entregue</div><b style="color:#0A2E57">'+fmtM(D.val)+'</b></div>'
+    +'<div><div class="t2-l"><span>Entregues no escopo</span><span>'+br(D.fin)+' de '+br(escopo)+'</span></div>'
+      +'<div class="t2-prog"><i style="width:'+(escopo?(D.fin/escopo*100).toFixed(1):0)+'%"></i></div></div>'
+  +'</div>'
+
+  +'<div class="t2-grid">'
+    +'<div class="t2-card"><h3>Trânsito por região</h3><div class="t2-s">Carteira fora do CD, sem devoluções</div>'
+      +'<div class="t2-map">'+t2Mapa(D.reg)+'</div>'
+      +'<div>'+D.reg.map(function(r){var c=COR[r.r]||'#4A7AA8';return '<div class="t2-rl"><i style="background:'+c+'"></i><span>'+esc(r.r)+'</span><b style="color:'+c+'">'+br(r.n)+'</b><em>'+fmtM(r.val)+'</em></div>';}).join('')
+        +'<div class="t2-rl t2-tot"><i></i><span>'+br(totT)+' NFs fora do CD</span><b style="color:#13294B">'+br(totT)+'</b><em>'+fmtM(totV)+'</em></div></div>'
     +'</div>'
-    +'<div class="gtv-period"><div class="gtv-dot"></div><div><div class="gtv-pl">Período</div><div class="gtv-pv">'+(agg.quarterLabel||'')+'</div></div></div>'
-    +'<div class="gtv-topright">'
-      +'<div class="gtv-clockwrap"><div class="gtv-cl">Em operação</div>'
-        +'<div class="gtv-clock gtv-tnum" id="tv-clock">'+tvRelogio()+'</div>'
-        +'<div class="gtv-date">'+tvData()+'</div></div>'
-      +'<button class="gtv-backpill" onclick="var b=document.getElementById(\'tv-back-btn\'); if(b) b.click();">← Voltar ao painel</button>'
+
+    +'<div class="t2-col" style="grid-template-rows:minmax(0,1fr) auto">'
+      +'<div class="t2-card"><h3>Entregas finalizadas por mês</h3><div class="t2-s">Volume entregue e OTD contra a meta de 99%</div><div class="t2-chart">'+t2Grafico(D.serie)+'</div></div>'
+      +'<div class="t2-card"><h3>Carteira aberta: '+br(st.aberto)+' NFs</h3>'
+        +'<div class="t2-st">'
+          +tile(sit.cd,'No CD')+tile(sit.transito,'Em trânsito')+tile(sit.agenda,'Trânsito agenda')+tile(sit.rota,'Em rota')
+          +tile(sit.ag_agend,'Agendamento')+tile(sit.atraso,'Em atraso','t2-w')+tile(sit.tratativa,'Em tratativa','t2-w')+tile(sit.devolucao,'Devolução','t2-r')
+        +'</div></div>'
+    +'</div>'
+
+    +'<div class="t2-col" style="grid-template-rows:auto minmax(0,1fr)">'
+      +'<div class="t2-card"><h3>Lead time e OTD por região</h3><div class="t2-s">Brasil em '+esc((lt.mesNome||'').toLowerCase())+': '+dias(lt.lt_total)+' ('+dias(lt.lt_exp)+' expedição + '+dias(lt.lt_trans)+' transporte)</div><div style="margin-top:8px">'+regioesLT+'</div></div>'
+      +'<div class="t2-card"><h3>Transportadoras</h3><div class="t2-s">OTD e entregas finalizadas no ano</div><div style="margin-top:6px">'+ranking+'</div></div>'
     +'</div>'
   +'</div>'
 
-  +'<div class="gtv-grid">'
-
-    +'<div class="gtv-card">'
-      +'<div class="gtv-card-h"><div class="gtv-eyebrow">OTD · On-Time Delivery</div><div class="gtv-muted" style="font-weight:700;font-size:14px">'+(mc.nome||'').toUpperCase()+' · '+anoAtual+(mc.defasado?' · ÚLTIMO MÊS COM DADO':'')+'</div></div>'
-      +'<div class="gtv-otd-body">'
-        +'<div class="gtv-gauge"><div class="gtv-sweep"></div>'
-          +'<svg viewBox="0 0 200 200">'
-            +'<circle cx="100" cy="100" r="86" fill="none" stroke="#E6F0F8" stroke-width="15"/>'
-            +'<circle cx="100" cy="100" r="86" fill="none" stroke="url(#gtvGrad)" stroke-width="15" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.7,.2,1)"/>'
-            +'<defs><linearGradient id="gtvGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00A7E7"/><stop offset="1" stop-color="#004A87"/></linearGradient></defs>'
-          +'</svg>'
-          +'<div class="gtv-gc"><div class="gtv-pct gtv-tnum">'+gtvFmtPct(mc.otd)+'</div>'
-            +'<div class="gtv-plb">On-Time Delivery</div>'
-            +'<div class="gtv-mo">'+(mc.on||0).toLocaleString('pt-BR')+' no prazo · '+(mc.off||0).toLocaleString('pt-BR')+' atraso</div></div>'
-        +'</div>'
-        +'<div class="gtv-otd-side">'
-          +'<div class="gtv-metaline"><span class="gtv-muted" style="font-weight:700;font-size:12px;letter-spacing:.1em">META 99%</span><span class="gtv-big gtv-tnum">'+(mc.fin||0).toLocaleString('pt-BR')+' finalizadas</span></div>'
-          +'<div class="gtv-metabar"><i style="width:'+pct.toFixed(1)+'%"></i><span class="gtv-target" style="left:99%"></span></div>'
-          +'<div class="gtv-summary">'
-            +'<div class="gtv-chip"><div class="gtv-n gtv-tnum">'+(mc.on||0).toLocaleString('pt-BR')+'</div><div class="gtv-t">No prazo</div></div>'
-            +'<div class="gtv-chip"><div class="gtv-n gtv-tnum">'+(mc.off||0).toLocaleString('pt-BR')+'</div><div class="gtv-t">Em atraso</div></div>'
-            +'<div class="gtv-chip"><div class="gtv-n gtv-tnum">'+(mc.fin||0).toLocaleString('pt-BR')+'</div><div class="gtv-t">Finalizadas</div></div>'
-          +'</div>'
-          +'<div class="gtv-hist">'+gtvHistorico(agg.otdMesesAnteriores)+'</div>'
-        +'</div>'
-      +'</div>'
-    +'</div>'
-
-    +'<div class="gtv-card">'
-      +'<div class="gtv-card-h"><div class="gtv-eyebrow">Status das Entregas · Em Trânsito</div></div>'
-      +'<div class="gtv-tiles">'
-        +ABERTAS_SIT.map(x=>gtvTile(x.curto, st.sit[x.k], x.k==='tratativa'?'gtv-warn':(x.k==='devolucao'?'gtv-dev':'gtv-base'), x.k==='tratativa'&&st.sit[x.k]>0, gtvShare(st.sit[x.k], st.aberto))).join('')
-        +gtvTile('Em Atraso', st.sit.atraso, 'gtv-warn', true, 'marca · '+gtvShare(st.sit.atraso, st.aberto))
-        +gtvTile('Devolvidas', st.devolvida, 'gtv-dev', false, 'fora do OTD')
-        +gtvTile('Carteira Aberta', st.aberto, 'gtv-tot', false, 'soma das 7 situações')
-      +'</div>'
-    +'</div>'
-
-    +'<div class="gtv-card">'
-      +'<div class="gtv-card-h"><div class="gtv-eyebrow">Mapa · OTD &amp; Lead Time por Região</div><div class="gtv-muted" style="font-weight:700;font-size:12px">Lead Time Brasil · '+(lt.mesNome||'').toUpperCase()+'</div></div>'
-      +'<div class="gtv-lead">'
-        +'<div class="gtv-leadbox"><div class="gtv-t">Total</div><div class="gtv-v gtv-tnum">'+(lt.lt_total||0).toFixed(1).replace('.',',')+'<small> d</small></div></div>'
-        +'<div class="gtv-leadbox"><div class="gtv-t">Expedição</div><div class="gtv-v gtv-tnum">'+(lt.lt_exp||0).toFixed(1).replace('.',',')+'<small> d</small></div></div>'
-        +'<div class="gtv-leadbox"><div class="gtv-t">Transporte</div><div class="gtv-v gtv-tnum">'+(lt.lt_trans||0).toFixed(1).replace('.',',')+'<small> d</small></div></div>'
-      +'</div>'
-      +'<div class="gtv-mapbody">'
-        +'<div class="gtv-mapwrap">'+gtvMapaSVG(agg.regioes)+'</div>'
-        +'<div class="gtv-rtable"><div class="gtv-hd"><span>Região</span><span style="text-align:right">OTD</span><span style="text-align:right">Lead Time</span></div>'+gtvTabelaRegioes(agg.regioes)+'</div>'
-      +'</div>'
-    +'</div>'
-
-    +'<div class="gtv-card">'
-      +'<div class="gtv-card-h"><div class="gtv-eyebrow">Ranking de Transportadoras · Acumulado</div></div>'
-      +'<div class="gtv-rank-hd"><span>#</span><span>Transportadora</span><span style="text-align:right">OTD</span><span>Finalizadas</span></div>'
-      +'<div class="gtv-rank">'+gtvRanking(agg.transps)+'</div>'
-    +'</div>'
-
-  +'</div>'
-
-  +'<div class="gtv-foot">'
-    +'<div class="gtv-l"><span class="gtv-live"></span><span>Sistema em operação · Base atualizada '+((otdData.atualizado||'')) +'</span></div>'
-    +'<div class="gtv-ver">'+ver+' · TORRE OTD</div>'
-  +'</div>'
+  +'<div class="t2-foot"><span><span class="t2-live"></span>Sistema em operação. Base atualizada em '+esc(otdData.atualizado||'—')+'</span><span>'+esc(ver)+' · Torre OTD</span></div>'
 +'</div>';
 
     gtvFit();
