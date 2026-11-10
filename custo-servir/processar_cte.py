@@ -83,6 +83,7 @@ BUCKET         = "dashboards"
 PATH_JSON      = "custo-servir/dados.json"
 PATH_RAW       = "custo-servir/ctes_raw.json"
 PATH_BASE      = "custo-servir/ctes_base.json"   # v9.2: versao leve para o painel
+PATH_COMP      = "custo-servir/ctes_comp.json"   # v9.3: composicao do frete (vPrest/Comp) por CT-e
 
 CNPJ_GENOMMA   = "09080907000506"
 CNPJ_INOVALAB  = "60698771000126"           # v9: CNPJ real visto nos CT-es
@@ -527,6 +528,18 @@ def parse_cte(filepath: str):
             try: peso = float(q.findtext("cte:qCarga", namespaces=NS) or 0)
             except: pass
 
+    # v9.3: composicao do frete como cobrada (vPrest/Comp: xNome + vComp).
+    # So leitura: nao altera v_frete nem nenhum total.
+    comps = []
+    for _c in root.findall(".//cte:vPrest/cte:Comp", NS):
+        _nm = re.sub(r"\s+", " ", (_c.findtext("cte:xNome", namespaces=NS) or "").strip().upper())[:30]
+        try:
+            _vc = round(float(_c.findtext("cte:vComp", namespaces=NS) or 0), 2)
+        except ValueError:
+            continue
+        if _nm and _vc:
+            comps.append([_nm, _vc])
+
     # Numero do CTe, serie e caracteristicas
     ide = root.find(".//cte:ide", NS)
     n_cte = serie_cte = cfop = ""
@@ -641,6 +654,7 @@ def parse_cte(filepath: str):
         "v_frete":      round(v_frete, 2),
         "v_merc":       round(v_merc,  2),
         "peso":         round(peso, 3),
+        "comps":        comps,
     }
 
 
@@ -1169,6 +1183,29 @@ def _mz_raw(c):
     return out
 
 
+def _montar_comp(ctes: list) -> bytes:
+    """v9.3: {"v":1,"nomes":[...],"c":{chave:[i,valor,i,valor,...]}} com a composicao do
+    frete de cada CT-e (como veio no XML). CT-es lidos antes da v9.3 nao tem 'comps' e ficam
+    fora ate o REPROCESSAR_TUDO.bat."""
+    nomes, idx, c_out = [], {}, {}
+    sem = 0
+    for c in ctes:
+        cp = c.get("comps")
+        if not cp:
+            sem += 1
+            continue
+        flat = []
+        for nm, v in cp:
+            if nm not in idx:
+                idx[nm] = len(nomes); nomes.append(nm)
+            flat += [idx[nm], v]
+        c_out[c["chave"]] = flat
+    if sem:
+        log.info(f"  Composicao do frete: {len(c_out):,} CT-es com componentes | {sem:,} sem (rode REPROCESSAR_TUDO.bat uma vez)")
+    return json.dumps({"v": 1, "nomes": nomes, "c": c_out}, ensure_ascii=False,
+                      separators=(",", ":")).encode("utf-8")
+
+
 def publicar_raw(ctes: list) -> bool:
     """Publica dados brutos para exportacao Excel no dashboard."""
     EMP = {"GENOMMA":"G","INOVALAB":"I","OUTROS":"O"}
@@ -1213,11 +1250,14 @@ def publicar_raw(ctes: list) -> bool:
     base = json.dumps({"v": 2, "cols": COLS, "dict": {k: list(d.keys()) for k, d in dic.items()}, "rows": rows},
                       ensure_ascii=False, separators=(",",":")).encode("utf-8")
     data = json.dumps(raw, ensure_ascii=False, separators=(",",":")).encode("utf-8")
+    comp = _montar_comp(ctes)
     if SEM_PUBLICAR:
         with open("ctes_raw_local.json", "wb") as _f:
             _f.write(data)
         with open("ctes_base_local.json", "wb") as _f:
             _f.write(base)
+        with open("ctes_comp_local.json", "wb") as _f:
+            _f.write(comp)
         log.info(f"  (--sem-publicar) nada enviado; copias locais ctes_raw_local.json ({len(data)//1024}KB) "
                  f"e ctes_base_local.json ({len(base)//1024}KB)")
         return True
@@ -1232,6 +1272,15 @@ def publicar_raw(ctes: list) -> bool:
             log.error(f"  ERRO base {rb.status_code}: {rb.text[:200]}")
     except Exception as e:
         log.error(f"  ERRO base: {e}")
+    # v9.3: composicao do frete (arquivo separado, lido pelo painel so ao abrir o detalhe de CT-es)
+    try:
+        rc = requests.post(f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_COMP}", data=comp, headers=hdrs, timeout=90)
+        if rc.status_code in (200,201,204):
+            log.info(f"  OK ctes_comp.json ({len(comp)//1024}KB)")
+        else:
+            log.error(f"  ERRO comp {rc.status_code}: {rc.text[:200]}")
+    except Exception as e:
+        log.error(f"  ERRO comp: {e}")
     url  = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{PATH_RAW}"
     try:
         r = requests.post(url, data=data, headers=hdrs, timeout=90)

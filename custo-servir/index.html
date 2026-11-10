@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Custo de Servir — Torre de Controle</title>
-<!-- v9.1 · 28/out/2026 · cálculos a partir de ctes_raw.json · aba Comparativo Anual -->
+<!-- v9.3 · 10/nov/2026 · detalhe de CT-es por cliente (aba Clientes) com composição do frete (ctes_comp.json) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -78,6 +78,21 @@ table.dt tr:last-child td{border-bottom:none}table.dt tr:hover td{background:var
 .leg-sem i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .sub{font-size:9px;color:var(--text2);font-weight:400;margin-top:1px}
 .muted{color:var(--text3)}
+/* v9.3: detalhe de CT-es por cliente (aba Clientes) */
+.ctb{font-size:10px;padding:3px 9px;border-radius:10px;border:0.5px solid var(--green);background:transparent;color:var(--green-dk);cursor:pointer;font-weight:500;white-space:nowrap}
+.ctb:hover{background:var(--green-lt)}.ctb.on{background:var(--green);color:#fff;border-color:var(--green)}
+table.dt>tbody>tr.ctd-row:hover>td,table.dt>tbody>tr.ctd-row>td{background:var(--bg)!important;padding:0 0 12px 0;white-space:normal}
+.ctd{border:0.5px solid var(--green);border-radius:var(--r);background:var(--bg);padding:12px 14px;margin:6px 0 0;display:flex;flex-direction:column;gap:12px;width:0;min-width:100%;box-sizing:border-box}
+.ctd-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.ctd-t{font-size:9px;font-weight:600;color:var(--green-dk);letter-spacing:.06em;text-transform:uppercase}
+.ctd-n{font-size:14px;font-weight:700;color:var(--text);margin-top:2px}.ctd-s{font-size:10px;color:var(--text2);margin-top:2px}
+.ctd-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.ctd-k>div{border:0.5px solid var(--border);border-radius:var(--r);padding:7px 10px}.ctd-k .kl{font-size:9px;color:var(--text2)}.ctd-k .kv{font-size:14px;font-weight:700;margin-top:2px}
+.ctd-bar{display:flex;height:10px;border-radius:3px;overflow:hidden;background:var(--bg2)}
+.ctd-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:10px;color:var(--text2)}.ctd-leg b{color:var(--text);font-weight:600}
+.ctd-leg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.ctd-tw{overflow-x:auto;max-height:460px;overflow-y:auto;border:0.5px solid var(--border);border-radius:var(--r)}
+.ctd-tw table.dt th{position:sticky;top:0;z-index:1}
 details.met{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:10px 16px;margin-bottom:10px}
 details.met summary{cursor:pointer;font-size:11px;font-weight:600;color:var(--text2)}
 details.met div{font-size:11px;color:var(--text2);line-height:1.6;margin-top:8px}
@@ -311,6 +326,7 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
             <th class="r">Part. frete</th><th class="r">Frete/envio</th>
             <th class="r" style="color:#185FA5">Mercadoria</th>
             <th class="r" style="color:var(--amber)">%CTS</th>
+            <th class="r">Detalhe</th>
           </tr></thead><tbody id="tb-cli"></tbody></table></div>
           <div class="note" id="cli-note"></div>
           <div class="leg-sem" id="sem-cli"></div></div>
@@ -982,6 +998,119 @@ function fmtCnpj(c){c=(c||'').replace(/\D/g,'');return c.length===14?c.slice(0,2
 function cliSearch(v){_cliQ=(v||'').trim().toLowerCase();rCli();}
 function cliSort(btn){_cliS=btn.dataset.s;document.querySelectorAll('.sortb').forEach(b=>b.classList.toggle('on',b===btn));rCli();}
 function toggleFil(i){const rows=document.querySelectorAll('.filg-'+i);if(!rows.length)return;const show=rows[0].style.display==='none';rows.forEach(r=>r.style.display=show?'':'none');const car=document.getElementById('cliar-'+i);if(car)car.textContent=show?'\u25be':'\u25b8';}
+// ── v9.3: DETALHE DE CT-ES POR CLIENTE ─────────────────────────────
+// Mostra os CT-es emitidos para a matriz/filial com os filtros da barra,
+// e a composição do frete como cobrada (ctes_comp.json, lido só ao abrir).
+// Não audita: os valores são os do CT-e.
+let _CTD=null,CTD_IDX=[],CTD_LAST=null,COMP=null,COMP_ST='idle';
+const CTD_COR=['#0F6E56','#1D9E75','#5DCAA5','#9FE1CB','#185FA5','#85B7EB','#EF9F27','#D85A30','#993C1D','#7F77DD','#a0a09a'];
+const CTD_MAXC=9, CTD_MAXL=500;
+function f2(v){return v==null||isNaN(v)?'—':v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function abrirCtes(i){
+  const s=i>=0?CTD_IDX[i]:null;
+  if(!s||(_CTD&&_CTD.t===s.t&&_CTD.cg===s.cg&&_CTD.fil===s.fil))_CTD=null;else _CTD=s;
+  rCli();
+}
+function carregarComp(){
+  if(COMP_ST!=='idle')return;
+  COMP_ST='loading';
+  fetchJSON(BASE+'ctes_comp.json',2).then(j=>{
+    COMP=j&&j.c?j:null;COMP_ST=COMP?'ok':'none';
+    if(_CTD&&curTab==='cliente')rCli();
+  });
+}
+function compDe(r){
+  if(!COMP)return null;const v=COMP.c[r.k];if(!v)return null;
+  const o={};for(let i=0;i<v.length;i+=2){const n=COMP.nomes[v[i]];o[n]=(o[n]||0)+v[i+1];}return o;
+}
+function filtrosTxt(){
+  const p=[];
+  if(F.ano!=='all')p.push(F.ano);if(F.qtr!=='all')p.push(F.qtr);
+  const mk=mesKeyF();if(mk)p.push(mk.k?mesLbl(mk.k).replace('*',''):MNOM[mk.m]);
+  if(F.emp!=='all')p.push(F.emp);if(F.tipo!=='all')p.push(F.tipo);if(F.reg!=='all')p.push(F.reg);
+  return p.length?p.join(' · '):'Todo o período';
+}
+function tipoCte(r){return r.com?'Complementar':(r.ree?'Reentrega':'Normal')+(r.dup?' · susp. dup.':'');}
+function ctdRow(rs,nome,sub,showFil,cls){
+  return '<tr class="ctd-row '+cls+'"><td colspan="12"><div class="ctd">'+ctdHtml(rs,nome,sub,showFil)+'</div></td></tr>';
+}
+function ctdHtml(rs,nome,sub,showFil){
+  carregarComp();
+  const lista=rs.slice().sort((a,b)=>b.d.localeCompare(a.d)||String(b.nct||'').localeCompare(String(a.nct||''),undefined,{numeric:true}));
+  CTD_LAST={lista,nome,sub,showFil};
+  const t=agg(rs);
+  const trs=new Map();rs.forEach(r=>trs.set(r.tr,(trs.get(r.tr)||0)+r.vf));
+  const trTop=[...trs.entries()].sort((a,b)=>b[1]-a[1]);
+  const tot={};let nCom=0,fCom=0;
+  const comps=lista.map(r=>{const o=compDe(r);if(o){nCom++;fCom+=r.vf;for(const n in o)tot[n]=(tot[n]||0)+o[n];}return o;});
+  let cols=Object.keys(tot).sort((a,b)=>tot[b]-tot[a]);
+  const temOutros=cols.length>CTD_MAXC;const principais=cols.slice(0,temOutros?CTD_MAXC-1:CTD_MAXC);
+  const outrosTot=cols.slice(principais.length).reduce((s,n)=>s+tot[n],0);
+  const colsV=principais.concat(temOutros?['OUTROS']:[]);
+  const valCol=(o,n)=>{if(!o)return null;if(n!=='OUTROS')return o[n]||0;return Object.keys(o).filter(k=>!principais.includes(k)).reduce((s,k)=>s+o[k],0);};
+  const totCol=n=>n==='OUTROS'?outrosTot:tot[n];
+  const trTxt=trTop.length===1?esc(nomeTr(trTop[0][0])):(trTop.length+' (maior: '+esc(nomeTr(trTop[0][0]))+')');
+  let h='<div class="ctd-h"><div><div class="ctd-t">CT-es emitidos · valores como cobrados no CT-e</div>'
+    +'<div class="ctd-n">'+esc(nome)+'</div><div class="ctd-s">'+esc(sub)+' · '+esc(filtrosTxt())+'</div></div>'
+    +'<div style="display:flex;gap:6px"><button class="bsm" onclick="exportarCtesCliente()">Exportar Excel</button>'
+    +'<button class="bsm" onclick="abrirCtes(-1)">Fechar</button></div></div>';
+  h+='<div class="ctd-k">'
+    +'<div><div class="kl">CT-es</div><div class="kv">'+fInt(t.n)+'</div></div>'
+    +'<div><div class="kl">Transportadoras</div><div class="kv" style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+esc(trTop.map(x=>nomeTr(x[0])).join(' | '))+'">'+trTxt+'</div></div>'
+    +'<div><div class="kl">Frete</div><div class="kv" style="color:var(--red)">'+fR(t.f)+'</div></div>'
+    +'<div><div class="kl">Mercadoria</div><div class="kv" style="color:#185FA5">'+fM(t.m)+'</div></div>'
+    +'<div><div class="kl">%CTS</div><div class="kv" style="color:var(--amber)">'+pf(t.pct)+'</div></div>'
+    +'<div><div class="kl">Frete/envio</div><div class="kv">'+fR(t.fpc)+'</div></div>'
+    +'<div><div class="kl">Peso</div><div class="kv">'+fInt(t.kg)+' kg</div></div></div>';
+  if(COMP_ST==='loading'||COMP_ST==='idle')h+='<div class="note" style="margin:0">Carregando a composição do frete…</div>';
+  else if(!nCom)h+='<div class="note" style="margin:0">Composição do frete ainda não disponível para estes CT-es. Ela aparece depois de rodar o REPROCESSAR_TUDO.bat uma vez (CT-es novos já entram com ela).</div>';
+  else{
+    const totC=colsV.reduce((s,n)=>s+totCol(n),0)||1;
+    h+='<div><div style="font-size:10px;font-weight:600;margin-bottom:6px">Composição do frete cobrado'+(nCom<lista.length?' <span class="muted" style="font-weight:400">('+fInt(nCom)+' de '+fInt(lista.length)+' CT-es com composição no XML)</span>':'')+'</div>'
+      +'<div class="ctd-bar">'+colsV.map((n,j)=>'<div title="'+esc(n)+': R$ '+f2(totCol(n))+'" style="width:'+(100*totCol(n)/totC).toFixed(2)+'%;background:'+CTD_COR[j%CTD_COR.length]+'"></div>').join('')+'</div>'
+      +'<div class="ctd-leg" style="margin-top:7px">'+colsV.map((n,j)=>'<span><i style="background:'+CTD_COR[j%CTD_COR.length]+'"></i>'+esc(n)+' <b>R$ '+f2(totCol(n))+'</b> · '+p1(100*totCol(n)/totC)+'</span>').join('')+'</div></div>';
+  }
+  const vis=lista.slice(0,CTD_MAXL);
+  h+='<div class="ctd-tw"><table class="dt"><thead><tr><th>Data</th><th>CT-e</th><th>Tipo</th><th>NF</th>'+(showFil?'<th>Filial</th>':'')
+    +'<th>Transportadora</th><th>Destino</th><th class="r">Peso kg</th><th class="r">Mercadoria</th>'
+    +colsV.map(n=>'<th class="r">'+esc(n)+'</th>').join('')
+    +'<th class="r" style="color:var(--red)">Frete</th><th class="r" style="color:var(--amber)">%CTS</th></tr></thead><tbody>';
+  vis.forEach((r,ix)=>{const o=comps[ix];
+    h+='<tr><td>'+r.d.split('-').reverse().join('/')+'</td><td style="font-weight:500">'+esc(r.nct||'')+'</td>'
+      +'<td style="font-size:10px;color:'+(r.com||r.ree||r.dup?'var(--amber)':'var(--text2)')+'">'+tipoCte(r)+'</td>'
+      +'<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+esc(r.nfs||'')+'">'+esc(r.nfs||'—')+'</td>'
+      +(showFil?'<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis" title="'+fmtCnpj(r.cc)+'">'+esc(r.filAb||r.cn||'')+'</td>':'')
+      +'<td style="max-width:210px;overflow:hidden;text-overflow:ellipsis" title="'+esc(r.tn||'')+' '+fmtCnpj(r.tc)+'">'+esc(r.tn||nomeTr(r.tr))+'</td>'
+      +'<td style="font-size:10px;color:var(--text2)">'+esc(r.mu||'')+'-'+esc(r.uf||'')+'</td>'
+      +'<td class="r">'+(r.kg>0?r.kg.toLocaleString('pt-BR',{maximumFractionDigits:1}):'—')+'</td>'
+      +'<td class="r" style="color:#185FA5">'+(r.vm>0?f2(r.vm):'—')+'</td>'
+      +colsV.map(n=>{const v=valCol(o,n);return '<td class="r">'+(v==null?'<span class="muted">—</span>':f2(v))+'</td>';}).join('')
+      +'<td class="r" style="color:var(--red);font-weight:600">'+f2(r.vf)+'</td>'
+      +'<td class="r">'+(r.vm>0?pf(r.vf/r.vm*100):'—')+'</td></tr>';
+  });
+  h+='<tr class="tr-tot"><td colspan="'+(showFil?8:7)+'">Total · '+fInt(t.n)+' CT-es</td><td class="r">'+f2(t.m)+'</td>'
+    +colsV.map(n=>'<td class="r">'+f2(totCol(n))+'</td>').join('')
+    +'<td class="r">'+f2(t.f)+'</td><td class="r">'+pf(t.pct)+'</td></tr></tbody></table></div>';
+  if(lista.length>CTD_MAXL)h+='<div class="note" style="margin:0">Exibindo os '+CTD_MAXL+' CT-es mais recentes de '+fInt(lista.length)+'. O Excel traz todos.</div>';
+  return h;
+}
+function exportarCtesCliente(){
+  if(!CTD_LAST)return;
+  const {lista,nome,showFil}=CTD_LAST;
+  const comps=lista.map(compDe);
+  const tot={};comps.forEach(o=>{if(o)for(const n in o)tot[n]=(tot[n]||0)+o[n];});
+  const cols=Object.keys(tot).sort((a,b)=>tot[b]-tot[a]);
+  const L=[['Data emissão','Número CT-e','Tipo','NF(s)'].concat(showFil?['Filial','CNPJ filial']:['CNPJ cliente'])
+    .concat(['Transportadora','CNPJ transportadora','Município','UF','Peso kg','Mercadoria R$'],cols.map(n=>n+' R$'),['Frete R$','%CTS','Chave CT-e'])];
+  lista.forEach((r,i)=>{const o=comps[i];
+    L.push([r.d,r.nct||'',tipoCte(r),r.nfs||''].concat(showFil?[r.filAb||r.cn||'',fmtCnpj(r.cc)]:[fmtCnpj(r.cc)])
+      .concat([r.tn||nomeTr(r.tr),fmtCnpj(r.tc),r.mu||'',r.uf||'',r.kg||null,r2(r.vm)],cols.map(n=>o?r2(o[n]||0):null),[r2(r.vf),r.vm>0?r2(r.vf/r.vm*100):null,r.k]));
+  });
+  const wb=XLSX.utils.book_new();const ws=XLSX.utils.aoa_to_sheet(L);
+  XLSX.utils.book_append_sheet(wb,ws,'CTes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Cliente:',nome],['Filtros:',filtrosTxt()],['CT-es:',lista.length],['Gerado em:',new Date().toLocaleString('pt-BR')],['Observação:','Valores como cobrados no CT-e; composição lida do XML (vPrest/Comp).']]),'Resumo');
+  XLSX.writeFile(wb,'CTes_'+String(nome).replace(/[^\w]+/g,'_').slice(0,40)+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
 function rCli(){
   const rows=filt('outbound');const tot=agg(rows);REF=tot.pct;const totalF=tot.f||1;
   // agrega por cliente (matriz) e, dentro dele, por filial (CNPJ)
@@ -989,7 +1118,7 @@ function rCli(){
   rows.forEach(r=>{
     let c=cm.get(r.cg);if(!c){c={a:nA(),fil:new Map(),key:r.cg};cm.set(r.cg,c);}
     add(c.a,r);
-    let f=c.fil.get(r.fil);if(!f){f={a:nA(),cnpj:r.cc,nome:r.cn,ab:r.ab,uf:r.uf,rg:r.rg,cid:r.mu};c.fil.set(r.fil,f);}
+    let f=c.fil.get(r.fil);if(!f){f={a:nA(),key:r.fil,cnpj:r.cc,nome:r.cn,ab:r.ab,uf:r.uf,rg:r.rg,cid:r.mu};c.fil.set(r.fil,f);}
     add(f.a,r);
   });
   let clis=[...cm.values()].map(c=>{fin(c.a);c.fil.forEach(f=>fin(f.a));c.nome=nomeCli(c.key);return c;});
@@ -1005,10 +1134,14 @@ function rCli(){
   else clis.sort((a,b)=>b.a.f-a.a.f);
   const LIM=300;const total=clis.length;const vis=clis.slice(0,LIM);
   let html='';
+  CTD_IDX=[];
   vis.forEach((c,i)=>{
     const a=c.a;const fils=[...c.fil.values()].sort((x,y)=>y.a.f-x.a.f);
     const nf=fils.length;const exp=nf>1;
-    const open=!!(exp&&q&&fils.some(fmatch));
+    const selC=!!(_CTD&&_CTD.t==='c'&&_CTD.cg===c.key);
+    const selFilIn=!!(_CTD&&_CTD.t==='f'&&_CTD.cg===c.key);
+    const open=!!(exp&&((q&&fils.some(fmatch))||selFilIn));
+    const ic=CTD_IDX.push({t:'c',cg:c.key,nome:c.nome})-1;
     const caret=exp?'<span id="cliar-'+i+'" style="display:inline-block;width:12px;color:var(--text2)">'+(open?'\u25be':'\u25b8')+'</span>':'<span style="display:inline-block;width:12px"></span>';
     const f0=fils[0];
     const regs=[...new Set(fils.map(f=>f.rg))];
@@ -1023,8 +1156,12 @@ function rCli(){
       +'<td class="r">'+p1(a.f/totalF*100)+'</td>'
       +'<td class="r">'+fR(a.fpc)+'</td>'
       +'<td class="r" style="color:#185FA5">'+(a.m>0?fK(a.m):'—')+'</td>'
-      +'<td class="r" style="color:'+cP(a.pct)+';font-weight:600">'+pf(a.pct)+'</td></tr>';
+      +'<td class="r" style="color:'+cP(a.pct)+';font-weight:600">'+pf(a.pct)+'</td>'
+      +'<td class="r"><button class="ctb'+(selC?' on':'')+'" onclick="event.stopPropagation();abrirCtes('+ic+')">'+(selC?'Fechar ▴':'CT-es ▾')+'</button></td></tr>';
+    if(selC)html+=ctdRow(rows.filter(r=>r.cg===c.key),c.nome,exp?(nf+' filiais'):(fmtCnpj(f0.cnpj)+' · '+(f0.cid||'')+'-'+(f0.uf||'')),exp,'');
     if(exp)fils.forEach(f=>{const b=f.a;
+      const selF=!!(selFilIn&&_CTD.fil===f.key);
+      const iff=CTD_IDX.push({t:'f',cg:c.key,fil:f.key,nome:c.nome})-1;
       html+='<tr class="filg-'+i+'" style="display:'+(open?'':'none')+';background:var(--bg2)">'
         +'<td></td>'
         +'<td style="padding-left:26px;max-width:240px;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:var(--text2)" title="'+fmtCnpj(f.cnpj)+'">'+esc(f.ab||f.nome||'')+' <span class="muted">'+fmtCnpj(f.cnpj)+'</span></td>'
@@ -1036,11 +1173,13 @@ function rCli(){
         +'<td class="r" style="font-size:10px">'+p1(b.f/totalF*100)+'</td>'
         +'<td class="r" style="font-size:10px">'+fR(b.fpc)+'</td>'
         +'<td class="r" style="font-size:10px;color:#185FA5">'+(b.m>0?fK(b.m):'—')+'</td>'
-        +'<td class="r" style="font-size:10px;color:'+cP(b.pct)+';font-weight:600">'+pf(b.pct)+'</td></tr>';
+        +'<td class="r" style="font-size:10px;color:'+cP(b.pct)+';font-weight:600">'+pf(b.pct)+'</td>'
+        +'<td class="r"><button class="ctb'+(selF?' on':'')+'" onclick="event.stopPropagation();abrirCtes('+iff+')">'+(selF?'Fechar ▴':'CT-es ▾')+'</button></td></tr>';
+      if(selF)html+=ctdRow(rows.filter(r=>r.cg===c.key&&r.fil===f.key),(f.ab||f.nome||c.nome),fmtCnpj(f.cnpj)+' · '+(f.cid||'')+'-'+(f.uf||''),false,'filg-'+i);
     });
   });
-  if(vis.length)html+='<tr class="tr-tot"><td></td><td>Total do escopo ('+fInt(cm.size)+' clientes)</td><td></td><td></td><td></td><td class="r">'+fInt(tot.n)+'</td><td class="r">'+fK(tot.f)+'</td><td class="r">100%</td><td class="r">'+fR(tot.fpc)+'</td><td class="r">'+fK(tot.m)+'</td><td class="r">'+pf(tot.pct)+'</td></tr>';
-  document.getElementById('tb-cli').innerHTML=html||vazio(11,'Nenhum cliente encontrado');
+  if(vis.length)html+='<tr class="tr-tot"><td></td><td>Total do escopo ('+fInt(cm.size)+' clientes)</td><td></td><td></td><td></td><td class="r">'+fInt(tot.n)+'</td><td class="r">'+fK(tot.f)+'</td><td class="r">100%</td><td class="r">'+fR(tot.fpc)+'</td><td class="r">'+fK(tot.m)+'</td><td class="r">'+pf(tot.pct)+'</td><td></td></tr>';
+  document.getElementById('tb-cli').innerHTML=html||vazio(12,'Nenhum cliente encontrado');
   document.getElementById('cli-note').textContent=(total>LIM?'Exibindo os '+LIM+' primeiros de '+fInt(total)+' clientes (a busca procura em todos). ':'')+nota;
   semLeg('sem-cli',REF);
 }

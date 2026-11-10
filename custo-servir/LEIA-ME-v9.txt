@@ -123,3 +123,24 @@ Regras de negocio novas (pipeline e painel):
 Passos: rode REPUBLICAR.bat (aplica as regras e publica o arquivo leve).
 Depois, uma vez, REPROCESSAR_TUDO.bat (grava a referencia dos
 complementares/substitutos).
+
+VERSAO 9.3 - DETALHE DE CT-ES POR CLIENTE (10/11/2026)
+------------------------------------------------------
+Painel (aba Clientes):
+- Coluna "Detalhe" com botao "CT-es" na matriz e em cada filial. Abre,
+  logo abaixo da linha, os CT-es emitidos para o cliente respeitando os
+  filtros da barra (empresa, ano, quarter, mes, CIF/FOB, regiao):
+  data, numero, tipo (normal/complementar/reentrega), NF, filial,
+  transportadora, destino, peso, mercadoria, cada taxa cobrada, frete
+  e %CTS. Mostra tambem a composicao do frete cobrado (barra + legenda)
+  e exporta para Excel. Nao e auditoria: valores como vieram no CT-e.
+Pipeline (processar_cte.py v9.3):
+- Le o bloco vPrest/Comp de cada XML (nome e valor de cada componente).
+  Nenhum total muda: v_frete, ctes_raw.json e ctes_base.json ficam iguais.
+- Publica o arquivo novo custo-servir/ctes_comp.json, que o painel so
+  baixa quando alguem abre o detalhe.
+PASSO UNICO PARA VOCE:
+- Rode REPROCESSAR_TUDO.bat uma vez (com o Y: conectado). Os CT-es lidos
+  antes da v9.3 nao tem a composicao; depois disso o ATUALIZAR.bat diario
+  ja traz a composicao dos CT-es novos. Enquanto isso, o detalhe mostra
+  os CT-es com o frete total e avisa que a composicao ainda nao existe.
