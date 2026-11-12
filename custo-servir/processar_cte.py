@@ -1238,8 +1238,9 @@ def publicar_raw(ctes: list) -> bool:
              **_mz_raw(c)} for c in ctes]
     # v9.2: versao leve (colunar) para o painel; o ctes_raw.json completo fica para o Excel
     COLS = ["k","d","ano","mes","e","o","tn","tc","cn","cc","rn","rc","uf","mu","rg","tp",
-            "vf","vm","kg","sop","tpc","tgi","mz","ab","mzc","abc","ref","fl","nct","nfs"]
-    DIC = ["tn","tc","cn","cc","rn","rc","mu","mz","ab","mzc","abc","uf","rg","sop","tpc","fl","e","o","tp"]
+            "vf","vm","kg","sop","tpc","tgi","mz","ab","mzc","abc","ref","fl","nct","nfs",
+            "vei","xca"]   # v9.4: veiculo e carac. adicional (aba Auditoria)
+    DIC = ["tn","tc","cn","cc","rn","rc","mu","mz","ab","mzc","abc","uf","rg","sop","tpc","fl","e","o","tp","vei","xca"]
     dic = {k: {} for k in DIC}
     def _cod(k, v):
         if k not in dic: return v
