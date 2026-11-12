@@ -144,3 +144,26 @@ PASSO UNICO PARA VOCE:
   antes da v9.3 nao tem a composicao; depois disso o ATUALIZAR.bat diario
   ja traz a composicao dos CT-es novos. Enquanto isso, o detalhe mostra
   os CT-es com o frete total e avisa que a composicao ainda nao existe.
+
+VERSAO 9.4 - ABA AUDITORIA (12/11/2026)
+---------------------------------------
+- Nova aba "Auditoria" (ao lado de Custo, so no Outbound). Cada CT-e
+  Outbound de 2026 e recalculado com o motor do Simulador de Frete
+  (_core/motor-frete.js, copia literal das funcoes do simulador) e as
+  tabelas do simulador (simulador-frete/tabelas.json no Supabase), e
+  comparado taxa a taxa com a composicao do XML.
+- Lista com numero do CT-e, transportadora, cliente, destino, mercadoria,
+  cada taxa cobrada, total cobrado, valor de tabela, diferenca e status;
+  detalhe por CT-e; conformidade por transportadora; exporta Excel.
+- Regras: taxas por CNPJ especifico (TDE/TRT/TAG) e emergencial entram
+  na tabela so quando o CT-e cobrou; lotacao por viagem (data + tabela +
+  destino) rateada pelo frete; tolerancia R$ 1,00 ou 0,5% (AUD_CFG).
+- De-para transportadora -> tabela fica em AUD_TAB (index.html). Nova
+  transportadora ou tabela nova: incluir la.
+- processar_cte.py: a base leve (ctes_base.json) passa a levar o veiculo
+  (vei) e a carac. adicional (xca). Ate a proxima atualizacao, o painel
+  busca esses campos no ctes_raw.json.
+ROTINA: nada muda. O agendamento (10h e 14h) roda ATUALIZAR_TUDO.bat,
+que atualiza a base, a composicao do frete e, com isso, a auditoria.
+Se as tabelas do simulador forem alteradas, a auditoria usa a versao
+nova automaticamente na proxima abertura do painel.
