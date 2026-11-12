@@ -4,6 +4,8 @@
  * (simulador-frete/index.html, commit 7b4f6e3): FATOR_M3, CAPACIDADE_VEICULO,
  * getCapacidadeVeiculo, norm, calcularPesoConsiderado, calcularFretePeso,
  * aplicarTaxas, simular, fmtBR, fmtKg.
+ * EMBUTIDO em custo-servir/index.html (o painel é publicado como arquivo único):
+ * ao mudar este arquivo, atualize também a cópia dentro do index.html.
  * Usado pela aba Auditoria do Custo de Servir para garantir o MESMO cálculo do
  * simulador. Se a regra do simulador mudar, atualize este arquivo junto.
  * Nenhuma linha das funções foi alterada; só foram embrulhadas num escopo
