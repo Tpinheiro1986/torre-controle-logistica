@@ -9,7 +9,8 @@ Uso:  python ajustes_pos_parser.py tabelas_novo.json tabelas.json(atual) tabelas
    do Custo de Servir usam o nome 'ATIVA 2026' -> renomeia a PEDAGIO e descarta a DEVOLUCAO.
 2. ATIVA: GRIS 0,1467% e TSO 0,1692% (o PDF mostra so 2 casas: 0,15 / 0,17;
    valores exatos confirmados em CT-e).
-3. TRANSCUNHA TRUCK 2026 -> 'TRANSCUNHA TRUCK' (nome usado na auditoria).
+3. TRANSCUNHA TRUCK 2026 -> 'TRANSCUNHA TRUCK' e TRANSCUNHA CARRETA_2026 ATUALIZADA ->
+   'TRANSCUNHA CARRETA' (nomes usados na auditoria).
 4. Tabelas que existem na base atual e nao vieram no export sao mantidas
    (ex.: TRANSCUNHA CARRETA no export de 13/11/2026).
 """
@@ -29,6 +30,8 @@ for t in new['tabelas']:
             if x['nome'] == 'TSO':  x['percentual'] = 0.1692
     if t['nome'] == 'TRANSCUNHA TRUCK 2026':
         t['nome'] = 'TRANSCUNHA TRUCK'
+    if t['nome'] == 'TRANSCUNHA CARRETA_2026 ATUALIZADA':
+        t['nome'] = 'TRANSCUNHA CARRETA'
     out.append(t)
 nomes = {t['nome'] for t in out}
 for t in old['tabelas']:
