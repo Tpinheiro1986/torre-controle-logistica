@@ -167,3 +167,15 @@ ROTINA: nada muda. O agendamento (10h e 14h) roda ATUALIZAR_TUDO.bat,
 que atualiza a base, a composicao do frete e, com isso, a auditoria.
 Se as tabelas do simulador forem alteradas, a auditoria usa a versao
 nova automaticamente na proxima abertura do painel.
+
+VERSAO 9.5 - AUDITORIA COM VIGENCIA DE TABELA (13/11/2026)
+----------------------------------------------------------
+- CT-es emitidos ate 30/09/2026 sao auditados com a tabela congelada
+  (versao do simulador do commit 7b4f6e3, a mesma usada ate 12/11).
+  A partir de 01/10/2026 (Q4/26) usa a tabela atual do simulador.
+- Para congelar o proximo periodo: em AUD_VIG (index.html), de a entrada
+  'atual' uma data 'ate' e troque a url pelo commit da tabela vigente;
+  depois inclua de novo a entrada 'atual' no fim.
+- Filtros da aba no topo (transportadora, status, tabela usada, busca);
+  valem para indicadores e lista (status so para a lista).
+- Ordenacao clicando no titulo de qualquer coluna (clicar de novo inverte).

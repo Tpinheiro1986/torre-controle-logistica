@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Custo de Servir — Torre de Controle</title>
-<!-- v9.4 · 12/nov/2026 · aba Auditoria (CT-e x tabela do Simulador de Frete) · v9.3 detalhe de CT-es por cliente -->
+<!-- v9.5 · 13/nov/2026 · Auditoria com vigência de tabela (até Q3/26 congelada; Q4/26 tabela atual), filtros no topo e ordenação por coluna · v9.4 aba Auditoria (CT-e x tabela do Simulador de Frete) · v9.3 detalhe de CT-es por cliente -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- MOTOR DE FRETE: cópia embutida de _core/motor-frete.js (o painel é publicado como arquivo único). Atualize os dois juntos. -->
@@ -370,6 +370,9 @@ table.dt>tbody>tr.ctd-row:hover>td,table.dt>tbody>tr.ctd-row>td{background:var(-
 /* v9.4: aba Auditoria */
 .aud-chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px;font-size:10px}
 .aud-chips .alb{margin:0;font-size:9px;font-weight:600;color:var(--text2);letter-spacing:.06em;min-width:96px;text-transform:uppercase}
+.aud-fbar{display:flex;flex-direction:column;gap:6px;position:sticky;top:52px;z-index:5}
+.aud-th{cursor:pointer;user-select:none}.aud-th:hover{color:var(--text)}.aud-th.on{color:var(--green-dk)}
+.aud-vg{display:inline-block;font-size:9px;font-weight:600;padding:1px 6px;border-radius:8px;white-space:nowrap}.aud-vg-a{color:#0F6E56;background:#E1F5EE}.aud-vg-c{color:#5F5E5A;background:#F1EFE8}
 .aud-tw{max-height:640px;overflow:auto;border:0.5px solid var(--border);border-radius:var(--r)}
 .aud-tw table.dt th{position:sticky;top:0;z-index:1}
 .aud-st{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
@@ -818,7 +821,18 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
           <div style="font-size:11px;color:var(--text2);line-height:1.55">
             <strong style="color:var(--text)">Como funciona:</strong> cada CT-e Outbound de 2026 é recalculado pelo <strong>motor do Simulador de Frete</strong> (mesmas funções e mesmas tabelas) e comparado, taxa a taxa, com a composição do XML (vPrest/Comp).
             Taxas por CNPJ específico (TDE, TRT, TAG) e a emergencial entram no valor de tabela só quando o CT-e as cobrou. Lotação é calculada por viagem (data + tabela + destino), com o valor rateado pelo frete de cada CT-e.
-            Tolerância por CT-e: <strong id="aud-tol">R$ 1,00 ou 0,5%</strong>. Diferença encontrada não é cobrança indevida confirmada: é evidência para análise com a transportadora. Todos os filtros acima se aplicam.
+            Tolerância por CT-e: <strong id="aud-tol">R$ 1,00 ou 0,5%</strong>. <strong>Vigência:</strong> <span id="aud-vig-txt">—</span>. Diferença encontrada não é cobrança indevida confirmada: é evidência para análise com a transportadora. Os filtros da barra do painel e os filtros abaixo valem para indicadores e lista (o Status filtra só a lista).
+          </div>
+        </div>
+        <div class="card aud-fbar" id="aud-fbar">
+          <div class="aud-chips" id="aud-chips-tr"></div>
+          <div class="aud-chips" id="aud-chips-st"></div>
+          <div class="aud-chips" id="aud-chips-vg"></div>
+          <div class="aud-chips" style="margin-bottom:0"><span class="alb">Buscar</span>
+            <input id="aud-search" oninput="audSearch(this.value)" placeholder="CT-e, cliente, CNPJ ou cidade…" autocomplete="off"
+              style="font-size:11px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);min-width:260px;outline:none">
+            <button class="bsm" onclick="audLimpar()">Limpar filtros</button>
+            <button class="bsm" onclick="exportarAuditoria()" style="margin-left:auto">Exportar Excel</button>
           </div>
         </div>
         <div id="aud-load" class="card" style="display:none;font-size:12px;color:var(--text2)"></div>
@@ -832,23 +846,8 @@ details.met code{font-size:10px;background:var(--bg2);padding:1px 4px;border-rad
             </tr></thead><tbody id="tb-aud-tr"></tbody></table></div>
           </div>
           <div class="card">
-            <div class="slbl"><span class="sn">2</span>CT-es auditados — ordenar por
-              <button class="sortb on" data-a="dif" onclick="audSort(this)">Maior diferença R$</button>
-              <button class="sortb" data-a="pct" onclick="audSort(this)">Maior diferença %</button>
-              <button class="sortb" data-a="data" onclick="audSort(this)">Data</button>
-              <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
-                <input id="aud-search" oninput="audSearch(this.value)" placeholder="CT-e, cliente, CNPJ ou cidade…" autocomplete="off"
-                  style="font-size:11px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:8px;background:var(--bg2);color:var(--text);min-width:220px;outline:none;text-transform:none;letter-spacing:0;font-weight:400">
-                <button class="bsm" onclick="exportarAuditoria()" style="text-transform:none;letter-spacing:0">Exportar Excel</button>
-              </span>
-            </div>
-            <div class="aud-chips" id="aud-chips-tr"></div>
-            <div class="aud-chips" id="aud-chips-st" style="margin-bottom:10px"></div>
-            <div class="tw aud-tw"><table class="dt" id="t-aud"><thead><tr>
-              <th>Data</th><th>CT-e</th><th>Transportadora</th><th>Cliente</th><th>Destino</th><th class="r" style="color:#185FA5">Mercadoria</th>
-              <th class="r">Frete peso</th><th class="r">Fr. valor / ADV</th><th class="r">GRIS</th><th class="r">Pedágio</th><th class="r">TDE</th><th class="r">TRT</th><th class="r">Adicional</th><th class="r">Outras</th>
-              <th class="r" style="color:var(--red)">Total cobrado</th><th class="r">Valor tabela</th><th class="r">Diferença R$</th><th class="r">Dif. %</th><th>Status</th>
-            </tr></thead><tbody id="tb-aud"></tbody></table></div>
+            <div class="slbl"><span class="sn">2</span>CT-es auditados <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— clique no título de uma coluna para ordenar (de novo inverte)</span></div>
+            <div class="tw aud-tw"><table class="dt" id="t-aud"><thead><tr id="aud-head"></tr></thead><tbody id="tb-aud"></tbody></table></div>
             <div class="note" id="aud-note"></div>
           </div>
         </div>
@@ -1452,8 +1451,19 @@ function exportarCtesCliente(){
 // (_core/motor-frete.js = cópia literal das funções do simulador) e as
 // tabelas do simulador (dashboards/simulador-frete/tabelas.json), e
 // compara taxa a taxa com a composição do XML (ctes_comp.json).
-const AUD_CFG={anoMin:2026,origem:'Extrema-MG',tolRS:1,tolPct:0.5,
-  url:SURL+'/storage/v1/object/public/dashboards/simulador-frete/tabelas.json'};
+const AUD_CFG={anoMin:2026,origem:'Extrema-MG',tolRS:1,tolPct:0.5};
+// VIGÊNCIA DAS TABELAS — cada CT-e usa a primeira versão cuja data "ate" é >= data de emissão.
+// Versões congeladas apontam para um commit fixo do GitHub (não mudam mais). A última
+// (ate:null) é a tabela atual do Simulador de Frete (Supabase), que muda quando o simulador é salvo.
+// Para congelar um novo período: dê à entrada 'atual' uma data 'ate' e troque a url dela pelo commit
+// da tabela vigente até essa data; depois adicione de novo a entrada 'atual' no fim da lista.
+const AUD_GH='Tpinheiro1986/torre-controle-logistica';
+const AUD_VIG=[
+  {id:'q3',ate:'2026-09-30',nome:'Tabela vigente até Q3/26 (congelada em 13/11/2026)',curto:'Até Q3/26',
+   urls:['https://cdn.jsdelivr.net/gh/'+AUD_GH+'@7b4f6e3/simulador-frete/tabelas.json','https://raw.githubusercontent.com/'+AUD_GH+'/7b4f6e3/simulador-frete/tabelas.json']},
+  {id:'atual',ate:null,nome:'Tabela atual do Simulador de Frete',curto:'Atual (Q4/26+)',
+   urls:[SURL+'/storage/v1/object/public/dashboards/simulador-frete/tabelas.json',
+         'https://raw.githubusercontent.com/'+AUD_GH+'/main/simulador-frete/tabelas.json']}];
 // de-para: CNPJ raiz da transportadora (+ veículo lido do xObs) → tabela do simulador
 const AUD_TAB={
   '01125797':()=>'ATIVA 2026',
@@ -1468,8 +1478,8 @@ const AUD_SH={'01125797':'Ativa','18233211':'FL Brasil','20051163':'Ala Cargo','
 const AUD_K=['FP','ADV','GRIS','PED','TDE','TRT','ADIC','OUT'];
 const AUD_KL={FP:'Frete peso',ADV:'Frete valor / Ad valorem',GRIS:'GRIS',PED:'Pedágio',TDE:'TDE',TRT:'TRT',ADIC:'Adicional frete',OUT:'Outras taxas'};
 const AUD_STL={VERDE:'Aprovado',VERMELHO:'Acima da tabela',AZUL:'Abaixo da tabela',AMARELO:'Pendente',CINZA:'Desconsiderado'};
-let TABF=null,TABF_ST='idle',TABF_IDX=null,AUD_RES=null,AUD_VEI=null,AUD_VEI_ST='idle',AUD_LAST=[];
-let _audTr='all',_audSt='all',_audSort='dif',_audQ='',_audOpen=null;
+let TABV=[],TABF_ST='idle',AUD_RES=null,AUD_VEI=null,AUD_VEI_ST='idle',AUD_LAST=[];
+let _audTr='all',_audSt='all',_audVg='all',_audQ='',_audOpen=null,_audSort={k:'dif',dir:-1};
 function audNrm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();}
 // nome do componente no XML → chave padrão (regras por transportadora)
 function audKCte(raiz,n){n=audNrm(n);
@@ -1490,18 +1500,28 @@ function audKTab(n){n=audNrm(n);
   return 'OUT';}
 // taxa condicional: só para CNPJ específico (sem cidade/UF) ou emergencial → entra só se o CT-e cobrou
 function audCond(t){return !!(t.aplicar_cnpjs_count&&!(t.aplicar_cidades||[]).length&&!(t.aplicar_ufs||[]).length)||/EMERGENC/.test(audNrm(t.nome));}
+function audIndexar(j){
+  const o=MotorFrete.norm(AUD_CFG.origem),idx={},porChave={};let maxD='';
+  j.tabelas.forEach(t=>{const m=new Map();(t.rotas||[]).forEach(r=>{
+    if(!(r.origens||[]).some(x=>MotorFrete.norm(x)===o))return;
+    (r.destinos||[]).forEach(d=>{const k=MotorFrete.norm(d);if(!m.has(k))m.set(k,r);});});
+    idx[t.nome]={tab:t,rotas:m};porChave[audChaveTab(t.nome)]=t.nome;
+    const md=String(t.status||'').match(/(\d{2})\/(\d{2})\/(\d{4})/);if(md){const iso=md[3]+'-'+md[2]+'-'+md[1];if(iso>maxD)maxD=iso;}});
+  return {idx,porChave,maxD};
+}
+// nome sem ano (FL BRASIL 2026 → FL BRASIL): se a tabela for renomeada só no ano, o de-para continua valendo
+function audChaveTab(n){return audNrm(n).replace(/\b20\d\d\b/g,'').replace(/\s+/g,' ').trim();}
+async function audBaixar(v){for(const u of v.urls){const j=await fetchJSON(u,2);if(j&&j.tabelas)return j;}return null;}
 function carregarTabFrete(){
   if(TABF_ST!=='idle')return;TABF_ST='loading';
-  fetchJSON(AUD_CFG.url,3).then(j=>{
-    TABF=j&&j.tabelas?j:null;TABF_ST=TABF?'ok':'erro';
-    if(TABF){const o=MotorFrete.norm(AUD_CFG.origem);TABF_IDX={};
-      TABF.tabelas.forEach(t=>{const m=new Map();(t.rotas||[]).forEach(r=>{
-        if(!(r.origens||[]).some(x=>MotorFrete.norm(x)===o))return;
-        (r.destinos||[]).forEach(d=>{const k=MotorFrete.norm(d);if(!m.has(k))m.set(k,r);});});
-        TABF_IDX[t.nome]={tab:t,rotas:m};});}
+  Promise.all(AUD_VIG.map(audBaixar)).then(js=>{
+    TABV=js.map((j,i)=>j?Object.assign({v:AUD_VIG[i]},audIndexar(j)):null);
+    TABF_ST=TABV.every(Boolean)?'ok':'erro';
     AUD_RES=null;if(curTab==='auditoria')rAud();
   });
 }
+function audDiaSeg(iso){const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+1);return d.toLocaleDateString('pt-BR');}
+function audVersao(d){for(let i=0;i<AUD_VIG.length;i++){const a=AUD_VIG[i].ate;if(!a||d<=a)return i;}return AUD_VIG.length-1;}
 // veículo (xObs) e característica adicional: na base leve a partir da v9.4; antes disso, do ctes_raw.json
 function carregarVeic(){
   if(AUD_VEI_ST!=='idle')return;
@@ -1511,9 +1531,10 @@ function carregarVeic(){
   if(RAW_FULL)fim(RAW_FULL);else fetchJSON(BASE+'ctes_raw.json').then(raw=>{RAW_FULL=raw||[];fim(RAW_FULL);});
 }
 function audVei(r){if(AUD_VEI){const v=AUD_VEI[r.k];return v||{vei:'',xca:''};}return {vei:r.vei||'',xca:r.xca||''};}
-function audSimular(tabNome,dest,peso,nf,cobK,cobN){
-  const ix=TABF_IDX&&TABF_IDX[tabNome];if(!ix)return {err:'Tabela '+tabNome+' não encontrada no simulador'};
-  const rota=ix.rotas.get(MotorFrete.norm(dest));if(!rota)return {err:'Sem rota '+AUD_CFG.origem+' → '+dest+' na '+tabNome};
+function audSimular(vi,tabNome,dest,peso,nf,cobK,cobN){
+  const V=TABV[vi];const nome=V.idx[tabNome]?tabNome:V.porChave[audChaveTab(tabNome)];
+  const ix=nome&&V.idx[nome];if(!ix)return {err:'Tabela '+tabNome+' não encontrada na versão "'+V.v.curto+'"'};
+  const rota=ix.rotas.get(MotorFrete.norm(dest));if(!rota)return {err:'Sem rota '+AUD_CFG.origem+' → '+dest+' na '+nome+' ('+V.v.curto+')'};
   const usar=t=>{if(!audCond(t))return t;const k=audKTab(t.nome);
     const cobrou=k==='OUT'?cobN.has(audNrm(t.nome).slice(0,12)):cobK.has(k);if(!cobrou)return null;
     const c=Object.assign({},t);delete c.aplicar_cnpjs_count;return c;};
@@ -1521,10 +1542,10 @@ function audSimular(tabNome,dest,peso,nf,cobK,cobN){
   const mod=Object.assign({},tab,{taxas_gerais:(tab.taxas_gerais||[]).map(usar).filter(Boolean),
     rotas:[Object.assign({},rota,{taxas:(rota.taxas||[]).map(usar).filter(Boolean)})]});
   const r=MotorFrete.simular({tabelas:[mod]},AUD_CFG.origem,dest,peso,0,nf).resultados[0];
-  if(!r)return {err:'Rota sem regras de preço na '+tabNome};
+  if(!r)return {err:'Rota sem regras de preço na '+nome};
   const comp={FP:r.fretePeso};const det=[['Frete peso',r.fretePeso,r.fretePesoModo]];
   r.taxasDetalhe.forEach(t=>{const k=audKTab(t.nome);comp[k]=(comp[k]||0)+t.valor;det.push([t.nome,t.valor,t.desc]);});
-  return {total:r.total,comp,det,rota:r.rota_desc};
+  return {total:r.total,comp,det,rota:r.rota_desc,tabUsada:nome};
 }
 function audCalcular(){
   const ehLot=t=>/CARRETA|TRUCK|TOCO|FIORINO|VUC|VAN| 34/.test(t);
@@ -1533,7 +1554,7 @@ function audCalcular(){
     const raiz=r.tr;const vx=audVei(r);const cp=compDe(r);
     const cob={};const cobN=new Set();const outN=[];
     if(cp)Object.keys(cp).forEach(n=>{const k=audKCte(raiz,n);cob[k]=(cob[k]||0)+cp[n];cobN.add(audNrm(n).slice(0,12));if(k==='OUT')outN.push(n+' R$ '+f2(cp[n]));});
-    const a={r,raiz,vei:vx.vei,cob,cobN,outN,cp,tab:null,sim:null,simC:null,det:null,st:'',tipo:'',obs:'',via:null};
+    const a={r,raiz,vi:audVersao(r.d),vei:vx.vei,cob,cobN,outN,cp,tab:null,sim:null,simC:null,det:null,st:'',tipo:'',obs:'',via:null};
     res.set(r.k,a);
     const devol=/DEVOLUC/.test(audNrm(vx.xca))&&audNrm(r.mu)==='EXTREMA';
     if(r.com){a.st='CINZA';a.tipo='Complementar';a.obs='CT-e complementar: fora da auditoria de tabela.';return;}
@@ -1542,21 +1563,21 @@ function audCalcular(){
     if(!tab){a.st='AMARELO';a.tipo=f?'Dados insuficientes':'Tabela não localizada';a.obs=f?'Veículo não identificado no xObs do CT-e.':'Transportadora sem tabela cadastrada no simulador.';return;}
     if(!cp){a.st='AMARELO';a.tipo='Dados insuficientes';a.obs='CT-e sem composição do frete no XML (rode o REPROCESSAR_TUDO.bat).';a.tab=tab;return;}
     a.tab=tab;
-    if(ehLot(tab)){const k=[r.d,tab,r.mu+'-'+r.uf].join('|');(viag[k]=viag[k]||[]).push(a);return;}
+    if(ehLot(tab)){const k=[r.d,tab,r.mu+'-'+r.uf,a.vi].join('|');(viag[k]=viag[k]||[]).push(a);return;}
     if(!(r.kg>0)){a.st='AMARELO';a.tipo='Dados insuficientes';a.obs='Peso zerado no CT-e.';return;}
-    const s=audSimular(tab,r.mu+'-'+r.uf,r.kg,r.vm,new Set(Object.keys(cob)),cobN);
+    const s=audSimular(a.vi,tab,r.mu+'-'+r.uf,r.kg,r.vm,new Set(Object.keys(cob)),cobN);
     if(s.err){a.st='AMARELO';a.tipo='Tabela não localizada';a.obs=s.err+'.';return;}
-    Object.assign(a,{sim:s.total,simC:s.comp,det:s.det,rota:s.rota});
+    Object.assign(a,{sim:s.total,simC:s.comp,det:s.det,rota:s.rota,tab:s.tabUsada});
   });
   Object.values(viag).forEach(as=>{
     const r0=as[0].r,tab=as[0].tab,dest=r0.mu+'-'+r0.uf;
     const kg=as.reduce((s,a)=>s+a.r.kg,0),nf=as.reduce((s,a)=>s+a.r.vm,0),vt=as.reduce((s,a)=>s+a.r.vf,0);
     const cobK=new Set(),cobN=new Set();as.forEach(a=>{Object.keys(a.cob).forEach(k=>cobK.add(k));a.cobN.forEach(n=>cobN.add(n));});
-    const s=audSimular(tab,dest,kg,nf,cobK,cobN);
+    const s=audSimular(as[0].vi,tab,dest,kg,nf,cobK,cobN);
     as.forEach(a=>{
       if(s.err){a.st='AMARELO';a.tipo='Tabela não localizada';a.obs=s.err+'.';return;}
       const sh=vt?a.r.vf/vt:1/as.length;a.sim=s.total*sh;a.simC={};for(const k in s.comp)a.simC[k]=s.comp[k]*sh;
-      a.det=s.det.map(x=>[x[0],x[1]*sh,x[2]]);a.rota=s.rota;
+      a.det=s.det.map(x=>[x[0],x[1]*sh,x[2]]);a.rota=s.rota;a.tab=s.tabUsada;
       a.via={n:as.length,ctes:as.map(x=>x.r.nct).join(', '),sim:s.total,vt};});
   });
   res.forEach(a=>{
@@ -1576,24 +1597,40 @@ function audCalcular(){
   });
   AUD_RES=res;
 }
-function audSort(btn){_audSort=btn.dataset.a;document.querySelectorAll('.sortb[data-a]').forEach(b=>b.classList.toggle('on',b===btn));rAud();}
-function audSearch(v){_audQ=(v||'').trim().toLowerCase();rAud();}
+function audSearch(v){_audQ=(v||'').trim().toLowerCase();_audOpen=null;rAud();}
 function audSetTr(v){_audTr=v;_audOpen=null;rAud();}
 function audSetSt(v){_audSt=v;_audOpen=null;rAud();}
+function audSetVg(v){_audVg=v;_audOpen=null;rAud();}
+function audLimpar(){_audTr='all';_audSt='all';_audVg='all';_audQ='';_audOpen=null;const i=document.getElementById('aud-search');if(i)i.value='';rAud();}
 function audToggle(k){_audOpen=_audOpen===k?null:k;rAud();}
+// colunas da lista: [chave de ordenação, título, classe, cor, sentido inicial (-1 = maior primeiro)]
+const AUD_COLS=[['d','Data','','',-1],['nct','CT-e','','',-1],['tr','Transportadora','','',1],['cli','Cliente','','',1],['dest','Destino','','',1],
+  ['vm','Mercadoria','r','#185FA5',-1]].concat(AUD_K.map(k=>[k,{FP:'Frete peso',ADV:'Fr. valor / ADV',GRIS:'GRIS',PED:'Pedágio',TDE:'TDE',TRT:'TRT',ADIC:'Adicional',OUT:'Outras'}[k],'r','',-1]),
+  [['vf','Total cobrado','r','var(--red)',-1],['sim','Valor tabela','r','',-1],['dif','Diferença R$','r','',-1],['pct','Dif. %','r','',-1],['vg','Tabela','','',1],['st','Status','','',1]]);
+const AUD_ST_ORD={VERMELHO:0,AZUL:1,AMARELO:2,VERDE:3,CINZA:4};
+function audValSort(a,k){const r=a.r;switch(k){
+  case 'd':return r.d+String(r.nct||'').padStart(12,'0');case 'nct':return +r.nct||0;case 'tr':return audNomeTr(a);case 'cli':return r.cn||'';
+  case 'dest':return (r.mu||'')+'-'+(r.uf||'');case 'vm':return r.vm||0;case 'vf':return r.vf||0;case 'sim':return a.sim;case 'dif':return a.dif;
+  case 'pct':return a.pct;case 'vg':return a.vi;case 'st':return AUD_ST_ORD[a.st];default:return a.cob[k]||0;}}
+function audOrd(k){const c=AUD_COLS.find(x=>x[0]===k);_audSort=_audSort.k===k?{k,dir:-_audSort.dir}:{k,dir:c?c[4]:-1};rAud();}
 function audNomeTr(a){return AUD_SH[a.raiz]||nomeTr(a.raiz);}
 function rAud(){
   const load=document.getElementById('aud-load'),body=document.getElementById('aud-body');
   carregarComp();carregarTabFrete();carregarVeic();
   const msg=!window.MotorFrete?'Motor de frete não carregado (_core/motor-frete.js).'
-    :TABF_ST==='erro'?'Não foi possível carregar as tabelas do Simulador de Frete (simulador-frete/tabelas.json).'
+    :TABF_ST==='erro'?'Não foi possível carregar as tabelas do Simulador de Frete: '+AUD_VIG.filter((v,i)=>!TABV[i]).map(v=>v.nome).join(', ')+'.'
     :(COMP_ST==='loading'||COMP_ST==='idle'||TABF_ST!=='ok'||AUD_VEI_ST!=='ok')?'Carregando tabelas do simulador e composição dos CT-es…':'';
   if(msg){load.style.display='';load.textContent=msg;body.style.display='none';return;}
   load.style.display='none';body.style.display='';
   if(!AUD_RES)audCalcular();
-  const escopo=filt('outbound').filter(r=>r.ano>=AUD_CFG.anoMin).map(r=>AUD_RES.get(r.k)).filter(Boolean);
-  // KPIs (respeitam filtros da barra e a transportadora escolhida)
-  const porTr=escopo.filter(a=>_audTr==='all'||a.raiz===_audTr);
+  document.getElementById('aud-vig-txt').textContent=AUD_VIG.map((v,i)=>(i===0?'CT-es até ':'')+(v.ate?v.ate.split('-').reverse().join('/')+' → '+v.nome:'a partir de '+(AUD_VIG[i-1]?audDiaSeg(AUD_VIG[i-1].ate):'')+' → '+v.nome)
+    +(TABV[i]&&TABV[i].maxD?' (última tabela fechada em '+TABV[i].maxD.split('-').reverse().join('/')+')':'')).join(' · ');
+  const base=filt('outbound').filter(r=>r.ano>=AUD_CFG.anoMin).map(r=>AUD_RES.get(r.k)).filter(Boolean);
+  const q=_audQ,qd=q.replace(/\D/g,'');
+  const okQ=a=>!q||String(a.r.nct||'').includes(q)||(a.r.cn||'').toLowerCase().includes(q)||(a.r.mu||'').toLowerCase().includes(q)||(qd.length>=4&&(a.r.cc||'').includes(qd));
+  const okTr=a=>_audTr==='all'||a.raiz===_audTr, okVg=a=>_audVg==='all'||a.vi===+_audVg;
+  // indicadores e conformidade: barra do painel + transportadora + tabela + busca (o Status filtra só a lista)
+  const porTr=base.filter(a=>okTr(a)&&okVg(a)&&okQ(a));
   const aud=porTr.filter(a=>a.sim!=null);
   const n=s=>porTr.filter(a=>a.st===s).length;
   const soma=(arr,f)=>arr.reduce((s,a)=>s+(f(a)||0),0);
@@ -1610,8 +1647,7 @@ function rAud(){
    +kpi('Diferença líquida',(vt-sm>=0?'+':'−')+fR(Math.abs(vt-sm)),'cobrado − tabela',vt-sm>0?'var(--red)':'#185FA5')
    +kpi('Potencial de recuperação',fR(soma(ac,a=>a.dif)),'a confirmar com a transportadora','var(--red)')
    +kpi('Tolerância','R$ '+f2(AUD_CFG.tolRS)+' ou '+String(AUD_CFG.tolPct).replace('.',',')+'%','por CT-e (AUD_CFG)','var(--text)');
-  // conformidade por transportadora (ignora o chip de transportadora)
-  const g=new Map();escopo.forEach(a=>{let x=g.get(a.raiz);if(!x){x={a,n:0,ok:0,vt:0,sm:0,ac:0,ab:0,pd:0};g.set(a.raiz,x);}
+  const g=new Map();porTr.forEach(a=>{let x=g.get(a.raiz);if(!x){x={a,n:0,ok:0,vt:0,sm:0,ac:0,ab:0,pd:0};g.set(a.raiz,x);}
     if(a.st==='AMARELO')x.pd++;if(a.sim==null)return;x.n++;if(a.st==='VERDE')x.ok++;x.vt+=a.r.vf;x.sm+=a.sim;if(a.st==='VERMELHO')x.ac+=a.dif;if(a.st==='AZUL')x.ab-=a.dif;});
   const gs=[...g.values()].sort((x,y)=>y.vt-x.vt);
   document.getElementById('tb-aud-tr').innerHTML=gs.map(x=>{const c=x.n?100*x.ok/x.n:null;
@@ -1619,19 +1655,26 @@ function rAud(){
       +'<td class="r" style="font-weight:700;color:'+(c==null?'var(--text2)':c>=90?'var(--green)':c>=60?'var(--amber)':'var(--red)')+'">'+(c==null?'—':p1(c))+'</td>'
       +'<td class="r">'+(x.n?fR(x.vt):'—')+'</td><td class="r">'+(x.n?fR(x.sm):'—')+'</td>'
       +'<td class="r" style="color:var(--red);font-weight:600">'+(x.ac?fR(x.ac):'—')+'</td><td class="r" style="color:#185FA5">'+(x.ab?fR(x.ab):'—')+'</td><td class="r">'+(x.pd||'—')+'</td></tr>';}).join('')||vazio(8);
-  // chips
-  const trs=gs.map(x=>x.a.raiz);
+  // filtros do topo (contagens consideram os outros filtros)
   const chip=(on,fn,lbl,qt)=>'<button class="fb'+(on?' on':'')+'" onclick="'+fn+'">'+esc(lbl)+(qt!=null?' <span class="muted">'+qt+'</span>':'')+'</button>';
-  document.getElementById('aud-chips-tr').innerHTML='<span class="alb">Transportadora</span>'+chip(_audTr==='all',"audSetTr('all')",'Todas',escopo.length)
-    +trs.map(t=>chip(_audTr===t,"audSetTr('"+t+"')",AUD_SH[t]||nomeTr(t),escopo.filter(a=>a.raiz===t).length)).join('');
+  const bTr=base.filter(a=>okVg(a)&&okQ(a)),trs=[...new Set(bTr.map(a=>a.raiz))].sort((x,y)=>bTr.filter(a=>a.raiz===y).length-bTr.filter(a=>a.raiz===x).length);
+  document.getElementById('aud-chips-tr').innerHTML='<span class="alb">Transportadora</span>'+chip(_audTr==='all',"audSetTr('all')",'Todas',bTr.length)
+    +trs.map(t=>chip(_audTr===t,"audSetTr('"+t+"')",AUD_SH[t]||nomeTr(t),bTr.filter(a=>a.raiz===t).length)).join('');
   document.getElementById('aud-chips-st').innerHTML='<span class="alb">Status</span>'+chip(_audSt==='all',"audSetSt('all')",'Todos',porTr.length)
     +['VERMELHO','AZUL','VERDE','AMARELO','CINZA'].map(s=>chip(_audSt===s,"audSetSt('"+s+"')",AUD_STL[s],n(s))).join('');
+  const bVg=base.filter(a=>okTr(a)&&okQ(a));
+  document.getElementById('aud-chips-vg').innerHTML='<span class="alb">Tabela usada</span>'+chip(_audVg==='all',"audSetVg('all')",'Todas',bVg.length)
+    +AUD_VIG.map((v,i)=>chip(_audVg===String(i),"audSetVg('"+i+"')",v.curto,bVg.filter(a=>a.vi===i).length)).join('');
+  // cabeçalho ordenável
+  document.getElementById('aud-head').innerHTML=AUD_COLS.map(c=>{const on=_audSort.k===c[0];
+    return '<th class="aud-th'+(c[2]?' '+c[2]:'')+(on?' on':'')+'"'+(c[3]&&!on?' style="color:'+c[3]+'"':'')+' onclick="audOrd(\''+c[0]+'\')" title="Ordenar por '+c[1]+'">'+c[1]+(on?(_audSort.dir<0?' ▼':' ▲'):'')+'</th>';}).join('');
   // lista
-  const q=_audQ,qd=q.replace(/\D/g,'');
   let lista=porTr.filter(a=>_audSt==='all'||a.st===_audSt);
-  if(q)lista=lista.filter(a=>String(a.r.nct||'').includes(q)||(a.r.cn||'').toLowerCase().includes(q)||(a.r.mu||'').toLowerCase().includes(q)||(qd.length>=4&&(a.r.cc||'').includes(qd)));
-  const dv=a=>a.dif==null?-1e12:a.dif,pv=a=>a.pct==null?-1e12:a.pct;
-  lista.sort(_audSort==='pct'?(x,y)=>pv(y)-pv(x):_audSort==='data'?(x,y)=>y.r.d.localeCompare(x.r.d)||String(y.r.nct).localeCompare(String(x.r.nct),undefined,{numeric:true}):(x,y)=>dv(y)-dv(x));
+  const {k:sk,dir}=_audSort;
+  lista.sort((x,y)=>{const a=audValSort(x,sk),b=audValSort(y,sk);
+    if(a==null&&b==null)return 0;if(a==null)return 1;if(b==null)return -1;
+    const c=typeof a==='string'?a.localeCompare(b,'pt-BR',{numeric:true}):a-b;
+    return c*dir||(audValSort(y,'d')<audValSort(x,'d')?-1:1);});
   AUD_LAST=lista;
   const LIM=600;let h='';
   lista.slice(0,LIM).forEach(a=>{const r=a.r;const op=_audOpen===r.k;
@@ -1650,18 +1693,19 @@ function rAud(){
       +'<td class="r">'+(a.sim==null?'—':f2(a.sim))+'</td>'
       +'<td class="r" style="'+(red?'color:var(--red);font-weight:700':a.st==='AZUL'?'color:#185FA5;font-weight:600':'color:var(--text2)')+'">'+(a.dif==null?'—':(a.dif>0?'+':a.dif<0?'−':'')+f2(Math.abs(a.dif)))+'</td>'
       +'<td class="r" style="'+(red?'color:var(--red);font-weight:600':'color:var(--text2)')+'">'+(a.pct==null?'—':(a.pct>0?'+':a.pct<0?'−':'')+Math.abs(a.pct).toFixed(1).replace('.',',')+'%')+'</td>'
+      +'<td><span class="aud-vg '+(AUD_VIG[a.vi].ate?'aud-vg-c':'aud-vg-a')+'" title="'+esc(AUD_VIG[a.vi].nome)+'">'+esc(AUD_VIG[a.vi].curto)+'</span></td>'
       +'<td><span class="aud-st aud-'+a.st+'" title="'+esc(a.tipo)+'">'+AUD_STL[a.st]+'</span></td></tr>';
-    if(op)h+='<tr class="aud-det"><td colspan="19">'+audDetalhe(a)+'</td></tr>';
+    if(op)h+='<tr class="aud-det"><td colspan="20">'+audDetalhe(a)+'</td></tr>';
   });
-  document.getElementById('tb-aud').innerHTML=h||vazio(19,'Nenhum CT-e com os filtros selecionados');
+  document.getElementById('tb-aud').innerHTML=h||vazio(20,'Nenhum CT-e com os filtros selecionados');
   // o detalhe aberto acompanha a largura visível da lista (a tabela rola na horizontal)
   const tw=document.querySelector('.aud-tw');document.querySelectorAll('.aud-dg').forEach(d=>{d.style.width=Math.max(320,tw.clientWidth-30)+'px';});
   document.getElementById('aud-note').textContent=(lista.length>LIM?'Exibindo '+LIM+' de '+fInt(lista.length)+' CT-es (o Excel traz todos). ':fInt(lista.length)+' CT-es. ')
-    +'Clique no número do CT-e para abrir a comparação taxa a taxa. Células em vermelho: taxa cobrada acima da tabela; em azul: abaixo (passe o mouse para ver o valor de tabela). Auditoria a partir de '+AUD_CFG.anoMin+'.';
+    +'Ordenado por '+(AUD_COLS.find(c=>c[0]===_audSort.k)||[0,''])[1]+(_audSort.dir<0?' (maior primeiro)':' (menor primeiro)')+'. Clique no número do CT-e para abrir a comparação taxa a taxa. Células em vermelho: taxa cobrada acima da tabela; em azul: abaixo (passe o mouse para ver o valor de tabela). Auditoria a partir de '+AUD_CFG.anoMin+'.';
 }
 function audDetalhe(a){
   const r=a.r;let h='<div class="aud-dg"><div style="flex:1 1 520px">';
-  h+='<div class="aud-h">Composição: tabela × CT-e</div><div style="font-size:11px;margin-bottom:6px"><b>'+esc(a.tipo)+'</b> · '+(a.tab?'Tabela '+esc(a.tab)+(a.rota?' · '+esc(a.rota):''):'Sem tabela aplicada')+'</div>';
+  h+='<div class="aud-h">Composição: tabela × CT-e</div><div style="font-size:11px;margin-bottom:6px"><b>'+esc(a.tipo)+'</b> · '+(a.tab?'Tabela '+esc(a.tab)+(a.rota?' · '+esc(a.rota):''):'Sem tabela aplicada')+' · <span class="aud-vg '+(AUD_VIG[a.vi].ate?'aud-vg-c':'aud-vg-a')+'">'+esc(AUD_VIG[a.vi].nome)+'</span></div>';
   if(a.simC){
     h+='<table class="dt" style="background:var(--bg)"><thead><tr><th>Componente</th><th class="r">Tabela</th><th class="r">Cobrado</th><th class="r">Diferença</th><th>Situação</th></tr></thead><tbody>';
     AUD_K.forEach(k=>{const t=a.simC[k]||0,c=a.cob[k]||0,d=c-t;if(t<0.005&&c<0.005)return;const tol=Math.max(1,t*0.005);
@@ -1683,14 +1727,14 @@ function audDetalhe(a){
 function exportarAuditoria(){
   if(!AUD_LAST.length){alert('Nenhum CT-e na lista.');return;}
   const L=[['Data emissão','Número CT-e','Transportadora','CNPJ transportadora','Cliente','CNPJ cliente','Município','UF','NF(s)','Peso kg','Mercadoria R$']
-    .concat(AUD_K.map(k=>AUD_KL[k]+' cobrado R$'),['Total cobrado R$','Valor tabela R$','Diferença R$','Diferença %','Status','Tipo','Tabela do simulador','Rota','Observação'],
+    .concat(AUD_K.map(k=>AUD_KL[k]+' cobrado R$'),['Total cobrado R$','Valor tabela R$','Diferença R$','Diferença %','Status','Tipo','Tabela do simulador','Versão da tabela','Rota','Observação'],
       AUD_K.map(k=>AUD_KL[k]+' tabela R$'),['Componentes no XML','Chave CT-e'])];
   AUD_LAST.forEach(a=>{const r=a.r;
     L.push([r.d,r.nct||'',r.tn||'',fmtCnpj(r.tc),r.cn||'',fmtCnpj(r.cc),r.mu||'',r.uf||'',r.nfs||'',r.kg||null,r2(r.vm)]
-      .concat(AUD_K.map(k=>r2(a.cob[k]||0)),[r2(r.vf),r2(a.sim),r2(a.dif),r2(a.pct),AUD_STL[a.st],a.tipo,a.tab||'',a.rota||'',a.obs||''],
+      .concat(AUD_K.map(k=>r2(a.cob[k]||0)),[r2(r.vf),r2(a.sim),r2(a.dif),r2(a.pct),AUD_STL[a.st],a.tipo,a.tab||'',AUD_VIG[a.vi].nome,a.rota||'',a.obs||''],
         AUD_K.map(k=>a.simC?r2(a.simC[k]||0):null),[a.cp?Object.keys(a.cp).map(n=>n+' '+f2(a.cp[n])).join('; '):'',r.k]));});
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(L),'Auditoria');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Filtros:',filtrosTxt()],['Transportadora:',_audTr==='all'?'Todas':(AUD_SH[_audTr]||nomeTr(_audTr))],['Status:',_audSt==='all'?'Todos':AUD_STL[_audSt]],
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Filtros:',filtrosTxt()],['Transportadora:',_audTr==='all'?'Todas':(AUD_SH[_audTr]||nomeTr(_audTr))],['Status:',_audSt==='all'?'Todos':AUD_STL[_audSt]],['Tabela usada:',_audVg==='all'?'Todas':AUD_VIG[+_audVg].nome],['Busca:',_audQ||'—'],
     ['CT-es:',AUD_LAST.length],['Tolerância:','R$ '+AUD_CFG.tolRS+' ou '+AUD_CFG.tolPct+'%'],['Motor:',(window.MotorFrete&&MotorFrete.versao)||''],['Gerado em:',new Date().toLocaleString('pt-BR')],
     ['Observação:','Diferença não é cobrança indevida confirmada. Taxas por CNPJ específico e emergencial entram na tabela só quando cobradas. Lotação por viagem, rateada pelo frete.']]),'Resumo');
   XLSX.writeFile(wb,'Auditoria_frete_'+new Date().toISOString().slice(0,10)+'.xlsx');
