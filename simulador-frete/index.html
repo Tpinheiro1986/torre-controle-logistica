@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <title>Simulador de Frete — Torre de Controle</title>
-<script>window.__BUILD__ = { version: 'v2.0-simulador', date: '13/11/2026' };</script>
+<script>window.__BUILD__ = { version: 'v2.1-simulador', date: '13/11/2026' };</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -462,6 +462,26 @@ tr.is-over .sx-rowlbl b{color:var(--text3)}
 .sx-rk .mt .c{color:var(--green)}.sx-rk .mt .d{color:var(--red)}
 .sx-note{font-size:11.5px;color:var(--text2);margin:8px 2px 0}
 .sx-busy{padding:40px;text-align:center;color:var(--text2)}
+
+/* ---- v2.1: seta de clique + mostrador %frete/mercadoria ---- */
+.sx-cell{padding-right:24px}
+.sx-cell::after{content:"›";position:absolute;right:9px;top:50%;transform:translateY(-55%);font:600 15px var(--f-body);color:var(--text3);transition:transform .15s,color .15s}
+.sx-cell:hover::after{color:var(--primary);transform:translate(3px,-55%)}
+.sx-cell.sel::after{content:"▾";color:var(--primary);font-size:12px;transform:translateY(-50%)}
+.sx-cell .pc{display:block;font-size:10px;font-weight:400;color:var(--text3);margin-top:1px}
+.sx-cell.cheap .pc{color:var(--green);opacity:.8}.sx-cell.dear .pc{color:var(--red);opacity:.8}
+.sx-hint{display:inline-flex;align-items:center;gap:6px;background:var(--primary-l);color:var(--primary);border:0.5px solid var(--primary);border-radius:20px;padding:3px 10px 3px 6px;font-weight:600}
+.sx-hint i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--primary);color:var(--bg);font-style:normal;font-size:11px;line-height:1}
+.sx-pod .go{font-size:11px;font-weight:600;color:var(--primary);margin-top:4px}
+.sx-pod .row2{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.sx-pctchip{font:500 11px var(--f-mono);padding:2px 7px;border-radius:10px;white-space:nowrap}
+.sx-pctchip.ok{background:var(--green-l);color:var(--green)}.sx-pctchip.mid{background:var(--orange-l);color:var(--orange)}.sx-pctchip.hi{background:var(--red-l);color:var(--red)}
+.sx-dh{align-items:center}
+.sx-dh .right{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.sx-gauge{display:grid;justify-items:center;gap:0}
+.sx-gauge svg{width:170px;height:auto;display:block}
+.sx-gauge .lb{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);font-weight:600;margin-top:-2px}
+.sx-gauge .sc{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
@@ -1264,6 +1284,32 @@ function sxCapTxt(veh){
 }
 function sxOrd(list, order){ return [...list].sort((a,b)=>{const ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b,'pt-BR');}); }
 const sxF = v => fmtBR(v);
+// Faixas do % frete sobre mercadoria (frete / valor da NF). Ajuste aqui se a referência mudar.
+const SX_CTS = { ok:3, alto:5, max:10 };
+const sxCts = (tot, nf) => nf>0 ? tot/nf*100 : null;
+const sxCtsCls = p => p==null ? '' : p<=SX_CTS.ok ? 'ok' : p<=SX_CTS.alto ? 'mid' : 'hi';
+const sxCtsTxt = p => p==null ? '—' : p.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+function sxGauge(p){
+  const R=58, cx=75, cy=72, max=SX_CTS.max;
+  const ang = v => Math.PI*(1-Math.min(Math.max(v,0),max)/max);
+  const pt = (v,r=R) => [cx + r*Math.cos(ang(v)), cy - r*Math.sin(ang(v))];
+  const arc = (a,b,col) => { const [x1,y1]=pt(a),[x2,y2]=pt(b); return `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="${col}" stroke-width="11" fill="none"/>`; };
+  const v = p==null ? 0 : p;
+  const [nx,ny] = pt(v, R-16);
+  const ticks = [0, SX_CTS.ok, SX_CTS.alto, max].map(t=>{ const [x,y]=pt(t,R+12); return `<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" font-size="8.5" text-anchor="middle" fill="var(--text3)" font-family="var(--f-mono)">${t}%</text>`; }).join('');
+  const col = {ok:'var(--green)',mid:'var(--orange)',hi:'var(--red)'}[sxCtsCls(p)]||'var(--text3)';
+  return `<div class="sx-gauge" title="Frete ÷ valor da mercadoria (NF). Verde até ${SX_CTS.ok}%, amarelo até ${SX_CTS.alto}%, vermelho acima.">
+    <svg viewBox="-14 -6 178 100" role="img" aria-label="Frete sobre mercadoria ${sxCtsTxt(p)}">
+      ${arc(0,SX_CTS.ok,'var(--green-l)')}${arc(SX_CTS.ok,SX_CTS.alto,'var(--orange-l)')}${arc(SX_CTS.alto,max,'var(--red-l)')}
+      ${p!=null?arc(0,Math.min(v,max),col):''}
+      ${ticks}
+      <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="${cx}" cy="${cy}" r="4.5" fill="var(--text)"/>
+      <text x="${cx}" y="${cy+17}" font-size="15" font-weight="600" text-anchor="middle" fill="${col}" font-family="var(--f-mono)">${sxCtsTxt(p)}</text>
+    </svg>
+    <div class="lb">Frete / mercadoria</div>
+  </div>`;
+}
 const sxPct = v => v.toLocaleString('pt-BR',{maximumFractionDigits:v<10?1:0}) + '%';
 
 function renderResultados(){
@@ -1285,6 +1331,7 @@ function renderResultados(){
           ${params.m3 ? `<span class="sx-chip">Cubagem <b>${fmtBR(params.m3,3)} m³</b></span>` : ''}
           <span class="sx-chip">Valor NF <b>R$ ${sxF(params.nf)}</b></span>
           <span class="sx-chip">Opções <b>${resultados.length}</b> · viáveis <b>${viaveis.length}</b></span>
+          ${viaveis[0] ? `<span class="sx-chip">Frete/mercadoria na melhor opção <b class="sx-pctchip ${sxCtsCls(sxCts(viaveis[0].total,params.nf))}">${sxCtsTxt(sxCts(viaveis[0].total,params.nf))}</b></span>` : ''}
         </div>
       </div>
       <div class="sx-seg" role="group" aria-label="Visão">
@@ -1331,8 +1378,9 @@ function sxRenderRota(){
       <span class="pos">${i===0?'Melhor opção':(i+1)+'ª opção'}</span>
       <span class="nm">${escapeHtml(sxTransp(r.tabela))}</span>
       <span class="vh">${escapeHtml(sxVeic(r.tabela))} · ${escapeHtml(r.tabela)}</span>
-      <span class="pr">R$ ${sxF(r.total)}</span>
+      <span class="row2"><span class="pr">R$ ${sxF(r.total)}</span><span class="sx-pctchip ${sxCtsCls(sxCts(r.total,params.nf))}" title="Frete sobre o valor da mercadoria">${sxCtsTxt(sxCts(r.total,params.nf))} da NF</span></span>
       <span class="df">${i===0?'menor custo viável':'+R$ '+sxF(r.total-best.total)+' ('+sxPct((r.total/best.total-1)*100)+')'}</span>
+      <span class="go">Ver cálculo ›</span>
     </button>`).join('');
 
   // matriz
@@ -1359,7 +1407,7 @@ function sxRenderRota(){
         if(r.tabela===SX_SEL) cls.push('sel');
         const rx = (r.taxasRestritas?.length && r.totalComRestritas - r.total > 0.005) ? `<span class="rx" title="Pode subir até R$ ${sxF(r.totalComRestritas)} com taxas que dependem do cliente">+</span>` : '';
         const tip = `${r.tabela} · frete R$ ${sxF(r.fretePeso)} + taxas R$ ${sxF(r.totalTaxas)}`;
-        return `<td><button type="button" class="${cls.join(' ')}" title="${escapeHtml(tip)}" onclick="sxSelect('${escapeHtml(r.tabela).replace(/'/g,"\\'")}')">${best && r.tabela===best.tabela?'<span class="flag">melhor</span>':''}${sxF(r.total)}${rx}</button></td>`;
+        return `<td><button type="button" class="${cls.join(' ')}" title="${escapeHtml(tip)}" onclick="sxSelect('${escapeHtml(r.tabela).replace(/'/g,"\\'")}')">${best && r.tabela===best.tabela?'<span class="flag">melhor</span>':''}${sxF(r.total)}${rx}<span class="pc">${sxCtsTxt(sxCts(r.total,params.nf))} da NF</span></button></td>`;
       }).join('')}
       <td class="sx-meta">${loR ? escapeHtml(sxTransp(loR.tabela)) : '—'}</td>
       <td class="sx-gap">${multi ? sxF(hi-lo)+' <small>('+sxPct((hi/lo-1)*100)+')</small>' : '—'}</td>
@@ -1374,8 +1422,8 @@ function sxRenderRota(){
       <span><i class="sx-sw" style="background:var(--red-l);outline:1px solid var(--red)"></i>Mais cara do veículo</span>
       <span><i class="sx-sw" style="outline:2px solid var(--green)"></i>Melhor opção geral</span>
       <span><b style="color:var(--red)">+</b> pode ter taxa do cliente (TDE/TRT por CNPJ)</span>
-      <span>Clique num valor para ver o cálculo</span>
     </div>
+    <div class="sx-legend"><span class="sx-hint"><i>›</i>Clique em qualquer valor para abrir o cálculo completo abaixo</span><span>% abaixo do valor = frete ÷ valor da NF</span></div>
     <div class="sx-tbl-wrap"><table class="sx-tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <div id="sx-drill">${sel ? sxDrill(sel, best) : ''}</div>`;
 }
@@ -1405,7 +1453,7 @@ function sxDrill(r, best){
         <h3>${escapeHtml(sxTransp(r.tabela))} · ${escapeHtml(sxVeic(r.tabela))}</h3>
         <div class="sub">${escapeHtml(r.tabela)} — ${escapeHtml(r.transportador||'')}</div>
       </div>
-      <div class="tot"><div class="v">R$ ${sxF(r.total)}</div>${cmp}</div>
+      <div class="right">${sxGauge(sxCts(r.total, LAST_RESULT.params.nf))}<div class="tot"><div class="v">R$ ${sxF(r.total)}</div>${cmp}<div class="c">sobre NF de R$ ${sxF(LAST_RESULT.params.nf)}</div></div></div>
     </div>
     ${r.excedeCapacidade ? `<div class="sx-warn">Peso considerado ${fmtKg(r.pesoConsiderado)} excede ${r.veiculo.kg.toLocaleString('pt-BR')} kg do ${escapeHtml(r.veiculo.label)}. Valor mostrado só para referência.</div>` : ''}
     <div class="sx-bar">${bar}</div>
@@ -1511,7 +1559,7 @@ function sxRenderTodas(){
         ${carrs.map(c=>{ const x=l.e[c]; if(!x) return '<td><span class="sx-na">—</span></td>';
           const cls = ['sx-cell']; if(multi && x.total===l.lo) cls.push('cheap'); else if(multi && x.total===l.hi) cls.push('dear');
           const rx = x.restr - x.total > 0.005 ? '<span class="rx">+</span>' : '';
-          return `<td><button type="button" class="${cls.join(' ')}" title="${escapeHtml(x.tabela)} · frete R$ ${sxF(x.frete)} + taxas R$ ${sxF(x.taxas)} — clique para abrir o cálculo" onclick="sxAbrirDestino('${dEsc}','${escapeHtml(x.tabela).replace(/'/g,"\\'")}')">${sxF(x.total)}${rx}</button></td>`; }).join('')}
+          return `<td><button type="button" class="${cls.join(' ')}" title="${escapeHtml(x.tabela)} · frete R$ ${sxF(x.frete)} + taxas R$ ${sxF(x.taxas)} — clique para abrir o cálculo" onclick="sxAbrirDestino('${dEsc}','${escapeHtml(x.tabela).replace(/'/g,"\\'")}')">${sxF(x.total)}${rx}<span class="pc">${sxCtsTxt(sxCts(x.total,params.nf))}</span></button></td>`; }).join('')}
         <td class="sx-meta">${multi ? escapeHtml(loC) : '—'}</td>
         <td class="sx-gap">${multi ? sxF(l.gap)+' <small>('+sxPct((l.hi/l.lo-1)*100)+')</small>' : '—'}</td></tr>`;
     }).join('');
@@ -1529,6 +1577,7 @@ function sxRenderTodas(){
         <span><i class="sx-sw" style="background:var(--green-l);outline:1px solid var(--green)"></i>Mais barata</span>
         <span><i class="sx-sw" style="background:var(--red-l);outline:1px solid var(--red)"></i>Mais cara</span>
         <span>Diferença = mais cara − mais barata</span>
+        <span class="sx-hint"><i>›</i>Clique num valor para abrir o cálculo do destino</span>
         <span>${total.toLocaleString('pt-BR')} destinos${total>LIM?` · mostrando ${LIM} (use UF ou busca)`:''}</span>
       </div>
       <div class="sx-tbl-wrap" style="max-height:70vh;overflow:auto"><table class="sx-tbl" id="sx-tbl-all"><thead>${head}</thead><tbody>${body}</tbody></table></div>
