@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <title>Simulador de Frete — Torre de Controle</title>
-<script>window.__BUILD__ = { version: 'v1.0-simulador', date: '21/05/2026' };</script>
+<script>window.__BUILD__ = { version: 'v2.0-simulador', date: '13/11/2026' };</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root{
   --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede8;
@@ -292,6 +294,174 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg3);color:
 .toast.ok{background:var(--green);color:#fff}
 .toast.err{background:var(--red);color:#fff}
 .toast svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5}
+
+/* ================================================================
+   LAYOUT v2 (13/11/2026) — faixa de parâmetros no topo + matriz
+   veículo × transportadora com drill-down do cálculo
+   ================================================================ */
+:root{
+  --bg:#ffffff;--bg2:#f3f5f4;--bg3:#eef1f0;
+  --text:#15211f;--text2:#5d6b68;--text3:#8a9794;
+  --border:rgba(21,33,31,.12);--border2:rgba(21,33,31,.22);
+  --primary:#c85a0c;--primary-d:#a5480a;--primary-l:#fbeee3;
+  --green:#13734a;--green-l:#e2f3ea;--green-d:#0e5a39;
+  --red:#b3261e;--red-l:#fbe6e4;
+  --orange:#b26a00;--orange-l:#fbf0dc;
+  --c1:#c85a0c;--c2:#2f5d57;--c3:#7f9c96;--c4:#d9a441;--c5:#8c4f2b;--c6:#b9c7c3;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#172120;--bg2:#1d2928;--bg3:#0f1514;
+    --text:#e6ecea;--text2:#9aa8a5;--text3:#6c7a77;
+    --border:rgba(255,255,255,.09);--border2:rgba(255,255,255,.17);
+    --primary:#f08a3e;--primary-d:#d9620f;--primary-l:rgba(240,138,62,.14);
+    --green:#5fd39b;--green-l:#173528;--green-d:#5fd39b;
+    --red:#ff8a80;--red-l:#3d1c1a;
+    --orange:#f0b45e;--orange-l:rgba(240,180,94,.12);
+    --c1:#f08a3e;--c2:#5fb3a6;--c3:#9fb8b3;--c4:#e8c070;--c5:#c98a62;--c6:#4c5d5a;
+    color-scheme:dark;
+  }
+}
+body{font-family:var(--f-body);background:var(--bg3)}
+.page-title{font-family:var(--f-display);font-weight:700;font-size:34px;line-height:1;letter-spacing:.01em}
+.main-tab.active{border-color:var(--primary)}
+
+/* ---------- faixa de parâmetros ---------- */
+.layout{grid-template-columns:1fr!important;gap:18px}
+.layout>*,#results-area,#results-list{min-width:0}
+.results-summary{display:block;padding:16px 20px}
+.sx-route{overflow-wrap:anywhere}
+@media(max-width:600px){.sx-route{font-size:22px}.page-title{font-size:28px}}
+.form-card{position:static;display:grid;grid-template-columns:1fr 1.45fr 2fr .9fr .9fr 1.1fr auto;gap:10px 14px;align-items:end;padding:14px 18px 16px}
+.form-card-title{grid-column:1/-1;margin-bottom:2px;font-family:var(--f-display);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+.form-card .field{margin-bottom:0;min-width:0}
+.form-card .field-row{display:contents}
+.form-card .field-hint{display:none}
+.form-card #cliente-hint{display:block;position:absolute;font-size:10px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.form-card #bloco-cliente{position:relative}
+.form-card .btn-calc{margin-top:0;padding:9px 20px;white-space:nowrap}
+.form-card .modo-btn{padding:8px 6px;font-size:11.5px}
+.field-input{font-family:var(--f-body)}
+#f-peso,#f-m3,#f-nf{font-family:var(--f-mono)}
+@media(max-width:1060px){.form-card{grid-template-columns:repeat(3,1fr)}.form-card #bloco-destino,.form-card #bloco-cliente{grid-column:span 3}}
+@media(max-width:600px){.form-card{grid-template-columns:1fr 1fr}.form-card #bloco-destino,.form-card #bloco-cliente,.form-card .btn-calc{grid-column:1/-1}}
+
+/* ---------- cabeçalho do resultado ---------- */
+.sx-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:14px}
+.sx-route{font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1.05;text-wrap:balance}
+.sx-route .arw{color:var(--primary);margin:0 6px}
+.sx-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sx-chip{font-size:11px;color:var(--text2);background:var(--bg);border:0.5px solid var(--border2);border-radius:4px;padding:3px 8px}
+.sx-chip b{font-family:var(--f-mono);font-weight:500;color:var(--text)}
+.sx-seg{display:inline-flex;border:0.5px solid var(--border2);border-radius:6px;overflow:hidden;background:var(--bg)}
+.sx-seg button{font:600 12px var(--f-body);padding:8px 14px;border:none;background:transparent;color:var(--text2);cursor:pointer}
+.sx-seg button+button{border-left:0.5px solid var(--border2)}
+.sx-seg button[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+.sx-seg button small{font-family:var(--f-mono);opacity:.6;margin-left:4px;font-weight:400}
+
+/* ---------- pódio ---------- */
+.sx-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.sx-pod{background:var(--bg);border:0.5px solid var(--border2);border-radius:8px;padding:12px 14px;display:grid;gap:3px;text-align:left;cursor:pointer;font:inherit;color:inherit;min-width:0}
+.sx-pod:hover{border-color:var(--primary)}
+.sx-pod.first{border:1.5px solid var(--green);background:linear-gradient(var(--green-l),var(--green-l)) top/100% 4px no-repeat,var(--bg)}
+.sx-pod .pos{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);font-weight:600}
+.sx-pod.first .pos{color:var(--green)}
+.sx-pod .nm{font-family:var(--f-display);font-weight:700;font-size:21px;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sx-pod .vh{font-size:11px;color:var(--text2)}
+.sx-pod .pr{font-family:var(--f-mono);font-size:19px;font-weight:500;margin-top:4px}
+.sx-pod .df{font-family:var(--f-mono);font-size:11px;color:var(--text2)}
+@media(max-width:700px){.sx-podium{grid-template-columns:1fr}}
+
+/* ---------- matriz ---------- */
+.sx-legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:11px;color:var(--text2);margin:0 2px 8px}
+.sx-sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+.sx-tbl-wrap{overflow-x:auto;background:var(--bg);border:0.5px solid var(--border2);border-radius:8px}
+.sx-tbl{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+.sx-tbl th,.sx-tbl td{padding:0;border-bottom:0.5px solid var(--border);text-align:right;white-space:nowrap}
+.sx-tbl tr:last-child td{border-bottom:none}
+.sx-tbl th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);font-weight:600;padding:10px 12px;background:var(--bg);position:sticky;top:0}
+.sx-tbl th.sortable{cursor:pointer;user-select:none}
+.sx-tbl th[data-s="asc"]::after{content:" ▲"}.sx-tbl th[data-s="desc"]::after{content:" ▼"}
+.sx-tbl th:first-child,.sx-tbl td:first-child{text-align:left;position:sticky;left:0;background:var(--bg);z-index:1}
+.sx-rowlbl{padding:9px 12px;display:grid;gap:1px}
+.sx-rowlbl b{font-weight:600;font-size:13px}
+.sx-rowlbl span{font-size:10.5px;color:var(--text3)}
+.sx-rowlbl .uf{display:inline;color:var(--text2);font-size:11px;margin-left:4px}
+.sx-rowlbl .over{color:var(--red);font-weight:600}
+tr.is-over .sx-rowlbl b{color:var(--text3)}
+.sx-cell{display:block;width:100%;min-width:96px;padding:10px 12px;border:none;background:transparent;color:var(--text);font:500 13px var(--f-mono);text-align:right;cursor:pointer;position:relative}
+.sx-cell:hover{background:var(--bg2)}
+.sx-cell.cheap{background:var(--green-l);color:var(--green)}
+.sx-cell.dear{background:var(--red-l);color:var(--red)}
+.sx-cell.over{color:var(--text3);text-decoration:line-through;text-decoration-color:var(--text3)}
+.sx-cell.best{box-shadow:inset 0 0 0 2px var(--green);font-weight:600}
+.sx-cell.sel{box-shadow:inset 0 0 0 2px var(--primary)}
+.sx-cell.best.sel{box-shadow:inset 0 0 0 2px var(--green),inset 0 0 0 4px var(--primary)}
+.sx-cell .flag{position:absolute;top:3px;right:4px;font-size:8.5px;font-family:var(--f-body);font-weight:700;letter-spacing:.05em;color:var(--green);text-transform:uppercase}
+.sx-cell .rx{color:var(--red);font-size:10px;margin-left:3px;vertical-align:super}
+.sx-na{display:block;padding:10px 12px;color:var(--border2);font-family:var(--f-mono)}
+.sx-tbl td.sx-meta{padding:9px 12px;text-align:left;font-size:12px}
+.sx-tbl td.sx-gap{padding:9px 12px;font-family:var(--f-mono);font-size:12px;color:var(--text2)}
+.sx-gap small{font-size:10.5px}
+
+/* ---------- drill-down ---------- */
+.sx-drill{margin-top:14px;background:var(--bg);border:0.5px solid var(--border2);border-top:3px solid var(--primary);border-radius:8px;padding:18px 20px;display:grid;gap:16px}
+.sx-dh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px 24px}
+.sx-dh .ey{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);font-weight:700}
+.sx-dh h3{font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.05;margin-top:2px}
+.sx-dh .sub{font-size:11.5px;color:var(--text2);margin-top:2px}
+.sx-dh .tot{text-align:right}
+.sx-dh .tot .v{font-family:var(--f-mono);font-size:26px;font-weight:500}
+.sx-dh .tot .c{font-size:11.5px;color:var(--text2)}
+.sx-dh .tot .c.ok{color:var(--green);font-weight:600}
+.sx-bar{display:flex;height:12px;border-radius:3px;overflow:hidden;background:var(--bg2)}
+.sx-bar i{display:block;height:100%}
+.sx-comp{width:100%;border-collapse:collapse;font-size:12.5px}
+.sx-comp td{padding:7px 8px;border-bottom:0.5px solid var(--border);vertical-align:top}
+.sx-comp td.n{white-space:nowrap;font-weight:600}
+.sx-comp td.d{color:var(--text2);font-size:11.5px;width:100%}
+.sx-comp td.v{font-family:var(--f-mono);text-align:right;white-space:nowrap}
+.sx-comp td.p{font-family:var(--f-mono);text-align:right;color:var(--text3);font-size:11px;white-space:nowrap}
+.sx-comp tr.tt td{border-bottom:none;border-top:1.5px solid var(--text);font-weight:700;padding-top:9px}
+.sx-comp tr.tt td.v{font-size:14px}
+.sx-dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:0}
+.sx-restr{border:0.5px dashed var(--red);border-radius:6px;padding:10px 12px;display:grid;gap:4px}
+.sx-restr .t{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);font-weight:700}
+.sx-restr .r{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--red)}
+.sx-restr .r span:last-child{font-family:var(--f-mono);white-space:nowrap}
+.sx-restr .r small{opacity:.75}
+.sx-restr .r.tot{border-top:0.5px solid var(--red);padding-top:5px;margin-top:2px;font-weight:700}
+.sx-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 18px;font-size:11.5px}
+.sx-facts div{display:grid;gap:1px;min-width:0}
+.sx-facts span{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-weight:600}
+.sx-facts b{font-weight:500;overflow-wrap:anywhere}
+.sx-warn{background:var(--red-l);color:var(--red);border-radius:6px;padding:8px 12px;font-size:12px}
+
+/* ---------- todas as rotas ---------- */
+.sx-ctl{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:end;background:var(--bg);border:0.5px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:12px}
+.sx-ctl .fl{display:grid;gap:4px}
+.sx-ctl label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);font-weight:600}
+.sx-ctl select,.sx-ctl input{font:500 12.5px var(--f-body);color:var(--text);background:var(--bg2);border:0.5px solid var(--border2);border-radius:5px;padding:6px 9px}
+.sx-vseg{display:flex;flex-wrap:wrap;gap:4px}
+.sx-vseg button{font:500 12px var(--f-body);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);padding:6px 10px;border-radius:5px;cursor:pointer}
+.sx-vseg button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.sx-vseg button small{font-family:var(--f-mono);opacity:.6;margin-left:3px}
+.sx-rank{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.sx-rk{background:var(--bg);border:0.5px solid var(--border2);border-radius:8px;padding:10px 12px;display:grid;gap:4px;min-width:0}
+.sx-rk .pos{font-family:var(--f-mono);font-size:10.5px;color:var(--text3)}
+.sx-rk .nm{font-family:var(--f-display);font-size:19px;font-weight:700;line-height:1}
+.sx-rk .ix{font-family:var(--f-mono);font-size:14px}
+.sx-rk .ix small{font-family:var(--f-body);font-size:10px;color:var(--text2)}
+.sx-rk .bar{height:4px;border-radius:2px;background:var(--bg2);overflow:hidden}
+.sx-rk .bar i{display:block;height:100%;background:var(--primary)}
+.sx-rk .mt{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;color:var(--text2)}
+.sx-rk .mt b{font-family:var(--f-mono);font-weight:500}
+.sx-rk .mt .c{color:var(--green)}.sx-rk .mt .d{color:var(--red)}
+.sx-note{font-size:11.5px;color:var(--text2);margin:8px 2px 0}
+.sx-busy{padding:40px;text-align:center;color:var(--text2)}
 </style>
 </head>
 <body>
@@ -411,7 +581,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg3);color:
         <div class="results-empty" id="results-empty">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <div class="results-empty-title">Pronto para simular</div>
-          <div class="results-empty-sub">Preencha os parâmetros ao lado e clique em <strong>Simular frete</strong>.</div>
+          <div class="results-empty-sub">Preencha os parâmetros acima e clique em <strong>Simular frete</strong>.</div>
         </div>
 
         <div class="loading" id="loading">
@@ -425,13 +595,6 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg3);color:
             <span id="notice-text"></span>
           </div>
           <div class="results-summary" id="results-summary"></div>
-          <div class="results-header">
-            <div class="results-count" id="results-count"></div>
-            <div>
-              <button class="sort-btn on" onclick="ordenar('preco')" id="sort-preco">Menor preço</button>
-              <button class="sort-btn" onclick="ordenar('nome')" id="sort-nome">A–Z</button>
-            </div>
-          </div>
           <div id="results-rows"></div>
         </div>
       </div>
@@ -1068,128 +1231,327 @@ function calcular(){
 
   LAST_RESULT = simular(origem, destino, peso, m3, nf);
   LAST_RESULT.params = { origem, destino, peso, m3, nf, clienteLabel };
+  if(!window._sxKeepSel) SX_SEL = null;
+  window._sxKeepSel = false;
   renderResultados();
 }
+
+// ============================================================
+// RESULTADOS v2 — matriz veículo × transportadora + drill-down
+// e visão "Todas as rotas" (comparativo por destino)
+// ============================================================
+const SX_VORDER = ['Fracionado','Fiorino','Van','VUC','3/4','Toco','Truck','Carreta'];
+const SX_CORDER = ['Ativa','FL Brasil','Expresso Minas','Cootravale','LD Cargo','Transben','ALA Cargo','Transcunha'];
+const SX_CNAME  = {'ATIVA':'Ativa','FL BRASIL':'FL Brasil','EXPRESSO MINAS':'Expresso Minas','COOTRAVALE':'Cootravale',
+                   'LD CARGO':'LD Cargo','TRANSBEN':'Transben','ALA CARGO':'ALA Cargo','TRANSCUNHA':'Transcunha'};
+let SX_VIEW = 'rota';          // 'rota' | 'todas'
+let SX_SEL  = null;            // nome da tabela selecionada no drill-down
+let SX_ALL  = { veh:null, uf:'', q:'', min:2, sortK:'gap', sortD:'desc' };
+let SX_CACHE = null;           // { key, porVeic:{veh: Map(dest -> {transp: res})} }
+
+function sxTransp(nome){
+  const s = (nome||'').toUpperCase()
+    .replace(/\b(CARRETA|TRUCK|TOCO|VUC|VAN|FIORINO)\b/g,' ')
+    .replace(/\s34\b/,' ').replace(/\b20\d\d\b/g,' ').replace(/[-_]/g,' ')
+    .replace(/\bATUALIZADA\b/g,' ').replace(/\s+/g,' ').trim();
+  return SX_CNAME[s] || s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+}
+function sxVeic(nome){ const v = getCapacidadeVeiculo(nome); return v ? v.label : 'Fracionado'; }
+function sxCapTxt(veh){
+  if(veh==='Fracionado') return 'por peso, sem limite';
+  const v = CAPACIDADE_VEICULO.find(x=>x.label===veh);
+  return v ? 'até ' + v.kg.toLocaleString('pt-BR') + ' kg' : '';
+}
+function sxOrd(list, order){ return [...list].sort((a,b)=>{const ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b,'pt-BR');}); }
+const sxF = v => fmtBR(v);
+const sxPct = v => v.toLocaleString('pt-BR',{maximumFractionDigits:v<10?1:0}) + '%';
 
 function renderResultados(){
   const { resultados, motivosExclusao, pesoConsiderado, params } = LAST_RESULT;
   const notice = document.getElementById('notice');
   const noticeText = document.getElementById('notice-text');
   const summary = document.getElementById('results-summary');
-  const count = document.getElementById('results-count');
-  const rows = document.getElementById('results-rows');
 
-  // Summary
+  const viaveis = resultados.filter(r=>!r.excedeCapacidade).sort((a,b)=>a.total-b.total);
+  if(!SX_SEL || !resultados.some(r=>r.tabela===SX_SEL)) SX_SEL = viaveis[0]?.tabela || resultados[0]?.tabela || null;
+
   summary.innerHTML = `
-    ${params.clienteLabel ? `<div class="summary-item"><div class="lbl">Cliente</div><div class="val">${escapeHtml(params.clienteLabel)}</div></div>` : ''}
-    <div class="summary-item"><div class="lbl">Origem → Destino</div><div class="val">${escapeHtml(params.origem)} → ${escapeHtml(params.destino)}</div></div>
-    <div class="summary-item"><div class="lbl">Peso considerado</div><div class="val">${fmtKg(pesoConsiderado)}</div></div>
-    <div class="summary-item"><div class="lbl">Valor da NF</div><div class="val">R$ ${fmtBR(params.nf)}</div></div>
-    <div class="summary-item"><div class="lbl">Transportadoras</div><div class="val">${resultados.length}</div></div>
-  `;
+    <div class="sx-top">
+      <div>
+        <div class="sx-route">${escapeHtml(params.origem)}<span class="arw">→</span>${escapeHtml(params.destino)}</div>
+        <div class="sx-chips">
+          ${params.clienteLabel ? `<span class="sx-chip">Cliente <b>${escapeHtml(params.clienteLabel)}</b></span>` : ''}
+          <span class="sx-chip">Peso considerado <b>${fmtKg(pesoConsiderado)}</b></span>
+          ${params.m3 ? `<span class="sx-chip">Cubagem <b>${fmtBR(params.m3,3)} m³</b></span>` : ''}
+          <span class="sx-chip">Valor NF <b>R$ ${sxF(params.nf)}</b></span>
+          <span class="sx-chip">Opções <b>${resultados.length}</b> · viáveis <b>${viaveis.length}</b></span>
+        </div>
+      </div>
+      <div class="sx-seg" role="group" aria-label="Visão">
+        <button type="button" aria-pressed="${SX_VIEW==='rota'}" onclick="sxSetView('rota')">Esta rota</button>
+        <button type="button" aria-pressed="${SX_VIEW==='todas'}" onclick="sxSetView('todas')">Todas as rotas</button>
+      </div>
+    </div>`;
 
-  if(resultados.length === 0){
-    rows.innerHTML = `<div class="results-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div class="results-empty-title">Nenhuma transportadora encontrada</div>
-      <div class="results-empty-sub">Não há tabela cadastrada para a rota <strong>${escapeHtml(params.origem)} → ${escapeHtml(params.destino)}</strong>.</div></div>`;
-    count.textContent = '';
-    notice.classList.remove('on');
-    return;
-  }
-
-  // Ordenar: primeiro por capacidade compatível (compatíveis > excedidas), depois pelo critério escolhido
-  let sorted = [...resultados];
-  if(SORT_MODE==='preco'){
-    sorted.sort((a,b) => {
-      // capacidade ok vem primeiro
-      if(a.excedeCapacidade !== b.excedeCapacidade) return a.excedeCapacidade ? 1 : -1;
-      return a.total - b.total;
-    });
-  } else {
-    sorted.sort((a,b) => {
-      if(a.excedeCapacidade !== b.excedeCapacidade) return a.excedeCapacidade ? 1 : -1;
-      return a.tabela.localeCompare(b.tabela,'pt-BR');
-    });
-  }
-
-  // Encontrar o melhor preço entre as VIÁVEIS (excluindo as que excedem)
-  const viaveis = sorted.filter(r => !r.excedeCapacidade);
-  const minVal = viaveis.length ? viaveis[0].total : 0;
-
-  count.textContent = `${resultados.length} ${resultados.length===1?'transportadora':'transportadoras'} disponíveis`;
-
-  // Aviso quando algumas foram excluídas
   if(motivosExclusao.length){
     notice.classList.add('on');
     noticeText.textContent = `${motivosExclusao.length} ${motivosExclusao.length===1?'tabela atende esta rota mas foi excluída':'tabelas atendem esta rota mas foram excluídas'} por falta de regras de preço.`;
   } else { notice.classList.remove('on'); }
 
-  rows.innerHTML = sorted.map((r,i)=>{
-    const isBest = SORT_MODE==='preco' && !r.excedeCapacidade && i===0;
-    let diff = '';
-    if(!r.excedeCapacidade && i>0 && viaveis.length){
-      diff = ` (+R$ ${fmtBR(r.total - minVal)})`;
-    } else if(r.excedeCapacidade && viaveis.length){
-      diff = `vs. melhor viável: R$ ${fmtBR(r.total - minVal)}`;
-    }
-    const vehLabel = r.veiculo ? `${r.veiculo.label} · cap. ${r.veiculo.kg.toLocaleString('pt-BR')} kg` : 'Fracionada';
-    const capBadge = r.excedeCapacidade
-      ? `<span class="cap-badge" title="Peso considerado ${fmtKg(r.pesoConsiderado)} excede ${r.veiculo.kg.toLocaleString('pt-BR')} kg do ${r.veiculo.label}"><svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>capacidade excedida</span>`
-      : '';
-    return `
-      <div class="result-row ${isBest?'best':''} ${r.excedeCapacidade?'over-capacity':''}" data-i="${i}">
-        <div class="result-head" onclick="toggleDetail(this.parentElement)">
-          <div>
-            <div class="result-name">${escapeHtml(r.tabela)} ${isBest ? '<span class="best-badge">Melhor preço</span>':''} ${capBadge}</div>
-            <div class="result-transp">${escapeHtml(r.transportador||'')}</div>
-            <div class="veiculo-info">${vehLabel}</div>
-          </div>
-          <div>
-            <div class="result-price">R$ ${fmtBR(r.total)}</div>
-            <div class="result-diff">${diff || (isBest ? 'menor custo' : '')}</div>
-            ${(r.taxasRestritas && r.taxasRestritas.length && (r.totalComRestritas - r.total) > 0.005) ? `<div style="font-size:10px;color:var(--red);margin-top:2px;white-space:nowrap;text-align:right">+ até R$ ${fmtBR(r.totalComRestritas - r.total)} (cliente)</div>` : ''}
-          </div>
-          <div class="result-toggle"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-        <div class="result-detail">
-          <div class="det-grid">
-            <div class="det-block">
-              <div class="det-block-title">Composição</div>
-              <div class="det-row"><span class="lbl">Frete-peso</span><span class="val">R$ ${fmtBR(r.fretePeso)}</span></div>
-              ${r.taxasDetalhe.map(t=>`<div class="det-row"><span class="lbl">${escapeHtml(t.nome)}</span><span class="val">R$ ${fmtBR(t.valor)}</span></div>`).join('')}
-              <div class="det-total"><span>Total</span><span>R$ ${fmtBR(r.total)}</span></div>
-              ${(r.taxasRestritas && r.taxasRestritas.length) ? `
-                <div style="margin-top:12px;padding-top:8px;border-top:0.5px dashed var(--red)">
-                  <div style="font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:6px">Taxas que dependem do cliente (CNPJ/CEP)</div>
-                  ${r.taxasRestritas.map(t=>`<div class="det-row"><span class="lbl" style="color:var(--red)">${escapeHtml(t.nome)} <span style="font-size:9px;color:var(--red);opacity:.65">(${escapeHtml(t.motivo)})</span></span><span class="val" style="color:var(--red)">+R$ ${fmtBR(t.valor)}</span></div>`).join('')}
-                  ${(r.ajusteAdicional>0.005) ? `<div class="det-row"><span class="lbl" style="color:var(--red)">Ajuste ADICIONAL FRETE</span><span class="val" style="color:var(--red)">+R$ ${fmtBR(r.ajusteAdicional)}</span></div>` : ''}
-                  <div class="det-total" style="color:var(--red);border-top-color:var(--red)"><span>Total com taxas do cliente</span><span>R$ ${fmtBR(r.totalComRestritas)}</span></div>
-                </div>
-              ` : ''}
-            </div>
-            <div class="det-block">
-              <div class="det-block-title">Memória de cálculo</div>
-              <div style="font-size:11px;color:var(--text2);margin-bottom:6px"><strong>Frete-peso:</strong> ${escapeHtml(r.fretePesoModo)}</div>
-              ${r.taxasDetalhe.map(t=>`<div style="font-size:11px;color:var(--text2);margin-bottom:3px"><strong>${escapeHtml(t.nome)}:</strong> ${escapeHtml(t.desc)}</div>`).join('')}
-              <div style="font-size:10px;color:var(--text3);margin-top:10px">
-                <strong>Rota:</strong> ${escapeHtml(r.rota_desc||r.rota_id)}<br>
-                <strong>Modalidade:</strong> ${escapeHtml(r.modalidade||'-')} · <strong>Cálculo:</strong> ${escapeHtml(r.tipo_calculo||'-')}<br>
-                <strong>Vigência:</strong> ${escapeHtml(r.validade||'-')}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+  if(SX_VIEW==='todas') sxRenderTodas(); else sxRenderRota();
+}
+
+function sxSetView(v){ SX_VIEW = v; renderResultados(); }
+function sxSelect(tabela){
+  SX_SEL = tabela;
+  sxRenderRota();
+  const d = document.getElementById('sx-drill'); if(d) d.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ---------------- ESTA ROTA ----------------
+function sxRenderRota(){
+  const rows = document.getElementById('results-rows');
+  const { resultados, params } = LAST_RESULT;
+  if(!resultados.length){
+    rows.innerHTML = `<div class="results-empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="results-empty-title">Nenhuma transportadora encontrada</div>
+      <div class="results-empty-sub">Não há tabela cadastrada para a rota <strong>${escapeHtml(params.origem)} → ${escapeHtml(params.destino)}</strong>.</div></div>`;
+    return;
+  }
+  const viaveis = resultados.filter(r=>!r.excedeCapacidade).sort((a,b)=>a.total-b.total);
+  const best = viaveis[0] || null;
+  const grid = {};
+  resultados.forEach(r=>{ const v=sxVeic(r.tabela), c=sxTransp(r.tabela); (grid[v]=grid[v]||{})[c]=r; });
+  const veics = sxOrd(Object.keys(grid), SX_VORDER);
+  const carrs = sxOrd([...new Set(resultados.map(r=>sxTransp(r.tabela)))], SX_CORDER);
+
+  // pódio
+  const pod = viaveis.slice(0,3).map((r,i)=>`
+    <button type="button" class="sx-pod ${i===0?'first':''}" onclick="sxSelect('${escapeHtml(r.tabela).replace(/'/g,"\\'")}')">
+      <span class="pos">${i===0?'Melhor opção':(i+1)+'ª opção'}</span>
+      <span class="nm">${escapeHtml(sxTransp(r.tabela))}</span>
+      <span class="vh">${escapeHtml(sxVeic(r.tabela))} · ${escapeHtml(r.tabela)}</span>
+      <span class="pr">R$ ${sxF(r.total)}</span>
+      <span class="df">${i===0?'menor custo viável':'+R$ '+sxF(r.total-best.total)+' ('+sxPct((r.total/best.total-1)*100)+')'}</span>
+    </button>`).join('');
+
+  // matriz
+  const head = `<tr><th>Veículo</th>${carrs.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}<th style="text-align:left">Mais barata</th><th>Diferença</th></tr>`;
+  const body = veics.map(v=>{
+    const cel = grid[v];
+    const vs = Object.values(cel);
+    const over = vs.every(r=>r.excedeCapacidade);
+    const ok = vs.filter(r=>!r.excedeCapacidade);
+    const lo = ok.length ? Math.min(...ok.map(r=>r.total)) : null;
+    const hi = ok.length ? Math.max(...ok.map(r=>r.total)) : null;
+    const multi = ok.length > 1;
+    const loR = ok.find(r=>r.total===lo);
+    return `<tr class="${over?'is-over':''}">
+      <td><div class="sx-rowlbl"><b>${v}</b><span>${sxCapTxt(v)}</span>${over?'<span class="over">peso acima da capacidade</span>':''}</div></td>
+      ${carrs.map(c=>{
+        const r = cel[c];
+        if(!r) return '<td><span class="sx-na">—</span></td>';
+        const cls = ['sx-cell'];
+        if(r.excedeCapacidade) cls.push('over');
+        else if(multi && r.total===lo) cls.push('cheap');
+        else if(multi && r.total===hi) cls.push('dear');
+        if(best && r.tabela===best.tabela) cls.push('best');
+        if(r.tabela===SX_SEL) cls.push('sel');
+        const rx = (r.taxasRestritas?.length && r.totalComRestritas - r.total > 0.005) ? `<span class="rx" title="Pode subir até R$ ${sxF(r.totalComRestritas)} com taxas que dependem do cliente">+</span>` : '';
+        const tip = `${r.tabela} · frete R$ ${sxF(r.fretePeso)} + taxas R$ ${sxF(r.totalTaxas)}`;
+        return `<td><button type="button" class="${cls.join(' ')}" title="${escapeHtml(tip)}" onclick="sxSelect('${escapeHtml(r.tabela).replace(/'/g,"\\'")}')">${best && r.tabela===best.tabela?'<span class="flag">melhor</span>':''}${sxF(r.total)}${rx}</button></td>`;
+      }).join('')}
+      <td class="sx-meta">${loR ? escapeHtml(sxTransp(loR.tabela)) : '—'}</td>
+      <td class="sx-gap">${multi ? sxF(hi-lo)+' <small>('+sxPct((hi/lo-1)*100)+')</small>' : '—'}</td>
+    </tr>`;
   }).join('');
+
+  const sel = resultados.find(r=>r.tabela===SX_SEL);
+  rows.innerHTML = `
+    ${pod ? `<div class="sx-podium">${pod}</div>` : '<div class="sx-warn" style="margin-bottom:14px">O peso considerado excede a capacidade de todos os veículos com tabela para esta rota.</div>'}
+    <div class="sx-legend">
+      <span><i class="sx-sw" style="background:var(--green-l);outline:1px solid var(--green)"></i>Mais barata do veículo</span>
+      <span><i class="sx-sw" style="background:var(--red-l);outline:1px solid var(--red)"></i>Mais cara do veículo</span>
+      <span><i class="sx-sw" style="outline:2px solid var(--green)"></i>Melhor opção geral</span>
+      <span><b style="color:var(--red)">+</b> pode ter taxa do cliente (TDE/TRT por CNPJ)</span>
+      <span>Clique num valor para ver o cálculo</span>
+    </div>
+    <div class="sx-tbl-wrap"><table class="sx-tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    <div id="sx-drill">${sel ? sxDrill(sel, best) : ''}</div>`;
+}
+
+function sxDrill(r, best){
+  const comps = [{nome:'Frete-peso', valor:r.fretePeso, desc:r.fretePesoModo}, ...r.taxasDetalhe];
+  const cores = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)'];
+  const tot = r.total || 1;
+  const bar = comps.map((c,i)=>`<i style="width:${Math.max(0,c.valor/tot*100)}%;background:${cores[i%cores.length]}" title="${escapeHtml(c.nome)}: R$ ${sxF(c.valor)}"></i>`).join('');
+  const linhas = comps.map((c,i)=>`<tr><td class="n"><span class="sx-dot" style="background:${cores[i%cores.length]}"></span>${escapeHtml(c.nome)}</td><td class="d">${escapeHtml(c.desc||'')}</td><td class="v">R$ ${sxF(c.valor)}</td><td class="p">${sxPct(c.valor/tot*100)}</td></tr>`).join('');
+  let cmp;
+  if(r.excedeCapacidade) cmp = `<div class="c" style="color:var(--red)">peso acima da capacidade do ${escapeHtml(r.veiculo.label)}</div>`;
+  else if(best && r.tabela===best.tabela) cmp = `<div class="c ok">Melhor opção desta rota</div>`;
+  else if(best) cmp = `<div class="c">+R$ ${sxF(r.total-best.total)} (${sxPct((r.total/best.total-1)*100)}) acima de ${escapeHtml(sxTransp(best.tabela))} ${escapeHtml(sxVeic(best.tabela))}</div>`;
+  else cmp = '';
+  const restr = (r.taxasRestritas && r.taxasRestritas.length) ? `
+    <div class="sx-restr">
+      <div class="t">Taxas que dependem do cliente (CNPJ/CEP) — não incluídas no total</div>
+      ${r.taxasRestritas.map(t=>`<div class="r"><span>${escapeHtml(t.nome)} <small>(${escapeHtml(t.motivo)})</small></span><span>+R$ ${sxF(t.valor)}</span></div>`).join('')}
+      ${r.ajusteAdicional>0.005 ? `<div class="r"><span>Ajuste ADICIONAL FRETE</span><span>+R$ ${sxF(r.ajusteAdicional)}</span></div>` : ''}
+      <div class="r tot"><span>Total com taxas do cliente</span><span>R$ ${sxF(r.totalComRestritas)}</span></div>
+    </div>` : '';
+  return `<section class="sx-drill" aria-label="Cálculo detalhado">
+    <div class="sx-dh">
+      <div>
+        <div class="ey">Cálculo completo</div>
+        <h3>${escapeHtml(sxTransp(r.tabela))} · ${escapeHtml(sxVeic(r.tabela))}</h3>
+        <div class="sub">${escapeHtml(r.tabela)} — ${escapeHtml(r.transportador||'')}</div>
+      </div>
+      <div class="tot"><div class="v">R$ ${sxF(r.total)}</div>${cmp}</div>
+    </div>
+    ${r.excedeCapacidade ? `<div class="sx-warn">Peso considerado ${fmtKg(r.pesoConsiderado)} excede ${r.veiculo.kg.toLocaleString('pt-BR')} kg do ${escapeHtml(r.veiculo.label)}. Valor mostrado só para referência.</div>` : ''}
+    <div class="sx-bar">${bar}</div>
+    <table class="sx-comp"><tbody>${linhas}
+      <tr class="tt"><td class="n">Total</td><td class="d"></td><td class="v">R$ ${sxF(r.total)}</td><td class="p">100%</td></tr>
+    </tbody></table>
+    ${restr}
+    <div class="sx-facts">
+      <div><span>Rota da tabela</span><b>${escapeHtml(r.rota_desc||r.rota_id||'—')}</b></div>
+      <div><span>Peso considerado</span><b>${fmtKg(r.pesoConsiderado)}</b></div>
+      <div><span>Veículo</span><b>${r.veiculo ? escapeHtml(r.veiculo.label)+' · cap. '+r.veiculo.kg.toLocaleString('pt-BR')+' kg' : 'Fracionado (por peso)'}</b></div>
+      <div><span>Tipo de frete</span><b>${escapeHtml(r.tipo_frete||'—')}</b></div>
+      <div><span>Situação da tabela</span><b>${escapeHtml(r.status||'—')}</b></div>
+      <div><span>Valor/kg</span><b>R$ ${r.pesoConsiderado>0 ? fmtBR(r.total/r.pesoConsiderado,4) : '—'}</b></div>
+    </div>
+  </section>`;
+}
+
+// ---------------- TODAS AS ROTAS ----------------
+function sxBuildCache(origem, peso, nf){
+  const key = norm(origem)+'|'+peso+'|'+nf;
+  if(SX_CACHE && SX_CACHE.key===key) return SX_CACHE;
+  const no = norm(origem);
+  const tabs = TABELAS.tabelas.map(tab=>{
+    const m = new Map();
+    (tab.rotas||[]).forEach(r=>{
+      if(!r.regras || !r.regras.length) return;
+      if(!(r.origens||[]).some(o=>norm(o)===no)) return;
+      (r.destinos||[]).forEach(d=>{ if(!m.has(d)) m.set(d, r); });
+    });
+    return { tab, veh:sxVeic(tab.nome), transp:sxTransp(tab.nome), cap:getCapacidadeVeiculo(tab.nome), rotas:m };
+  });
+  SX_CACHE = { key, peso, nf, tabs, porVeic:{} };
+  return SX_CACHE;
+}
+function sxCalcVeic(cache, veh){
+  if(cache.porVeic[veh]) return cache.porVeic[veh];
+  const out = new Map();
+  cache.tabs.filter(t=>t.veh===veh).forEach(t=>{
+    t.rotas.forEach((rota, dest)=>{
+      const fp = calcularFretePeso(rota.regras, cache.peso); if(!fp) return;
+      const tx = aplicarTaxas(t.tab, rota, fp.valor, cache.nf, cache.peso, dest);
+      const e = out.get(dest) || {};
+      if(!e[t.transp]) e[t.transp] = { tabela:t.tab.nome, total:fp.valor+tx.totalTaxas, frete:fp.valor, taxas:tx.totalTaxas, restr:tx.totalComRestritas };
+      out.set(dest, e);
+    });
+  });
+  cache.porVeic[veh] = out;
+  return out;
+}
+function sxRenderTodas(){
+  const rows = document.getElementById('results-rows');
+  const { params, pesoConsiderado } = LAST_RESULT;
+  const cache = sxBuildCache(params.origem, pesoConsiderado, params.nf);
+  const veicsDisp = sxOrd([...new Set(cache.tabs.filter(t=>t.rotas.size).map(t=>t.veh))], SX_VORDER);
+  if(!SX_ALL.veh || !veicsDisp.includes(SX_ALL.veh)){
+    const s = SX_SEL ? sxVeic(SX_SEL) : null;
+    SX_ALL.veh = veicsDisp.includes(s) ? s : veicsDisp[0];
+  }
+  const veh = SX_ALL.veh;
+  const nCarr = v => new Set(cache.tabs.filter(t=>t.veh===v && t.rotas.size).map(t=>t.transp)).size;
+  const capV = CAPACIDADE_VEICULO.find(x=>x.label===veh);
+  const overCap = capV && pesoConsiderado > capV.kg;
+
+  rows.innerHTML = `<div class="sx-busy">Calculando todas as rotas…</div>`;
+  setTimeout(()=>{
+    const mapa = sxCalcVeic(cache, veh);
+    const ufs = [...new Set([...mapa.keys()].map(d=>d.slice(-2)))].sort();
+    const q = norm(SX_ALL.q);
+    let lin = [];
+    mapa.forEach((e, d)=>{
+      if(SX_ALL.uf && d.slice(-2)!==SX_ALL.uf) return;
+      if(q && !norm(d).includes(q)) return;
+      const ks = Object.keys(e); if(ks.length < SX_ALL.min) return;
+      const vals = ks.map(k=>e[k].total);
+      const lo = Math.min(...vals), hi = Math.max(...vals);
+      lin.push({ d, e, lo, hi, gap:hi-lo, n:ks.length });
+    });
+    const carrs = sxOrd([...new Set(lin.flatMap(l=>Object.keys(l.e)))], SX_CORDER);
+
+    // ranking
+    const st = {}; carrs.forEach(c=>st[c]={n:0,w:0,l:0,s:0,k:0});
+    lin.forEach(l=>{ Object.keys(l.e).forEach(c=>{ const s=st[c]; s.n++; if(l.n<2) return; s.s += l.e[c].total/l.lo; s.k++; if(l.e[c].total===l.lo) s.w++; if(l.e[c].total===l.hi) s.l++; }); });
+    const ord = carrs.map(c=>({c, ...st[c], avg: st[c].k ? st[c].s/st[c].k : null})).sort((a,b)=>(a.avg??9)-(b.avg??9));
+    const maxA = Math.max(0.01, ...ord.map(o=>o.avg?o.avg-1:0));
+    const rank = ord.map((o,i)=>`<div class="sx-rk"><div class="pos">${o.avg==null?'sem concorrente':(i+1)+'º mais barata'}</div><div class="nm">${escapeHtml(o.c)}</div>
+      <div class="ix">${o.avg==null?'—':'+'+sxPct((o.avg-1)*100)} <small>acima da mais barata</small></div>
+      <div class="bar"><i style="width:${o.avg==null?0:Math.max(2,(o.avg-1)/maxA*100)}%"></i></div>
+      <div class="mt"><span><b>${o.n}</b> rotas</span><span class="c">barata <b>${o.w}</b></span><span class="d">cara <b>${o.l}</b></span></div></div>`).join('');
+
+    // ordenação e limite
+    const sk = SX_ALL.sortK, sd = SX_ALL.sortD==='asc'?1:-1;
+    const getv = l => sk==='d' ? l.d : sk==='lo' ? l.lo : sk==='gap' ? l.gap : (l.e[sk.slice(2)]?.total ?? (sd>0?1e12:-1));
+    lin.sort((a,b)=>{ const x=getv(a), y=getv(b); return (typeof x==='string' ? x.localeCompare(y,'pt-BR') : x-y)*sd; });
+    const LIM = 400, total = lin.length, vis = lin.slice(0, LIM);
+    const th = (k,l,al) => `<th class="sortable" ${al?'style="text-align:left"':''} data-k="${k}" ${SX_ALL.sortK===k?`data-s="${SX_ALL.sortD}"`:''}>${l}</th>`;
+    const head = `<tr>${th('d','Destino')}${carrs.map(c=>th('c:'+c, escapeHtml(c))).join('')}${th('lo','Mais barata',1)}${th('gap','Diferença')}</tr>`;
+    const body = vis.map(l=>{
+      const multi = l.n > 1;
+      const loC = Object.keys(l.e).find(c=>l.e[c].total===l.lo);
+      const dEsc = escapeHtml(l.d).replace(/'/g,"\\'");
+      return `<tr><td><div class="sx-rowlbl"><b>${escapeHtml(l.d.slice(0,-3))}<span class="uf">${l.d.slice(-2)}</span></b></div></td>
+        ${carrs.map(c=>{ const x=l.e[c]; if(!x) return '<td><span class="sx-na">—</span></td>';
+          const cls = ['sx-cell']; if(multi && x.total===l.lo) cls.push('cheap'); else if(multi && x.total===l.hi) cls.push('dear');
+          const rx = x.restr - x.total > 0.005 ? '<span class="rx">+</span>' : '';
+          return `<td><button type="button" class="${cls.join(' ')}" title="${escapeHtml(x.tabela)} · frete R$ ${sxF(x.frete)} + taxas R$ ${sxF(x.taxas)} — clique para abrir o cálculo" onclick="sxAbrirDestino('${dEsc}','${escapeHtml(x.tabela).replace(/'/g,"\\'")}')">${sxF(x.total)}${rx}</button></td>`; }).join('')}
+        <td class="sx-meta">${multi ? escapeHtml(loC) : '—'}</td>
+        <td class="sx-gap">${multi ? sxF(l.gap)+' <small>('+sxPct((l.hi/l.lo-1)*100)+')</small>' : '—'}</td></tr>`;
+    }).join('');
+
+    rows.innerHTML = `
+      <div class="sx-ctl">
+        <div class="fl"><label>Veículo</label><div class="sx-vseg">${veicsDisp.map(v=>`<button type="button" aria-pressed="${v===veh}" onclick="SX_ALL.veh='${v}';sxRenderTodas()">${v}<small>${nCarr(v)}</small></button>`).join('')}</div></div>
+        <div class="fl"><label for="sx-uf">UF</label><select id="sx-uf" onchange="SX_ALL.uf=this.value;sxRenderTodas()"><option value="">Todas</option>${ufs.map(u=>`<option ${u===SX_ALL.uf?'selected':''}>${u}</option>`).join('')}</select></div>
+        <div class="fl"><label for="sx-q">Destino</label><input id="sx-q" placeholder="Buscar cidade" value="${escapeHtml(SX_ALL.q)}" oninput="SX_ALL.q=this.value;clearTimeout(window._sxT);window._sxT=setTimeout(()=>{sxRenderTodas();setTimeout(()=>{const e=document.getElementById('sx-q');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length);}},0)},250)"></div>
+        <div class="fl"><label for="sx-min">Linhas</label><select id="sx-min" onchange="SX_ALL.min=+this.value;sxRenderTodas()"><option value="2" ${SX_ALL.min===2?'selected':''}>Só com 2+ transportadoras</option><option value="1" ${SX_ALL.min===1?'selected':''}>Todas</option></select></div>
+      </div>
+      ${overCap ? `<div class="sx-warn" style="margin-bottom:12px">O peso considerado (${fmtKg(pesoConsiderado)}) passa da capacidade do ${veh} (${capV.kg.toLocaleString('pt-BR')} kg). Valores só para referência.</div>` : ''}
+      <div class="sx-rank">${rank}</div>
+      <div class="sx-legend">
+        <span><i class="sx-sw" style="background:var(--green-l);outline:1px solid var(--green)"></i>Mais barata</span>
+        <span><i class="sx-sw" style="background:var(--red-l);outline:1px solid var(--red)"></i>Mais cara</span>
+        <span>Diferença = mais cara − mais barata</span>
+        <span>${total.toLocaleString('pt-BR')} destinos${total>LIM?` · mostrando ${LIM} (use UF ou busca)`:''}</span>
+      </div>
+      <div class="sx-tbl-wrap" style="max-height:70vh;overflow:auto"><table class="sx-tbl" id="sx-tbl-all"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+      <p class="sx-note">Mesmo peso (${fmtKg(pesoConsiderado)}) e NF (R$ ${sxF(params.nf)}) da simulação, origem ${escapeHtml(params.origem)}. Clique num valor para abrir o cálculo completo daquele destino.</p>`;
+    rows.querySelectorAll('#sx-tbl-all th.sortable').forEach(h=>h.onclick=()=>{
+      const k=h.dataset.k; if(SX_ALL.sortK===k) SX_ALL.sortD = SX_ALL.sortD==='asc'?'desc':'asc'; else { SX_ALL.sortK=k; SX_ALL.sortD = k==='d'?'asc':(k==='gap'?'desc':'asc'); }
+      sxRenderTodas();
+    });
+  }, 20);
+}
+function sxAbrirDestino(dest, tabela){
+  window._sxKeepSel = true;
+  if(MODO_BUSCA==='cliente') switchModoBusca('destino');
+  document.getElementById('f-destino').value = dest;
+  SX_SEL = tabela; SX_VIEW = 'rota';
+  calcular();
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function toggleDetail(row){ row.classList.toggle('open'); }
 
 function ordenar(modo){
   SORT_MODE = modo;
-  document.getElementById('sort-preco').classList.toggle('on', modo==='preco');
-  document.getElementById('sort-nome').classList.toggle('on', modo==='nome');
   if(LAST_RESULT) renderResultados();
 }
 
